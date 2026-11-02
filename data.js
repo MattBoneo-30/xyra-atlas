@@ -83,7 +83,7 @@ export const COURSES = [
       ['Diversify deliberately','Match any investment to time horizon, liquidity needs and tolerance for loss. Fees compound too.'],
       'List three risks you would need to understand before investing.','A guaranteed high return with no risk is...', ['A reason to verify carefully','Always legitimate','The same as insured savings'],0,'Unusually certain high returns are a common warning sign.')
   ],{featured:true}),
-  course('time','Time & Focus','Protect attention and make plans you can keep.','clock','atlas-horizon','Personal systems',[
+  course('time','Time & Focus','Protect attention and make plans you can keep.','clock','course-time','Personal systems',[
     lesson('priorities','Find the next important action',8,'Beginner','Being busy is not the same as making progress.',
       ['Choose a meaningful target','Pick one outcome that matters this week; translate it into a concrete next action.'],
       ['Decide what not to do','Time is finite. Removing low-value commitments is often more powerful than adding hacks.'],
@@ -119,7 +119,7 @@ export const COURSES = [
       ['Keep difficulty just above comfort','Combine comprehensible input, speaking, spaced practice and feedback. Expand domains steadily.'],
       'Pick one measurable three-month language goal.','What points toward higher proficiency?', ['Daily meaningful use with feedback','Only seven days of memorization','Never encountering real speech'],0,'Sustained, varied practice builds durable language skill.')
   ],{featured:true}),
-  course('communication','Communication','Speak clearly, listen deeply and set boundaries.','message','course-library','Relationships & work',[
+  course('communication','Communication','Speak clearly, listen deeply and set boundaries.','message','course-communication','Relationships & work',[
     lesson('listen','Listen to understand',8,'Beginner','Good conversation starts before your reply.',
       ['Listen for meaning','Notice facts, feelings and needs. Reflect back what you heard instead of immediately solving.'],
       ['Ask open questions','“What was the hardest part?” often reveals more than “Are you fine?”'],
@@ -133,7 +133,7 @@ export const COURSES = [
       ['Seek repair','A genuine apology names the action, accepts responsibility and follows through with change.'],
       'Rewrite a blaming accusation as a clear observation and request.','What makes an apology stronger?', ['“Sorry you feel that way”','Owning the behavior and changing it','Demanding immediate forgiveness'],1,'Accountability and action are central to repair.')
   ]),
-  course('thinking','Critical Thinking','Spot weak claims, confusion and false certainty.','spark','course-psychology','Mental tools',[
+  course('thinking','Critical Thinking','Spot weak claims, confusion and false certainty.','spark','course-thinking','Mental tools',[
     lesson('evidence','Evidence versus assertion',9,'Beginner','Confidence is not a substitute for proof.',
       ['Understand the claim','Ask what exactly is being asserted, what would count as evidence and what would disprove it.'],
       ['Trace the source','Prefer primary documents, quality research and transparent methods when possible.'],
@@ -147,7 +147,7 @@ export const COURSES = [
       ['Separate values and facts','Some disagreements involve different priorities, not only a missing statistic.'],
       'Write a fair summary of a view you oppose before responding.','What is steelmanning?', ['Mocking a weak claim','Presenting a view in its strongest fair form','Changing the subject'],1,'A fair reconstruction improves real dialogue.')
   ]),
-  course('digital','Digital & AI Literacy','Stay safe, verify outputs and use technology well.','shield','course-library','Modern essentials',[
+  course('digital','Digital & AI Literacy','Stay safe, verify outputs and use technology well.','shield','course-digital','Modern essentials',[
     lesson('passwords','Your digital security baseline',9,'Beginner','Simple security habits prevent many common compromises.',
       ['Use unique credentials','A password manager and unique strong passwords reduce credential reuse risk. Enable multi-factor authentication.'],
       ['Keep recovery current','Secure your recovery methods and update software. Treat unexpected login prompts cautiously.'],
@@ -161,7 +161,7 @@ export const COURSES = [
       ['Protect sensitive inputs','Avoid pasting passwords, personal records or private documents without understanding the provider and controls.'],
       'Fact-check three specific claims in an AI-generated answer.','What is a sound AI habit?', ['Assume all confident answers are true','Verify high-stakes claims','Share secrets to get faster results'],1,'High-stakes decisions require verification.')
   ]),
-  course('career','Career & Work','Build skills, opportunities and a compelling portfolio.','rocket','course-business','Your future',[
+  course('career','Career & Work','Build skills, opportunities and a compelling portfolio.','rocket','course-career','Your future',[
     lesson('skills','Map a valuable skill',8,'Beginner','Your career is built through evidence of ability.',
       ['Choose a practical target','Study real job descriptions and note recurring tasks, tools and expected outcomes.'],
       ['Learn by producing','Create small public or private projects that prove a specific capability.'],
@@ -175,7 +175,7 @@ export const COURSES = [
       ['Make a specific case','Explain measurable contributions, ask for a clear range and leave room for discussion.'],
       'Practice a respectful salary conversation aloud.','What improves a negotiation?', ['Bluffing about offers','Market evidence and a clear request','Threatening a colleague'],1,'Evidence and clarity are more effective than deception.')
   ]),
-  course('science','Science & The World','Explore how science tests explanations.','orbit','atlas-horizon','Curiosity',[
+  course('science','Science & The World','Explore how science tests explanations.','orbit','course-science','Curiosity',[
     lesson('method','Think like a scientist',9,'Beginner','Science is a process for revising claims in light of evidence.',
       ['Ask testable questions','Separate predictions from observations and choose measurable outcomes.'],
       ['Accept revision','A good model changes when stronger evidence appears. Uncertainty can be useful, not shameful.'],
@@ -189,7 +189,7 @@ export const COURSES = [
       ['Look for leverage','Small structural changes sometimes beat repeated one-time fixes.'],
       'Sketch a feedback loop affecting your sleep or productivity.','A feedback loop describes...', ['An isolated fact','How an output influences future behavior','A random opinion'],1,'Systems thinking considers consequences across time.')
   ]),
-  course('relationships','Relationships & Wellbeing','Build mutual respect, healthy habits and resilience.','heart','course-psychology','Care & connection',[
+  course('relationships','Relationships & Wellbeing','Build mutual respect, healthy habits and resilience.','heart','course-relationships','Care & connection',[
     lesson('trust','Build trust through actions',9,'Beginner','Trust grows through reliability, transparency and repair.',
       ['Small promises matter','Follow through on reasonable commitments and communicate promptly when plans change.'],
       ['Mutual agency','A healthy relationship respects both people’s choices, social ties and boundaries.'],
@@ -203,7 +203,7 @@ export const COURSES = [
       ['Know when to ask for help','A professional can help when symptoms persist or interfere with daily life. General guidance is not a diagnosis.'],
       'Pick one sustainable habit to practice this week.','What is a realistic change strategy?', ['Change everything overnight','Start small and adjust','Avoid all support'],1,'Small consistent habits are easier to maintain.')
   ]),
-  course('negotiation','Influence & Negotiation','Understand persuasion without becoming coercive.','compass','course-business','People skills',[
+  course('negotiation','Influence & Negotiation','Understand persuasion without becoming coercive.','compass','course-negotiation','People skills',[
     lesson('persuasion','Persuasion versus manipulation',10,'Beginner','Influence becomes unethical when it relies on deception or overrides informed choice.',
       ['Understand the difference','Persuasion presents relevant reasons openly. Manipulation conceals key information or exploits fear and vulnerabilities.'],
       ['Use informed choice','State your interests, show trade-offs, invite questions and accept a no.'],

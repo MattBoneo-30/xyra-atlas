@@ -4,19 +4,19 @@
 
 ![Xyra Atlas emblem](assets/atlas-mark.svg)
 
-## Current release: Foundation 0.2
+## Current release: Foundation 0.3 — Illustrated Worlds
 
-- A violet-and-gold responsive interface, landscape illustrations and a home-screen app icon.
+- A violet-and-gold responsive interface, **14 distinct original vector course worlds**, Xyra's Corner artwork, landscape hero and a home-screen app icon. The same course identity appears on home tiles, category cards, course covers and lessons.
 - 14 learning subjects with 52 short introductory lessons, exercises and knowledge checks (actual count is checked by tests).
 - Psychology, legal literacy, business, money, productivity, communication, critical thinking, language study, digital literacy, career, science, relationships and influence.
 - **The Shadow Library (18+ educational content)** covers manipulation, gaslighting, lies, emotional leverage, deceptive interface design, consent and adult media literacy. The age acknowledgment is a *content gate*, not verified age or identity security.
 - Seven-day language practice framework for 20 languages (a training plan, not yet translated courses or audio lessons).
 - Local bookmarks, favorites, quizzes, progress, achievement badges, themes, and JSON export/import for transferring between devices.
-- **Review Deck:** cards unlocked by completed lessons with scheduled recall after 1, 3, 7, 14, 30 and 60 days. Forgotten cards repeat after 10 minutes. Schedules are included in local backup exports.
+- **Review Deck:** recall flashcards unlocked by completed lessons; spaced practice at 1, 3, 7, 14, 30, and 60-day intervals, with 10-minute repeats for forgotten material. Review schedules are stored locally and included in progress backups.
 - Offline app shell and included course library, cached by a same-origin service worker.
 - No account, advertisement, external API call or tracking service is required for the current edition.
 
-**Scope honesty:** This release is a real working foundation with concise introductory teaching, not yet a complete beginner-to-professional encyclopedia. Advanced chapters and subject-specific original illustrations will grow in subsequent releases. Seven days can establish useful first phrases, not native-like fluency.
+**Scope honesty:** This release is a real working foundation with concise introductory teaching, not yet a complete beginner-to-professional encyclopedia. Advanced chapters and richer cinematic/character artwork will grow in subsequent releases. The current unique SVG scenes are handcrafted vector illustrations, not the full painterly concept art. Seven days can establish useful first phrases, not native-like fluency.
 
 ## Run locally
 
@@ -61,11 +61,12 @@ index.html             HTML shell and PWA metadata
 styles.css             Responsive design system and screen styles
 app.js                 Navigation, interface, storage, quizzes, review UX, install UX
 data.js                Offline learning curriculum and language sprint
-review.js              Dependency-free spaced repetition and validation
-assets/                Optimized vector illustrations / identity
+review.js              Dependency-free spaced repetition logic and input validation
+assets/                14 distinct course scenes, a corner scene, vector identity
 sw.js                  Offline service worker
 manifest.webmanifest   Installability metadata
 scripts/build.mjs      Dependency-free static build and PNG generation
+scripts/artwork_builder.py   Optional source generator for 14 reproducible course scenes
 scripts/serve.mjs      Local HTTP preview
 tests/                 Content and PWA checks
 vercel.json            Vercel build and security headers
@@ -74,7 +75,7 @@ vercel.json            Vercel build and security headers
 ## Next content milestones
 
 1. Deep subject tracks with credible citations and regional law selection, starting with the Philippines.
-2. Original rich cinematic chapter artwork, reusable illustrations, and an accessible illustration library.
+2. Additional painterly cinematic chapter artwork and branded character scenes; the first set of 14 lightweight subject-specific illustrations is complete.
 3. Interactive study cards, question bank, spaced repetition and properly sourced language audio.
 4. A transparent download manager for optional offline packs and optional end-to-end encrypted synchronization.
 

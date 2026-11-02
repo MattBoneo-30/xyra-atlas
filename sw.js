@@ -1,12 +1,25 @@
 /* Xyra Atlas: privacy-first, same-origin offline app shell. */
-const CACHE = 'xyra-atlas-v2';
+const CACHE = 'xyra-atlas-v3';
 const APP_SHELL = [
   '/', '/index.html', '/styles.css', '/app.js', '/data.js', '/review.js',
   '/manifest.webmanifest', '/assets/atlas-mark.svg',
   '/assets/atlas-horizon.svg', '/assets/course-library.svg',
-  '/assets/course-psychology.svg', '/assets/course-laws.svg',
-  '/assets/course-business.svg', '/assets/course-savings.svg',
-  '/assets/course-languages.svg', '/assets/course-shadow.svg',
+  '/assets/course-business.svg',
+  '/assets/course-career.svg',
+  '/assets/course-communication.svg',
+  '/assets/course-digital.svg',
+  '/assets/course-languages.svg',
+  '/assets/course-laws.svg',
+  '/assets/course-library.svg',
+  '/assets/course-negotiation.svg',
+  '/assets/course-psychology.svg',
+  '/assets/course-relationships.svg',
+  '/assets/course-savings.svg',
+  '/assets/course-science.svg',
+  '/assets/course-shadow.svg',
+  '/assets/course-thinking.svg',
+  '/assets/course-time.svg',
+  '/assets/xyra-corner.svg',
   '/icon-192.png', '/icon-512.png', '/apple-touch-icon.png'
 ];
 self.addEventListener('install', event => {

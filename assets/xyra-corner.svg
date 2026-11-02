@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 460 520" role="img" aria-label="A glowing open book, lavender window and a golden guiding star">
+ <defs>
+ <linearGradient id="night" x2="1" y2="1"><stop stop-color="#1e143a"/><stop offset=".5" stop-color="#634277"/><stop offset="1" stop-color="#241935"/></linearGradient>
+ <radialGradient id="light"><stop stop-color="#ffedd0" stop-opacity=".9"/><stop offset=".5" stop-color="#e5bba9" stop-opacity=".3"/><stop offset="1" stop-color="#e5bba9" stop-opacity="0"/></radialGradient>
+ <linearGradient id="page"><stop stop-color="#fce6d4"/><stop offset="1" stop-color="#c4a4cb"/></linearGradient>
+ </defs>
+ <rect width="460" height="520" rx="34" fill="url(#night)"/>
+ <path d="M48 0v302m360-302v302M44 304h367" stroke="#a782b7" stroke-width="9" opacity=".65"/><path d="M58 21q163 84 346 0" stroke="#ffdab6" stroke-width="2" opacity=".45" fill="none"/>
+ <circle cx="258" cy="195" r="174" fill="url(#light)"/>
+ <path d="M93 313q132-160 270 0" fill="#815880" opacity=".35"/>
+ <g fill="#ffe8c6"><circle cx="112" cy="100" r="3"/><circle cx="368" cy="149" r="4"/><circle cx="327" cy="65" r="3"/><circle cx="83" cy="211" r="2"/></g>
+ <path d="M230 62 246 121 305 137 246 152 230 210 214 152 154 137 214 121z" fill="#ffdfae"/>
+ <circle cx="230" cy="137" r="59" stroke="#ffe9cc" stroke-opacity=".5" fill="none" stroke-width="2"/>
+ <path d="M0 399q195-43 460 0v121H0z" fill="#281c39"/><path d="M37 374h390v30H37z" fill="#926b76" stroke="#edb8a4" stroke-width="5"/>
+ <path d="M75 312q72-43 151 12 84-55 158-12v106q-93-16-158 19-64-35-151-19z" fill="url(#page)" stroke="#fbe4c7" stroke-width="6"/>
+ <path d="M226 324v111M95 347q65-14 111 13M96 366q67-14 109 11M96 387q61-14 108 11M247 356q54-25 112-11M246 376q54-25 111-11M246 397q54-25 111-11" fill="none" stroke="#846287" stroke-width="4" opacity=".6" stroke-linecap="round"/>
+ <path d="M226 437q0 15 14 35l16-14" fill="none" stroke="#e7b885" stroke-width="6"/>
+ <path d="M387 312c0-36 46-44 46-6 0 19-14 25-25 26h-21z" fill="#ddc5cb" stroke="#fce1c5" stroke-width="4"/><path d="M385 332h42q0 20-21 20t-21-20z" fill="#ab7998"/><path d="M408 285q-13-25 0-43" stroke="#ffe0ce" stroke-width="4" stroke-linecap="round" opacity=".7"/>
+</svg>
