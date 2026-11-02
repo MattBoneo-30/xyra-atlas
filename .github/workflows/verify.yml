@@ -1,0 +1,43 @@
+name: Verify Xyra Atlas
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: verify-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test-and-build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate curriculum and build
+        run: npm run check
+      - name: Verify offline artifacts
+        run: |
+          test -s dist/index.html
+          test -s dist/sw.js
+          test -s dist/data.js
+          test -s dist/icon-192.png
+          test -s dist/icon-512.png
+          test -s dist/apple-touch-icon.png
+      - name: Save deployable website
+        uses: actions/upload-artifact@v4
+        with:
+          name: xyra-atlas-static-site
+          path: dist/
+          retention-days: 7
