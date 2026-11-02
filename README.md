@@ -4,13 +4,14 @@
 
 ![Xyra Atlas emblem](assets/atlas-mark.svg)
 
-## Current release: Foundation 0.3 — Illustrated Worlds
+## Current release: Language Lab 0.4
 
 - A violet-and-gold responsive interface, **14 distinct original vector course worlds**, Xyra's Corner artwork, landscape hero and a home-screen app icon. The same course identity appears on home tiles, category cards, course covers and lessons.
 - 14 learning subjects with 52 short introductory lessons, exercises and knowledge checks (actual count is checked by tests).
 - Psychology, legal literacy, business, money, productivity, communication, critical thinking, language study, digital literacy, career, science, relationships and influence.
 - **The Shadow Library (18+ educational content)** covers manipulation, gaslighting, lies, emotional leverage, deceptive interface design, consent and adult media literacy. The age acknowledgment is a *content gate*, not verified age or identity security.
-- Seven-day language practice framework for 20 languages (a training plan, not yet translated courses or audio lessons).
+- Seven-day language practice framework for 20 languages, with **72 practical offline phrases across nine starter languages**: Japanese, Korean, Spanish, French, Mandarin Chinese, German, Filipino, Italian and English.
+- Interactive phrase-recall cards, local mastery marking, backup/import and optional speech synthesis where installed voices support it. Other languages retain the seven-day training plan.
 - Local bookmarks, favorites, quizzes, progress, achievement badges, themes, and JSON export/import for transferring between devices.
 - **Review Deck:** recall flashcards unlocked by completed lessons; spaced practice at 1, 3, 7, 14, 30, and 60-day intervals, with 10-minute repeats for forgotten material. Review schedules are stored locally and included in progress backups.
 - Offline app shell and included course library, cached by a same-origin service worker.
@@ -62,6 +63,7 @@ styles.css             Responsive design system and screen styles
 app.js                 Navigation, interface, storage, quizzes, review UX, install UX
 data.js                Offline learning curriculum and language sprint
 review.js              Dependency-free spaced repetition logic and input validation
+phrasebook.js          Nine offline starter phrase packs and progress validation
 assets/                14 distinct course scenes, a corner scene, vector identity
 sw.js                  Offline service worker
 manifest.webmanifest   Installability metadata

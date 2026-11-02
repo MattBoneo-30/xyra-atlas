@@ -1,10 +1,11 @@
 import { COURSES, LANGUAGES, LEARNING_SPRINT, DAILY_NOTES, findCourse, findLesson, totalLessons } from './data.js';
 import { makeReviewCards, dueReviewCards, recordReview, normalizeReviews } from './review.js';
+import { getPhrasePack, sanitizePhraseProgress } from './phrasebook.js';
 
 const STORAGE_KEY = 'xyra-atlas-state-v1';
 const esc = value => String(value ?? '').replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
 const plain = text => esc(text).replace(/\n/g, '<br>');
-const initial = { completed: [], bookmarks: [], favorites: [], answers: {}, reviews: {}, lastOpened: null, dailyVisits: [], theme: 'dark', language: 'ja', languageDays: [], userName: '', welcomeDismissed: false };
+const initial = { completed: [], bookmarks: [], favorites: [], answers: {}, reviews: {}, lastOpened: null, dailyVisits: [], theme: 'dark', language: 'ja', languageDays: [], phrases: {}, userName: '', welcomeDismissed: false };
 function readStored() {
   try {
     const data = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
@@ -17,6 +18,7 @@ function readStored() {
       favorites: Array.isArray(data.favorites) ? data.favorites.filter(x => typeof x === 'string') : [],
       dailyVisits: Array.isArray(data.dailyVisits) ? data.dailyVisits.filter(x => /^\d{4}-\d{2}-\d{2}$/.test(x)) : [],
       languageDays: Array.isArray(data.languageDays) ? data.languageDays.filter(x => typeof x === 'string') : [],
+      phrases: sanitizePhraseProgress(data.phrases),
       answers: data.answers && typeof data.answers === 'object' && !Array.isArray(data.answers) ? data.answers : {},
       reviews: normalizeReviews(data.reviews),
       theme: data.theme === 'light' ? 'light' : 'dark',
@@ -28,6 +30,7 @@ function readStored() {
 let saved = readStored();
 const reviewCards = makeReviewCards(COURSES);
 let reviewRevealed = false;
+let phraseRevealed = false, phraseIndex = 0;
 const getDueReviews = () => dueReviewCards(reviewCards, saved.completed, saved.reviews, Date.now(), shadowUnlocked);
 let route = parseHash();
 let filter = 'all';
@@ -269,6 +272,7 @@ function languagePage() {
     <div class="section"><div class="section-heading"><div><span class="overline">CHOOSE YOUR STARTING POINT</span><h2>Pick a language</h2></div></div><label class="field-label" for="language-select">Your learning language</label><select id="language-select" aria-label="Choose a language" class="styled-select">${LANGUAGES.map(x=>`<option value="${x.code}" ${saved.language===x.code?'selected':''}>${x.flag} ${esc(x.name)}</option>`).join('')}</select><p class="fineprint">This is a reusable practice plan, not a translated course or a promise of native-level fluency. Verified lessons and audio for each language will be added in later content releases.</p></div>
     <div class="sprint-head"><div><span class="overline">YOUR SEVEN-DAY LAUNCH</span><h2>${language.flag} ${esc(language.name)} sprint</h2><p>Practice 20–30 minutes daily. Build a practical foundation.</p></div><strong>${completedDays}/7</strong></div>${bars(completedDays,7)}
     <div class="sprint-list">${LEARNING_SPRINT.map(([title,description],i)=>`<button type="button" class="sprint-day ${saved.languageDays.includes(`${saved.language}:${i}`)?'complete':''}" data-action="toggle-day" data-id="${i}"><span class="day-check">${saved.languageDays.includes(`${saved.language}:${i}`)?icon('check',17):`0${i+1}`}</span><span><small>DAY ${i+1}</small><strong>${esc(title)}</strong><em>${esc(description)}</em></span></button>`).join('')}</div>
+    ${(() => { const pack=getPhrasePack(saved.language);if(!pack)return `<section class="phrase-lab"><h2>Phrase pack coming soon</h2><p>The seven-day practice plan remains available while this language's lessons are prepared.</p></section>`;const words=pack.phrases,word=words[phraseIndex%words.length],known=saved.phrases[saved.language]||[];return `<section class="phrase-lab"><div class="phrase-head"><span class="overline">OFFLINE PHRASE PRACTICE</span><h2>Practice for real</h2><p>${known.length} of ${words.length} learned</p></div>${bars(known.length,words.length)}<div class="phrase-card"><small>CARD ${phraseIndex%words.length+1} OF ${words.length}</small><h3>${esc(word.english)}</h3>${phraseRevealed?`<div class="phrase-answer" lang="${esc(pack.locale)}"><strong>${esc(word.target)}</strong><small>${esc(word.pronunciation)}</small></div><div class="phrase-buttons">${button(`${icon('play',17)} Listen`,'phrase-speak','secondary-button')}${button(known.includes(word.id)?'Learned ✓':'Mark learned','phrase-known','secondary-button')}</div>`:button('Reveal translation','phrase-reveal','primary-button')}<div class="phrase-controls">${button('Previous','phrase-prev','text-action')}${button(`Next phrase ${icon('arrow',16)}`,'phrase-next','text-action')}</div></div><p class="fineprint">Speak before revealing. Playback requires a compatible installed device voice. Marking learned is a self-assessment.</p></section>`;})()}
     <div class="language-callout">${icon('info',22)}<p><strong>From beginner to native-like?</strong> That's a long-term journey. In one week, target greetings, essential questions and short conversations. Real proficiency grows through months and years of meaningful use.</p></div>
   </main>`;
 }
@@ -277,7 +281,7 @@ function you() {
     <div class="profile-card"><div class="profile-avatar">✦</div><div><span class="overline">ATLAS EXPLORER</span><h2>${esc(actualName())}</h2><p>Level ${Math.floor(finished()/6)+1} · ${finished()} lessons completed</p></div></div>
     <div class="settings-panel"><h2>Make it yours</h2><label class="field-label" for="profile-name">What should Atlas call you?</label><div class="name-row"><input id="profile-name" value="${esc(saved.userName)}" maxlength="40" placeholder="Curious learner"/>${button('Save','save-name','small-button')}</div><div class="settings-row"><span class="setting-icon">${icon(saved.theme==='dark'?'moon':'sun',21)}</span><div><strong>Appearance</strong><small>Switch between twilight and daylight</small></div>${button(saved.theme==='dark'?'Dark':'Light','theme','small-button')}</div><div class="settings-row"><span class="setting-icon">${icon(navigator.onLine?'wifi':'wifi-off',21)}</span><div><strong>Connection</strong><small>Lessons are included in your offline app</small></div><span class="setting-value">${navigator.onLine?'Online':'Offline'}</span></div><div class="settings-row"><span class="setting-icon">${icon('download',21)}</span><div><strong>Install Xyra Atlas</strong><small>Keep it on your phone's home screen</small></div>${button('How?','install','small-button')}</div></div>
     <div class="settings-panel"><h2>Your data, your choice</h2><p class="settings-description">Progress is stored only in this browser on this device. It is not synced to a server. Export a backup before switching phones or clearing browser data.</p><div class="data-actions">${button(`${icon('download',18)} Export backup`,'export','secondary-button')}${button(`${icon('upload',18)} Import backup`,'import','secondary-button')}${button(`${icon('trash',18)} Reset progress`,'reset-dialog','outline-danger')}</div><input type="file" id="backup-file" accept=".json,application/json" hidden /></div>
-    <div class="settings-panel"><h2>About Xyra Atlas</h2><p class="settings-description">A pocket atlas for the art of living—designed for curiosity, independence and the courage to learn difficult things.</p><p class="fineprint">Foundation 0.3 · Illustrated learning edition. Some subjects are introductions, not complete professional courses. Laws vary by jurisdiction. Adult content is educational. There are no ads, trackers or accounts in this edition.</p>${button(`A note from Xyra ${chevron}`,'open-corner','text-action')}</div>
+    <div class="settings-panel"><h2>About Xyra Atlas</h2><p class="settings-description">A pocket atlas for the art of living—designed for curiosity, independence and the courage to learn difficult things.</p><p class="fineprint">Foundation 0.4 · Language Lab edition. Some subjects are introductions, not complete professional courses. Laws vary by jurisdiction. Adult content is educational. There are no ads, trackers or accounts in this edition.</p>${button(`A note from Xyra ${chevron}`,'open-corner','text-action')}</div>
   </main>`;
 }
 function errorView() { return `<main class="page"><div class="empty-state">${icon('compass',34)}<h2>This page wandered off the map.</h2><p>Let's find your way back.</p>${button('Go home','goto-home','primary-button')}</div></main>`; }
@@ -319,6 +323,7 @@ function answerBackup(e) {
         theme:clean.theme==='light'?'light':'dark',
         language:LANGUAGES.some(x=>x.code===clean.language)?clean.language:'ja',
         languageDays:Array.isArray(clean.languageDays)?clean.languageDays.filter(x=>typeof x==='string'):[],
+        phrases:sanitizePhraseProgress(clean.phrases),
         userName:typeof clean.userName==='string'?clean.userName.slice(0,40):''
       };
       visitToday(); persist();flash('Backup imported successfully.');
@@ -353,6 +358,10 @@ async function handleAction(e) {
   else if(action==='reveal-review') {reviewRevealed=true;render();}
   else if(action==='rate-review') {const card=getDueReviews()[0];if(!card||!reviewRevealed||id!==card.id)return;const outcome=button.dataset.outcome;if(!['again','remembered'].includes(outcome))return;saved.reviews[card.id]=recordReview(saved.reviews[card.id],outcome);reviewRevealed=false;persist();flash(outcome==='remembered'?'Nice recall! Your next review is scheduled.':'Good practice. This card returns in 10 minutes.');}
   else if(action==='toggle-day') toggle('languageDays',`${saved.language}:${id}`);
+  else if(action==='phrase-reveal'){phraseRevealed=true;render();}
+  else if(action==='phrase-next'||action==='phrase-prev'){const p=getPhrasePack(saved.language);if(!p)return;phraseIndex=(phraseIndex+(action==='phrase-next'?1:p.phrases.length-1))%p.phrases.length;phraseRevealed=false;render();}
+  else if(action==='phrase-known'){const p=getPhrasePack(saved.language);if(!p)return;const word=p.phrases[phraseIndex%p.phrases.length];const known=new Set(saved.phrases[saved.language]||[]);known.has(word.id)?known.delete(word.id):known.add(word.id);saved.phrases[saved.language]=[...known];persist();render();}
+  else if(action==='phrase-speak'){const p=getPhrasePack(saved.language);if(!p)return;const w=p.phrases[phraseIndex%p.phrases.length];if(!('speechSynthesis' in window)||!('SpeechSynthesisUtterance' in window)){flash('Speech is not available on this device.');return;}try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(w.target);u.lang=p.locale;u.rate=.85;speechSynthesis.speak(u);}catch{flash('Speech is not available on this device.');}}
   else if(action==='save-name') {saved.userName=(document.getElementById('profile-name')?.value||'').trim().slice(0,40);persist();flash('Your name is saved on this device.');}
   else if(action==='install') {modal='install';render();}
   else if(action==='install-prompt' && installEvent) {const prompt=installEvent;installEvent=null;modal='';render();try{await prompt.prompt();}catch{flash('Use your browser menu to install.');}}
@@ -367,7 +376,7 @@ async function handleAction(e) {
 }
 document.addEventListener('click',handleAction);
 document.addEventListener('change',e=>{
-  if(e.target.id==='language-select') {saved.language=e.target.value;persist();render();}
+  if(e.target.id==='language-select') {saved.language=e.target.value;phraseIndex=0;phraseRevealed=false;persist();render();}
   if(e.target.id==='age-agree') {gateConfirmed=e.target.checked;const btn=document.querySelector('[data-action="enter-shadow"]');if(btn)btn.disabled=!gateConfirmed;}
   if(e.target.id==='backup-file') answerBackup(e);
 });
