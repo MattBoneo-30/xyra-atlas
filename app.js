@@ -43,9 +43,17 @@ const actualName = () => saved.userName?.trim() || 'curious learner';
 const percent = (num, max) => max ? Math.round(num / max * 100) : 0;
 const plural = (n, noun) => `${n} ${noun}${n === 1 ? '' : 's'}`;
 const wasVisited = date => saved.dailyVisits.includes(date);
+let storageWarningShown = false;
 function persist() {
   try { localStorage.setItem(STORAGE_KEY, JSON.stringify(saved)); }
-  catch { flash('Your browser could not save changes. Try exporting a backup.'); }
+  catch {
+    // Some private/locked-down browsers reject storage. Never render synchronously
+    // while the module is still initializing (or recursively show warnings).
+    if (!storageWarningShown) {
+      storageWarningShown = true;
+      queueMicrotask(() => flash('This browser could not save progress. Export a backup before closing the app.'));
+    }
+  }
 }
 function visitToday() {
   const date = today();
