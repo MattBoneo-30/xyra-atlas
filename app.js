@@ -1,9 +1,10 @@
 import { COURSES, LANGUAGES, LEARNING_SPRINT, DAILY_NOTES, findCourse, findLesson, totalLessons } from './data.js';
+import { makeReviewCards, dueReviewCards, recordReview, normalizeReviews } from './review.js';
 
 const STORAGE_KEY = 'xyra-atlas-state-v1';
 const esc = value => String(value ?? '').replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
 const plain = text => esc(text).replace(/\n/g, '<br>');
-const initial = { completed: [], bookmarks: [], favorites: [], answers: {}, lastOpened: null, dailyVisits: [], theme: 'dark', language: 'ja', languageDays: [], userName: '', welcomeDismissed: false };
+const initial = { completed: [], bookmarks: [], favorites: [], answers: {}, reviews: {}, lastOpened: null, dailyVisits: [], theme: 'dark', language: 'ja', languageDays: [], userName: '', welcomeDismissed: false };
 function readStored() {
   try {
     const data = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
@@ -17,6 +18,7 @@ function readStored() {
       dailyVisits: Array.isArray(data.dailyVisits) ? data.dailyVisits.filter(x => /^\d{4}-\d{2}-\d{2}$/.test(x)) : [],
       languageDays: Array.isArray(data.languageDays) ? data.languageDays.filter(x => typeof x === 'string') : [],
       answers: data.answers && typeof data.answers === 'object' && !Array.isArray(data.answers) ? data.answers : {},
+      reviews: normalizeReviews(data.reviews),
       theme: data.theme === 'light' ? 'light' : 'dark',
       language: LANGUAGES.some(x => x.code === data.language) ? data.language : 'ja',
       userName: typeof data.userName === 'string' ? data.userName.slice(0,40) : ''
@@ -24,6 +26,9 @@ function readStored() {
   } catch { return {...initial}; }
 }
 let saved = readStored();
+const reviewCards = makeReviewCards(COURSES);
+let reviewRevealed = false;
+const getDueReviews = () => dueReviewCards(reviewCards, saved.completed, saved.reviews, Date.now(), shadowUnlocked);
 let route = parseHash();
 let filter = 'all';
 let query = '';
@@ -124,12 +129,13 @@ function parseHash() {
   if (segments[0] === 'course' && segments[1]) return {view:'course', courseId:segments[1]};
   if (segments[0] === 'lesson' && segments[1] && segments[2]) return {view:'lesson', courseId:segments[1], lessonId:segments[2]};
   if (segments[0] === 'language') return {view:'language'};
+  if (segments[0] === 'review') return {view:'review'};
   if (['home','explore','journey','saved','you'].includes(segments[0])) return {view:segments[0]};
   return {view:'home'};
 }
 function nav(path) { const next = '#/' + path; if (location.hash === next) { route = parseHash(); render(); } else location.hash = next; window.scrollTo({top:0,behavior:'instant'}); }
 function flash(text) { currentToast = text; clearTimeout(toastTimer); render(); toastTimer = setTimeout(() => {currentToast = '';render();},3200); }
-function tabForRoute() { return ['course','lesson','language'].includes(route.view) ? 'explore' : route.view; }
+function tabForRoute() { return route.view === 'review' ? 'journey' : ['course','lesson','language'].includes(route.view) ? 'explore' : route.view; }
 function topbar() {
   return `<header class="topbar"><div class="topbar-inner">
     <button type="button" class="wordmark" data-action="goto-home" aria-label="Xyra Atlas home">${mark}<span>Xyra <em>Atlas</em></span></button>
@@ -152,6 +158,7 @@ function card(c,mode='tile') {
 }
 function home() {
   const done = finished();
+  const reviewsDue = getDueReviews().length;
   const featured = COURSES.filter(c=>c.featured && !c.dark).slice(0,3);
   const last = saved.lastOpened && findCourse(saved.lastOpened.courseId) && findLesson(saved.lastOpened.courseId,saved.lastOpened.lessonId) ? saved.lastOpened : null;
   const note = DAILY_NOTES[Math.floor(new Date().getTime()/86400000)%DAILY_NOTES.length];
@@ -160,6 +167,7 @@ function home() {
     <section class="hero-landscape" aria-label="The journey begins"><img src="/assets/atlas-horizon.svg" alt="Dreamlike lavender mountains beneath a glowing moon" /><div class="landscape-shade"></div><div class="hero-caption"><span class="tiny-star">✧ YOUR JOURNEY</span><strong>Every great story begins<br/>with a curious mind.</strong></div><div class="hero-moon">✦</div></section>
     <section class="stats-strip" aria-label="Your learning summary"><div class="stat-persona"><span class="flame-icon">${icon('flame',24)}</span><div><strong>Level ${Math.floor(done/6)+1} · ${done < 6?'Curious Learner':done < 24?'Knowledge Seeker':'Atlas Explorer'}</strong><span>${done} lessons finished</span></div></div>${bars(done % 6,6)}<span class="stat-next">${done%6}/6</span></section>
     ${last ? `<section class="resume-card"><div class="section-heading compact"><div><span class="overline">PICK UP WHERE YOU LEFT OFF</span><h2>Keep going</h2></div></div><button type="button" data-action="open-lesson" data-course="${esc(last.courseId)}" data-lesson="${esc(last.lessonId)}" class="resume-inner"><span class="resume-icon">${icon('play',22)}</span><span><strong>${esc(findLesson(last.courseId,last.lessonId).title)}</strong><small>${esc(findCourse(last.courseId).title)}</small></span>${chevron}</button></section>`:''}
+    <section class="review-invite"><div class="review-invite-icon">${icon('orbit',27)}</div><div><span class="overline">MAKE KNOWLEDGE STICK</span><h2>Your Review Deck</h2><p>${reviewsDue ? `${plural(reviewsDue,'flashcard')} ready to practice.` : 'Complete a lesson to unlock its flashcard.'}</p></div>${button(`Practice ${icon('arrow',17)}`,'review','small-button')}</section>
     <section class="section"><div class="section-heading"><div><span class="overline">DISCOVER NEW WORLDS</span><h2>Explore & learn</h2></div>${button(`See all ${chevron}`,'goto-explore','text-action')}</div><div class="topic-grid">${COURSES.filter(c=>!c.dark).slice(0,6).map(c=>`<button type="button" class="topic-tile" data-action="open-course" data-id="${esc(c.id)}"><span class="topic-icon">${icon(c.icon,24)}</span><strong>${esc(c.title)}</strong></button>`).join('')}</div></section>
     <section class="section"><div class="section-heading"><div><span class="overline">HANDPICKED FOR YOU</span><h2>Begin your journey</h2></div></div><div class="feature-scroller">${featured.map(c=>card(c)).join('')}</div></section>
     <section class="xyra-note"><div class="note-art">✦<span>✧</span></div><div><span class="overline">A LITTLE NOTE FROM XYRA</span><h2>From my corner to yours</h2><p>“${esc(note)}”</p>${button(`Explore my corner ${chevron}`,'open-corner','text-action')}</div></section>
@@ -225,8 +233,24 @@ function journey() {
   return `<main class="page journey-page"><div class="page-title"><span class="overline">YOUR GROWTH IS YOURS</span><h1>Every step <em>counts.</em></h1><p>Not a race. A beautiful habit of becoming.</p></div>
     <div class="journey-banner"><div class="journey-aura">✧</div><span class="overline">YOUR ATLAS RANK</span><div class="journey-level">${Math.floor(done/6)+1}</div><h2>${done < 6?'Curious Learner':done<24?'Knowledge Seeker':'Atlas Explorer'}</h2><p>Keep exploring, one honest lesson at a time.</p>${bars(done%6,6)}<span class="subtle-count">${done%6} / 6 to next level</span></div>
     <div class="metrics-grid"><div><span class="metric-icon">${icon('book',22)}</span><strong>${done}</strong><small>Lessons learned</small></div><div><span class="metric-icon">${icon('flame',22)}</span><strong>${streak()}</strong><small>Day streak</small></div><div><span class="metric-icon">${icon('spark',22)}</span><strong>${xp}</strong><small>Knowledge XP</small></div></div>
+    <section class="review-invite"><div class="review-invite-icon">${icon('orbit',27)}</div><div><span class="overline">ACTIVE RECALL</span><h2>Your Review Deck</h2><p>${plural(getDueReviews().length,'card')} due now, from your completed lessons.</p></div>${button('Open deck','review','small-button')}</section>
     <section class="section"><div class="section-heading"><div><span class="overline">MOMENTS WORTH REMEMBERING</span><h2>Your milestones</h2></div></div><div class="badge-grid">${[['First Spark','Complete one lesson',done>=1,'spark'],['The Explorer','Complete six lessons',done>=6,'compass'],['Bookworm','Complete twenty lessons',done>=20,'book'],['The Constant','Visit for seven days',saved.dailyVisits.length>=7,'flame']].map(([name,desc,unlock,ico])=>`<div class="achievement ${unlock?'unlocked':''}"><div>${icon(ico,26)}</div><strong>${name}</strong><small>${desc}</small><span>${unlock?'Unlocked':'Locked'}</span></div>`).join('')}</div></section>
     <section class="section"><div class="section-heading"><div><span class="overline">YOUR ONGOING JOURNEYS</span><h2>Learning paths</h2></div></div><div class="learning-paths">${active.length?active.map(c=>`<button type="button" class="path-row" data-action="open-course" data-id="${esc(c.id)}"><span class="path-icon">${icon(c.icon,23)}</span><span><strong>${esc(c.title)}</strong><small>${courseProgress(c)} of ${c.lessons.length} lessons</small>${bars(courseProgress(c),c.lessons.length)}</span>${chevron}</button>`).join(''):`<div class="empty-state">${icon('compass',34)}<h3>Your journey begins here</h3><p>Pick a subject, finish one lesson, and your path will appear here.</p>${button('Explore subjects','goto-explore','primary-button')}</div>`}</div></section>
+  </main>`;
+}
+function reviewPage() {
+  const learned = new Set(saved.completed);
+  const unlockedCards = reviewCards.filter(card => learned.has(card.id) && (!card.dark || shadowUnlocked));
+  const due = getDueReviews();
+  const card = due[0];
+  return `<main class="page review-page"><div class="subnav">${button(`${icon('back',18)} Back to journey`,'goto-journey','back-link')}</div>
+    <div class="page-title"><span class="overline">KNOWLEDGE THAT STAYS</span><h1>Your <em>Review Deck.</em></h1><p>Recall what you learned, then check the answer. The next review is scheduled automatically—entirely on this device.</p></div>
+    <div class="review-metrics"><div><strong>${due.length}</strong><small>Due now</small></div><div><strong>${unlockedCards.length}</strong><small>Unlocked cards</small></div><div><strong>${unlockedCards.length - due.length}</strong><small>Scheduled later</small></div></div>
+    ${card ? `<div class="review-flashcard"><span class="overline">${esc(card.courseTitle)} · ${esc(card.title)}</span><span class="review-card-counter">${plural(due.length,'card')} ready</span><h2>${esc(card.question)}</h2>
+       ${reviewRevealed ? `<div class="review-answer"><span class="overline">THE ANSWER</span><h3>${esc(card.answer)}</h3><p>${esc(card.explanation)}</p></div>
+         <p class="review-guidance">Did you remember it before revealing the answer?</p><div class="review-actions">${button(`${icon('clock',18)} Practice again`,'rate-review','secondary-button',`data-outcome="again" data-id="${esc(card.id)}"`)}${button(`${icon('check',18)} I remembered`,'rate-review','primary-button',`data-outcome="remembered" data-id="${esc(card.id)}"`)}</div>` : button(`${icon('book',19)} Reveal answer`,'reveal-review','primary-button review-reveal')}
+    </div>` : `<div class="review-empty"><span class="review-empty-orbit">✦</span><h2>${unlockedCards.length ? 'All caught up!' : 'Your first flashcard awaits.'}</h2><p>${unlockedCards.length ? 'You have reviewed everything due for now. Return when the next card is ready.' : 'Complete a lesson and its quiz to unlock your first practice card.'}</p>${button('Explore lessons','goto-explore','primary-button')}</div>`}
+    <div class="review-info">${icon('info',20)}<span>Forgotten cards return after 10 minutes. Remembered cards return after 1, 3, 7, 14, 30 and 60 days. Your answers and next review times are saved in your local backup.</span></div>
   </main>`;
 }
 function savedPage() {
@@ -270,8 +294,8 @@ function render() {
   document.documentElement.dataset.theme=saved.theme;
   document.body.classList.toggle('dialog-open',Boolean(modal));
   const view = route.view;
-  const content = ({home,explore,journey,saved:savedPage,you,course:coursePage,lesson:lessonPage,language:languagePage}[view] || errorView)();
-  document.getElementById('app').innerHTML = `${topbar()}<div class="shell"><aside class="desktop-rail"><div class="rail-title">YOUR ATLAS <span>✧</span></div>${[['home','Home','home'],['explore','Explore & Learn','compass'],['journey','My Journey','spark'],['saved','Saved Library','bookmark'],['you','Your Space','user']].map(([id,label,ico])=>`<button type="button" data-action="nav" data-id="${id}" class="rail-link ${tabForRoute()===id?'active':''}">${icon(ico,20)} ${label}</button>`).join('')}<div class="rail-divider"></div><button type="button" class="rail-link" data-action="language">${icon('languages',20)} Language Lab</button><button type="button" class="rail-link" data-action="open-course" data-id="shadow">${icon('moon',20)} Shadow Library</button><div class="rail-note">✦<p>The world is a little bigger every time you learn.</p></div></aside><div class="main-column">${content}<footer class="app-footer">Made with curiosity, for a life still unfolding. <span>✧ Xyra Atlas</span></footer></div></div>${navBar()}${modalView()}${currentToast?`<div class="toast" role="status">${icon('spark',19)} ${esc(currentToast)}</div>`:''}`;
+  const content = ({home,explore,journey,review:reviewPage,saved:savedPage,you,course:coursePage,lesson:lessonPage,language:languagePage}[view] || errorView)();
+  document.getElementById('app').innerHTML = `${topbar()}<div class="shell"><aside class="desktop-rail"><div class="rail-title">YOUR ATLAS <span>✧</span></div>${[['home','Home','home'],['explore','Explore & Learn','compass'],['journey','My Journey','spark'],['saved','Saved Library','bookmark'],['you','Your Space','user']].map(([id,label,ico])=>`<button type="button" data-action="nav" data-id="${id}" class="rail-link ${tabForRoute()===id?'active':''}">${icon(ico,20)} ${label}</button>`).join('')}<div class="rail-divider"></div><button type="button" class="rail-link" data-action="review">${icon('orbit',20)} Review Deck</button><button type="button" class="rail-link" data-action="language">${icon('languages',20)} Language Lab</button><button type="button" class="rail-link" data-action="open-course" data-id="shadow">${icon('moon',20)} Shadow Library</button><div class="rail-note">✦<p>The world is a little bigger every time you learn.</p></div></aside><div class="main-column">${content}<footer class="app-footer">Made with curiosity, for a life still unfolding. <span>✧ Xyra Atlas</span></footer></div></div>${navBar()}${modalView()}${currentToast?`<div class="toast" role="status">${icon('spark',19)} ${esc(currentToast)}</div>`:''}`;
   document.title = `${view==='course' ? findCourse(route.courseId)?.title+' · ':view==='lesson' ? findLesson(route.courseId,route.lessonId)?.title+' · ' : ''}Xyra Atlas`;
 }
 function toggle(list,value) { saved[list]=saved[list].includes(value)?saved[list].filter(x=>x!==value):[...saved[list],value];persist();render(); }
@@ -289,6 +313,7 @@ function answerBackup(e) {
         bookmarks:Array.isArray(clean.bookmarks)?clean.bookmarks.filter(x=>typeof x==='string'):[],
         favorites:Array.isArray(clean.favorites)?clean.favorites.filter(x=>typeof x==='string'):[],
         answers:clean.answers && typeof clean.answers==='object'&&!Array.isArray(clean.answers)?clean.answers:{},
+        reviews:normalizeReviews(clean.reviews),
         dailyVisits:Array.isArray(clean.dailyVisits)?clean.dailyVisits.filter(x=>/^\d{4}-\d{2}-\d{2}$/.test(x)):[],
         lastOpened:clean.lastOpened&&typeof clean.lastOpened==='object'?clean.lastOpened:null,
         theme:clean.theme==='light'?'light':'dark',
@@ -323,6 +348,10 @@ async function handleAction(e) {
   else if(action==='answer') {saved.answers[button.dataset.key]=Number(button.dataset.index);persist();render();}
   else if(action==='complete') {if(button.disabled)return;const key=button.dataset.key;const [cid,lid]=key.split(':');const l=findLesson(cid,lid);if(l && saved.answers[key]===l.quiz.correct && !isCompleted(key)){saved.completed.push(key);persist();flash('Lesson complete. You earned 60 XP ✦');}}
   else if(action==='language') nav('language');
+  else if(action==='goto-journey') nav('journey');
+  else if(action==='review') {reviewRevealed=false;nav('review');}
+  else if(action==='reveal-review') {reviewRevealed=true;render();}
+  else if(action==='rate-review') {const card=getDueReviews()[0];if(!card||!reviewRevealed||id!==card.id)return;const outcome=button.dataset.outcome;if(!['again','remembered'].includes(outcome))return;saved.reviews[card.id]=recordReview(saved.reviews[card.id],outcome);reviewRevealed=false;persist();flash(outcome==='remembered'?'Nice recall! Your next review is scheduled.':'Good practice. This card returns in 10 minutes.');}
   else if(action==='toggle-day') toggle('languageDays',`${saved.language}:${id}`);
   else if(action==='save-name') {saved.userName=(document.getElementById('profile-name')?.value||'').trim().slice(0,40);persist();flash('Your name is saved on this device.');}
   else if(action==='install') {modal='install';render();}
@@ -346,7 +375,7 @@ document.addEventListener('input',e=>{
   if(e.target.id==='course-search') {const pos=e.target.selectionStart;query=e.target.value;render();const input=document.getElementById('course-search');if(input){input.focus();try{input.setSelectionRange(pos,pos);}catch{}}}
 });
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&modal){modal='';if(['course','lesson'].includes(route.view)&&route.courseId==='shadow'&&!shadowUnlocked)nav('explore');else render();} if((e.key==='Enter'||e.key===' ')&&e.target.classList?.contains('shadow-preview')) {e.preventDefault();gateConfirmed=false;modal='shadow';render();}});
-window.addEventListener('hashchange',()=>{route=parseHash();if(route.view==='course'&&route.courseId==='shadow'&&!shadowUnlocked)modal='shadow';if(route.view==='lesson'&&route.courseId==='shadow'&&!shadowUnlocked)modal='shadow';render();});
+window.addEventListener('hashchange',()=>{reviewRevealed=false;route=parseHash();if(route.view==='course'&&route.courseId==='shadow'&&!shadowUnlocked)modal='shadow';if(route.view==='lesson'&&route.courseId==='shadow'&&!shadowUnlocked)modal='shadow';render();});
 window.addEventListener('online',render);window.addEventListener('offline',render);
 window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();installEvent=e;});
 if('serviceWorker' in navigator && location.protocol.startsWith('http')){

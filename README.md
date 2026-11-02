@@ -4,7 +4,7 @@
 
 ![Xyra Atlas emblem](assets/atlas-mark.svg)
 
-## Current release: Foundation 0.1
+## Current release: Foundation 0.2
 
 - A violet-and-gold responsive interface, landscape illustrations and a home-screen app icon.
 - 14 learning subjects with 52 short introductory lessons, exercises and knowledge checks (actual count is checked by tests).
@@ -12,6 +12,7 @@
 - **The Shadow Library (18+ educational content)** covers manipulation, gaslighting, lies, emotional leverage, deceptive interface design, consent and adult media literacy. The age acknowledgment is a *content gate*, not verified age or identity security.
 - Seven-day language practice framework for 20 languages (a training plan, not yet translated courses or audio lessons).
 - Local bookmarks, favorites, quizzes, progress, achievement badges, themes, and JSON export/import for transferring between devices.
+- **Review Deck:** cards unlocked by completed lessons with scheduled recall after 1, 3, 7, 14, 30 and 60 days. Forgotten cards repeat after 10 minutes. Schedules are included in local backup exports.
 - Offline app shell and included course library, cached by a same-origin service worker.
 - No account, advertisement, external API call or tracking service is required for the current edition.
 
@@ -58,8 +59,9 @@ For iOS: open the Vercel URL in **Safari** → Share → **Add to Home Screen** 
 ```
 index.html             HTML shell and PWA metadata
 styles.css             Responsive design system and screen styles
-app.js                 Navigation, interface, storage, quizzes, install UX
+app.js                 Navigation, interface, storage, quizzes, review UX, install UX
 data.js                Offline learning curriculum and language sprint
+review.js              Dependency-free spaced repetition and validation
 assets/                Optimized vector illustrations / identity
 sw.js                  Offline service worker
 manifest.webmanifest   Installability metadata
