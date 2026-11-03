@@ -1109,6 +1109,64 @@ async function handleAction(e) {
   else if(action==='rate-review') {const card=getDueReviews()[0];if(!card||!reviewRevealed||id!==card.id)return;const outcome=button.dataset.outcome;if(!['again','remembered'].includes(outcome))return;saved.reviews[card.id]=recordReview(saved.reviews[card.id],outcome);reviewRevealed=false;persist();flash(outcome==='remembered'?'Nice recall! Your next review is scheduled.':'Good practice. This card returns in 10 minutes.');}
   else if(action==='toggle-day') toggle('languageDays',`${saved.language}:${id}`);
 
+  else if(action==='conversation-start'){
+   if(route.view!=='language'||!getPhrasePack(saved.language))return;
+   const questId=document.getElementById('conversation-quest-select')?.value;
+   if(!CONVERSATION_QUESTS.some(q=>q.id===questId))return;
+   conversationQuestPendingId=questId;
+   const existing=normalizeConversationQuest(saved.conversationQuest,PHRASEBOOK);
+   if(existing&&!conversationQuestResults(existing,PHRASEBOOK).done){modal='conversation-quest-replace';render();return;}
+   saved.conversationQuest=createConversationQuest(PHRASEBOOK,saved.language,{questId,seed:Math.floor(Math.random()*4294967296)});
+   if(saved.conversationQuest){persist();render();}
+  }
+  else if(action==='conversation-replace-confirm'){
+   if(modal!=='conversation-quest-replace'||!getPhrasePack(saved.language))return;
+   const next=createConversationQuest(PHRASEBOOK,saved.language,{questId:conversationQuestPendingId,seed:Math.floor(Math.random()*4294967296)});
+   if(!next)return;
+   saved.conversationQuest=next;modal='';persist();render();
+  }
+  else if(action==='conversation-resume'){
+   if(route.view!=='language')return;
+   const existing=normalizeConversationQuest(saved.conversationQuest,PHRASEBOOK);
+   if(!existing||conversationQuestResults(existing,PHRASEBOOK).done)return;
+   saved.language=existing.code;phraseIndex=0;phraseRevealed=false;phraseReviewRevealed=false;persist();render();
+  }
+  else if(action==='conversation-answer'){
+   if(route.view!=='language')return;
+   const current=normalizeConversationQuest(saved.conversationQuest,PHRASEBOOK);
+   if(!current||current.code!==saved.language)return;
+   const question=currentConversationQuestion(current,PHRASEBOOK);
+   if(!question||question.id!==button.dataset.step)return;
+   const next=answerConversationQuestion(current,id,PHRASEBOOK);
+   if(!next||Object.keys(next.answers).length<=Object.keys(current.answers).length)return;
+   saved.conversationQuest=next;persist();render();
+  }
+  else if(action==='conversation-next'){
+   if(route.view!=='language')return;
+   const current=normalizeConversationQuest(saved.conversationQuest,PHRASEBOOK);
+   if(!current||current.code!==saved.language)return;
+   const next=advanceConversationQuest(current,PHRASEBOOK);
+   if(!next||next.position<=current.position)return;
+   if(conversationQuestResults(next,PHRASEBOOK).done)
+    saved.conversationQuestHistory=recordConversationQuestHistory(saved.conversationQuestHistory,next,PHRASEBOOK);
+   saved.conversationQuest=next;persist();render();
+  }
+  else if(action==='conversation-new'){
+   if(route.view!=='language')return;
+   const current=normalizeConversationQuest(saved.conversationQuest,PHRASEBOOK);
+   if(!current||current.code!==saved.language||!conversationQuestResults(current,PHRASEBOOK).done)return;
+   saved.conversationQuest=null;persist();render();
+  }
+  else if(action==='conversation-discard'){
+   if(route.view!=='language')return;
+   const current=normalizeConversationQuest(saved.conversationQuest,PHRASEBOOK);
+   if(!current||current.code!==saved.language||conversationQuestResults(current,PHRASEBOOK).done)return;
+   modal='conversation-quest-discard';render();
+  }
+  else if(action==='conversation-discard-confirm'){
+   if(modal!=='conversation-quest-discard')return;
+   saved.conversationQuest=null;modal='';persist();render();
+  }
   else if(action==='challenge-start'){
    if(route.view!=='language'||!getPhrasePack(saved.language))return;
    const mode=document.getElementById('language-challenge-mode')?.value;
