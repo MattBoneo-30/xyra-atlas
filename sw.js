@@ -96,8 +96,9 @@ self.addEventListener('fetch',event=>{
   if(cached?.ok)return cached;
   const live=await fetch(req);
   if(live.ok&&!url.search){
-   // Avoid transient caching errors escaping as unhandled promises.
-   event.waitUntil(current.put(url.pathname,live.clone()).catch(()=>{}));
+   // Put a verified same-origin asset in this release cache before resolving.
+   // Cache-write errors do not block an otherwise valid online response.
+   try{await current.put(url.pathname,live.clone());}catch{}
   }
   return live;
  })());
