@@ -1,12 +1,13 @@
 import { COURSES, LANGUAGES, LEARNING_SPRINT, DAILY_NOTES, findCourse, findLesson, totalLessons } from './data.js';
 import { makeReviewCards, dueReviewCards, recordReview, normalizeReviews } from './review.js';
+import { STUDIO_DEFAULTS, sanitizeStudio, calculateSavings, calculateBusiness, calculateTime } from './studio.js';
 import { getPhrasePack, sanitizePhraseProgress } from './phrasebook.js';
 import { normalizeFieldNotes, setFieldNote, MAX_FIELD_NOTE_LENGTH } from './fieldnotes.js';
 
 const STORAGE_KEY = 'xyra-atlas-state-v1';
 const esc = value => String(value ?? '').replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
 const plain = text => esc(text).replace(/\n/g, '<br>');
-const initial = { completed: [], bookmarks: [], favorites: [], answers: {}, reviews: {}, fieldNotes: {}, lastOpened: null, dailyVisits: [], theme: 'dark', language: 'ja', languageDays: [], phrases: {}, userName: '', welcomeDismissed: false };
+const initial = { completed: [], bookmarks: [], favorites: [], answers: {}, reviews: {}, fieldNotes: {}, lastOpened: null, dailyVisits: [], theme: 'dark', language: 'ja', languageDays: [], phrases: {}, studio: sanitizeStudio(null), userName: '', welcomeDismissed: false };
 function readStored() {
   try {
     const data = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
@@ -22,6 +23,7 @@ function readStored() {
       phrases: sanitizePhraseProgress(data.phrases),
       answers: data.answers && typeof data.answers === 'object' && !Array.isArray(data.answers) ? data.answers : {},
       reviews: normalizeReviews(data.reviews),
+      studio: sanitizeStudio(data.studio),
       fieldNotes: normalizeFieldNotes(data.fieldNotes),
       theme: data.theme === 'light' ? 'light' : 'dark',
       language: LANGUAGES.some(x => x.code === data.language) ? data.language : 'ja',
@@ -33,6 +35,7 @@ let saved = readStored();
 const reviewCards = makeReviewCards(COURSES);
 let reviewRevealed = false;
 let phraseRevealed = false, phraseIndex = 0;
+let studioTab = 'savings';
 const getDueReviews = () => dueReviewCards(reviewCards, saved.completed, saved.reviews, Date.now(), shadowUnlocked);
 let route = parseHash();
 let filter = 'all';
@@ -135,12 +138,13 @@ function parseHash() {
   if (segments[0] === 'lesson' && segments[1] && segments[2]) return {view:'lesson', courseId:segments[1], lessonId:segments[2]};
   if (segments[0] === 'language') return {view:'language'};
   if (segments[0] === 'review') return {view:'review'};
+  if (segments[0] === 'studio') return {view:'studio'};
   if (['home','explore','journey','saved','you'].includes(segments[0])) return {view:segments[0]};
   return {view:'home'};
 }
 function nav(path) { const next = '#/' + path; if (location.hash === next) { route = parseHash(); render(); } else location.hash = next; window.scrollTo({top:0,behavior:'instant'}); }
 function flash(text) { currentToast = text; clearTimeout(toastTimer); render(); toastTimer = setTimeout(() => {currentToast = '';render();},3200); }
-function tabForRoute() { return route.view === 'review' ? 'journey' : ['course','lesson','language'].includes(route.view) ? 'explore' : route.view; }
+function tabForRoute() { return ['review','studio'].includes(route.view) ? 'journey' : ['course','lesson','language'].includes(route.view) ? 'explore' : route.view; }
 function topbar() {
   return `<header class="topbar"><div class="topbar-inner">
     <button type="button" class="wordmark" data-action="goto-home" aria-label="Xyra Atlas home">${mark}<span>Xyra <em>Atlas</em></span></button>
@@ -173,6 +177,7 @@ function home() {
     <section class="stats-strip" aria-label="Your learning summary"><div class="stat-persona"><span class="flame-icon">${icon('flame',24)}</span><div><strong>Level ${Math.floor(done/6)+1} · ${done < 6?'Curious Learner':done < 24?'Knowledge Seeker':'Atlas Explorer'}</strong><span>${done} lessons finished</span></div></div>${bars(done % 6,6)}<span class="stat-next">${done%6}/6</span></section>
     ${last ? `<section class="resume-card"><div class="section-heading compact"><div><span class="overline">PICK UP WHERE YOU LEFT OFF</span><h2>Keep going</h2></div></div><button type="button" data-action="open-lesson" data-course="${esc(last.courseId)}" data-lesson="${esc(last.lessonId)}" class="resume-inner"><span class="resume-icon">${icon('play',22)}</span><span><strong>${esc(findLesson(last.courseId,last.lessonId).title)}</strong><small>${esc(findCourse(last.courseId).title)}</small></span>${chevron}</button></section>`:''}
     <section class="review-invite"><div class="review-invite-icon">${icon('orbit',27)}</div><div><span class="overline">MAKE KNOWLEDGE STICK</span><h2>Your Review Deck</h2><p>${reviewsDue ? `${plural(reviewsDue,'flashcard')} ready to practice.` : 'Complete a lesson to unlock its flashcard.'}</p></div>${button(`Practice ${icon('arrow',17)}`,'review','small-button')}</section>
+    <section class="studio-invite"><div class="studio-invite-icon">${icon('briefcase',27)}</div><div><span class="overline">LEARN BY DOING</span><h2>The Practice Studio</h2><p>Build a savings goal, test a business, or map your week.</p></div>${button('Try a tool','studio','small-button')}</section>
     <section class="section"><div class="section-heading"><div><span class="overline">DISCOVER NEW WORLDS</span><h2>Explore & learn</h2></div>${button(`See all ${chevron}`,'goto-explore','text-action')}</div><div class="topic-grid">${COURSES.filter(c=>!c.dark).slice(0,6).map(c=>`<button type="button" class="topic-tile" data-action="open-course" data-id="${esc(c.id)}"><img class="topic-image" src="/assets/${esc(c.art)}.svg" alt="" loading="lazy" decoding="async"/><span class="topic-icon">${icon(c.icon,24)}</span><strong>${esc(c.title)}</strong></button>`).join('')}</div></section>
     <section class="section"><div class="section-heading"><div><span class="overline">HANDPICKED FOR YOU</span><h2>Begin your journey</h2></div></div><div class="feature-scroller">${featured.map(c=>card(c)).join('')}</div></section>
     <section class="xyra-note"><div class="note-art"><img src="/assets/xyra-corner.svg" alt="Illustrated glowing book from Xyra's corner" loading="lazy" decoding="async" /></div><div><span class="overline">A LITTLE NOTE FROM XYRA</span><h2>From my corner to yours</h2><p>“${esc(note)}”</p>${button(`Explore my corner ${chevron}`,'open-corner','text-action')}</div></section>
@@ -242,9 +247,40 @@ function journey() {
     <div class="journey-banner"><div class="journey-aura">✧</div><span class="overline">YOUR ATLAS RANK</span><div class="journey-level">${Math.floor(done/6)+1}</div><h2>${done < 6?'Curious Learner':done<24?'Knowledge Seeker':'Atlas Explorer'}</h2><p>Keep exploring, one honest lesson at a time.</p>${bars(done%6,6)}<span class="subtle-count">${done%6} / 6 to next level</span></div>
     <div class="metrics-grid"><div><span class="metric-icon">${icon('book',22)}</span><strong>${done}</strong><small>Lessons learned</small></div><div><span class="metric-icon">${icon('flame',22)}</span><strong>${streak()}</strong><small>Day streak</small></div><div><span class="metric-icon">${icon('spark',22)}</span><strong>${xp}</strong><small>Knowledge XP</small></div></div>
     <section class="review-invite"><div class="review-invite-icon">${icon('orbit',27)}</div><div><span class="overline">ACTIVE RECALL</span><h2>Your Review Deck</h2><p>${plural(getDueReviews().length,'card')} due now, from your completed lessons.</p></div>${button('Open deck','review','small-button')}</section>
+    <section class="studio-invite"><div class="studio-invite-icon">${icon('briefcase',27)}</div><div><span class="overline">APPLIED LEARNING</span><h2>Practice Studio</h2><p>Financial and time-planning experiments you can repeat.</p></div>${button('Open studio','studio','small-button')}</section>
     <section class="section"><div class="section-heading"><div><span class="overline">MOMENTS WORTH REMEMBERING</span><h2>Your milestones</h2></div></div><div class="badge-grid">${[['First Spark','Complete one lesson',done>=1,'spark'],['The Explorer','Complete six lessons',done>=6,'compass'],['Bookworm','Complete twenty lessons',done>=20,'book'],['The Constant','Visit for seven days',saved.dailyVisits.length>=7,'flame']].map(([name,desc,unlock,ico])=>`<div class="achievement ${unlock?'unlocked':''}"><div>${icon(ico,26)}</div><strong>${name}</strong><small>${desc}</small><span>${unlock?'Unlocked':'Locked'}</span></div>`).join('')}</div></section>
     <section class="section"><div class="section-heading"><div><span class="overline">YOUR ONGOING JOURNEYS</span><h2>Learning paths</h2></div></div><div class="learning-paths">${active.length?active.map(c=>`<button type="button" class="path-row" data-action="open-course" data-id="${esc(c.id)}"><span class="path-icon">${icon(c.icon,23)}</span><span><strong>${esc(c.title)}</strong><small>${courseProgress(c)} of ${c.lessons.length} lessons</small>${bars(courseProgress(c),c.lessons.length)}</span>${chevron}</button>`).join(''):`<div class="empty-state">${icon('compass',34)}<h3>Your journey begins here</h3><p>Pick a subject, finish one lesson, and your path will appear here.</p>${button('Explore subjects','goto-explore','primary-button')}</div>`}</div></section>
   </main>`;
+}
+const peso = n => new Intl.NumberFormat('en-PH',{style:'currency',currency:'PHP',maximumFractionDigits:0}).format(n);
+function studioPage(){
+  const kind=studioTab, values=saved.studio[kind];
+  const config={
+    savings:[["expenses","Monthly essential expenses","Necessary monthly living costs",100000000],["current","Current emergency savings","Money available for emergencies",1000000000],["contribution","Saved each month","Realistic recurring contribution",100000000],["coverage","Months to cover","A goal between 1 and 24",24]],
+    business:[["price","Selling price per item","Revenue from one unit",100000000],["variable","Variable cost per item","Materials, packaging and fees",100000000],["fixed","Monthly fixed costs","Rent and recurring overhead",1000000000],["units","Monthly units sold","Your scenario, not a demand forecast",10000000]],
+    time:[["sleep","Sleep per night","Hours multiplied by seven",24],["work","Work per week","Include school or employment",168],["commute","Travel per week","Travel and waiting time",168],["care","Care and chores","Meals, household and care needs",168],["study","Planned learning","Weekly hours for learning",168]]
+  };
+  const titles={savings:"Your emergency fund",business:"Business break-even",time:"Your weekly time map"};
+  const art={savings:"course-savings",business:"course-business",time:"course-time"};
+  const field=([key,title,hint,max])=>`<label class="studio-field" for="studio-${key}"><span>${esc(title)}</span><input type="number" inputmode="decimal" id="studio-${key}" name="${key}" data-studio-field="${kind}" value="${values[key]}" min="${kind==='savings'&&key==='coverage'?1:0}" max="${max}" step="any" required /><small>${esc(hint)}</small></label>`;
+  const metric=(name,value,help)=>`<div class="studio-metric"><small>${esc(name)}</small><strong>${esc(value)}</strong><span>${esc(help)}</span></div>`;
+  let details="";
+  if(kind==="savings"){
+    const r=calculateSavings(values);
+    details=metric("Target",peso(r.goal),"Essential monthly costs × target months")+metric("Remaining",peso(r.gap),"Target minus available savings")+metric("Months to goal",r.months===null?"Not scheduled":String(r.months),r.months===null?"Choose a regular contribution":"Assumes steady saving and no withdrawals")+`<div class="studio-meter-label"><span>Funded so far</span><strong>${Math.round(r.percent)}%</strong></div><div class="studio-meter"><span style="width:${r.percent}%"></span></div><p class="studio-reading">${r.monthsCovered===null?'Enter monthly expenses to calculate coverage.':`Your current money covers roughly ${r.monthsCovered.toFixed(1)} months of these expenses.`} Keep emergency funds accessible; this estimate is not a guarantee.</p>`;
+  }else if(kind==="business"){
+    const r=calculateBusiness(values);
+    details=metric("Contribution per unit",peso(r.contribution),"Price minus variable cost")+metric("Break-even units",r.breakEvenUnits===null?"Not possible":`${r.breakEvenUnits.toLocaleString("en-PH")}`,"Units needed to cover fixed costs")+metric("Operating result",peso(r.profit),r.profit>=0?"Before taxes and omitted costs":"Projected shortfall")+`<p class="studio-reading">This model assumes a constant price, cost and units sold. Validate actual demand, fees, taxes and cash flow separately.</p>`;
+  }else{
+    const r=calculateTime(values);
+    details=metric("Allocated",`${r.allocated.toFixed(1)} h`,"Includes seven nights of sleep")+metric("Unallocated",`${r.remaining.toFixed(1)} h`,"Not automatically leisure time")+metric("Overbooked",`${r.overbooked.toFixed(1)} h`,"Over the 168-hour weekly limit")+`<div class="studio-meter-label"><span>Weekly hours planned</span><strong>${Math.round(r.percent)}%</strong></div><div class="studio-meter"><span style="width:${r.percent}%"></span></div><p class="studio-reading">Leave buffer time for rest, relationships and surprises. This is a planning aid, not a productivity score.</p>`;
+  }
+  return `<main class="page studio-page"><div class="subnav">${button(`${icon('back',18)} Back to journey`,'goto-journey','back-link')}</div>
+    <div class="studio-hero"><img src="/assets/${art[kind]}.svg" alt=""/><div class="studio-hero-copy"><span class="overline">LEARN BY DOING</span><h1>Practice <em>Studio.</em></h1><p>Turn ideas into real scenarios. Everything works offline and stays on your device.</p></div></div>
+    <div class="studio-tabs" aria-label="Practice tools">${[['savings','Savings'],['business','Business'],['time','Time']].map(([id,label])=>button(label,'studio-tab',`studio-tab ${kind===id?'active':''}`,`data-id="${id}" aria-pressed="${kind===id}"`)).join('')}</div>
+    <section class="studio-workspace"><div class="studio-workspace-intro"><span class="overline">PRACTICAL EXERCISE</span><h2>${titles[kind]}</h2><p>Adjust the numbers and update the scenario to see how the outcome changes.</p></div>
+    <div id="atlas-studio" class="studio-fields">${config[kind].map(field).join('')}</div><div class="studio-actions">${button(`${icon('check',17)} Update scenario`,'studio-calc','primary-button')}${button('Restore example','studio-reset','secondary-button')}</div><div class="studio-results" aria-live="polite"><span class="overline">YOUR SCENARIO</span><div class="studio-metrics">${details}</div></div></section>
+    <p class="info-line">${icon('info',16)} Educational estimates only; not personalized financial or professional advice. Your entries are saved locally and included in JSON backups.</p></main>`;
 }
 function reviewPage() {
   const learned = new Set(saved.completed);
@@ -303,8 +339,8 @@ function render() {
   document.documentElement.dataset.theme=saved.theme;
   document.body.classList.toggle('dialog-open',Boolean(modal));
   const view = route.view;
-  const content = ({home,explore,journey,review:reviewPage,saved:savedPage,you,course:coursePage,lesson:lessonPage,language:languagePage}[view] || errorView)();
-  document.getElementById('app').innerHTML = `${topbar()}<div class="shell"><aside class="desktop-rail"><div class="rail-title">YOUR ATLAS <span>✧</span></div>${[['home','Home','home'],['explore','Explore & Learn','compass'],['journey','My Journey','spark'],['saved','Saved Library','bookmark'],['you','Your Space','user']].map(([id,label,ico])=>`<button type="button" data-action="nav" data-id="${id}" class="rail-link ${tabForRoute()===id?'active':''}">${icon(ico,20)} ${label}</button>`).join('')}<div class="rail-divider"></div><button type="button" class="rail-link" data-action="review">${icon('orbit',20)} Review Deck</button><button type="button" class="rail-link" data-action="language">${icon('languages',20)} Language Lab</button><button type="button" class="rail-link" data-action="open-course" data-id="shadow">${icon('moon',20)} Shadow Library</button><div class="rail-note">✦<p>The world is a little bigger every time you learn.</p></div></aside><div class="main-column">${content}<footer class="app-footer">Made with curiosity, for a life still unfolding. <span>✧ Xyra Atlas</span></footer></div></div>${navBar()}${modalView()}${currentToast?`<div class="toast" role="status">${icon('spark',19)} ${esc(currentToast)}</div>`:''}`;
+  const content = ({home,explore,journey,review:reviewPage,studio:studioPage,saved:savedPage,you,course:coursePage,lesson:lessonPage,language:languagePage}[view] || errorView)();
+  document.getElementById('app').innerHTML = `${topbar()}<div class="shell"><aside class="desktop-rail"><div class="rail-title">YOUR ATLAS <span>✧</span></div>${[['home','Home','home'],['explore','Explore & Learn','compass'],['journey','My Journey','spark'],['saved','Saved Library','bookmark'],['you','Your Space','user']].map(([id,label,ico])=>`<button type="button" data-action="nav" data-id="${id}" class="rail-link ${tabForRoute()===id?'active':''}">${icon(ico,20)} ${label}</button>`).join('')}<div class="rail-divider"></div><button type="button" class="rail-link" data-action="review">${icon('orbit',20)} Review Deck</button><button type="button" class="rail-link" data-action="studio">${icon('briefcase',20)} Practice Studio</button><button type="button" class="rail-link" data-action="language">${icon('languages',20)} Language Lab</button><button type="button" class="rail-link" data-action="open-course" data-id="shadow">${icon('moon',20)} Shadow Library</button><div class="rail-note">✦<p>The world is a little bigger every time you learn.</p></div></aside><div class="main-column">${content}<footer class="app-footer">Made with curiosity, for a life still unfolding. <span>✧ Xyra Atlas</span></footer></div></div>${navBar()}${modalView()}${currentToast?`<div class="toast" role="status">${icon('spark',19)} ${esc(currentToast)}</div>`:''}`;
   document.title = `${view==='course' ? findCourse(route.courseId)?.title+' · ':view==='lesson' ? findLesson(route.courseId,route.lessonId)?.title+' · ' : ''}Xyra Atlas`;
 }
 function toggle(list,value) { saved[list]=saved[list].includes(value)?saved[list].filter(x=>x!==value):[...saved[list],value];persist();render(); }
@@ -323,6 +359,7 @@ function answerBackup(e) {
         favorites:Array.isArray(clean.favorites)?clean.favorites.filter(x=>typeof x==='string'):[],
         answers:clean.answers && typeof clean.answers==='object'&&!Array.isArray(clean.answers)?clean.answers:{},
         reviews:normalizeReviews(clean.reviews),
+        studio:sanitizeStudio(clean.studio),
         fieldNotes:normalizeFieldNotes(clean.fieldNotes),
         dailyVisits:Array.isArray(clean.dailyVisits)?clean.dailyVisits.filter(x=>/^\d{4}-\d{2}-\d{2}$/.test(x)):[],
         lastOpened:clean.lastOpened&&typeof clean.lastOpened==='object'?clean.lastOpened:null,
@@ -361,6 +398,10 @@ async function handleAction(e) {
   else if(action==='language') nav('language');
   else if(action==='goto-journey') nav('journey');
   else if(action==='review') {reviewRevealed=false;nav('review');}
+  else if(action==='studio') nav('studio');
+  else if(action==='studio-tab') {if(['savings','business','time'].includes(id)){studioTab=id;render();}}
+  else if(action==='studio-reset') {saved.studio[studioTab]={...STUDIO_DEFAULTS[studioTab]};persist();flash('Restored this practice example.');}
+  else if(action==='studio-calc') {const fields=[...document.querySelectorAll('[data-studio-field]')];const invalid=fields.find(el=>!el.checkValidity());if(invalid){invalid.reportValidity();return;}const values=Object.fromEntries(fields.map(el=>[el.name,el.value]));saved.studio[studioTab]=sanitizeStudio({[studioTab]:values})[studioTab];persist();flash('Your scenario is updated.');}
   else if(action==='reveal-review') {reviewRevealed=true;render();}
   else if(action==='rate-review') {const card=getDueReviews()[0];if(!card||!reviewRevealed||id!==card.id)return;const outcome=button.dataset.outcome;if(!['again','remembered'].includes(outcome))return;saved.reviews[card.id]=recordReview(saved.reviews[card.id],outcome);reviewRevealed=false;persist();flash(outcome==='remembered'?'Nice recall! Your next review is scheduled.':'Good practice. This card returns in 10 minutes.');}
   else if(action==='toggle-day') toggle('languageDays',`${saved.language}:${id}`);

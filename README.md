@@ -4,7 +4,7 @@
 
 ![Xyra Atlas emblem](assets/atlas-mark.svg)
 
-## Current release: Field Notebook 0.6
+## Current release: Practice Studio 0.7
 
 - A violet-and-gold responsive interface, **14 distinct original vector course worlds**, Xyra's Corner artwork, landscape hero and a home-screen app icon. The same course identity appears on home tiles, category cards, course covers and lessons.
 - 14 learning subjects and **64 interactive lessons**: 52 short starters plus 12 new sourced, three-section field guides with real-world worked examples, exercises and quizzes (counts verified by tests).
@@ -19,6 +19,8 @@
 - No account, advertisement, external API call or tracking service is required for the current edition.
 
 **New in 0.5:** Psychology (evidence journaling, habits, relational inference); Philippine law (Constitution, data privacy, consumer complaints); business (customer discovery, unit economics, Philippine launch steps); money (irregular bills, emergency planning, investment red flags). Sources are linked for optional online verification; lessons work offline. Links and regulations can change.
+
+- **Practice Studio:** three offline interactive labs for emergency-fund targets, business unit economics and a 168-hour weekly time budget. Inputs save privately on your device and are included in JSON backups. These are educational estimates, not personal financial advice.
 
 **Scope honesty:** This release is a real working foundation with concise introductory teaching, not yet a complete beginner-to-professional encyclopedia. Advanced chapters and richer cinematic/character artwork will grow in subsequent releases. The current unique SVG scenes are handcrafted vector illustrations, not the full painterly concept art. Seven days can establish useful first phrases, not native-like fluency.
 
@@ -68,6 +70,7 @@ data.js                Offline learning curriculum and language sprint
 deeptracks.js          12 sourced field-guide lessons with examples and quizzes
 review.js              Dependency-free spaced repetition logic and input validation
 fieldnotes.js          Offline per-lesson notebook validation and saving
+studio.js              Validated savings, business, and time scenario calculations
 phrasebook.js          Nine offline starter phrase packs and progress validation
 assets/                14 distinct course scenes, a corner scene, vector identity
 sw.js                  Offline service worker
