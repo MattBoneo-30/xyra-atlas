@@ -250,6 +250,20 @@ try{
   await page.reload({waitUntil:'domcontentloaded'});
   expect(Object.keys((await getState(page)).answers||{}).length===0,'reset remains clean after reload');
  });
+ await smoke('deep-link-resilience',{viewport:{width:1280,height:800}},async page=>{
+  await page.evaluate(()=>location.hash='#/lesson/%E0%A4%A');
+  await page.locator('.home-page').waitFor();
+  expect(await page.locator('.home-page').count()===1,'invalid encoded deep link opens safe Home');
+  await page.evaluate(()=>location.hash='#/course/%ZZ');
+  await page.locator('.home-page').waitFor();
+  expect(await page.locator('.home-page').count()===1,'second malformed route leaves app usable');
+  await page.evaluate(()=>location.hash='#/course/psychology');
+  await page.locator('.course-page').waitFor();
+  expect(await page.locator('.course-heading').count()===1,'a subsequent valid course deep link still works');
+  await page.evaluate(()=>location.hash='#/lesson/psychology/does-not-exist');
+  await page.locator('.empty-state').first().waitFor();
+  expect(await page.locator('.empty-state').count()>=1,'unknown lesson shows a recoverable error screen');
+ });
 }finally{
  if(browser)await browser.close();
  server.kill('SIGTERM');

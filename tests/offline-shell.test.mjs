@@ -21,3 +21,9 @@ test('offline navigation fallback uses the cached HTML and preserves foreign cac
  assert.match(source,/key\.startsWith\(CACHE_PREFIX\)/);
  assert.match(source,/cache\.addAll\(APP_SHELL\)/);
 });
+
+test('malformed percent encoding in a hash falls back safely without crashing app initialization',()=>{
+ const source=fs.readFileSync('app.js','utf8');
+ assert.match(source,/try \{ decoded=decodeURIComponent\(location\.hash/);
+ assert.match(source,/catch \{ return \{view:'home'\}; \}/);
+});
