@@ -335,3 +335,15 @@ html[data-theme=light]{color-scheme:light;--bg:#fbf5f6;--bg-raised:#fff9fa;--car
 .exam-insights-recent{margin:24px 0}.exam-insights-recent-row{display:grid;grid-template-columns:1fr 1.7fr auto;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--line);color:var(--muted);font-size:12px}.exam-insights-recent-row>span:nth-child(2){overflow-wrap:anywhere}.exam-insights-recent-row strong{color:var(--gold);white-space:nowrap}
 @media(max-width:700px){.exam-insights-columns{grid-template-columns:minmax(0,1fr)}.exam-insights{padding:20px 16px}.exam-insights-metrics>div{padding:13px 10px}.exam-insights-metrics span{font-size:11px}}
 @media(max-width:390px){.exam-insights-metrics{gap:6px}.exam-insights-metrics strong{font-size:22px}.exam-insights-recent-row{grid-template-columns:1fr 1.4fr auto;gap:6px;font-size:11px}}
+
+
+/* Focused revision: practice the specific concepts missed in earlier exams. */
+.exam-focus-action{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:20px;padding:21px;margin:23px 0 6px;border:1px solid var(--line-bright);border-radius:17px;background:linear-gradient(125deg,var(--card-soft),var(--card-strong))}
+.exam-focus-action>div:first-child{flex:1 1 250px;min-width:0}
+.exam-focus-action h3{font-size:20px;margin:8px 0 7px}
+.exam-focus-action p{font-size:13px;line-height:1.65;color:var(--muted);margin:0;max-width:525px}
+.exam-focus-controls{display:grid;grid-template-columns:minmax(0,1fr);gap:8px;flex:0 1 205px;min-width:185px}
+.exam-focus-controls label{font-size:12px;color:var(--muted)}
+.exam-focus-controls .styled-select{min-height:42px;border:1px solid var(--line-bright);border-radius:10px;background:var(--card);color:var(--text);padding:9px 12px;width:100%}
+.exam-focus-controls .primary-button{min-height:42px;width:100%}
+@media(max-width:600px){.exam-focus-action{padding:18px 15px;gap:16px}.exam-focus-controls{min-width:0;flex:1 1 100%}}
