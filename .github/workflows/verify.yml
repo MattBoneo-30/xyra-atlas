@@ -111,6 +111,18 @@ jobs:
           path: artifacts/browser/
           if-no-files-found: ignore
           retention-days: 7
+      - name: Install WebKit browser for cross-engine checks
+        run: npx playwright install --with-deps webkit
+      - name: Exercise mobile and desktop WebKit engine
+        run: npm run test:webkit
+      - name: Save WebKit visual evidence
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: xyra-atlas-webkit-screenshots
+          path: artifacts/browser-webkit/
+          if-no-files-found: ignore
+          retention-days: 7
       - name: Save deployable website
         uses: actions/upload-artifact@v7
         with:
