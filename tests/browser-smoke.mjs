@@ -1141,7 +1141,7 @@ try{
   expect(overflow.scroll<=overflow.width+8,'private data inventory fits 390px mobile width');
   await page.locator('[data-action="privacy-erase"][data-id="writing"]').click();
   await page.locator('.modal-card').waitFor();
-  await page.locator('[data-action="close-modal"]').click();
+  await page.locator('.modal-card button[data-action="close-modal"].secondary-button').click();
   expect((await getState(page)).fieldNotes['psychology:thoughts']==='My personal reflection','cancel keeps private notes unchanged');
   await page.locator('[data-action="privacy-erase"][data-id="writing"]').click();
   await page.locator('[data-action="privacy-erase-confirm"]').click();
