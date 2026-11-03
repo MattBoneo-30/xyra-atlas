@@ -13,6 +13,7 @@ import {normalizeOfflineReport,offlineAdvice} from './offline.js';
 import {parseBackupEnvelope,normalizeLessonKeys,normalizeQuizAnswers,normalizeLastOpened,backupCounts} from './backup.js';
 import {encryptBackup,decryptBackup,isEncryptedBackup} from './backupcrypto.js';
 import {EXAM_SIZES,examPool,createExam,normalizeExam,currentExamQuestion,answerExam,advanceExam,examResults} from './exam.js';
+import {PERSONAL_CARD_LIMIT,CARD_FRONT_LIMIT,CARD_BACK_LIMIT,normalizePersonalCards,createPersonalCard,updatePersonalCard,deletePersonalCard,duePersonalCards,ratePersonalCard,searchPersonalCards} from './personalcards.js';
 import {buildNotebookIndex,searchNotebook} from './notebook.js';
 import {normalizeMistakes,recordQuizAttempt,buildMistakeQueue} from './mistakes.js';
 import { createDailyQuest,dailyQuestProgress } from './dailyquest.js';
@@ -30,7 +31,7 @@ let storageProblem=null;
 let recoveryRaw=null;
 const esc = value => String(value ?? '').replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
 const plain = text => esc(text).replace(/\n/g, '<br>');
-function createInitialState(){return { completed: [], bookmarks: [], favorites: [], answers: {}, reviews: {}, fieldNotes: {}, lastOpened: null, dailyVisits: [], theme: 'dark', language: 'ja', languageDays: [], phrases: {}, studio: sanitizeStudio(null), userName: '', welcomeDismissed: false, learningPath: null, scenarios: {}, casebook: {}, mistakes:{}, exam:null, reader:normalizeReaderPreferences(null) };}
+function createInitialState(){return { completed: [], bookmarks: [], favorites: [], answers: {}, reviews: {}, fieldNotes: {}, lastOpened: null, dailyVisits: [], theme: 'dark', language: 'ja', languageDays: [], phrases: {}, studio: sanitizeStudio(null), userName: '', welcomeDismissed: false, learningPath: null, scenarios: {}, casebook: {}, mistakes:{}, exam:null, personalCards:[], reader:normalizeReaderPreferences(null) };}
 function readStored() {
   try {
     const raw=localStorage.getItem(STORAGE_KEY);
@@ -53,6 +54,7 @@ function readStored() {
       casebook: normalizeCasebook(data.casebook),
       mistakes:normalizeMistakes(data.mistakes,COURSES),
       exam:normalizeExam(data.exam,COURSES),
+      personalCards:normalizePersonalCards(data.personalCards,COURSES),
       reader: normalizeReaderPreferences(data.reader),
       learningPath: normalizeLearningPath(data.learningPath,COURSES),
       fieldNotes: normalizeFieldNotes(data.fieldNotes),
@@ -78,6 +80,10 @@ let glossaryQuery = '';
 let globalQuery = '';
 let globalSearchKind = 'all';
 let notebookQuery='';
+let personalCardQuery='';
+let personalCardEditingId=null;
+let personalCardRevealed=false;
+let personalCardPendingDelete=null;
 let modal = '';
 let pendingBackup=null;
 let encryptedFile=null;
@@ -186,6 +192,7 @@ function parseHash() {
   if (segments[0] === 'search') return {view:'search'};
   if (segments[0] === 'offline') return {view:'offline'};
   if (segments[0] === 'notebook') return {view:'notebook'};
+  if (segments[0] === 'personalcards') return {view:'personalcards'};
   if (segments[0] === 'mistakes') return {view:'mistakes'};
   if (segments[0] === 'scenario') return {view:'scenario'};
   if (segments[0] === 'casebook') return {view:'casebook',caseId:segments[1]||null};
@@ -195,7 +202,7 @@ function parseHash() {
 }
 function nav(path) { const next = '#/' + path; if (location.hash === next) { route = parseHash(); render(); } else location.hash = next; window.scrollTo({top:0,behavior:'instant'}); }
 function flash(text) { currentToast = text; clearTimeout(toastTimer); render(); toastTimer = setTimeout(() => {currentToast = '';render();},3200); }
-function tabForRoute() { return route.view==='notebook'?'saved':route.view==='offline'?'you':['review','studio','path','scenario','casebook','quest','insights','mistakes','exam'].includes(route.view) ? 'journey' : ['course','lesson','language','map','glossary','search','mentor'].includes(route.view) ? 'explore' : route.view; }
+function tabForRoute() { return ['notebook','personalcards'].includes(route.view)?'saved':route.view==='offline'?'you':['review','studio','path','scenario','casebook','quest','insights','mistakes','exam'].includes(route.view) ? 'journey' : ['course','lesson','language','map','glossary','search','mentor'].includes(route.view) ? 'explore' : route.view; }
 function topbar() {
   return `<header class="topbar"><div class="topbar-inner">
     <button type="button" class="wordmark" data-action="goto-home" aria-label="Xyra Atlas home">${mark}<span>Xyra <em>Atlas</em></span></button>
@@ -361,6 +368,7 @@ function journey() {
   return `<main class="page journey-page"><div class="page-title"><span class="overline">YOUR GROWTH IS YOURS</span><h1>Every step <em>counts.</em></h1><p>Not a race. A beautiful habit of becoming.</p></div>
     <div class="journey-banner"><div class="journey-aura">✧</div><span class="overline">YOUR ATLAS RANK</span><div class="journey-level">${Math.floor(done/6)+1}</div><h2>${done < 6?'Curious Learner':done<24?'Knowledge Seeker':'Atlas Explorer'}</h2><p>Keep exploring, one honest lesson at a time.</p>${bars(done%6,6)}<span class="subtle-count">${done%6} / 6 to next level</span></div>
     <div class="metrics-grid"><div><span class="metric-icon">${icon('book',22)}</span><strong>${done}</strong><small>Lessons learned</small></div><div><span class="metric-icon">${icon('flame',22)}</span><strong>${streak()}</strong><small>Day streak</small></div><div><span class="metric-icon">${icon('spark',22)}</span><strong>${xp}</strong><small>Knowledge XP</small></div></div>
+    <section class="personal-cards-invite"><div class="personal-cards-invite-icon">${icon('book',24)}</div><div><span class="overline">YOUR IDEAS, YOUR OWN FLASHCARDS</span><h2>Study Card Workshop</h2><p>Create private recall cards and review them on a spaced schedule.</p></div>${button('Open workshop','personal-cards-open','small-button')}</section>
     <section class="insights-invite"><div><span class="overline">YOUR LEARNING LANDSCAPE</span><h2>Learning Insights</h2><p>See activity, quiz practice and illustrated subject progress.</p></div>${button('View insights','insights','small-button')}</section>
     <section class="daily-quest-invite"><div class="quest-gem">✦</div><div><span class="overline">A DAILY INVITATION</span><h2>Today's Quest</h2><p>Three thoughtful steps, with no pressure to keep a streak.</p></div>${button('Open quest','quest','small-button')}</section>
     <section class="exam-invite"><div class="exam-invite-icon">${icon('book',27)}</div><div><span class="overline">TEST WHAT STAYS WITH YOU</span><h2>Practice Exam</h2><p>Take an offline 5, 10 or 20-question challenge. Save your place as you go.</p></div>${button('Open exam','exam-open','small-button')}</section>
@@ -551,6 +559,7 @@ function savedPage() {
   const favorites=COURSES.filter(c=>saved.favorites.includes(c.id) && (!c.dark || shadowUnlocked));
   const entries=saved.bookmarks.map(key=>{ const [cid,...rest]=key.split(':');const lid=rest.join(':');const c=findCourse(cid),l=findLesson(cid,lid);return c&&l&&(!c.dark||shadowUnlocked)?{c,l,key}:null;}).filter(Boolean);
   return `<main class="page"><div class="page-title"><span class="overline">A LIBRARY THAT REMEMBERS</span><h1>Your <em>saved</em> pages.</h1><p>Keep the knowledge you want to return to.</p></div>
+    <section class="personal-cards-invite"><div class="personal-cards-invite-icon">${icon('book',23)}</div><div><span class="overline">YOUR PRIVATE RECALL DECK</span><h2>Study Card Workshop</h2><p>${saved.personalCards.length} custom cards · ${duePersonalCards(saved.personalCards,COURSES).length} ready for practice.</p></div>${button('Open workshop','personal-cards-open','small-button')}</section>
     <section class="notebook-invite"><span class="notebook-invite-icon">✍</span><div><span class="overline">YOUR PRIVATE REFLECTIONS</span><h2>Field Notebook</h2><p>Search all the practice notes you've written while learning.</p></div>${button('Open notebook','notebook-open','small-button')}</section>
     <section class="section"><div class="section-heading"><div><span class="overline">BACK TO WHAT MATTERS</span><h2>Favorite subjects</h2></div></div><div class="course-list">${favorites.length?favorites.map(c=>card(c,'horizontal')).join(''):`<p class="empty-text">Tap the heart on a subject to keep it here.</p>`}</div></section>
     <section class="section"><div class="section-heading"><div><span class="overline">YOUR PERSONAL REFERENCES</span><h2>Bookmarked lessons</h2></div></div><div class="lesson-list">${entries.length?entries.map(({c,l,key})=>`<button type="button" class="lesson-row" data-action="open-lesson" data-course="${esc(c.id)}" data-lesson="${esc(l.id)}"><span class="lesson-number">${icon('bookmark',19)}</span><span class="lesson-info"><strong>${esc(l.title)}</strong><small>${esc(c.title)} · ${l.minutes} min</small></span>${chevron}</button>`).join(''):`<p class="empty-text">Bookmark a lesson while reading to find it here later.</p>`}</div></section>
@@ -637,6 +646,7 @@ function modalView() {
   if (!modal) return '';
   const inner = modal==='shadow' ? `<div class="modal-icon dark-icon">${icon('moon',28)}</div><span class="overline">A DIFFERENT KIND OF LESSON</span><h2>Enter the Shadow Library?</h2><p>This section explores manipulation, coercive behavior, psychological pressure, deception, adult intimacy, and sexual health. The purpose is understanding and informed choice—not abuse or exploitation.</p><div class="age-warning">${icon('info',19)} Contains mature educational discussions intended for adults 18+.</div><label class="checkbox-label"><input type="checkbox" id="age-agree" ${gateConfirmed?'checked':''}/><span>I am at least 18, and I understand the purpose of this material.</span></label>${button(`Enter the library ${icon('arrow',18)}`,'enter-shadow','primary-button',gateConfirmed?'':'disabled')}` :
   modal==='install' ? `<div class="modal-icon">${icon('download',26)}</div><span class="overline">TAKE YOUR ATLAS WITH YOU</span><h2>Install Xyra Atlas</h2><p>After the first successful online visit, the app shell and included lessons can work offline once fully cached.</p><div class="install-steps"><strong>On iPhone / iPad</strong><p>Open this website in Safari. Tap Share, then “Add to Home Screen” and enable “Open as Web App”.</p><strong>On Android</strong><p>Open in Chrome. Use the browser menu and select “Install app” or “Add to Home screen”, when available.</p></div>${installEvent?button(`Install now ${icon('download',18)}`,'install-prompt','primary-button'):''}<p class="fineprint">Installing does not automatically sync data across phones. Use Export/Import backup to transfer progress.</p>` :
+  modal==='personal-card-delete' && personalCardPendingDelete ? `<div class="modal-icon warning-icon">${icon('alert',26)}</div><h2>Delete this card?</h2><p>This removes the question, answer and its review schedule from this device. Other lesson progress stays unchanged.</p>${button('Keep card','close-modal','secondary-button')}${button('Delete card','personal-card-delete-confirm','outline-danger')}` :
   modal==='exam-discard' ? `<div class="modal-icon warning-icon">${icon('alert',26)}</div><h2>Discard this exam?</h2><p>Current practice answers will be cleared so you can choose a different subject or question count. Your lessons, notes and other learning progress will stay untouched.</p>${button('Keep practicing','close-modal','secondary-button')}${button('Discard exam','exam-discard-confirm','outline-danger')}` :
   modal==='reset' ? `<div class="modal-icon warning-icon">${icon('alert',26)}</div><h2>Reset your Atlas?</h2><p>All lesson progress, saved lessons, language sprint checks and preferences on this browser will be erased. Export a backup first if you need it.</p>${button('Cancel','close-modal','secondary-button')}${button('Erase my local progress','confirm-reset','outline-danger')}` :
   modal==='backup-encrypt' ? `<div class="modal-icon">${icon('lock',26)}</div><span class="overline">PRIVATE PROGRESS BACKUP</span><h2>Encrypt your Atlas</h2><p>Create a password-protected JSON backup, encrypted locally with AES-256-GCM. Your passphrase is never saved or uploaded. If you lose it, the file cannot be recovered.</p><label class="field-label" for="encrypt-backup-password">Passphrase (at least 12 characters)</label><input id="encrypt-backup-password" class="encrypted-backup-input" type="password" autocomplete="new-password" maxlength="256"/><label class="field-label" for="encrypt-backup-confirm">Confirm passphrase</label><input id="encrypt-backup-confirm" class="encrypted-backup-input" type="password" autocomplete="new-password" maxlength="256"/>${button('Cancel','backup-crypto-cancel','secondary-button')}${button('Encrypt and download','backup-encrypt-confirm','primary-button')}` :
@@ -655,8 +665,8 @@ function render() {
   document.body.classList.toggle('dialog-open',Boolean(modal));
   document.body.classList.toggle('reader-focus-mode',route.view==='lesson'&&saved.reader.focus);
   const view = route.view;
-  const content = ({home,explore,journey,exam:examPage,review:reviewPage,mistakes:mistakesPage,studio:studioPage,scenario:scenarioPage,casebook:casebookPage,map:mapPage,quest:questPage,glossary:glossaryPage,search:globalSearchPage,insights:insightsPage,mentor:mentorPage,offline:offlinePage,notebook:notebookPage,path:pathPage,saved:savedPage,you,course:coursePage,lesson:lessonPage,language:languagePage}[view] || errorView)();
-  document.getElementById('app').innerHTML = `${topbar()}<div class="shell"><aside class="desktop-rail"><div class="rail-title">YOUR ATLAS <span>✧</span></div>${[['home','Home','home'],['explore','Explore & Learn','compass'],['journey','My Journey','spark'],['saved','Saved Library','bookmark'],['you','Your Space','user']].map(([id,label,ico])=>`<button type="button" data-action="nav" data-id="${id}" class="rail-link ${tabForRoute()===id?'active':''}">${icon(ico,20)} ${label}</button>`).join('')}<div class="rail-divider"></div><button type="button" class="rail-link" data-action="notebook-open">${icon('book',20)} Field Notebook</button><button type="button" class="rail-link" data-action="exam-open">${icon('book',20)} Practice Exam</button><button type="button" class="rail-link" data-action="offline-open">${icon('download',20)} Offline Library</button><button type="button" class="rail-link" data-action="open-corner">${icon('spark',20)} Xyra's Corner</button><button type="button" class="rail-link" data-action="casebook">${icon('book',20)} Case Files</button><button type="button" class="rail-link" data-action="insights">${icon('chart',20)} Learning Insights</button><button type="button" class="rail-link" data-action="search">${icon('search',20)} Search Everything</button><button type="button" class="rail-link" data-action="glossary">${icon('book',20)} Glossary</button><button type="button" class="rail-link" data-action="quest">${icon('spark',20)} Daily Quest</button><button type="button" class="rail-link" data-action="map">${icon('compass',20)} Knowledge Map</button><button type="button" class="rail-link" data-action="mistakes-open">${icon('spark',20)} Mistake Lab</button><button type="button" class="rail-link" data-action="review">${icon('orbit',20)} Review Deck</button><button type="button" class="rail-link" data-action="path">${icon('compass',20)} Guided Path</button><button type="button" class="rail-link" data-action="studio">${icon('briefcase',20)} Practice Studio</button><button type="button" class="rail-link" data-action="language">${icon('languages',20)} Language Lab</button><button type="button" class="rail-link" data-action="open-course" data-id="shadow">${icon('moon',20)} Shadow Library</button><div class="rail-note">✦<p>The world is a little bigger every time you learn.</p></div></aside><div class="main-column">${storageHealthBanner()}${content}<footer class="app-footer">Made with curiosity, for a life still unfolding. <span>✧ Xyra Atlas</span></footer></div></div>${navBar()}${modalView()}${currentToast?`<div class="toast" role="status">${icon('spark',19)} ${esc(currentToast)}</div>`:''}`;
+  const content = ({home,explore,journey,exam:examPage,review:reviewPage,mistakes:mistakesPage,personalcards:personalCardsPage,studio:studioPage,scenario:scenarioPage,casebook:casebookPage,map:mapPage,quest:questPage,glossary:glossaryPage,search:globalSearchPage,insights:insightsPage,mentor:mentorPage,offline:offlinePage,notebook:notebookPage,path:pathPage,saved:savedPage,you,course:coursePage,lesson:lessonPage,language:languagePage}[view] || errorView)();
+  document.getElementById('app').innerHTML = `${topbar()}<div class="shell"><aside class="desktop-rail"><div class="rail-title">YOUR ATLAS <span>✧</span></div>${[['home','Home','home'],['explore','Explore & Learn','compass'],['journey','My Journey','spark'],['saved','Saved Library','bookmark'],['you','Your Space','user']].map(([id,label,ico])=>`<button type="button" data-action="nav" data-id="${id}" class="rail-link ${tabForRoute()===id?'active':''}">${icon(ico,20)} ${label}</button>`).join('')}<div class="rail-divider"></div><button type="button" class="rail-link" data-action="notebook-open">${icon('book',20)} Field Notebook</button><button type="button" class="rail-link" data-action="personal-cards-open">${icon('book',20)} Study Card Workshop</button><button type="button" class="rail-link" data-action="exam-open">${icon('book',20)} Practice Exam</button><button type="button" class="rail-link" data-action="offline-open">${icon('download',20)} Offline Library</button><button type="button" class="rail-link" data-action="open-corner">${icon('spark',20)} Xyra's Corner</button><button type="button" class="rail-link" data-action="casebook">${icon('book',20)} Case Files</button><button type="button" class="rail-link" data-action="insights">${icon('chart',20)} Learning Insights</button><button type="button" class="rail-link" data-action="search">${icon('search',20)} Search Everything</button><button type="button" class="rail-link" data-action="glossary">${icon('book',20)} Glossary</button><button type="button" class="rail-link" data-action="quest">${icon('spark',20)} Daily Quest</button><button type="button" class="rail-link" data-action="map">${icon('compass',20)} Knowledge Map</button><button type="button" class="rail-link" data-action="mistakes-open">${icon('spark',20)} Mistake Lab</button><button type="button" class="rail-link" data-action="review">${icon('orbit',20)} Review Deck</button><button type="button" class="rail-link" data-action="path">${icon('compass',20)} Guided Path</button><button type="button" class="rail-link" data-action="studio">${icon('briefcase',20)} Practice Studio</button><button type="button" class="rail-link" data-action="language">${icon('languages',20)} Language Lab</button><button type="button" class="rail-link" data-action="open-course" data-id="shadow">${icon('moon',20)} Shadow Library</button><div class="rail-note">✦<p>The world is a little bigger every time you learn.</p></div></aside><div class="main-column">${storageHealthBanner()}${content}<footer class="app-footer">Made with curiosity, for a life still unfolding. <span>✧ Xyra Atlas</span></footer></div></div>${navBar()}${modalView()}${currentToast?`<div class="toast" role="status">${icon('spark',19)} ${esc(currentToast)}</div>`:''}`;
   const main=document.querySelector('#app main');
   if(main){main.id='atlas-main';main.setAttribute('tabindex','-1');}
   for(const el of document.querySelectorAll('.topbar,.shell,.bottom-nav'))el.inert=Boolean(modal);
@@ -678,6 +688,7 @@ function normalizedBackupState(clean){
    casebook:normalizeCasebook(clean.casebook),
    mistakes:normalizeMistakes(clean.mistakes,COURSES),
     exam:normalizeExam(clean.exam,COURSES),
+    personalCards:normalizePersonalCards(clean.personalCards,COURSES),
    reader:normalizeReaderPreferences(clean.reader),
    learningPath:normalizeLearningPath(clean.learningPath,COURSES),
    fieldNotes:normalizeFieldNotes(clean.fieldNotes),
@@ -748,6 +759,7 @@ function confirmBackupImport(){
  saved=candidate;
  recoveryRaw=null;storageProblem=null;storageWarningShown=false;
  shadowUnlocked=false;gateConfirmed=false;
+ personalCardEditingId=null;personalCardRevealed=false;personalCardPendingDelete=null;personalCardQuery='';
  pendingBackup=null;modal='';
  nav('you');flash('Backup restored on this device.');
 }
