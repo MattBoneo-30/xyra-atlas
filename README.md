@@ -4,10 +4,10 @@
 
 ![Xyra Atlas emblem](assets/atlas-mark.svg)
 
-## Current release: Language Lab 0.4
+## Current release: Field Guides 0.5
 
 - A violet-and-gold responsive interface, **14 distinct original vector course worlds**, Xyra's Corner artwork, landscape hero and a home-screen app icon. The same course identity appears on home tiles, category cards, course covers and lessons.
-- 14 learning subjects with 52 short introductory lessons, exercises and knowledge checks (actual count is checked by tests).
+- 14 learning subjects and **64 interactive lessons**: 52 short starters plus 12 new sourced, three-section field guides with real-world worked examples, exercises and quizzes (counts verified by tests).
 - Psychology, legal literacy, business, money, productivity, communication, critical thinking, language study, digital literacy, career, science, relationships and influence.
 - **The Shadow Library (18+ educational content)** covers manipulation, gaslighting, lies, emotional leverage, deceptive interface design, consent and adult media literacy. The age acknowledgment is a *content gate*, not verified age or identity security.
 - Seven-day language practice framework for 20 languages, with **72 practical offline phrases across nine starter languages**: Japanese, Korean, Spanish, French, Mandarin Chinese, German, Filipino, Italian and English.
@@ -16,6 +16,8 @@
 - **Review Deck:** recall flashcards unlocked by completed lessons; spaced practice at 1, 3, 7, 14, 30, and 60-day intervals, with 10-minute repeats for forgotten material. Review schedules are stored locally and included in progress backups.
 - Offline app shell and included course library, cached by a same-origin service worker.
 - No account, advertisement, external API call or tracking service is required for the current edition.
+
+**New in 0.5:** Psychology (evidence journaling, habits, relational inference); Philippine law (Constitution, data privacy, consumer complaints); business (customer discovery, unit economics, Philippine launch steps); money (irregular bills, emergency planning, investment red flags). Sources are linked for optional online verification; lessons work offline. Links and regulations can change.
 
 **Scope honesty:** This release is a real working foundation with concise introductory teaching, not yet a complete beginner-to-professional encyclopedia. Advanced chapters and richer cinematic/character artwork will grow in subsequent releases. The current unique SVG scenes are handcrafted vector illustrations, not the full painterly concept art. Seven days can establish useful first phrases, not native-like fluency.
 
@@ -62,6 +64,7 @@ index.html             HTML shell and PWA metadata
 styles.css             Responsive design system and screen styles
 app.js                 Navigation, interface, storage, quizzes, review UX, install UX
 data.js                Offline learning curriculum and language sprint
+deeptracks.js          12 sourced field-guide lessons with examples and quizzes
 review.js              Dependency-free spaced repetition logic and input validation
 phrasebook.js          Nine offline starter phrase packs and progress validation
 assets/                14 distinct course scenes, a corner scene, vector identity

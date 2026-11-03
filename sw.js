@@ -1,7 +1,7 @@
 /* Xyra Atlas: privacy-first, same-origin offline app shell. */
-const CACHE = 'xyra-atlas-v4';
+const CACHE = 'xyra-atlas-v5';
 const APP_SHELL = [
-  '/', '/index.html', '/styles.css', '/app.js', '/data.js', '/review.js', '/phrasebook.js',
+  '/', '/index.html', '/styles.css', '/app.js', '/data.js', '/review.js', '/phrasebook.js', '/deeptracks.js',
   '/manifest.webmanifest', '/assets/atlas-mark.svg',
   '/assets/atlas-horizon.svg', '/assets/course-library.svg',
   '/assets/course-business.svg',

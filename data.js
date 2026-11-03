@@ -1,3 +1,4 @@
+import { DEEP_TRACKS } from './deeptracks.js';
 /** Xyra Atlas starter curriculum. Educational content is general information, not professional advice. */
 const lesson = (id, title, minutes, stage, intro, first, second, task, question, options, correct, explanation) => ({
   id, title, minutes, stage, intro,
@@ -248,6 +249,7 @@ export const COURSES = [
       'List three reasons entertainment should not be treated as sexual health education.','What is a sound source for health decisions?', ['A staged video','Evidence-based healthcare information','An anonymous rumor'],1,'Clinical and public-health sources are more reliable for health information.')
   ],{dark:true,featured:true})
 ];
+for(const entry of COURSES) if(DEEP_TRACKS[entry.id]) entry.lessons.push(...DEEP_TRACKS[entry.id]);
 export const LANGUAGES = [
   {name:'English',flag:'🇬🇧',code:'en'}, {name:'Japanese',flag:'🇯🇵',code:'ja'},
   {name:'Korean',flag:'🇰🇷',code:'ko'}, {name:'Spanish',flag:'🇪🇸',code:'es'},

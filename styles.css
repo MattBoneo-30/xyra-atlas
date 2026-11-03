@@ -39,3 +39,11 @@ html[data-theme=light]{color-scheme:light;--bg:#fbf5f6;--bg-raised:#fff9fa;--car
 /* Language Lab 0.4: touch-friendly, offline phrase cards */
 .phrase-lab{border:1px solid var(--line-bright);border-radius:21px;padding:22px 17px;background:linear-gradient(150deg,var(--card-soft),var(--card));margin:24px 0}.phrase-lab h2{font:normal 28px Georgia,serif;margin:8px 0}.phrase-lab p{font-size:12px;color:var(--muted);line-height:1.65}.phrase-head{margin-bottom:16px}.phrase-card{border-radius:17px;background:var(--bg-raised);border:1px solid var(--line);margin-top:18px;padding:24px 18px}.phrase-card>small{color:var(--gold);letter-spacing:1.4px;font-size:10px}.phrase-card h3{font:normal clamp(25px,6vw,35px)/1.3 Georgia,serif;margin:16px 0 20px}.phrase-card .primary-button{width:100%}.phrase-answer{border-top:1px solid var(--line);padding:18px 0;display:grid;gap:9px}.phrase-answer strong{font-size:clamp(24px,7vw,40px);overflow-wrap:anywhere}.phrase-answer small{color:var(--gold);font-size:13px}.phrase-buttons{display:flex;gap:8px}.phrase-buttons button{flex:1;min-height:44px}.phrase-controls{display:flex;justify-content:space-between;gap:12px;margin-top:21px}
 @media(max-width:350px){.phrase-buttons{flex-direction:column}}
+
+/* Advanced lesson reference cards */
+.worked-example,.lesson-sources{margin:1.35rem 0;padding:1.2rem 1.35rem;border-radius:20px;border:1px solid rgba(239,204,151,.26);background:linear-gradient(145deg,rgba(89,50,113,.27),rgba(31,22,52,.25))}
+.worked-example h3,.lesson-sources h3{margin:.45rem 0;font-size:1.14rem;color:var(--text,#f8f1ff)}
+.worked-example p,.lesson-sources p{line-height:1.75;color:var(--muted,#d9cce7)}
+.lesson-sources ul{list-style:none;margin:.7rem 0 0;padding:0;display:grid;gap:.6rem}
+.lesson-sources li a{display:inline-flex;gap:.4rem;align-items:center;color:var(--gold,#f8d79b);font-weight:600;text-decoration:underline;text-underline-offset:.2rem;overflow-wrap:anywhere;line-height:1.5}
+.lesson-sources li a:focus-visible{outline:3px solid #eebc78;outline-offset:4px;border-radius:3px}
