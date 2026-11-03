@@ -45,6 +45,8 @@ export function auditCurriculum(courses){
    if(wordLength(lesson.task)<90)missing.push('applied-exercise');
    if(wordLength(quiz?.explanation)<50)missing.push('answer-rationale');
    if(refs.length===0)missing.push('further-reading-source');
+   const guide=Array.isArray(lesson.practiceGuide)?lesson.practiceGuide:[];
+   if(guide.length!==2||guide.some(line=>wordLength(line)<75))missing.push('structured-evidence-practice');
    lessons.push({id,courseId:course.id,title:valid(lesson.title)?lesson.title:id,stage:lesson.stage,
      teachingSections:sections.length,hasWorkedExample:wordLength(lesson.example)>=170,
      hasSource:refs.length>0,editorialNeeds:missing});
@@ -57,6 +59,7 @@ export function auditCurriculum(courses){
   schemaVersion:1,valid:criticalIssues.length===0,criticalIssues,subjects,lessons,
   totals:{subjects:subjects.length,lessons:lessons.length,
    threeSectionDepth:coverage('deeper-sections'),workedExamples:coverage('worked-example'),
+   structuredEvidencePractice:coverage('structured-evidence-practice'),
    appliedExercises:coverage('applied-exercise'),answerRationales:coverage('answer-rationale'),
    furtherReading:coverage('further-reading-source'),uniqueSourceURLs:sourceSet.size,
    lessonsWithEditorialFlags:lessons.filter(l=>l.editorialNeeds.length).length},

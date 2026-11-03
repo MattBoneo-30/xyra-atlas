@@ -7,6 +7,7 @@ import { PH_CASEWORK } from './phcasework.js';
 import { ADVANCED_ENRICHMENTS } from './advancedenrichments.js';
 import { FOUNDATION_CASES } from './foundationcases.js';
 import { FOUNDATION_CASES_TWO } from './foundationcases2.js';
+import {practiceGuide} from './practiceguides.js';
 /** Xyra Atlas starter curriculum. Educational content is general information, not professional advice. */
 const lesson = (id, title, minutes, stage, intro, first, second, task, question, options, correct, explanation) => ({
   id, title, minutes, stage, intro,
@@ -293,6 +294,7 @@ for(const entry of COURSES) if(LIFE_PRACTICE[entry.id]) entry.lessons.push(...LI
 for(const entry of COURSES) if(MASTERY_TRACKS[entry.id]) entry.lessons.push(...MASTERY_TRACKS[entry.id]);
 for(const entry of COURSES) if(CAPSTONE_LABS[entry.id]) entry.lessons.push(...CAPSTONE_LABS[entry.id]);
 for(const entry of COURSES) if(PH_CASEWORK[entry.id]) entry.lessons.push(...PH_CASEWORK[entry.id]);
+for(const entry of COURSES) for(const item of entry.lessons) item.practiceGuide=practiceGuide(entry.id,item.stage);
 export const LANGUAGES = [
   {name:'English',flag:'🇬🇧',code:'en'}, {name:'Japanese',flag:'🇯🇵',code:'ja'},
   {name:'Korean',flag:'🇰🇷',code:'ko'}, {name:'Spanish',flag:'🇪🇸',code:'es'},

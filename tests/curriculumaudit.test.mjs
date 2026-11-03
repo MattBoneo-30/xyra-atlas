@@ -11,6 +11,7 @@ test('curriculum produces a deterministic comprehensive, cautious editorial back
  assert.equal(totalLessons,134);
  assert.equal(report.subjects.length,14);
  assert.equal(report.lessons.length,134);
+ assert.equal(report.totals.structuredEvidencePractice,134);
  assert.ok(report.totals.threeSectionDepth>=26);
  assert.ok(report.totals.workedExamples>=26);
  assert.ok(report.totals.uniqueSourceURLs>=25);

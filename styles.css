@@ -604,3 +604,11 @@ html[data-theme=light]{color-scheme:light;--bg:#fbf5f6;--bg-raised:#fff9fa;--car
 .clinic-foot .secondary-button{min-height:44px}
 @media(max-width:780px){.clinic-grid{grid-template-columns:minmax(0,1fr)}.clinic-head{flex-direction:column}.clinic-head h2{font-size:27px}}
 @media(max-width:390px){.clinic-panel{padding:14px}.clinic-question{padding:14px}.clinic-foot .secondary-button{width:100%}}
+
+/* Subject- and stage-specific reflection prompts inside the private lesson reader */
+.practice-guide-steps{list-style:none;counter-reset:practice-step;display:grid;gap:11px;padding:0;margin:19px 0 15px}
+.practice-guide-steps>li{position:relative;min-width:0;border-radius:14px;border:1px solid var(--line-bright);background:var(--card);padding:15px 16px}
+.practice-guide-step{display:block;color:var(--gold);font-size:10px;font-weight:750;letter-spacing:1.3px;margin:0 0 9px}
+.practice-guide-steps p{font-size:14px;line-height:1.7;margin:0;white-space:normal;overflow-wrap:break-word}
+@media(min-width:900px){.practice-guide-steps{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:420px){.practice-guide-steps>li{padding:13px}}

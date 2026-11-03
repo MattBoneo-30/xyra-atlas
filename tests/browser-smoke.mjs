@@ -1291,6 +1291,24 @@ try{
  });
 
 
+ await smoke('guided-subject-skills-offline',{viewport:{width:390,height:844},isMobile:true,hasTouch:true,deviceScaleFactor:2},async(page,context)=>{
+   await page.goto(BASE+'/#/lesson/thinking/arguments',{waitUntil:'domcontentloaded'});
+   await page.locator('.reading-page').waitFor();
+   const list=page.locator('.practice-guide-steps li');
+   expect(await list.count()===2,'advanced thinking lesson has two distinct skill-transfer prompts');
+   expect((await list.first().textContent()).includes('rebuttal'),'the first challenge tests a counterargument');
+   const bounds=await mobileOverflow(page);
+   expect(bounds.scroll<=bounds.width+8,'reflection layout fits mobile');
+   await page.evaluate(async()=>{await navigator.serviceWorker.ready;});
+   await page.reload({waitUntil:'domcontentloaded'});
+   await page.waitForFunction(()=>Boolean(navigator.serviceWorker.controller));
+   await context.setOffline(true);
+   await page.reload({waitUntil:'domcontentloaded'});
+   expect(await page.locator('.practice-guide-steps li').count()===2,'guided prompts remain available offline');
+   await context.setOffline(false);
+ });
+
+
 }finally{
  if(browser)await browser.close();
  server.kill('SIGTERM');
