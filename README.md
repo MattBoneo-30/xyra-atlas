@@ -4,7 +4,7 @@
 
 ![Xyra Atlas emblem](assets/atlas-mark.svg)
 
-## Current release: Two-Way Language Challenges 1.29
+## Current release: Exam Insights & Practice History 1.30
 
 - A violet-and-gold responsive interface, **14 distinct original vector course worlds**, Xyra's Corner artwork, landscape hero and a home-screen app icon. The same course identity appears on home tiles, category cards, course covers and lessons.
 - 14 learning subjects and **117 interactive lessons**: 52 short starters, 36 prior field guides and **29 new advanced mastery lessons** with worked examples, exercises, quizzes and optional online references (counts verified by tests).
@@ -20,6 +20,7 @@
 
 **New in 0.5:** Psychology (evidence journaling, habits, relational inference); Philippine law (Constitution, data privacy, consumer complaints); business (customer discovery, unit economics, Philippine launch steps); money (irregular bills, emergency planning, investment red flags). Sources are linked for optional online verification; lessons work offline. Links and regulations can change.
 
+- **Exam Insights & Practice History (1.30):** Completed Practice Exams now create a bounded, private history of the latest 12 attempts. See per-subject question accuracy, recent scores, and direct review shortcuts to missed lesson questions. Results are recorded once on completion and persist after reload, through ordinary and encrypted backups. Historical records contain summary counts and missed lesson identifiers—not raw selected answers—and are validated on import, including checks that mature-course content cannot enter the general exam history. Clearing history needs confirmation and leaves other learning data untouched. These are practice signals, not professional competence or standardized test scores.
 - **Two-Way Language Challenges (1.29):** The nine authored eight-phrase starter packs now support offline, seeded multiple-choice practice in either direction (English meaning → target-language phrase or target phrase → English meaning). Each of the eight questions includes four choices, immediate feedback, and an end-of-challenge answer review. Unfinished sessions resume after reload and are included in plain/encrypted progress backups; saved score history tracks attempts, best and latest result per supported language. Switching languages preserves an unfinished session, while replacement/deletion require confirmation. This exercises recognition—not conversational proficiency, pronunciation accuracy, or listening comprehension—and does not silently mark phrases learned.
 - **Applied Mastery Tracks (1.28):** 29 advanced practical lessons across all 14 subjects, including three Philippine legal and financial consumer-rights workflows. Each has three in-depth teaching sections, an original worked example, a concrete exercise, a quiz with explanation, and further reading from official or reputable sources. New Beginner/Intermediate/Advanced filters make growing course libraries easier to navigate on mobile and desktop. Further-reading links require connectivity, and regulations may change.
 - **Study Card Workshop (1.27):** Create, edit, search and delete up to 120 personal recall cards in your own words, with optional non-mature subject tags. Study due cards with answer reveal and offline spaced repetition, using 10-minute repeats or 1, 3, 7, 14, 30 and 60-day intervals. Editing a prompt resets its review schedule. Private cards transfer with normal and encrypted JSON progress backups, are sanitized during import, and are erased only by deliberate deletion, reset, or browser-data removal. The workshop contains no upload or synchronization and does not alter lesson completion.
@@ -109,6 +110,7 @@ studio.js
 paths.js                Seven-session study planner, validation and progress              Validated savings, business, and time scenario calculations
 phrasebook.js          Nine offline starter phrase packs and progress validation
 languagechallenge.js   Offline two-way recognition questions and persisted scores
+examhistory.js         Validated private exam results and subject-review summaries
 assets/                14 distinct course scenes, a corner scene, vector identity
 sw.js                  Offline service worker
 manifest.webmanifest   Installability metadata
