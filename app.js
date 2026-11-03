@@ -1,5 +1,6 @@
 import { COURSES, LANGUAGES, LEARNING_SPRINT, DAILY_NOTES, findCourse, findLesson, totalLessons } from './data.js';
 import { makeReviewCards, dueReviewCards, recordReview, normalizeReviews } from './review.js';
+import { SCENARIOS,normalizeScenarioAnswers,recordScenarioAnswer,scenarioProgress } from './scenarios.js';
 import { STUDIO_DEFAULTS, sanitizeStudio, calculateSavings, calculateBusiness, calculateTime } from './studio.js';
 import { getPhrasePack, sanitizePhraseProgress } from './phrasebook.js';
 import { normalizeFieldNotes, setFieldNote, MAX_FIELD_NOTE_LENGTH } from './fieldnotes.js';
@@ -9,7 +10,7 @@ import { PATH_GOALS, PATH_BUDGETS, createLearningPath, normalizeLearningPath, pa
 const STORAGE_KEY = 'xyra-atlas-state-v1';
 const esc = value => String(value ?? '').replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
 const plain = text => esc(text).replace(/\n/g, '<br>');
-const initial = { completed: [], bookmarks: [], favorites: [], answers: {}, reviews: {}, fieldNotes: {}, lastOpened: null, dailyVisits: [], theme: 'dark', language: 'ja', languageDays: [], phrases: {}, studio: sanitizeStudio(null), userName: '', welcomeDismissed: false, learningPath: null };
+const initial = { completed: [], bookmarks: [], favorites: [], answers: {}, reviews: {}, fieldNotes: {}, lastOpened: null, dailyVisits: [], theme: 'dark', language: 'ja', languageDays: [], phrases: {}, studio: sanitizeStudio(null), userName: '', welcomeDismissed: false, learningPath: null, scenarios: {} };
 function readStored() {
   try {
     const data = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
@@ -26,6 +27,7 @@ function readStored() {
       answers: data.answers && typeof data.answers === 'object' && !Array.isArray(data.answers) ? data.answers : {},
       reviews: normalizeReviews(data.reviews),
       studio: sanitizeStudio(data.studio),
+      scenarios: normalizeScenarioAnswers(data.scenarios),
       learningPath: normalizeLearningPath(data.learningPath,COURSES),
       fieldNotes: normalizeFieldNotes(data.fieldNotes),
       theme: data.theme === 'light' ? 'light' : 'dark',
@@ -142,13 +144,14 @@ function parseHash() {
   if (segments[0] === 'language') return {view:'language'};
   if (segments[0] === 'review') return {view:'review'};
   if (segments[0] === 'studio') return {view:'studio'};
+  if (segments[0] === 'scenario') return {view:'scenario'};
   if (segments[0] === 'path') return {view:'path'};
   if (['home','explore','journey','saved','you'].includes(segments[0])) return {view:segments[0]};
   return {view:'home'};
 }
 function nav(path) { const next = '#/' + path; if (location.hash === next) { route = parseHash(); render(); } else location.hash = next; window.scrollTo({top:0,behavior:'instant'}); }
 function flash(text) { currentToast = text; clearTimeout(toastTimer); render(); toastTimer = setTimeout(() => {currentToast = '';render();},3200); }
-function tabForRoute() { return ['review','studio','path'].includes(route.view) ? 'journey' : ['course','lesson','language'].includes(route.view) ? 'explore' : route.view; }
+function tabForRoute() { return ['review','studio','path','scenario'].includes(route.view) ? 'journey' : ['course','lesson','language'].includes(route.view) ? 'explore' : route.view; }
 function topbar() {
   return `<header class="topbar"><div class="topbar-inner">
     <button type="button" class="wordmark" data-action="goto-home" aria-label="Xyra Atlas home">${mark}<span>Xyra <em>Atlas</em></span></button>
@@ -182,6 +185,7 @@ function home() {
     ${last ? `<section class="resume-card"><div class="section-heading compact"><div><span class="overline">PICK UP WHERE YOU LEFT OFF</span><h2>Keep going</h2></div></div><button type="button" data-action="open-lesson" data-course="${esc(last.courseId)}" data-lesson="${esc(last.lessonId)}" class="resume-inner"><span class="resume-icon">${icon('play',22)}</span><span><strong>${esc(findLesson(last.courseId,last.lessonId).title)}</strong><small>${esc(findCourse(last.courseId).title)}</small></span>${chevron}</button></section>`:''}
     <section class="review-invite"><div class="review-invite-icon">${icon('orbit',27)}</div><div><span class="overline">MAKE KNOWLEDGE STICK</span><h2>Your Review Deck</h2><p>${reviewsDue ? `${plural(reviewsDue,'flashcard')} ready to practice.` : 'Complete a lesson to unlock its flashcard.'}</p></div>${button(`Practice ${icon('arrow',17)}`,'review','small-button')}</section>
     <section class="path-invite"><div class="path-invite-icon">${icon('compass',27)}</div><div><span class="overline">YOUR OWN ROADMAP</span><h2>Guided Learning Paths</h2><p>Pick a goal and get a seven-session plan that follows your progress.</p></div>${button('Plan my week','path','small-button')}</section>
+    <section class="scenario-invite"><div class="studio-invite-icon">${icon('compass',27)}</div><div><span class="overline">THINK BEFORE YOU ACT</span><h2>Scenario Lab</h2><p>Six real-life decisions with feedback and explanations.</p></div>${button('Open lab','scenario','small-button')}</section>
     <section class="studio-invite"><div class="studio-invite-icon">${icon('briefcase',27)}</div><div><span class="overline">LEARN BY DOING</span><h2>The Practice Studio</h2><p>Build a savings goal, test a business, or map your week.</p></div>${button('Try a tool','studio','small-button')}</section>
     <section class="section"><div class="section-heading"><div><span class="overline">DISCOVER NEW WORLDS</span><h2>Explore & learn</h2></div>${button(`See all ${chevron}`,'goto-explore','text-action')}</div><div class="topic-grid">${COURSES.filter(c=>!c.dark).slice(0,6).map(c=>`<button type="button" class="topic-tile" data-action="open-course" data-id="${esc(c.id)}"><img class="topic-image" src="/assets/${esc(c.art)}.svg" alt="" loading="lazy" decoding="async"/><span class="topic-icon">${icon(c.icon,24)}</span><strong>${esc(c.title)}</strong></button>`).join('')}</div></section>
     <section class="section"><div class="section-heading"><div><span class="overline">HANDPICKED FOR YOU</span><h2>Begin your journey</h2></div></div><div class="feature-scroller">${featured.map(c=>card(c)).join('')}</div></section>
@@ -274,6 +278,11 @@ function pathPage() {
   </main>`;
 }
 
+function scenarioPage(){
+ const progress=scenarioProgress(saved.scenarios);
+ return `<main class="page scenario-page"><div class="subnav">${button('Back to journey','goto-journey','back-link')}</div><header class="scenario-hero"><span class="overline">LEARN THROUGH DECISIONS</span><h1>Scenario <em>Lab.</em></h1><p>Make a choice, examine the reasoning and try again. No connection required.</p><strong>${progress.done}/${progress.total} explored · ${progress.thoughtful} evidence-aligned choices</strong></header><div class="scenario-list">${SCENARIOS.map((s,i)=>{const chosen=saved.scenarios[s.id],answered=Number.isInteger(chosen);return `<section class="scenario-card"><div class="scenario-meta"><span class="overline">${esc(s.category)}</span><small>${i+1}/${SCENARIOS.length}</small></div><h2>${esc(s.title)}</h2><p>${esc(s.setup)}</p><h3>${esc(s.question)}</h3><div class="scenario-choices">${s.choices.map((c,j)=>button(`${String.fromCharCode(65+j)}. ${esc(c.label)}`,'scenario-answer',`scenario-choice ${chosen===j?'selected':''}`,`data-id="${esc(s.id)}" data-index="${j}" aria-pressed="${chosen===j}"`)).join('')}</div>${answered?`<aside class="scenario-feedback" role="status"><span class="overline">${s.choices[chosen].preferred?'A STRONG FIRST RESPONSE':'CONSIDER THIS'}</span><p>${esc(s.choices[chosen].result)}</p><p><strong>Takeaway:</strong> ${esc(s.takeaway)}</p><a href="${esc(s.source)}" target="_blank" rel="noopener noreferrer">Further reading ↗</a><div>${button('Try another choice','scenario-retry','text-action',`data-id="${esc(s.id)}"`)}</div></aside>`:''}</section>`}).join('')}</div><p class="info-line">Educational scenarios, not individualized professional advice. Opening sources requires internet.</p></main>`;
+}
+
 function studioPage(){
   const kind=studioTab, values=saved.studio[kind];
   const config={
@@ -360,7 +369,7 @@ function render() {
   document.documentElement.dataset.theme=saved.theme;
   document.body.classList.toggle('dialog-open',Boolean(modal));
   const view = route.view;
-  const content = ({home,explore,journey,review:reviewPage,studio:studioPage,path:pathPage,saved:savedPage,you,course:coursePage,lesson:lessonPage,language:languagePage}[view] || errorView)();
+  const content = ({home,explore,journey,review:reviewPage,studio:studioPage,scenario:scenarioPage,path:pathPage,saved:savedPage,you,course:coursePage,lesson:lessonPage,language:languagePage}[view] || errorView)();
   document.getElementById('app').innerHTML = `${topbar()}<div class="shell"><aside class="desktop-rail"><div class="rail-title">YOUR ATLAS <span>✧</span></div>${[['home','Home','home'],['explore','Explore & Learn','compass'],['journey','My Journey','spark'],['saved','Saved Library','bookmark'],['you','Your Space','user']].map(([id,label,ico])=>`<button type="button" data-action="nav" data-id="${id}" class="rail-link ${tabForRoute()===id?'active':''}">${icon(ico,20)} ${label}</button>`).join('')}<div class="rail-divider"></div><button type="button" class="rail-link" data-action="review">${icon('orbit',20)} Review Deck</button><button type="button" class="rail-link" data-action="path">${icon('compass',20)} Guided Path</button><button type="button" class="rail-link" data-action="studio">${icon('briefcase',20)} Practice Studio</button><button type="button" class="rail-link" data-action="language">${icon('languages',20)} Language Lab</button><button type="button" class="rail-link" data-action="open-course" data-id="shadow">${icon('moon',20)} Shadow Library</button><div class="rail-note">✦<p>The world is a little bigger every time you learn.</p></div></aside><div class="main-column">${content}<footer class="app-footer">Made with curiosity, for a life still unfolding. <span>✧ Xyra Atlas</span></footer></div></div>${navBar()}${modalView()}${currentToast?`<div class="toast" role="status">${icon('spark',19)} ${esc(currentToast)}</div>`:''}`;
   document.title = `${view==='course' ? findCourse(route.courseId)?.title+' · ':view==='lesson' ? findLesson(route.courseId,route.lessonId)?.title+' · ' : ''}Xyra Atlas`;
 }
@@ -381,6 +390,7 @@ function answerBackup(e) {
         answers:clean.answers && typeof clean.answers==='object'&&!Array.isArray(clean.answers)?clean.answers:{},
         reviews:normalizeReviews(clean.reviews),
         studio:sanitizeStudio(clean.studio),
+        scenarios:normalizeScenarioAnswers(clean.scenarios),
         learningPath:normalizeLearningPath(clean.learningPath,COURSES),
         fieldNotes:normalizeFieldNotes(clean.fieldNotes),
         dailyVisits:Array.isArray(clean.dailyVisits)?clean.dailyVisits.filter(x=>/^\d{4}-\d{2}-\d{2}$/.test(x)):[],
@@ -423,6 +433,9 @@ async function handleAction(e) {
   else if(action==='path') nav('path');
   else if(action==='create-path') {const goal=document.getElementById('path-goal')?.value;const minutes=Number(document.getElementById('path-minutes')?.value);const stamp=new Date().toISOString().slice(0,10);const next=createLearningPath(COURSES,goal,minutes,saved.completed,stamp);if(!next){flash('No unfinished lessons fit this focus and study time. Try another goal.');return;}saved.learningPath=next;persist();flash('Your seven-session learning path is ready!');}
   else if(action==='studio') nav('studio');
+  else if(action==='scenario') nav('scenario');
+  else if(action==='scenario-answer') {saved.scenarios=recordScenarioAnswer(saved.scenarios,id,Number(button.dataset.index));persist();render();}
+  else if(action==='scenario-retry') {delete saved.scenarios[id];persist();render();}
   else if(action==='studio-tab') {if(['savings','business','time'].includes(id)){studioTab=id;render();}}
   else if(action==='studio-reset') {saved.studio[studioTab]={...STUDIO_DEFAULTS[studioTab]};persist();flash('Restored this practice example.');}
   else if(action==='studio-calc') {const fields=[...document.querySelectorAll('[data-studio-field]')];const invalid=fields.find(el=>!el.checkValidity());if(invalid){invalid.reportValidity();return;}const values=Object.fromEntries(fields.map(el=>[el.name,el.value]));saved.studio[studioTab]=sanitizeStudio({[studioTab]:values})[studioTab];persist();flash('Your scenario is updated.');}

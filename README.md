@@ -4,7 +4,7 @@
 
 ![Xyra Atlas emblem](assets/atlas-mark.svg)
 
-## Current release: Guided Learning Paths 0.8
+## Current release: Scenario Lab 0.9
 
 - A violet-and-gold responsive interface, **14 distinct original vector course worlds**, Xyra's Corner artwork, landscape hero and a home-screen app icon. The same course identity appears on home tiles, category cards, course covers and lessons.
 - 14 learning subjects and **64 interactive lessons**: 52 short starters plus 12 new sourced, three-section field guides with real-world worked examples, exercises and quizzes (counts verified by tests).
@@ -20,6 +20,7 @@
 
 **New in 0.5:** Psychology (evidence journaling, habits, relational inference); Philippine law (Constitution, data privacy, consumer complaints); business (customer discovery, unit economics, Philippine launch steps); money (irregular bills, emergency planning, investment red flags). Sources are linked for optional online verification; lessons work offline. Links and regulations can change.
 
+- **Scenario Lab:** Six real-life choice exercises with explanatory feedback, local persistence, JSON backup and offline support. Sources are available online.
 - **Guided Learning Paths:** five goal-based offline learning routes with seven customizable daily sessions, automatic tracking from completed quizzes, and saved plans in private backups. Mature content is never inserted into plans.
 - **Practice Studio:** three offline interactive labs for emergency-fund targets, business unit economics and a 168-hour weekly time budget. Inputs save privately on your device and are included in JSON backups. These are educational estimates, not personal financial advice.
 
