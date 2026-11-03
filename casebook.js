@@ -91,7 +91,7 @@ export const CASE_FILES=[
           {
             "label": "Explain the status honestly and propose a realistic plan.",
             "title": "A repair through clarity",
-            "outcome": "You correct the timeline and clarify what the work requires.",
+            "outcome": "You correct the timeline, clarify what the work requires, and help the team agree on a practical deadline rather than pretending the original promise was realistic.",
             "takeaway": "Honest updates help teams recover from unrealistic promises."
           },
           {
