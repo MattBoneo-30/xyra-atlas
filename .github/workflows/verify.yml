@@ -38,6 +38,14 @@ jobs:
           path: artifacts/curriculum-audit.json
           if-no-files-found: ignore
           retention-days: 14
+      - name: Export independent editorial review packet
+        run: npm run export:editorial
+      - name: Save reviewer packet (not an approval)
+        uses: actions/upload-artifact@v7
+        with:
+          name: xyra-atlas-editorial-review-packet
+          path: artifacts/editorial-review-packet.json
+          retention-days: 14
       - name: Verify offline artifacts
         run: |
           test -s dist/index.html
