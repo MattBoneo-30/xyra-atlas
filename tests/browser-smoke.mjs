@@ -148,8 +148,8 @@ try{
   expect(await page.locator('.chapter-map-node').count()>=2,'cached lessons remain available offline');
   await page.locator('.bottom-nav [data-action="nav"][data-id="explore"]').click();
   await waitRoute(page,'#/explore');
-  await page.locator('.explore-page').waitFor();
-  expect(await page.locator('.explore-page').count()===1,'offline navigation works');
+  await page.locator('.course-list').waitFor();
+  expect(await page.locator('.course-list [data-action="open-course"]').count()>=10,'offline navigation keeps the local course library usable');
   await page.screenshot({path:snapshots+'/mobile-offline.png',fullPage:true});
   await context.setOffline(false);
  });
