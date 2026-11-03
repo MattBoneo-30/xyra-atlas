@@ -265,31 +265,31 @@ try{
   expect(await page.locator('.empty-state').count()>=1,'unknown lesson shows a recoverable error screen');
  });
  await smoke('backup-preview-restore',{viewport:{width:1280,height:820}},async page=>{
-  const original={completed:[],fieldNotes:{'psychology:habit-loop':'Original private note'},answers:{},bookmarks:[],theme:'dark'};
+  const original={completed:[],fieldNotes:{'psychology:thoughts':'Original private note'},answers:{},bookmarks:[],theme:'dark'};
   await page.evaluate(value=>localStorage.setItem('xyra-atlas-state-v1',JSON.stringify(value)),original);
   await page.reload({waitUntil:'domcontentloaded'});
   await page.locator('.desktop-rail [data-action="nav"][data-id="you"]').click();
   const backup={format:'xyra-atlas-backup',version:1,exportedAt:'2026-11-03T09:00:00Z',
-    state:{completed:['psychology:habit-loop'],fieldNotes:{'psychology:habit-loop':'Imported note'},answers:{},bookmarks:[]}};
+    state:{completed:['psychology:thoughts'],fieldNotes:{'psychology:thoughts':'Imported note'},answers:{},bookmarks:[]}};
   async function upload(payload,name='atlas-backup.json'){
    await page.locator('#backup-file').setInputFiles({name,mimeType:'application/json',buffer:Buffer.from(payload)});
   }
   await upload(JSON.stringify(backup));
   await page.locator('.backup-preview-grid').waitFor();
   expect((await page.locator('.modal-card').textContent()).includes('Restore this backup?'),'upload opens review modal rather than restoring immediately');
-  expect((await getState(page)).fieldNotes['psychology:habit-loop']==='Original private note','original note is untouched during preview');
+  expect((await getState(page)).fieldNotes['psychology:thoughts']==='Original private note','original note is untouched during preview');
   await page.locator('[data-action="backup-cancel"]').click();
-  expect((await getState(page)).fieldNotes['psychology:habit-loop']==='Original private note','cancel keeps existing data');
+  expect((await getState(page)).fieldNotes['psychology:thoughts']==='Original private note','cancel keeps existing data');
   await upload('{"format":"not-atlas"}');
   await page.waitForTimeout(100);
-  expect((await getState(page)).fieldNotes['psychology:habit-loop']==='Original private note','invalid import preserves progress');
+  expect((await getState(page)).fieldNotes['psychology:thoughts']==='Original private note','invalid import preserves progress');
   await upload(JSON.stringify(backup));
   await page.locator('.backup-preview-grid').waitFor();
   await page.locator('[data-action="backup-confirm"]').click();
-  await page.waitForFunction(()=>JSON.parse(localStorage.getItem('xyra-atlas-state-v1')||'{}').fieldNotes?.['psychology:habit-loop']==='Imported note');
-  expect((await getState(page)).fieldNotes['psychology:habit-loop']==='Imported note','confirmed restore replaces progress');
+  await page.waitForFunction(()=>JSON.parse(localStorage.getItem('xyra-atlas-state-v1')||'{}').fieldNotes?.['psychology:thoughts']==='Imported note');
+  expect((await getState(page)).fieldNotes['psychology:thoughts']==='Imported note','confirmed restore replaces progress');
   await page.reload({waitUntil:'domcontentloaded'});
-  expect((await getState(page)).fieldNotes['psychology:habit-loop']==='Imported note','restored data survives browser reload');
+  expect((await getState(page)).fieldNotes['psychology:thoughts']==='Imported note','restored data survives browser reload');
   await page.screenshot({path:snapshots+'/backup-restore.png',fullPage:true});
  });
 }finally{

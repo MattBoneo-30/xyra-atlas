@@ -24,6 +24,7 @@ test('every reset creates independent nested defaults rather than reusing mutate
  const a=fs.readFileSync('app.js','utf8');
  assert.match(a,/function createInitialState\(\)/);
  assert.match(a,/saved=createInitialState\(\)/);
- assert.match(a,/saved=\{\.\.\.createInitialState\(\),/);
+ assert.match(a,/return \{\.\.\.createInitialState\(\),/);
+ assert.match(a,/saved=candidate/);
  assert.doesNotMatch(a,/\.\.\.initial/);
 });
