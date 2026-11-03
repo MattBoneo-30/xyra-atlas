@@ -4,10 +4,10 @@
 
 ![Xyra Atlas emblem](assets/atlas-mark.svg)
 
-## Current release: Study Card Workshop 1.27
+## Current release: Applied Mastery Tracks 1.28
 
 - A violet-and-gold responsive interface, **14 distinct original vector course worlds**, Xyra's Corner artwork, landscape hero and a home-screen app icon. The same course identity appears on home tiles, category cards, course covers and lessons.
-- 14 learning subjects and **88 interactive lessons**: 52 short starters plus 36 structured, referenced field guides with real-world worked examples, exercises and quizzes (counts verified by tests).
+- 14 learning subjects and **117 interactive lessons**: 52 short starters, 36 prior field guides and **29 new advanced mastery lessons** with worked examples, exercises, quizzes and optional online references (counts verified by tests).
 - Psychology, legal literacy, business, money, productivity, communication, critical thinking, language study, digital literacy, career, science, relationships and influence.
 - **The Shadow Library (18+ educational content)** covers manipulation, gaslighting, lies, emotional leverage, deceptive interface design, consent and adult media literacy. The age acknowledgment is a *content gate*, not verified age or identity security.
 - Seven-day language practice framework for 20 languages, with **72 practical offline phrases across nine starter languages**: Japanese, Korean, Spanish, French, Mandarin Chinese, German, Filipino, Italian and English.
@@ -20,6 +20,7 @@
 
 **New in 0.5:** Psychology (evidence journaling, habits, relational inference); Philippine law (Constitution, data privacy, consumer complaints); business (customer discovery, unit economics, Philippine launch steps); money (irregular bills, emergency planning, investment red flags). Sources are linked for optional online verification; lessons work offline. Links and regulations can change.
 
+- **Applied Mastery Tracks (1.28):** 29 advanced practical lessons across all 14 subjects, including three Philippine legal and financial consumer-rights workflows. Each has three in-depth teaching sections, an original worked example, a concrete exercise, a quiz with explanation, and further reading from official or reputable sources. New Beginner/Intermediate/Advanced filters make growing course libraries easier to navigate on mobile and desktop. Further-reading links require connectivity, and regulations may change.
 - **Study Card Workshop (1.27):** Create, edit, search and delete up to 120 personal recall cards in your own words, with optional non-mature subject tags. Study due cards with answer reveal and offline spaced repetition, using 10-minute repeats or 1, 3, 7, 14, 30 and 60-day intervals. Editing a prompt resets its review schedule. Private cards transfer with normal and encrypted JSON progress backups, are sanitized during import, and are erased only by deliberate deletion, reset, or browser-data removal. The workshop contains no upload or synchronization and does not alter lesson completion.
 - **Offline Practice Exams:** Choose a 5, 10 or 20-question challenge from one subject or the whole non-mature library. Each answer reveals the explanation; a final review links to the source lessons. Sessions resume after reload and transfer with validated local backups. Practice results do not change completed lessons or Mistake Lab records. The exam engine and mobile browser flow have automated regression coverage.
 - **Encrypted Progress Backups:** Optional offline AES-256-GCM encrypted backups with PBKDF2-SHA256 (250,000 iterations), fresh salt and IV for each export. Unlocking a protected file opens the normal preview before any replacement. Passwords are not saved or sent; losing one makes the protected file unrecoverable. Plain JSON backups remain available.
@@ -99,7 +100,8 @@ index.html             HTML shell and PWA metadata
 styles.css             Responsive design system and screen styles
 app.js                 Navigation, interface, storage, quizzes, review UX, install UX
 data.js                Offline learning curriculum and language sprint
-deeptracks.js          12 sourced field-guide lessons with examples and quizzes
+deeptracks.js          Earlier sourced field guides with examples and quizzes
+masterytracks.js        29 advanced applied guides across all 14 learning subjects
 review.js              Dependency-free spaced repetition logic and input validation
 fieldnotes.js          Offline per-lesson notebook validation and saving
 studio.js
@@ -117,7 +119,7 @@ vercel.json            Vercel build and security headers
 
 ## Next content milestones
 
-1. Deep subject tracks with credible citations and regional law selection, starting with the Philippines.
+1. Continue deep subject tracks beyond the 29 new mastery guides, with more Philippine-law coverage and region selection. The foundation for privacy, consumer and banking complaints is implemented.
 2. Additional painterly cinematic chapter artwork and branded character scenes; the first set of 14 lightweight subject-specific illustrations is complete.
 3. Interactive study cards, question bank, spaced repetition and properly sourced language audio.
 4. A transparent download manager for optional offline packs and optional end-to-end encrypted synchronization.
