@@ -17,7 +17,10 @@ test('curriculum produces a deterministic comprehensive, cautious editorial back
  assert.equal(report.totals.lessonsWithEditorialFlags,0);
  assert.ok(report.totals.workedExamples>=26);
  assert.ok(report.totals.uniqueSourceURLs>=25);
- assert.ok(report.totals.lessonsWithEditorialFlags>0,'do not falsely declare advanced curriculum editorial review complete');
+ assert.equal(report.totals.lessonsWithEditorialFlags,0,'all automated pedagogical shape checks now pass');
+ const releaseGates=JSON.parse(fs.readFileSync('docs/stage-gates.json','utf8'));
+ assert.equal(releaseGates.gates[0].complete,false,'structural readiness must not be confused with independent expert signoff');
+ assert.ok(releaseGates.gates[0].blockers.some(s=>/review|source|verification/i.test(s)),'human evidence and source audits remain tracked');
  assert.equal(report.limitations.length,3);
  assert.deepEqual(report,auditCurriculum(COURSES));
 });
