@@ -2,12 +2,12 @@
 export const SEARCH_KINDS=Object.freeze([
   {id:'all',label:'Everything'}, {id:'course',label:'Subjects'},
   {id:'lesson',label:'Lessons'}, {id:'term',label:'Glossary'},
-  {id:'scenario',label:'Scenarios'}
+  {id:'scenario',label:'Scenarios'}, {id:'case',label:'Case Files'}
 ]);
 export function normalizeSearchText(value) {
   return String(value??'').normalize('NFKD').replace(/[\u0300-\u036f]/g,'').toLocaleLowerCase().replace(/\s+/g,' ').trim();
 }
-export function buildSearchIndex(courses=[],glossary=[],scenarios=[]) {
+export function buildSearchIndex(courses=[],glossary=[],scenarios=[],caseFiles=[]) {
   const items=[];
   for(const c of courses){
     const hidden=Boolean(c.dark);
@@ -30,6 +30,12 @@ export function buildSearchIndex(courses=[],glossary=[],scenarios=[]) {
     items.push({key:'scenario:'+s.id,kind:'scenario',id:s.id,title:s.title,
       category:s.category,description:s.setup,context:s.category||'',hidden:Boolean(s.adult),
       searchable:[s.title,s.category,s.setup,s.question,s.takeaway].filter(Boolean).join(' ')});
+  }
+  for(const c of caseFiles){
+    if(!c||typeof c.id!=='string')continue;
+    const story=(c.branches||[]).flatMap(b=>[b.scene,b.prompt,b.insight,...(b.options||[]).flatMap(o=>[o.label,o.outcome,o.takeaway])]).filter(Boolean).join(' ');
+    items.push({key:'case:'+c.id,kind:'case',id:c.id,title:c.title,category:c.subject||'Case Files',description:c.intro||'',context:c.subject||'',hidden:Boolean(c.adult),
+      searchable:[c.title,c.subject,c.intro,c.scene,c.prompt,story].filter(Boolean).join(' ')});
   }
   return items.map(item=>({...item,normalizedTitle:normalizeSearchText(item.title),
     normalizedContext:normalizeSearchText(item.context),
