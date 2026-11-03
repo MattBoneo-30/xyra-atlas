@@ -1,9 +1,9 @@
 /* Xyra Atlas: privacy-first, same-origin offline app shell. */
 const CACHE_PREFIX = 'xyra-atlas-';
-const CACHE = CACHE_PREFIX + 'v19';
+const CACHE = CACHE_PREFIX + 'v20';
 const APP_SHELL = [
   '/', '/index.html', '/styles.css', '/app.js', '/data.js', '/review.js', '/phrasebook.js', '/deeptracks.js', '/fieldnotes.js', '/studio.js', '/paths.js', '/scenarios.js', '/atlasmap.js', '/dailyquest.js', '/glossary.js', '/search.js', '/calendar.js', '/insights.js',
-  '/fieldguides.js', '/mentor.js', '/casebook.js', '/manifest.webmanifest', '/assets/atlas-mark.svg',
+  '/fieldguides.js', '/mentor.js', '/casebook.js', '/reader.js', '/manifest.webmanifest', '/assets/atlas-mark.svg',
   '/assets/atlas-horizon.svg', '/assets/xyra-guide.svg', '/assets/course-library.svg',
   '/assets/course-business.svg',
   '/assets/course-career.svg',

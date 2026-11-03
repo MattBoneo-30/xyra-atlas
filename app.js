@@ -5,6 +5,7 @@ import { SEARCH_KINDS,buildSearchIndex,searchAtlas } from './search.js';
 import { localDayKey,validDayKey,countVisitStreak } from './calendar.js';
 import { summarizeLearning,activityCalendar } from './insights.js';
 import { mentorMoment } from './mentor.js';
+import { READER_SIZES,normalizeReaderPreferences,setReaderSize,toggleReaderFocus } from './reader.js';
 import { createDailyQuest,dailyQuestProgress } from './dailyquest.js';
 import { buildKnowledgeMap } from './atlasmap.js';
 import { SCENARIOS,normalizeScenarioAnswers,recordScenarioAnswer,scenarioProgress } from './scenarios.js';
@@ -18,7 +19,7 @@ import { PATH_GOALS, PATH_BUDGETS, createLearningPath, normalizeLearningPath, pa
 const STORAGE_KEY = 'xyra-atlas-state-v1';
 const esc = value => String(value ?? '').replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
 const plain = text => esc(text).replace(/\n/g, '<br>');
-const initial = { completed: [], bookmarks: [], favorites: [], answers: {}, reviews: {}, fieldNotes: {}, lastOpened: null, dailyVisits: [], theme: 'dark', language: 'ja', languageDays: [], phrases: {}, studio: sanitizeStudio(null), userName: '', welcomeDismissed: false, learningPath: null, scenarios: {}, casebook: {} };
+const initial = { completed: [], bookmarks: [], favorites: [], answers: {}, reviews: {}, fieldNotes: {}, lastOpened: null, dailyVisits: [], theme: 'dark', language: 'ja', languageDays: [], phrases: {}, studio: sanitizeStudio(null), userName: '', welcomeDismissed: false, learningPath: null, scenarios: {}, casebook: {}, reader:normalizeReaderPreferences(null) };
 function readStored() {
   try {
     const data = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
@@ -37,6 +38,7 @@ function readStored() {
       studio: sanitizeStudio(data.studio),
       scenarios: normalizeScenarioAnswers(data.scenarios),
       casebook: normalizeCasebook(data.casebook),
+      reader: normalizeReaderPreferences(data.reader),
       learningPath: normalizeLearningPath(data.learningPath,COURSES),
       fieldNotes: normalizeFieldNotes(data.fieldNotes),
       theme: data.theme === 'light' ? 'light' : 'dark',
@@ -248,8 +250,9 @@ function lessonPage() {
   const idx=c.lessons.findIndex(item=>item.id===l.id);
   const next=c.lessons[idx+1];
   const chosen = saved.answers[key];
-  return `<main class="page reading-page"><div class="subnav">${button(`${icon('back',18)} ${esc(c.title)}`,'open-course','back-link',`data-id="${esc(c.id)}"`)}${button(icon('bookmark',21),'bookmark',`icon-button ${isBookmarked(key)?'is-favorite':''}`,`data-key="${esc(key)}" aria-label="${isBookmarked(key)?'Remove bookmark':'Bookmark lesson'}"`)}</div>
+  return `<main class="page reading-page" data-reader-size="${esc(saved.reader.size)}"><div class="subnav">${button(`${icon('back',18)} ${esc(c.title)}`,'open-course','back-link',`data-id="${esc(c.id)}"`)}${button(icon('bookmark',21),'bookmark',`icon-button ${isBookmarked(key)?'is-favorite':''}`,`data-key="${esc(key)}" aria-label="${isBookmarked(key)?'Remove bookmark':'Bookmark lesson'}"`)}</div>
     <div class="reading-head"><span class="overline">${esc(c.title)} · ${esc(l.stage)}</span><div class="reading-num">LESSON ${String(idx+1).padStart(2,'0')} OF ${String(c.lessons.length).padStart(2,'0')}</div><h1>${esc(l.title)}</h1><p>${esc(l.intro)}</p><span class="reading-time">${icon('clock',17)} ${l.minutes} min read & practice</span></div>
+    <div class="reader-toolbar" role="group" aria-label="Reading preferences"><div class="reader-toolbar-label">${icon('book',18)} Reading comfort</div><div class="reader-size-group" role="group" aria-label="Text size">${READER_SIZES.map(item=>button(esc(item.label),'reader-size',`reader-size-button ${saved.reader.size===item.id?'selected':''}`,`data-id="${item.id}" aria-pressed="${saved.reader.size===item.id}"`)).join('')}</div>${button(saved.reader.focus?`${icon('check',16)} Focus on`:`${icon('spark',16)} Focus mode`,'reader-focus',`reader-focus-button ${saved.reader.focus?'selected':''}`,`aria-pressed="${saved.reader.focus}"`)}</div>
     <div class="reading-illustration"><img src="/assets/${esc(c.art)}.svg" alt=""/><span class="reading-illustration-glow">✧</span></div>
     <article class="lesson-content">${l.sections.map((s,i)=>`<section><div class="article-section-num">0${i+1} / LEARN</div><h2>${esc(s.heading)}</h2><p>${esc(s.body)}</p></section>`).join('')}
       ${l.example ? `<aside class="worked-example"><span class="overline">WORKED EXAMPLE</span><h3>See it in action</h3><p>${esc(l.example)}</p></aside>` : ''}
@@ -466,6 +469,7 @@ function modalView() {
 function render() {
   document.documentElement.dataset.theme=saved.theme;
   document.body.classList.toggle('dialog-open',Boolean(modal));
+  document.body.classList.toggle('reader-focus-mode',route.view==='lesson'&&saved.reader.focus);
   const view = route.view;
   const content = ({home,explore,journey,review:reviewPage,studio:studioPage,scenario:scenarioPage,casebook:casebookPage,map:mapPage,quest:questPage,glossary:glossaryPage,search:globalSearchPage,insights:insightsPage,mentor:mentorPage,path:pathPage,saved:savedPage,you,course:coursePage,lesson:lessonPage,language:languagePage}[view] || errorView)();
   document.getElementById('app').innerHTML = `${topbar()}<div class="shell"><aside class="desktop-rail"><div class="rail-title">YOUR ATLAS <span>✧</span></div>${[['home','Home','home'],['explore','Explore & Learn','compass'],['journey','My Journey','spark'],['saved','Saved Library','bookmark'],['you','Your Space','user']].map(([id,label,ico])=>`<button type="button" data-action="nav" data-id="${id}" class="rail-link ${tabForRoute()===id?'active':''}">${icon(ico,20)} ${label}</button>`).join('')}<div class="rail-divider"></div><button type="button" class="rail-link" data-action="open-corner">${icon('spark',20)} Xyra's Corner</button><button type="button" class="rail-link" data-action="casebook">${icon('book',20)} Case Files</button><button type="button" class="rail-link" data-action="insights">${icon('chart',20)} Learning Insights</button><button type="button" class="rail-link" data-action="search">${icon('search',20)} Search Everything</button><button type="button" class="rail-link" data-action="glossary">${icon('book',20)} Glossary</button><button type="button" class="rail-link" data-action="quest">${icon('spark',20)} Daily Quest</button><button type="button" class="rail-link" data-action="map">${icon('compass',20)} Knowledge Map</button><button type="button" class="rail-link" data-action="review">${icon('orbit',20)} Review Deck</button><button type="button" class="rail-link" data-action="path">${icon('compass',20)} Guided Path</button><button type="button" class="rail-link" data-action="studio">${icon('briefcase',20)} Practice Studio</button><button type="button" class="rail-link" data-action="language">${icon('languages',20)} Language Lab</button><button type="button" class="rail-link" data-action="open-course" data-id="shadow">${icon('moon',20)} Shadow Library</button><div class="rail-note">✦<p>The world is a little bigger every time you learn.</p></div></aside><div class="main-column">${content}<footer class="app-footer">Made with curiosity, for a life still unfolding. <span>✧ Xyra Atlas</span></footer></div></div>${navBar()}${modalView()}${currentToast?`<div class="toast" role="status">${icon('spark',19)} ${esc(currentToast)}</div>`:''}`;
@@ -490,6 +494,7 @@ function answerBackup(e) {
         studio:sanitizeStudio(clean.studio),
         scenarios:normalizeScenarioAnswers(clean.scenarios),
         casebook:normalizeCasebook(clean.casebook),
+        reader:normalizeReaderPreferences(clean.reader),
         learningPath:normalizeLearningPath(clean.learningPath,COURSES),
         fieldNotes:normalizeFieldNotes(clean.fieldNotes),
         dailyVisits:Array.isArray(clean.dailyVisits)?clean.dailyVisits.filter(validDayKey).slice(-400):[],
@@ -540,6 +545,8 @@ async function handleAction(e) {
   else if(action==='path') nav('path');
   else if(action==='create-path') {const goal=document.getElementById('path-goal')?.value;const minutes=Number(document.getElementById('path-minutes')?.value);const stamp=today();const next=createLearningPath(COURSES,goal,minutes,saved.completed,stamp);if(!next){flash('No unfinished lessons fit this focus and study time. Try another goal.');return;}saved.learningPath=next;persist();flash('Your seven-session learning path is ready!');}
   else if(action==='studio') nav('studio');
+  else if(action==='reader-size'){if(route.view==='lesson'){saved.reader=setReaderSize(saved.reader,id);persist();render();}}
+  else if(action==='reader-focus'){if(route.view==='lesson'){saved.reader=toggleReaderFocus(saved.reader);persist();render();}}
   else if(action==='scenario') nav('scenario');
   else if(action==='casebook') nav('casebook');
   else if(action==='casebook-open'){if(getCaseFile(id))nav('casebook/'+id);}
