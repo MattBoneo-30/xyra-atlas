@@ -1122,6 +1122,48 @@ try{
  });
 
 
+ await smoke('private-category-data-controls', {viewport:{width:390,height:844},isMobile:true,hasTouch:true},async(page,context)=>{
+  await page.evaluate(()=>{
+   const key='xyra-atlas-state-v1',state=JSON.parse(localStorage.getItem(key)||'{}');
+   state.completed=['psychology:thoughts'];
+   state.answers={'psychology:thoughts':1};
+   state.fieldNotes={'psychology:thoughts':'My personal reflection'};
+   state.favorites=['psychology'];
+   state.phrases={ja:['1','2']};
+   localStorage.setItem(key,JSON.stringify(state));
+  });
+  await page.reload({waitUntil:'domcontentloaded'});
+  await page.locator('.bottom-nav [data-action="nav"][data-id="you"]').click();
+  await page.locator('[data-action="privacy-open"]').click();
+  await page.locator('.privacy-page').waitFor();
+  expect(await page.locator('.privacy-group').count()===5,'all local categories are shown');
+  const overflow=await mobileOverflow(page);
+  expect(overflow.scroll<=overflow.width+8,'private data inventory fits 390px mobile width');
+  await page.locator('[data-action="privacy-erase"][data-id="writing"]').click();
+  await page.locator('.modal-card').waitFor();
+  await page.locator('[data-action="close-modal"]').click();
+  expect((await getState(page)).fieldNotes['psychology:thoughts']==='My personal reflection','cancel keeps private notes unchanged');
+  await page.locator('[data-action="privacy-erase"][data-id="writing"]').click();
+  await page.locator('[data-action="privacy-erase-confirm"]').click();
+  let state=await getState(page);
+  expect(Object.keys(state.fieldNotes).length===0,'confirmed category deletion clears notes');
+  expect(state.completed.includes('psychology:thoughts'),'category clearing preserves lesson completions');
+  expect(state.favorites.includes('psychology'),'category clearing preserves saved courses');
+  expect(state.phrases.ja.length===2,'category clearing preserves language progress');
+  await page.reload({waitUntil:'domcontentloaded'});
+  state=await getState(page);
+  expect(Object.keys(state.fieldNotes).length===0&&state.phrases.ja.length===2,'selective erase survives reload');
+  await page.evaluate(async()=>{await navigator.serviceWorker.ready;});
+  await page.reload({waitUntil:'domcontentloaded'});
+  await page.waitForFunction(()=>Boolean(navigator.serviceWorker.controller));
+  await context.setOffline(true);
+  await page.reload({waitUntil:'domcontentloaded'});
+  await page.locator('.privacy-page').waitFor();
+  expect(await page.locator('.privacy-group').count()===5,'privacy inventory remains available offline');
+  await context.setOffline(false);
+ });
+
+
 }finally{
  if(browser)await browser.close();
  server.kill('SIGTERM');

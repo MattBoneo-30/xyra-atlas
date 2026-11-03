@@ -37,6 +37,7 @@ jobs:
           test -s dist/masterytracks.js
           test -s dist/languagechallenge.js
           test -s dist/conversationquest.js
+          test -s dist/datacontrols.js
           test -s dist/voicecoach.js
           test -s dist/phrasereview.js
           test -s dist/examhistory.js
