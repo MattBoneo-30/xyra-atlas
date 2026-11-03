@@ -1309,6 +1309,24 @@ try{
  });
 
 
+ await smoke('critical-foundation-money-practice-offline',{viewport:{width:390,height:844},isMobile:true,hasTouch:true,deviceScaleFactor:2},async(page,context)=>{
+   await page.goto(BASE+'/#/lesson/savings/debt',{waitUntil:'domcontentloaded'});
+   await page.locator('.reading-page').waitFor();
+   const text=await page.locator('.reading-page').textContent();
+   expect(text.includes('₱2,400'),'realistic loan comparison included in original task');
+   expect(text.includes('installment'),'cost method is explained');
+   const overflow=await mobileOverflow(page);
+   expect(overflow.scroll<=overflow.width+8,'case material fits narrow mobile viewport');
+   await page.evaluate(async()=>{await navigator.serviceWorker.ready;});
+   await page.reload({waitUntil:'domcontentloaded'});
+   await page.waitForFunction(()=>Boolean(navigator.serviceWorker.controller));
+   await context.setOffline(true);
+   await page.reload({waitUntil:'domcontentloaded'});
+   expect((await page.locator('.reading-page').textContent()).includes('₱2,400'),'loan practice readable offline');
+   await context.setOffline(false);
+ });
+
+
 }finally{
  if(browser)await browser.close();
  server.kill('SIGTERM');

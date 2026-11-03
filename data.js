@@ -7,6 +7,7 @@ import { PH_CASEWORK } from './phcasework.js';
 import { ADVANCED_ENRICHMENTS } from './advancedenrichments.js';
 import { FOUNDATION_CASES } from './foundationcases.js';
 import { FOUNDATION_CASES_TWO } from './foundationcases2.js';
+import {deepenCriticalFoundation} from './criticalfoundation.js';
 /** Xyra Atlas starter curriculum. Educational content is general information, not professional advice. */
 const lesson = (id, title, minutes, stage, intro, first, second, task, question, options, correct, explanation) => ({
   id, title, minutes, stage, intro,
@@ -257,6 +258,7 @@ export const COURSES = [
       'List three reasons entertainment should not be treated as sexual health education.','What is a sound source for health decisions?', ['A staged video','Evidence-based healthcare information','An anonymous rumor'],1,'Clinical and public-health sources are more reliable for health information.')
   ],{dark:true,featured:true})
 ];
+deepenCriticalFoundation(COURSES);
 for(const entry of COURSES){
   const extras=ADVANCED_ENRICHMENTS[entry.id]||{};
   for(const original of entry.lessons){
