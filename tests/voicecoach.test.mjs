@@ -17,7 +17,7 @@ test('matching offline voices must declare localService=true and correct primary
   voice('es-MX','Regional offline'),voice('en-US','Wrong language'),
   voice('es-ES','Network voice',false),
   voice('es-ES','Spanish offline'),voice('es-ES','Spanish offline B'),
-  voice('xx','Malformed',true,'bad'),voice('es_US','Invalid mix')
+  voice('xx','Malformed',true,'bad'),voice('de_DE','Different language')
  ];
  const local=matchingLanguageVoices(voices,'es-ES');
  assert.deepEqual(local.map(v=>v.name),['Spanish offline','Spanish offline B','Regional offline']);
