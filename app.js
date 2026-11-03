@@ -755,7 +755,9 @@ function watchOfflineRegistration(reg){
   const waiting=Boolean(reg.waiting&&navigator.serviceWorker.controller);
   if(offlineUpdateWaiting!==waiting){
    offlineUpdateWaiting=waiting;
-   render();
+   // Do not replace the lesson DOM while someone is reading or typing notes.
+   // The topbar indicator will appear on their next natural navigation.
+   if(route.view==='offline')render();
   }
  };
  checkWaiting();
