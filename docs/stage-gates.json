@@ -167,11 +167,21 @@
           "type": "ci",
           "value": "https://github.com/MattBoneo-30/xyra-atlas/actions/runs/41697134134",
           "note": "222 Node tests passed, real Chromium desktop/mobile/offline suite and separate WebKit Linux engine mobile/desktop scenarios passed; screenshots archived."
+        },
+        {
+          "type": "commit",
+          "value": "5980f7579e0d6eb2221558375799445334246d80",
+          "note": "Static bundle audit verifies every service-worker precache path, SVG active-content and accessible narrative-art checks, PNG dimensions and size budgets."
+        },
+        {
+          "type": "ci",
+          "value": "https://github.com/MattBoneo-30/xyra-atlas/actions/runs/41699259088",
+          "note": "227 passing Node tests, 95 static files matching 95 precache entries, 36 SVGs, raw bundle 1,224,715 bytes and independent gzip sum 421,891 bytes; zero asset violations; Chromium and Linux WebKit suites passed."
         }
       ],
       "blockers": [
-        "Although Linux Chromium and WebKit automated visual/interaction smoke checks pass, full final painterly art direction and manual visual signoff have not been completed.",
-        "Real iPhone Safari, Android Chrome and low-end mobile performance/accessibility QA are not yet established; WebKit on Linux is an engine check, not physical iOS testing."
+        "Final painterly/cinematic world, chapter and character illustrations require integration and aesthetic/manual signoff; the current 36 accessible vector compositions are explicitly interim assets.",
+        "Real iPhone Safari, Android Chrome, reduced-motion, contrast, device-performance and installed-PWA visual QA remain incomplete. Linux Chromium/WebKit coverage and passing static checks do not replace actual devices."
       ]
     },
     {
@@ -200,9 +210,22 @@
         "Actual iOS and Android PWA installation, offline, update, restore tests completed",
         "Licensing and release docs finalized"
       ],
-      "evidence": [],
+      "evidence": [
+        {
+          "type": "commit",
+          "value": "5980f7579e0d6eb2221558375799445334246d80",
+          "note": "Static bundle audit verifies every service-worker precache path, SVG active-content and accessible narrative-art checks, PNG dimensions and size budgets."
+        },
+        {
+          "type": "ci",
+          "value": "https://github.com/MattBoneo-30/xyra-atlas/actions/runs/41699259088",
+          "note": "227 passing Node tests, 95 static files matching 95 precache entries, 36 SVGs, raw bundle 1,224,715 bytes and independent gzip sum 421,891 bytes; zero asset violations; Chromium and Linux WebKit suites passed."
+        }
+      ],
       "blockers": [
-        "Deployment and real iOS/Android verification not established."
+        "Deployment URL and genuine Vercel production verification have not been established; owner authorization and external environment access may be required.",
+        "Physical iOS and Android PWA installation, offline re-open, device storage, accessibility and restore checks remain unverified.",
+        "Independent editorial/content and final painterly-art signoffs remain outstanding; passing CI is necessary but not sufficient for production final."
       ]
     }
   ]
