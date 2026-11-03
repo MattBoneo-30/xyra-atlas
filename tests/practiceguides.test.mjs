@@ -20,7 +20,7 @@ test('42 distinct evidence-led practice guides support every existing Atlas less
    }
   }
   for(const lesson of course.lessons){
-   assert.deepEqual(lesson.practiceGuide,practiceGuide(course.id,lesson.stage));
+   assert.ok(practiceGuide(course.id,lesson.stage));
   }
  }
  assert.equal(seen.size,84);
@@ -30,7 +30,8 @@ test('42 distinct evidence-led practice guides support every existing Atlas less
 });
 test('guided practice is additive to lesson-specific task and stays offline',()=>{
  const [app,data,sw,build]=['app.js','data.js','sw.js','scripts/build.mjs'].map(p=>fs.readFileSync(p,'utf8'));
- assert.match(data,/practiceGuide\(entry\.id,item\.stage\)/);
+ assert.doesNotMatch(data,/item\.practiceGuide=/);
+ assert.match(app,/practiceGuide\(c\.id,l\.stage\)/);
  assert.match(app,/practice-guide-steps/);
  assert.match(app,/esc\(step\)/);
  assert.match(sw,/\/practiceguides\.js/);

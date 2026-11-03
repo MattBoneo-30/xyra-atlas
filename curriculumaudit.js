@@ -1,3 +1,4 @@
+import {practiceGuide} from './practiceguides.js';
 /** Xyra Atlas curriculum content audit.
  * Mechanical checks identify gaps but NEVER certify legal accuracy, citations,
  * accessibility, educational outcomes or native-speaker expertise.
@@ -45,7 +46,7 @@ export function auditCurriculum(courses){
    if(wordLength(lesson.task)<90)missing.push('applied-exercise');
    if(wordLength(quiz?.explanation)<50)missing.push('answer-rationale');
    if(refs.length===0)missing.push('further-reading-source');
-   const guide=Array.isArray(lesson.practiceGuide)?lesson.practiceGuide:[];
+   const guide=practiceGuide(course.id,lesson.stage)||[];
    if(guide.length!==2||guide.some(line=>wordLength(line)<75))missing.push('structured-evidence-practice');
    lessons.push({id,courseId:course.id,title:valid(lesson.title)?lesson.title:id,stage:lesson.stage,
      teachingSections:sections.length,hasWorkedExample:wordLength(lesson.example)>=170,
