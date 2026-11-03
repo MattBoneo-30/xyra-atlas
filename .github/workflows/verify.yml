@@ -49,6 +49,16 @@ jobs:
           test -s dist/assets/chapter-security-sanctum.svg
           test -s dist/assets/chapter-business-atelier.svg
           test -s dist/assets/chapter-science-glasshouse.svg
+          test -s dist/assets/chapter-interpretation-crossroads.svg
+          test -s dist/assets/chapter-cash-weatherhouse.svg
+          test -s dist/assets/chapter-clockwork-schedule.svg
+          test -s dist/assets/chapter-language-teahouse.svg
+          test -s dist/assets/chapter-feedback-bridge.svg
+          test -s dist/assets/chapter-evidence-prism.svg
+          test -s dist/assets/chapter-portfolio-forge.svg
+          test -s dist/assets/chapter-boundary-garden.svg
+          test -s dist/assets/chapter-offer-market.svg
+          test -s dist/assets/chapter-protective-lantern.svg
           test -s dist/visualmap.js
           test -s dist/narration.js
           test -s dist/storagehealth.js
