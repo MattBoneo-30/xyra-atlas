@@ -525,6 +525,57 @@ try{
   expect(overflow.scroll<=overflow.width+8,'course stage filters do not cause mobile horizontal overflow');
  });
 
+
+ await smoke('offline-language-challenge',{viewport:{width:390,height:844}},async(page)=>{
+  await page.goto(BASE+'/#/language',{waitUntil:'domcontentloaded'});
+  await page.locator('.language-challenge').waitFor();
+  await page.locator('#language-select').selectOption('ja');
+  await page.locator('#language-challenge-mode').selectOption('recognition');
+  await page.locator('[data-action="challenge-start"]').click();
+  await page.locator('.language-challenge-options').waitFor();
+  let state=await getState(page);
+  expect(state.languageChallenge.code==='ja'&&state.languageChallenge.ids.length===8,'eight questions use Japanese authored phrase pack');
+  await page.locator('.language-challenge-choice').first().click();
+  await page.locator('.language-challenge-feedback').waitFor();
+  state=await getState(page);
+  expect(Object.keys(state.languageChallenge.answers).length===1,'challenge answer saves immediately');
+  expect(Object.keys(state.phrases||{}).length===0,'challenge does not automatically mark learned phrases');
+  await page.reload({waitUntil:'domcontentloaded'});
+  await page.locator('.language-challenge-feedback').waitFor();
+  expect(Object.keys((await getState(page)).languageChallenge.answers).length===1,'answered challenge resumes after reload');
+  for(let i=0;i<8;i++){
+   if(i>0){await page.locator('.language-challenge-choice').first().click();await page.locator('.language-challenge-feedback').waitFor();}
+   await page.locator('[data-action="challenge-next"]').click();
+  }
+  expect(await page.locator('.language-challenge-review article').count()===8,'completed challenge includes every answer review');
+  state=await getState(page);
+  expect(state.languageChallenge.position===8,'challenge session reaches final question');
+  expect(state.languageChallengeHistory.ja.attempts===1,'completion records one practice attempt');
+  expect(state.completed.length===0,'challenge leaves course completion unchanged');
+  await page.reload({waitUntil:'domcontentloaded'});
+  expect((await getState(page)).languageChallengeHistory.ja.attempts===1,'score history survives reload');
+  await page.locator('[data-action="challenge-new"]').click();
+  await page.locator('#language-challenge-mode').selectOption('meaning');
+  await page.locator('[data-action="challenge-start"]').click();
+  await page.locator('.language-challenge-question h3[lang="ja-JP"]').waitFor();
+  await page.locator('.language-challenge-choice').first().click();
+  await page.locator('#language-select').selectOption('ko');
+  expect(await page.locator('[data-action="challenge-resume"]').count()===1,'incomplete other-language session can be resumed');
+  await page.locator('[data-action="challenge-resume"]').click();
+  expect((await getState(page)).language==='ja','resume returns to original language');
+  await page.locator('.language-challenge-feedback').waitFor();
+  await page.locator('[data-action="challenge-discard"]').click();
+  await page.getByRole('button',{name:'Keep practicing'}).click();
+  expect((await getState(page)).languageChallenge!==null,'cancelling discard preserves session');
+  await page.locator('[data-action="challenge-discard"]').click();
+  await page.locator('[data-action="challenge-discard-confirm"]').click();
+  state=await getState(page);
+  expect(state.languageChallenge===null,'confirmed discard removes only active challenge');
+  expect(state.languageChallengeHistory.ja.attempts===1,'discard preserves completed score history');
+  const overflow=await mobileOverflow(page);
+  expect(overflow.scroll<=overflow.width+8,'challenge interface remains within narrow mobile viewport');
+ });
+
 }finally{
  if(browser)await browser.close();
  server.kill('SIGTERM');
