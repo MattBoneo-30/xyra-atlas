@@ -25,15 +25,15 @@ let storageProblem=null;
 let recoveryRaw=null;
 const esc = value => String(value ?? '').replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
 const plain = text => esc(text).replace(/\n/g, '<br>');
-const initial = { completed: [], bookmarks: [], favorites: [], answers: {}, reviews: {}, fieldNotes: {}, lastOpened: null, dailyVisits: [], theme: 'dark', language: 'ja', languageDays: [], phrases: {}, studio: sanitizeStudio(null), userName: '', welcomeDismissed: false, learningPath: null, scenarios: {}, casebook: {}, reader:normalizeReaderPreferences(null) };
+function createInitialState(){return { completed: [], bookmarks: [], favorites: [], answers: {}, reviews: {}, fieldNotes: {}, lastOpened: null, dailyVisits: [], theme: 'dark', language: 'ja', languageDays: [], phrases: {}, studio: sanitizeStudio(null), userName: '', welcomeDismissed: false, learningPath: null, scenarios: {}, casebook: {}, reader:normalizeReaderPreferences(null) };}
 function readStored() {
   try {
     const raw=localStorage.getItem(STORAGE_KEY);
     const envelope=parseStoredEnvelope(raw);
-    if(envelope.status==='corrupt'){storageProblem='corrupt';recoveryRaw=raw;return {...initial};}
+    if(envelope.status==='corrupt'){storageProblem='corrupt';recoveryRaw=raw;return createInitialState();}
     const data=envelope.value;
     return {
-      ...initial,
+      ...createInitialState(),
       ...data,
       completed: Array.isArray(data.completed) ? data.completed.filter(x => typeof x === 'string') : [],
       bookmarks: Array.isArray(data.bookmarks) ? data.bookmarks.filter(x => typeof x === 'string') : [],
@@ -53,7 +53,7 @@ function readStored() {
       language: LANGUAGES.some(x => x.code === data.language) ? data.language : 'ja',
       userName: typeof data.userName === 'string' ? data.userName.slice(0,40) : ''
     };
-  } catch {storageProblem='read-failed';return {...initial};}
+  } catch {storageProblem='read-failed';return createInitialState();}
 }
 let saved = readStored();
 const reviewCards = makeReviewCards(COURSES);
@@ -595,7 +595,7 @@ function answerBackup(e) {
       const data=JSON.parse(String(reader.result));
       if(data.format!=='xyra-atlas-backup' || data.version!==1 || !data.state || !Array.isArray(data.state.completed)) throw new Error('Not a compatible Xyra Atlas backup.');
       const clean=data.state;
-      saved={...initial,
+      saved={...createInitialState(),
         completed:clean.completed.filter(x=>typeof x==='string'),
         bookmarks:Array.isArray(clean.bookmarks)?clean.bookmarks.filter(x=>typeof x==='string'):[],
         favorites:Array.isArray(clean.favorites)?clean.favorites.filter(x=>typeof x==='string'):[],
@@ -698,7 +698,7 @@ async function handleAction(e) {
   else if(action==='storage-export-recovery')downloadRecoveryCopy();
   else if(action==='storage-retry'){if(storageProblem==='corrupt'||storageProblem==='read-failed'){flash('Existing data is protected. Use a valid backup or reset intentionally.');}else{const ok=persist();flash(ok?'Progress saved successfully in this browser.':'Saving is still blocked; export a backup.');}}
   else if(action==='reset-dialog') {modal='reset';render();}
-  else if(action==='confirm-reset') {recoveryRaw=null;storageProblem=null;storageWarningShown=false;saved={...initial};visitToday();persist();modal='';nav('home');flash('Local progress reset.');}
+  else if(action==='confirm-reset') {recoveryRaw=null;storageProblem=null;storageWarningShown=false;saved=createInitialState();shadowUnlocked=false;gateConfirmed=false;reviewRevealed=false;phraseRevealed=false;phraseIndex=0;studioTab='savings';visitToday();persist();modal='';nav('home');flash('Local progress reset.');}
   else if(action==='close-modal') {modal='';if(['course','lesson'].includes(route.view)&&route.courseId==='shadow'&&!shadowUnlocked)nav('explore');else render();}
   else if(action==='enter-shadow') {if(!gateConfirmed)return;shadowUnlocked=true;modal='';nav('course/shadow');}
   else if(action==='open-corner') nav('mentor');

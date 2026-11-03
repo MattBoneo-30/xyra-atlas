@@ -225,6 +225,31 @@ try{
   await context.setOffline(false);
   await page.screenshot({path:snapshots+'/offline-library-ready.png',fullPage:true});
  });
+ await smoke('repeat-progress-reset',{viewport:{width:1280,height:800}},async page=>{
+  await page.locator('.desktop-rail [data-action="nav"][data-id="you"]').click();
+  await page.locator('[data-action="reset-dialog"]').click();
+  await page.locator('[data-action="confirm-reset"]').click();
+  await page.locator('.home-page').waitFor();
+  await page.locator('.desktop-rail [data-action="nav"][data-id="explore"]').click();
+  await page.locator('[data-action="open-course"][data-id="psychology"]').first().click();
+  await page.locator('[data-action="open-lesson"]').first().click();
+  await page.locator('#field-note-input').waitFor();
+  await page.locator('#field-note-input').fill('This note must disappear after reset');
+  await page.locator('.quiz-option').first().click();
+  const before=await getState(page);
+  expect(Object.keys(before.answers||{}).length===1,'a nested quiz answer exists before reset');
+  expect(Object.keys(before.fieldNotes||{}).length===1,'a nested note exists before reset');
+  await page.locator('.desktop-rail [data-action="nav"][data-id="you"]').click();
+  await page.locator('[data-action="reset-dialog"]').click();
+  await page.locator('[data-action="confirm-reset"]').click();
+  await page.locator('.home-page').waitFor();
+  const after=await getState(page);
+  expect(Object.keys(after.answers||{}).length===0,'repeat reset fully clears quiz answers');
+  expect(Object.keys(after.fieldNotes||{}).length===0,'repeat reset fully clears private notes');
+  expect((after.completed||[]).length===0,'repeat reset fully clears completed lessons');
+  await page.reload({waitUntil:'domcontentloaded'});
+  expect(Object.keys((await getState(page)).answers||{}).length===0,'reset remains clean after reload');
+ });
 }finally{
  if(browser)await browser.close();
  server.kill('SIGTERM');

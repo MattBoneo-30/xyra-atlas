@@ -19,3 +19,11 @@ test('application blocks overwrites after corrupted saves and offers raw recover
  assert.match(app,/recoveryRaw=null;storageProblem=null/);
  assert.match(sw,/\/storagehealth\.js/);assert.match(build,/'storagehealth\.js'/);
 });
+
+test('every reset creates independent nested defaults rather than reusing mutated objects',()=>{
+ const a=fs.readFileSync('app.js','utf8');
+ assert.match(a,/function createInitialState\(\)/);
+ assert.match(a,/saved=createInitialState\(\)/);
+ assert.match(a,/saved=\{\.\.\.createInitialState\(\),/);
+ assert.doesNotMatch(a,/\.\.\.initial/);
+});
