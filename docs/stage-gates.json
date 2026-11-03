@@ -109,12 +109,32 @@
           "type": "ci",
           "value": "https://github.com/MattBoneo-30/xyra-atlas/actions/runs/41691573300",
           "note": "Latest branch build, Node tests and Chromium desktop/mobile/offline smoke tests passed after source traceability changes."
+        },
+        {
+          "type": "commit",
+          "value": "193e5af79821cc87963ee0b85f43a2de8a378ba9",
+          "note": "Original advanced decision added to every subject; subject clinics now contain 42 scenario questions."
+        },
+        {
+          "type": "commit",
+          "value": "b66b70b9e8ae9e2115296f9dc5a1ce39b4407dad",
+          "note": "Third-case tests corrected and keyboard assessment response focus moved to the explanation, verified in browser."
+        },
+        {
+          "type": "commit",
+          "value": "a38bb783a5226363f08fa3fa5db630b4a61d73f5",
+          "note": "Full source-accurate reviewer packet generator added: 134 lessons and 42 decisions with SHA-256 content hashes and supporting references."
+        },
+        {
+          "type": "ci",
+          "value": "https://github.com/MattBoneo-30/xyra-atlas/actions/runs/41694707356",
+          "note": "217 Node tests passed, offline build and real desktop/mobile browser checks succeeded. Editorial reviewer packet archived in GitHub Actions."
         }
       ],
       "blockers": [
-        "Independent qualified subject-matter reviewers have not signed off all 134 lessons, especially applicable Philippine legal/financial rules, health/safety claims and cultural context.",
-        "Automated lesson coverage and running quizzes verify software and content structure, not the accuracy of all pedagogy, the reliability of every answer, or the psychometric validation of assessments.",
-        "The 42 distinct course reference URLs and material claims still require a dated, comprehensive expert-supported claim-level review; six official-agency spot-checks do not constitute signoff."
+        "Qualified independent reviewers still need to inspect and sign off all 134 lessons, especially the Philippine legal/financial and safety-related content; the editorial packet is prepared, not approved.",
+        "Assessments, distractors and pedagogy require independent validity and suitability review. A passing automated test suite or an unverified reviewer field cannot establish substantive accuracy.",
+        "The 42 referenced URLs, all material claims, and language/cultural guidance still require dated claim-level or specialist review. Six official-source spot checks remain only partial evidence."
       ]
     },
     {

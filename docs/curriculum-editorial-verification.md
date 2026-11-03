@@ -58,6 +58,14 @@ Maintainer source checks on 2026-11-04 compared high-stakes language against the
 
 These spot-checks support the limited claims above only. They do not attest to the remaining curriculum, check every live URL, or establish an attorney/regulator/specialist review. A machine-readable claim register records the evidence and review limits.
 
+## Advanced decision clinic and independent reviewer handoff (2026-11-04)
+
+- Third, advanced scenario now appears in every subject's private offline decision clinic, for **42 total applied decisions** across 14 subjects.
+- Keyboard activation of an answer is verified in real Chromium: focus returns to the feedback explanation rather than disappearing after the page rerenders. Existing clinic answers remain compatible with old backups.
+- `npm run export:editorial` creates a full author-content review packet with **134 lessons, 42 decisions, 42 distinct source URLs** and SHA-256 hashes of the content to be reviewed. Each item is explicitly marked as requiring independent review. The artifact was uploaded in [GitHub Actions run 41694707356](https://github.com/MattBoneo-30/xyra-atlas/actions/runs/41694707356).
+- Latest successful full verification: **217 passing Node tests, zero failures**, and successful production/offline build with real Chromium desktop, mobile and offline tests.
+- **Independent expert approval count is 0.** These checks improve readiness and make later qualified review auditable; they do not establish professional or academic signoff and do not change the Advanced Curriculum stage gate.
+
 ## Outstanding criteria before the Advanced curriculum completion report
 
 - Complete a **lesson-by-lesson content audit**, not merely data-shape checks: teaching objective, multi-step explanation, worked example, realistic independent exercise, multiple validated checks, non-leading distractors, and caveats where necessary.
