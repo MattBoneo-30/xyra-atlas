@@ -4,6 +4,7 @@ import { spawn } from 'node:child_process';
 import { strict as assert } from 'node:assert';
 import { mkdir, writeFile } from 'node:fs/promises';
 import { chromium } from 'playwright';
+import {COURSES} from '../data.js';
 
 const PORT=42751;
 const BASE='http://127.0.0.1:'+PORT;
@@ -416,7 +417,10 @@ try{
   let state=await getState(page);
   expect(state.exam.ids.length===5,'exam creates the requested number of questions');
   expect(state.exam.ids.every(id=>id.startsWith('psychology:')),'subject-scoped exam contains only chosen course');
-  await page.locator('.exam-option').first().click();
+  const [firstCourse,firstLesson]=state.exam.ids[0].split(':');
+  const firstQuiz=COURSES.find(c=>c.id===firstCourse).lessons.find(l=>l.id===firstLesson).quiz;
+  const wrongChoice=(firstQuiz.correct+1)%firstQuiz.options.length;
+  await page.locator('.exam-option[data-index="'+wrongChoice+'"]').click();
   await page.locator('.exam-explanation').waitFor();
   state=await getState(page);
   expect(Object.keys(state.exam.responses).length===1,'answers persist immediately');
@@ -430,13 +434,19 @@ try{
   expect(await page.locator('.exam-review-item').count()===5,'final review shows each answer');
   state=await getState(page);
   expect(state.exam.position===5,'exam completed without losing session');
+  expect(state.examHistory?.length===1,'completed practice exam is archived exactly once');
+  expect(state.examHistory[0].missed.length>=1,'missed lesson is recorded without raw answers');
+  expect(await page.locator('.exam-insights-focus-item').count()>=1,'missed topic appears as a study suggestion');
+  expect(await page.locator('.exam-insights-subject').count()===1,'subject-level score reflects chosen psychology practice');
   expect(state.completed.length===0,'practice exam does not award lesson completions');
   await page.reload({waitUntil:'domcontentloaded'});
   expect(await page.locator('.exam-review-item').count()===5,'results remain after page reload');
+  expect((await getState(page)).examHistory.length===1,'reloading result does not duplicate history');
   const overflow=await mobileOverflow(page);
   expect(overflow.scroll<=overflow.width+8,'exam remains within mobile screen width');
   await page.locator('[data-action="exam-new"]').click();
   expect(await page.locator('#exam-course').count()===1,'completed exam can be restarted');
+  expect((await getState(page)).examHistory.length===1,'new exam does not discard prior practice history');
   await page.locator('[data-action="exam-start"]').click();
   await page.locator('[data-action="exam-discard"]').click();
   await page.getByRole('button',{name:'Keep practicing'}).click();
@@ -445,6 +455,13 @@ try{
   await page.locator('[data-action="exam-discard-confirm"]').click();
   expect((await getState(page)).exam===null,'confirmed discard clears only current exam');
   expect(await page.locator('#exam-course').count()===1,'learner can choose another exam after discard');
+  await page.locator('[data-action="exam-history-clear"]').click();
+  await page.getByRole('button',{name:'Keep history'}).click();
+  expect((await getState(page)).examHistory.length===1,'cancelling history clear preserves recorded scores');
+  await page.locator('[data-action="exam-history-clear"]').click();
+  await page.locator('[data-action="exam-history-clear-confirm"]').click();
+  expect((await getState(page)).examHistory.length===0,'clearing history preserves the rest of the Atlas');
+  expect(await page.locator('.exam-insights-empty').count()===1,'empty-state renders after clearing history');
  });
 
 
