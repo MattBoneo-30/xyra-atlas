@@ -1,7 +1,7 @@
 {
   "name": "xyra-atlas",
   "private": true,
-  "version": "1.58.0",
+  "version": "1.59.0",
   "type": "module",
   "description": "Xyra Atlas — an offline-first pocket library for a life of learning.",
   "scripts": {
@@ -11,6 +11,7 @@
     "test:browser": "node tests/browser-smoke.mjs",
     "test:webkit": "node tests/webkit-smoke.mjs",
     "audit:curriculum": "node scripts/audit-curriculum.mjs",
+    "audit:assets": "node scripts/audit-static-assets.mjs",
     "export:editorial": "node scripts/export-editorial-review.mjs",
     "audit:editorial": "node scripts/audit-editorial-attestations.mjs",
     "sign:editorial": "node scripts/sign-editorial-review.mjs",

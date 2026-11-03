@@ -28,6 +28,16 @@ jobs:
           package-manager-cache: false
       - name: Validate curriculum and build
         run: npm run check
+      - name: Audit static art accessibility and offline bundle budget
+        run: npm run audit:assets
+      - name: Archive static asset budget evidence
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: xyra-atlas-static-asset-audit
+          path: artifacts/static-asset-audit.json
+          if-no-files-found: ignore
+          retention-days: 14
       - name: Audit lesson pedagogy and source inventory
         run: npm run audit:curriculum
       - name: Save curriculum audit
