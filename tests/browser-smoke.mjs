@@ -1058,8 +1058,9 @@ try{
   await page.locator('#language-select').selectOption('ko');
   expect((await page.locator('.language-audio-indicator').textContent()).includes('unavailable'),'unsupported Korean voice is disclosed');
   expect(await page.locator('#language-voice-picker').isDisabled(),'no unverified Korean voices can be selected');
-  expect(await page.locator('[data-action="language-speak"]').first().isDisabled()===false,'practice feedback controls remain accessible even without voice');
-  await page.locator('[data-action="language-speak"][data-id="1"]').first().click();
+  await page.locator('[data-action="phrase-reveal"]').click();
+  expect(await page.locator('.phrase-card [data-action="language-speak"]').isEnabled(),'text practice controls remain accessible even without voice');
+  await page.locator('.phrase-card [data-action="language-speak"]').click();
   calls=await page.evaluate(()=>window.__atlasSpeech.calls);
   expect(calls.length===2,'missing voice never falls back to wrong language or remote cloud');
   await page.locator('#language-select').selectOption('ja');
