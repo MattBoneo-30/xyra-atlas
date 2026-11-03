@@ -123,6 +123,10 @@ const MATERIAL=[
       [
         "DTI — Consumer CARe System",
         "https://consumercare.dti.gov.ph/"
+      ],
+      [
+        "DTI FTEB — Adjudication After Mediation",
+        "https://fairtrade.dti.gov.ph/faq/how-can-i-file-the-consumer-complaint-with-the-adjudication-division/"
       ]
     ]
   }

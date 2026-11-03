@@ -38,7 +38,7 @@ The verified [release audit 41687979197](https://github.com/MattBoneo-30/xyra-at
 | Two-stage evidence and transfer guidance | 134 / 134 | A linked self-guided practice scaffold is present |
 | Answer explanations meeting the audit threshold | 134 / 134 | Each lesson has an explanatory quiz rationale |
 | At least one HTTPS further-reading link | 134 / 134 | Links are syntactically present, not necessarily live or relevant |
-| Distinct referenced URLs | 41 | Automated source-reachability report is available separately |
+| Distinct referenced URLs | 42 | Automated source-reachability report is available separately |
 | Lessons with automated structural editorial flags | **0 / 134** | No remaining *mechanical* gaps under the current checks |
 
 **This is not an independent expert signoff.** Length thresholds cannot establish nuanced pedagogy, correct legal interpretation, healthy practice advice or validated assessments. Content claims and source relevance need specialist review before the Advanced Curriculum stage can be marked complete. The stage machine-readable gate deliberately remains `complete:false`, and the owner's notification remains deferred.
@@ -53,6 +53,8 @@ Maintainer source checks on 2026-11-04 compared high-stakes language against the
 | NPC lists rights including access and rectification and indicates appropriate authorized/legal representation may matter | [NPC — Data Subject Rights](https://privacy.gov.ph/data-subject-rights/) | Rights and exceptions should be read from current official text |
 | A financial consumer should first use a BSP-supervised institution's own complaint channel before an eligible BSP-CAM escalation | [BSP — Consumer Assistance Mechanism](https://www.bsp.gov.ph/Pages/Forms/DispForm.aspx?ID=1869) | Check the institution, product, current route and documentary requirements |
 | Current DTI consumer guidance provides official complaint submission options including Consumer CARe | [DTI FTEB — How to file a consumer complaint](https://fairtrade.dti.gov.ph/faq/how-to-file-a-consumer-complaint/) | Determine jurisdiction and whether other regulators or processes apply |
+| BSP expects necessary fraud-response assistance and an institution reporting channel for unauthorized/fraudulent transactions | [BSP — Financial Consumer Protection](https://www.bsp.gov.ph/Pages/InclusiveFinance/FinancialConsumerProtectionNetwork.aspx) | Check provider and channel independently; compensation cannot be guaranteed |
+| DTI describes documentary requirements for adjudication following unsuccessful mediation | [DTI FTEB — Adjudication complaint requirements](https://fairtrade.dti.gov.ph/faq/how-can-i-file-the-consumer-complaint-with-the-adjudication-division/) | Applies only where DTI has jurisdiction and current procedures permit formal adjudication |
 
 These spot-checks support the limited claims above only. They do not attest to the remaining curriculum, check every live URL, or establish an attorney/regulator/specialist review. A machine-readable claim register records the evidence and review limits.
 
@@ -66,6 +68,6 @@ These spot-checks support the limited claims above only. They do not attest to t
 
 ## Reproducible checks
 
-Run `npm run check` for the Node unit suite and built static artifacts. CI also installs test-only Chromium for live desktop, small-mobile and offline integration smoke checks. Latest confirmed successful full suite: [Actions run 41687979197](https://github.com/MattBoneo-30/xyra-atlas/actions/runs/41687979197).
+Run `npm run check` for the Node unit suite and built static artifacts. CI also installs test-only Chromium for live desktop, small-mobile and offline integration smoke checks. Latest confirmed successful curriculum review run before this update: [Actions run 41690928095](https://github.com/MattBoneo-30/xyra-atlas/actions/runs/41690928095).
 
 **Source availability note (2026-11-04):** The former FTEB `/services/complaints-handling/` URL returned an inconsistent 404 on direct access despite an indexed result. Lesson references now use the official, directly retrievable [DTI consumer complaint FAQ](https://fairtrade.dti.gov.ph/faq/how-to-file-a-consumer-complaint/) instead. This is a link correction, not a full expert legal validation.

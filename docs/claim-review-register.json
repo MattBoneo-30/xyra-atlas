@@ -2,8 +2,8 @@
   "schemaVersion": 1,
   "reviewDate": "2026-11-04",
   "status": "partial-maintainer-spot-check-not-expert-signoff",
-  "primaryLinksChecked": 4,
-  "totalDistinctCourseURLs": 41,
+  "primaryLinksChecked": 6,
+  "totalDistinctCourseURLs": 42,
   "claims": [
     {
       "key": "npc-access-own-data",
@@ -35,7 +35,7 @@
       "key": "bsp-bank-first-complaint",
       "topic": "Philippine banking and consumer recourse",
       "claim": "BSP-CAM is a consumer escalation mechanism after complaints through a BSP-supervised institution's own consumer assistance process.",
-      "url": "https://www.bsp.gov.ph/Pages/Forms/DispForm.aspx?ID=1869",
+      "url": "https://www.bsp.gov.ph/Pages/InclusiveFinance/ConsumerAssistanceManagement.aspx",
       "publisher": "Bangko Sentral ng Pilipinas",
       "jurisdiction": "Philippines",
       "checkDate": "2026-11-04",
@@ -56,12 +56,39 @@
       "status": "limited-claim-checked",
       "independentExpertSignoff": false,
       "limitation": "A matter may be outside DTI authority; eligibility and available remedies are not guaranteed."
+    },
+    {
+      "key": "bsp-fraud-reporting-channel",
+      "topic": "Philippine financial consumer protection",
+      "claim": "For unauthorized or fraudulent transactions, BSP consumer-protection guidance expects supervised institutions to provide necessary assistance, including a continuous 24/7 reporting channel under a proportionate approach.",
+      "url": "https://www.bsp.gov.ph/Pages/InclusiveFinance/FinancialConsumerProtectionNetwork.aspx",
+      "publisher": "Bangko Sentral ng Pilipinas",
+      "jurisdiction": "Philippines",
+      "checkDate": "2026-11-04",
+      "method": "maintainer-official-page-spot-check",
+      "status": "limited-claim-checked",
+      "independentExpertSignoff": false,
+      "limitation": "The applicable institution and reporting process must be checked independently; prompt reporting does not guarantee reimbursement or a particular adjudicated outcome."
+    },
+    {
+      "key": "dti-after-mediation-adjudication",
+      "topic": "Philippine consumer complaint escalation",
+      "claim": "Official DTI-FTEB guidance describes filing a consumer complaint for adjudication after mediation, with additional complaint documents and a Certificate to File Action under the cited administrative procedure.",
+      "url": "https://fairtrade.dti.gov.ph/faq/how-can-i-file-the-consumer-complaint-with-the-adjudication-division/",
+      "publisher": "Department of Trade and Industry",
+      "jurisdiction": "Philippines",
+      "checkDate": "2026-11-04",
+      "method": "maintainer-official-page-spot-check",
+      "status": "limited-claim-checked",
+      "independentExpertSignoff": false,
+      "limitation": "Filing requirements and jurisdiction are conditional and may change; this limited source review does not establish who is entitled to relief in a particular dispute."
     }
   ],
   "expertReviewRequired": true,
   "notes": [
     "These are limited independent-source spot checks by a project maintainer, not legal or financial advice.",
     "Full material claim-by-claim review by qualified reviewers has not been obtained.",
-    "Never switch the advanced-curriculum gate to complete based only on these checks."
+    "Never switch the advanced-curriculum gate to complete based only on these checks.",
+    "Two added claims derive from published BSP financial consumer protection and DTI adjudication instructions, but do not constitute a complete claim review or professional advice."
   ]
 }
