@@ -2,6 +2,7 @@ import { COURSES, LANGUAGES, LEARNING_SPRINT, DAILY_NOTES, findCourse, findLesso
 import { makeReviewCards, dueReviewCards, recordReview, normalizeReviews } from './review.js';
 import { searchGlossary,GLOSSARY } from './glossary.js';
 import { SEARCH_KINDS,buildSearchIndex,searchAtlas } from './search.js';
+import { localDayKey,validDayKey,countVisitStreak } from './calendar.js';
 import { createDailyQuest,dailyQuestProgress } from './dailyquest.js';
 import { buildKnowledgeMap } from './atlasmap.js';
 import { SCENARIOS,normalizeScenarioAnswers,recordScenarioAnswer,scenarioProgress } from './scenarios.js';
@@ -25,7 +26,7 @@ function readStored() {
       completed: Array.isArray(data.completed) ? data.completed.filter(x => typeof x === 'string') : [],
       bookmarks: Array.isArray(data.bookmarks) ? data.bookmarks.filter(x => typeof x === 'string') : [],
       favorites: Array.isArray(data.favorites) ? data.favorites.filter(x => typeof x === 'string') : [],
-      dailyVisits: Array.isArray(data.dailyVisits) ? data.dailyVisits.filter(x => /^\d{4}-\d{2}-\d{2}$/.test(x)) : [],
+      dailyVisits: Array.isArray(data.dailyVisits) ? data.dailyVisits.filter(validDayKey).slice(-400) : [],
       languageDays: Array.isArray(data.languageDays) ? data.languageDays.filter(x => typeof x === 'string') : [],
       phrases: sanitizePhraseProgress(data.phrases),
       answers: data.answers && typeof data.answers === 'object' && !Array.isArray(data.answers) ? data.answers : {},
@@ -59,7 +60,7 @@ let shadowUnlocked = false; // A content acknowledgment, not a secure identity o
 let installEvent = null;
 let toastTimer;
 let currentToast = '';
-const today = () => new Date().toLocaleDateString('en-CA');
+const today = () => localDayKey(new Date());
 const idFor = (courseId, lessonId) => `${courseId}:${lessonId}`;
 const isCompleted = key => saved.completed.includes(key);
 const isBookmarked = key => saved.bookmarks.includes(key);
@@ -86,18 +87,7 @@ function visitToday() {
   if (!wasVisited(date)) { saved.dailyVisits = [...new Set([...saved.dailyVisits, date])].slice(-400); persist(); }
 }
 visitToday();
-function streak() {
-  const dates = new Set(saved.dailyVisits);
-  let cursor = new Date();
-  if (!dates.has(today())) cursor.setDate(cursor.getDate() - 1);
-  let n = 0;
-  while(n < 400) {
-    const key = cursor.toLocaleDateString('en-CA');
-    if (!dates.has(key)) break;
-    n++; cursor.setDate(cursor.getDate() - 1);
-  }
-  return n;
-}
+function streak() { return countVisitStreak(saved.dailyVisits); }
 function icon(name,size=20) {
   const p = {
     menu:'<path d="M4 7h16M4 12h16M4 17h16"/>',
@@ -455,7 +445,7 @@ function answerBackup(e) {
         scenarios:normalizeScenarioAnswers(clean.scenarios),
         learningPath:normalizeLearningPath(clean.learningPath,COURSES),
         fieldNotes:normalizeFieldNotes(clean.fieldNotes),
-        dailyVisits:Array.isArray(clean.dailyVisits)?clean.dailyVisits.filter(x=>/^\d{4}-\d{2}-\d{2}$/.test(x)):[],
+        dailyVisits:Array.isArray(clean.dailyVisits)?clean.dailyVisits.filter(validDayKey).slice(-400):[],
         lastOpened:clean.lastOpened&&typeof clean.lastOpened==='object'?clean.lastOpened:null,
         theme:clean.theme==='light'?'light':'dark',
         language:LANGUAGES.some(x=>x.code===clean.language)?clean.language:'ja',
@@ -500,7 +490,7 @@ async function handleAction(e) {
   else if(action==='goto-journey') nav('journey');
   else if(action==='review') {reviewRevealed=false;nav('review');}
   else if(action==='path') nav('path');
-  else if(action==='create-path') {const goal=document.getElementById('path-goal')?.value;const minutes=Number(document.getElementById('path-minutes')?.value);const stamp=new Date().toISOString().slice(0,10);const next=createLearningPath(COURSES,goal,minutes,saved.completed,stamp);if(!next){flash('No unfinished lessons fit this focus and study time. Try another goal.');return;}saved.learningPath=next;persist();flash('Your seven-session learning path is ready!');}
+  else if(action==='create-path') {const goal=document.getElementById('path-goal')?.value;const minutes=Number(document.getElementById('path-minutes')?.value);const stamp=today();const next=createLearningPath(COURSES,goal,minutes,saved.completed,stamp);if(!next){flash('No unfinished lessons fit this focus and study time. Try another goal.');return;}saved.learningPath=next;persist();flash('Your seven-session learning path is ready!');}
   else if(action==='studio') nav('studio');
   else if(action==='scenario') nav('scenario');
   else if(action==='map') nav('map');

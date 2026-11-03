@@ -4,7 +4,7 @@
 
 ![Xyra Atlas emblem](assets/atlas-mark.svg)
 
-## Current release: Universal Search 1.3
+## Current release: Offline Reliability 1.4
 
 - A violet-and-gold responsive interface, **14 distinct original vector course worlds**, Xyra's Corner artwork, landscape hero and a home-screen app icon. The same course identity appears on home tiles, category cards, course covers and lessons.
 - 14 learning subjects and **64 interactive lessons**: 52 short starters plus 12 new sourced, three-section field guides with real-world worked examples, exercises and quizzes (counts verified by tests).
@@ -20,6 +20,7 @@
 
 **New in 0.5:** Psychology (evidence journaling, habits, relational inference); Philippine law (Constitution, data privacy, consumer complaints); business (customer discovery, unit economics, Philippine launch steps); money (irregular bills, emergency planning, investment red flags). Sources are linked for optional online verification; lessons work offline. Links and regulations can change.
 
+- **Offline reliability:** Local calendar-day tracking for visit streaks, quest selection, learning path dates and backups; invalid dates rejected. Service worker now cleans up only Xyra Atlas caches, never caches from unrelated applications on the same origin. Includes executable cache-lifecycle regression tests.
 - **Universal Search:** Search the entire bundled offline Atlas—subjects, individual lessons, glossary terms and interactive scenarios—with category filters, relevance ranking, deep links, a keyboard shortcut (/), and privacy-safe mature-content filtering. No queries leave the device.
 - **Knowledge Glossary:** More than 30 searchable, plain-language definitions with real-life examples and direct course navigation. Runs offline; mature terminology stays behind the Shadow Library acknowledgment.
 - **Daily Quest:** A stable set of two lesson-and-quiz activities plus one real-life Scenario Lab decision per local day. Visual progress updates from completed lessons and scenarios without requiring a new account, a separate daily database or pressure to maintain streaks. Mature lessons are excluded.

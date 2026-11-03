@@ -1,6 +1,7 @@
+import {validDayKey} from './calendar.js';
 /** Stable, offline daily learning invitations. No tracking or forced streaks. */
 export function createDailyQuest(courses,scenarios,date) {
- if(typeof date!=='string'||!/^\d{4}-\d{2}-\d{2}$/.test(date)||!Array.isArray(courses)||!Array.isArray(scenarios))return null;
+ if(!validDayKey(date)||!Array.isArray(courses)||!Array.isArray(scenarios))return null;
  const seed=Number(date.replace(/-/g,''));
  const regular=courses.filter(c=>!c.dark&&Array.isArray(c.lessons)&&c.lessons.length);
  if(regular.length<2||scenarios.length===0)return null;

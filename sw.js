@@ -1,7 +1,8 @@
 /* Xyra Atlas: privacy-first, same-origin offline app shell. */
-const CACHE = 'xyra-atlas-v13';
+const CACHE_PREFIX = 'xyra-atlas-';
+const CACHE = CACHE_PREFIX + 'v14';
 const APP_SHELL = [
-  '/', '/index.html', '/styles.css', '/app.js', '/data.js', '/review.js', '/phrasebook.js', '/deeptracks.js', '/fieldnotes.js', '/studio.js', '/paths.js', '/scenarios.js', '/atlasmap.js', '/dailyquest.js', '/glossary.js', '/search.js',
+  '/', '/index.html', '/styles.css', '/app.js', '/data.js', '/review.js', '/phrasebook.js', '/deeptracks.js', '/fieldnotes.js', '/studio.js', '/paths.js', '/scenarios.js', '/atlasmap.js', '/dailyquest.js', '/glossary.js', '/search.js', '/calendar.js',
   '/manifest.webmanifest', '/assets/atlas-mark.svg',
   '/assets/atlas-horizon.svg', '/assets/course-library.svg',
   '/assets/course-business.svg',
@@ -27,7 +28,7 @@ self.addEventListener('install', event => {
 });
 self.addEventListener('activate', event => {
   event.waitUntil(Promise.all([
-    caches.keys().then(keys => Promise.all(keys.filter(key => key !== CACHE).map(key => caches.delete(key)))),
+    caches.keys().then(keys => Promise.all(keys.filter(key => key.startsWith(CACHE_PREFIX) && key !== CACHE).map(key => caches.delete(key)))),
     self.clients.claim()
   ]));
 });
