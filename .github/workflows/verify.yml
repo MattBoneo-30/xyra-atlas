@@ -20,11 +20,12 @@ jobs:
     timeout-minutes: 10
     steps:
       - name: Check out source
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version: '22'
+          package-manager-cache: false
       - name: Validate curriculum and build
         run: npm run check
       - name: Verify offline artifacts
@@ -32,11 +33,16 @@ jobs:
           test -s dist/index.html
           test -s dist/sw.js
           test -s dist/data.js
+          test -s dist/lifepractice.js
+          test -s dist/visualmap.js
+          test -s dist/narration.js
+          test -s dist/storagehealth.js
+          test -s dist/casebook.js
           test -s dist/icon-192.png
           test -s dist/icon-512.png
           test -s dist/apple-touch-icon.png
       - name: Save deployable website
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: xyra-atlas-static-site
           path: dist/
