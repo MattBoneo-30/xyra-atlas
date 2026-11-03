@@ -328,6 +328,27 @@ try{
   expect((await page.locator('#field-note-input').inputValue()).includes('Copper orchid'),'notebook opens the exact lesson and original note');
   await page.screenshot({path:snapshots+'/notebook-lesson.png',fullPage:true});
  });
+ await smoke('mistake-lab-repractice',{viewport:{width:1280,height:800}},async page=>{
+  await page.locator('.desktop-rail [data-action="nav"][data-id="explore"]').click();
+  await page.locator('[data-action="open-course"][data-id="psychology"]').first().click();
+  await page.locator('[data-action="open-lesson"]').first().click();
+  await page.locator('.quiz-options .quiz-option').first().click();
+  expect((await getState(page)).mistakes?.['psychology:thoughts']?.wrong===1,'incorrect quiz records a missed question');
+  await page.reload({waitUntil:'domcontentloaded'});
+  expect((await getState(page)).mistakes?.['psychology:thoughts']?.wrong===1,'missed question survives reload');
+  await page.locator('.desktop-rail [data-action="mistakes-open"]').click();
+  await page.locator('.mistakes-page').waitFor();
+  expect(await page.locator('.mistake-option').count()===3,'missed question appears for re-practice');
+  await page.locator('.mistake-option[data-index="0"]').click();
+  expect((await getState(page)).mistakes?.['psychology:thoughts']?.wrong===2,'repeat incorrect answer increments count');
+  await page.locator('.mistake-option[data-index="1"]').click();
+  await page.locator('.mistake-empty').waitFor();
+  const state=await getState(page);
+  expect(Object.keys(state.mistakes||{}).length===0,'correct retry clears missed-question queue');
+  expect(state.answers?.['psychology:thoughts']===1,'correct response updates lesson quiz state');
+  expect((state.completed||[]).length===0,'re-practice does not mark lesson completed');
+  await page.screenshot({path:snapshots+'/mistake-lab.png',fullPage:true});
+ });
 }finally{
  if(browser)await browser.close();
  server.kill('SIGTERM');
