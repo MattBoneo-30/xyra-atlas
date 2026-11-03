@@ -4,7 +4,7 @@
 
 ![Xyra Atlas emblem](assets/atlas-mark.svg)
 
-## Current release: Offline Practice Exams 1.26
+## Current release: Study Card Workshop 1.27
 
 - A violet-and-gold responsive interface, **14 distinct original vector course worlds**, Xyra's Corner artwork, landscape hero and a home-screen app icon. The same course identity appears on home tiles, category cards, course covers and lessons.
 - 14 learning subjects and **88 interactive lessons**: 52 short starters plus 36 structured, referenced field guides with real-world worked examples, exercises and quizzes (counts verified by tests).
@@ -20,6 +20,7 @@
 
 **New in 0.5:** Psychology (evidence journaling, habits, relational inference); Philippine law (Constitution, data privacy, consumer complaints); business (customer discovery, unit economics, Philippine launch steps); money (irregular bills, emergency planning, investment red flags). Sources are linked for optional online verification; lessons work offline. Links and regulations can change.
 
+- **Study Card Workshop (1.27):** Create, edit, search and delete up to 120 personal recall cards in your own words, with optional non-mature subject tags. Study due cards with answer reveal and offline spaced repetition, using 10-minute repeats or 1, 3, 7, 14, 30 and 60-day intervals. Editing a prompt resets its review schedule. Private cards transfer with normal and encrypted JSON progress backups, are sanitized during import, and are erased only by deliberate deletion, reset, or browser-data removal. The workshop contains no upload or synchronization and does not alter lesson completion.
 - **Offline Practice Exams:** Choose a 5, 10 or 20-question challenge from one subject or the whole non-mature library. Each answer reveals the explanation; a final review links to the source lessons. Sessions resume after reload and transfer with validated local backups. Practice results do not change completed lessons or Mistake Lab records. The exam engine and mobile browser flow have automated regression coverage.
 - **Encrypted Progress Backups:** Optional offline AES-256-GCM encrypted backups with PBKDF2-SHA256 (250,000 iterations), fresh salt and IV for each export. Unlocking a protected file opens the normal preview before any replacement. Passwords are not saved or sent; losing one makes the protected file unrecoverable. Plain JSON backups remain available.
 - **Practice Queue Navigation:** Mistake Lab now has accessible previous/next controls and a question counter. Learners can choose which missed topic to practice next, see the active question, and move between topics without leaving the lab. The queue still clears only after a correct response.
