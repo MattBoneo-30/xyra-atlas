@@ -4,9 +4,9 @@
 
 ![Xyra Atlas emblem](assets/atlas-mark.svg)
 
-## Current release: Cinematic Atlas Worlds 1.36
+## Current release: Illustrated Case Chapters 1.37
 
-- A violet-and-gold responsive interface, **14 distinct original vector course worlds** plus three new cinematic illustrated portal scenes, Xyra's Corner artwork and a home-screen app icon. The same course identity appears on home tiles, category cards, course covers and lessons.
+- A violet-and-gold responsive interface, **14 distinct original vector course worlds** plus three cinematic portal scenes and four case-specific illustrated chapters, Xyra's Corner artwork and a home-screen app icon. The same course identity appears on home tiles, category cards, course covers and lessons.
 - 14 learning subjects and **131 interactive lessons**: 117 existing lessons plus **14 new applied capstone labs**, one in every subject. Each capstone contains an original decision case, worked example, hands-on exercise, self-check rubric, knowledge question, and optional source for further reading (counts verified by tests).
 - Psychology, legal literacy, business, money, productivity, communication, critical thinking, language study, digital literacy, career, science, relationships and influence.
 - **The Shadow Library (18+ educational content)** covers manipulation, gaslighting, lies, emotional leverage, deceptive interface design, consent and adult media literacy. The age acknowledgment is a *content gate*, not verified age or identity security.
@@ -20,6 +20,7 @@
 
 **New in 0.5:** Psychology (evidence journaling, habits, relational inference); Philippine law (Constitution, data privacy, consumer complaints); business (customer discovery, unit economics, Philippine launch steps); money (irregular bills, emergency planning, investment red flags). Sources are linked for optional online verification; lessons work offline. Links and regulations can change.
 
+- **Illustrated Case Chapters (1.37):** Four original standalone chapter scenes are now integrated into the **actual lesson reader**, rather than existing only as landing-page decoration. A Philippine personal-data request takes place in the **Privacy Observatory**, an account recovery exercise in the **Security Sanctum**, a small-business pilot in the **Maker’s Atelier**, and a causal-inference exercise in the **Research Glasshouse**. Each has its own accessible illustration and caption; all other lessons retain their existing course-world artwork. Scenes are self-contained, locally authored SVGs (no remote scripts or images), optimized for mobile readability and cached for offline reading. Automated tests validate the exact capstone mapping, safe SVG content, actual Chromium image decode, fallback behavior and offline mobile reading. These are illustrative vector compositions, **not yet the final painterly chapter or character art**.
 - **Cinematic Atlas Worlds (1.36):** Three original, self-contained, responsive SVG environments are now integrated into the real home screen: the moonlit **Archive Gate** hero opens Explore, the **Lantern Library** opens Xyra's Corner, and the flowering **Starlit Garden Path** opens the Knowledge Map. Their navigation works by keyboard, mouse, and touch; all scenes are precached in the versioned service worker and render while offline. The layout respects reduced-motion preferences, uses legible text overlays, and is tested in real Chromium desktop and mobile viewports, including image decode, navigation, offline reloading, and screenshot capture. These are high-detail illustrated vector environments, **not** the final painterly character artwork or all cinematic chapter scenes envisioned for Atlas.
 - **Safe Offline Updates (1.35):** Updates now download all bundled lessons, modules, and illustrations into a new versioned cache **without immediately replacing an active reading session**. When a new service worker is installed and waiting, a discreet topbar indicator and Offline Library notice offer **Apply update**; the app reloads only after the learner chooses it and the new worker takes control. The existing offline edition stays usable during download. The service worker serves only assets from the active version's cache and no longer caches arbitrary same-origin URLs. Offline readiness and repair verify valid cached responses, preserving unrelated cache stores. Unit tests emulate staging, activation consent, cache isolation, offline deep links, and repair; real Chromium tests emulate a two-version transition. As always, learning progress lives in browser storage, so export a backup before deleting app data or changing devices. External source links and installed speech voices may still need internet or device support.
 - **Daily Phrase Recall (1.34):** Every one of the nine existing starter-language phrase packs now supports a dedicated offline spaced-recall queue. Hide the target phrase, try to retrieve it, reveal it, then self-report **Practice again** (returns after 10 minutes) or **I remembered** (returns after 1, 3, 7, 14, 30 or 60 days as recall strengthens). The queue and due counts are separate per language and saved locally, included in normal and encrypted progress backups, and validated on import. A safe per-language reset does not remove other language schedules, learned-phrase markings, or challenge scores. Automated Node and mobile Chromium checks cover real timing, recovery, language switching, and backup restoration. This is self-reported text recall, not pronunciation assessment or a test of fluency.
@@ -121,7 +122,7 @@ phrasereview.js         Private language-by-language spaced recall scheduling
 languagechallenge.js   Offline two-way recognition questions and persisted scores
 examhistory.js         Validated private exam results and subject-review summaries
 focusedexam.js         Prioritized missed-question revision exams
-assets/                14 course scenes, three cinematic home worlds, corner art and vector identity
+assets/                14 course scenes, three home worlds, four illustrated chapters, corner art and identity
 sw.js                  Offline service worker
 manifest.webmanifest   Installability metadata
 scripts/build.mjs      Dependency-free static build and PNG generation
@@ -134,7 +135,7 @@ vercel.json            Vercel build and security headers
 ## Next content milestones
 
 1. Continue deep subject tracks beyond the 29 new mastery guides, with more Philippine-law coverage and region selection. The foundation for privacy, consumer and banking complaints is implemented.
-2. Develop the final painterly cinematic chapter illustrations and richer branded character scenes. The 14 subject illustrations and first three navigable illustrated home environments are already integrated and tested; painterly production artwork remains outstanding.
+2. Develop the final painterly cinematic chapter illustrations and richer branded character scenes. The 14 subject illustrations, three home worlds, and four chapter-specific scenes are integrated; finished painterly art and character imagery remain outstanding.
 3. Expand the working study-card and language-challenge banks with more verified language material and properly sourced audio (the present audio depends on installed device voices).
 4. A transparent download manager for optional offline packs and optional end-to-end encrypted synchronization.
 
