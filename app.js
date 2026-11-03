@@ -10,6 +10,7 @@ import {createChapterMap} from './visualmap.js';
 import {buildLessonNarration} from './narration.js';
 import {parseStoredEnvelope,storageHealthMessage} from './storagehealth.js';
 import {normalizeOfflineReport,offlineAdvice} from './offline.js';
+import {parseBackupEnvelope,normalizeLessonKeys,normalizeQuizAnswers,normalizeLastOpened,backupCounts} from './backup.js';
 import { createDailyQuest,dailyQuestProgress } from './dailyquest.js';
 import { buildKnowledgeMap } from './atlasmap.js';
 import { SCENARIOS,normalizeScenarioAnswers,recordScenarioAnswer,scenarioProgress } from './scenarios.js';
@@ -69,6 +70,7 @@ let glossaryQuery = '';
 let globalQuery = '';
 let globalSearchKind = 'all';
 let modal = '';
+let pendingBackup=null;
 let gateConfirmed = false;
 let shadowUnlocked = false; // A content acknowledgment, not a secure identity or age verification system.
 let installEvent = null;
@@ -574,6 +576,11 @@ function modalView() {
   const inner = modal==='shadow' ? `<div class="modal-icon dark-icon">${icon('moon',28)}</div><span class="overline">A DIFFERENT KIND OF LESSON</span><h2>Enter the Shadow Library?</h2><p>This section explores manipulation, coercive behavior, psychological pressure, deception, adult intimacy, and sexual health. The purpose is understanding and informed choice—not abuse or exploitation.</p><div class="age-warning">${icon('info',19)} Contains mature educational discussions intended for adults 18+.</div><label class="checkbox-label"><input type="checkbox" id="age-agree" ${gateConfirmed?'checked':''}/><span>I am at least 18, and I understand the purpose of this material.</span></label>${button(`Enter the library ${icon('arrow',18)}`,'enter-shadow','primary-button',gateConfirmed?'':'disabled')}` :
   modal==='install' ? `<div class="modal-icon">${icon('download',26)}</div><span class="overline">TAKE YOUR ATLAS WITH YOU</span><h2>Install Xyra Atlas</h2><p>After the first successful online visit, the app shell and included lessons can work offline once fully cached.</p><div class="install-steps"><strong>On iPhone / iPad</strong><p>Open this website in Safari. Tap Share, then “Add to Home Screen” and enable “Open as Web App”.</p><strong>On Android</strong><p>Open in Chrome. Use the browser menu and select “Install app” or “Add to Home screen”, when available.</p></div>${installEvent?button(`Install now ${icon('download',18)}`,'install-prompt','primary-button'):''}<p class="fineprint">Installing does not automatically sync data across phones. Use Export/Import backup to transfer progress.</p>` :
   modal==='reset' ? `<div class="modal-icon warning-icon">${icon('alert',26)}</div><h2>Reset your Atlas?</h2><p>All lesson progress, saved lessons, language sprint checks and preferences on this browser will be erased. Export a backup first if you need it.</p>${button('Cancel','close-modal','secondary-button')}${button('Erase my local progress','confirm-reset','outline-danger')}` :
+  modal==='backup-preview' && pendingBackup ? `<div class="modal-icon">${icon('upload',26)}</div><span class="overline">REVIEW BEFORE RESTORING</span><h2>Restore this backup?</h2><p>Importing will <strong>replace</strong> the learning progress, notes, and preferences currently saved on this device. It will not merge the two libraries.</p>
+  <p class="backup-file-label">${esc(pendingBackup.sourceName)}${pendingBackup.exportedAt?' · '+esc(pendingBackup.exportedAt):''}</p>
+  <div class="backup-preview-grid" aria-label="Imported progress summary"><div><strong>${pendingBackup.counts.lessons}</strong><span>Completed lessons</span></div><div><strong>${pendingBackup.counts.notes}</strong><span>Private notes</span></div><div><strong>${pendingBackup.counts.quizzes}</strong><span>Quiz answers</span></div><div><strong>${pendingBackup.counts.bookmarks}</strong><span>Bookmarks</span></div></div>
+  <p class="backup-replace-warning">Current device: ${finished()} completed lessons and ${Object.keys(saved.fieldNotes).length} notes. Export those first if you want to preserve them.</p>
+  <div class="backup-preview-actions">${button('Cancel','backup-cancel','secondary-button')}${button('Restore and replace','backup-confirm','outline-danger')}</div>` :
   modal==='corner' ? `<div class="modal-icon">${icon('spark',26)}</div><span class="overline">XYRA'S CORNER</span><h2>A little note, just for you ♡</h2><p>“You are allowed to be new at something. You are allowed to ask strange questions. And you are allowed to change your mind when you learn more.”</p><div class="xyra-signature">With curiosity, Xyra ✦</div><p class="fineprint">One thought I want to leave you with: knowledge is power, but wisdom is knowing when and how to use it.</p>` :
   modal==='updates' ? `<div class="modal-icon">${icon('book',26)}</div><span class="overline">ABOUT THIS EDITION</span><h2>Welcome to your pocket atlas</h2><p>Atlas v1.19 includes ${COURSES.length} subjects and ${totalLessons} lessons, quizzes, the Language Lab, Practice Studio, branching Case Files, private notes, study paths and offline caching.</p><p>This remains a development edition: the complete advanced curriculum, final cinematic artwork, production deployment and real-device verification are not finished. You can export your progress at any time.</p>` : '';
   return `<div class="modal-backdrop" data-action="close-modal"><div class="modal-card" role="dialog" aria-modal="true" aria-label="Xyra Atlas dialog" data-stop="true">${button(icon('close',21),'close-modal','modal-close','aria-label="Close dialog"')}${inner}</div></div>`;
@@ -589,40 +596,60 @@ function render() {
   document.title = `${view==='course' ? findCourse(route.courseId)?.title+' · ':view==='lesson' ? findLesson(route.courseId,route.lessonId)?.title+' · ' : ''}Xyra Atlas`;
 }
 function toggle(list,value) { saved[list]=saved[list].includes(value)?saved[list].filter(x=>x!==value):[...saved[list],value];persist();render(); }
-function answerBackup(e) {
-  const file=e.target.files?.[0]; if (!file) return;
-  if (file.size > 1024*1024) {flash('Backup is too large.');return;}
-  const reader=new FileReader();
-  reader.onload=()=>{
-    try {
-      const data=JSON.parse(String(reader.result));
-      if(data.format!=='xyra-atlas-backup' || data.version!==1 || !data.state || !Array.isArray(data.state.completed)) throw new Error('Not a compatible Xyra Atlas backup.');
-      const clean=data.state;
-      saved={...createInitialState(),
-        completed:clean.completed.filter(x=>typeof x==='string'),
-        bookmarks:Array.isArray(clean.bookmarks)?clean.bookmarks.filter(x=>typeof x==='string'):[],
-        favorites:Array.isArray(clean.favorites)?clean.favorites.filter(x=>typeof x==='string'):[],
-        answers:clean.answers && typeof clean.answers==='object'&&!Array.isArray(clean.answers)?clean.answers:{},
-        reviews:normalizeReviews(clean.reviews),
-        studio:sanitizeStudio(clean.studio),
-        scenarios:normalizeScenarioAnswers(clean.scenarios),
-        casebook:normalizeCasebook(clean.casebook),
-        reader:normalizeReaderPreferences(clean.reader),
-        learningPath:normalizeLearningPath(clean.learningPath,COURSES),
-        fieldNotes:normalizeFieldNotes(clean.fieldNotes),
-        dailyVisits:Array.isArray(clean.dailyVisits)?clean.dailyVisits.filter(validDayKey).slice(-400):[],
-        lastOpened:clean.lastOpened&&typeof clean.lastOpened==='object'?clean.lastOpened:null,
-        theme:clean.theme==='light'?'light':'dark',
-        language:LANGUAGES.some(x=>x.code===clean.language)?clean.language:'ja',
-        languageDays:Array.isArray(clean.languageDays)?clean.languageDays.filter(x=>typeof x==='string'):[],
-        phrases:sanitizePhraseProgress(clean.phrases),
-        userName:typeof clean.userName==='string'?clean.userName.slice(0,40):''
-      };
-      recoveryRaw=null;storageProblem=null;storageWarningShown=false;
-      visitToday(); persist();flash('Backup imported successfully.');
-    }catch(err){flash('Import failed: '+(err instanceof Error?err.message:'Invalid file'));}
-  };
-  reader.readAsText(file);
+function normalizedBackupState(clean){
+ return {...createInitialState(),
+   completed:normalizeLessonKeys(clean.completed,COURSES),
+   bookmarks:normalizeLessonKeys(clean.bookmarks,COURSES),
+   favorites:normalizeLessonKeys(clean.favorites,COURSES,'course'),
+   answers:normalizeQuizAnswers(clean.answers,COURSES),
+   reviews:normalizeReviews(clean.reviews),
+   studio:sanitizeStudio(clean.studio),
+   scenarios:normalizeScenarioAnswers(clean.scenarios),
+   casebook:normalizeCasebook(clean.casebook),
+   reader:normalizeReaderPreferences(clean.reader),
+   learningPath:normalizeLearningPath(clean.learningPath,COURSES),
+   fieldNotes:normalizeFieldNotes(clean.fieldNotes),
+   dailyVisits:Array.isArray(clean.dailyVisits)?clean.dailyVisits.filter(validDayKey).slice(-400):[],
+   lastOpened:normalizeLastOpened(clean.lastOpened,COURSES),
+   theme:clean.theme==='light'?'light':'dark',
+   language:LANGUAGES.some(x=>x.code===clean.language)?clean.language:'ja',
+   languageDays:Array.isArray(clean.languageDays)?clean.languageDays.filter(x=>typeof x==='string').slice(0,200):[],
+   phrases:sanitizePhraseProgress(clean.phrases),
+   userName:typeof clean.userName==='string'?clean.userName.slice(0,40):''
+ };
+}
+function answerBackup(e){
+ const file=e.target.files?.[0];if(!file)return;
+ if(file.size>1024*1024){flash('Backup is too large (1 MB maximum).');e.target.value='';return;}
+ const reader=new FileReader();
+ reader.onload=()=>{
+  try{
+   const parsed=parseBackupEnvelope(String(reader.result));
+   const candidate=normalizedBackupState(parsed.state);
+   pendingBackup={state:candidate,exportedAt:parsed.exportedAt,sourceName:String(file.name||'Atlas backup').slice(0,120),
+     counts:backupCounts(candidate)};
+   modal='backup-preview';
+   render();
+  }catch(err){
+   pendingBackup=null;flash('Import failed: '+(err instanceof Error?err.message:'Invalid backup.'));
+  }finally{e.target.value='';}
+ };
+ reader.onerror=()=>{pendingBackup=null;e.target.value='';flash('Unable to read the selected backup.');};
+ reader.readAsText(file);
+}
+function confirmBackupImport(){
+ if(!pendingBackup)return;
+ // Replace the persisted state first; never mutate the in-memory state if a write fails.
+ const candidate=pendingBackup.state;
+ const day=today();
+ candidate.dailyVisits=[...new Set([...candidate.dailyVisits,day])].slice(-400);
+ try{localStorage.setItem(STORAGE_KEY,JSON.stringify(candidate));}
+ catch{flash('Restore could not be saved. Your current learning data remains unchanged.');return;}
+ saved=candidate;
+ recoveryRaw=null;storageProblem=null;storageWarningShown=false;
+ shadowUnlocked=false;gateConfirmed=false;
+ pendingBackup=null;modal='';
+ nav('you');flash('Backup restored on this device.');
 }
 function exportBackup() {
   if(storageProblem==='corrupt'){flash('Stored progress is unreadable. Download the recovery text first, then restore a valid backup.');return;}
@@ -697,12 +724,14 @@ async function handleAction(e) {
   else if(action==='install') {modal='install';render();}
   else if(action==='install-prompt' && installEvent) {const prompt=installEvent;installEvent=null;modal='';render();try{await prompt.prompt();}catch{flash('Use your browser menu to install.');}}
   else if(action==='import') document.getElementById('backup-file')?.click();
+  else if(action==='backup-confirm')confirmBackupImport();
+  else if(action==='backup-cancel'){pendingBackup=null;modal='';render();}
   else if(action==='export') exportBackup();
   else if(action==='storage-export-recovery')downloadRecoveryCopy();
   else if(action==='storage-retry'){if(storageProblem==='corrupt'||storageProblem==='read-failed'){flash('Existing data is protected. Use a valid backup or reset intentionally.');}else{const ok=persist();flash(ok?'Progress saved successfully in this browser.':'Saving is still blocked; export a backup.');}}
   else if(action==='reset-dialog') {modal='reset';render();}
   else if(action==='confirm-reset') {recoveryRaw=null;storageProblem=null;storageWarningShown=false;saved=createInitialState();shadowUnlocked=false;gateConfirmed=false;reviewRevealed=false;phraseRevealed=false;phraseIndex=0;studioTab='savings';visitToday();persist();modal='';nav('home');flash('Local progress reset.');}
-  else if(action==='close-modal') {modal='';if(['course','lesson'].includes(route.view)&&route.courseId==='shadow'&&!shadowUnlocked)nav('explore');else render();}
+  else if(action==='close-modal') {if(modal==='backup-preview')pendingBackup=null;modal='';if(['course','lesson'].includes(route.view)&&route.courseId==='shadow'&&!shadowUnlocked)nav('explore');else render();}
   else if(action==='enter-shadow') {if(!gateConfirmed)return;shadowUnlocked=true;modal='';nav('course/shadow');}
   else if(action==='open-corner') nav('mentor');
   else if(action==='open-updates') {modal='updates';render();}
@@ -728,7 +757,7 @@ document.addEventListener('input',e=>{
   if(e.target.id==='glossary-search') {const pos=e.target.selectionStart;glossaryQuery=e.target.value;render();const field=document.getElementById('glossary-search');if(field){field.focus();try{field.setSelectionRange(pos,pos);}catch{}}}
   if(e.target.id==='course-search') {const pos=e.target.selectionStart;query=e.target.value;render();const input=document.getElementById('course-search');if(input){input.focus();try{input.setSelectionRange(pos,pos);}catch{}}}
 });
-document.addEventListener('keydown',e=>{if(e.key==='/'&&!modal&&!e.altKey&&!e.ctrlKey&&!e.metaKey&&!['INPUT','TEXTAREA','SELECT'].includes(document.activeElement?.tagName)&&!document.activeElement?.isContentEditable){e.preventDefault();nav('search');requestAnimationFrame(()=>document.getElementById('atlas-global-search')?.focus());}if(e.key==='Escape'&&modal){modal='';if(['course','lesson'].includes(route.view)&&route.courseId==='shadow'&&!shadowUnlocked)nav('explore');else render();} if((e.key==='Enter'||e.key===' ')&&e.target.classList?.contains('shadow-preview')) {e.preventDefault();gateConfirmed=false;modal='shadow';render();}});
+document.addEventListener('keydown',e=>{if(e.key==='/'&&!modal&&!e.altKey&&!e.ctrlKey&&!e.metaKey&&!['INPUT','TEXTAREA','SELECT'].includes(document.activeElement?.tagName)&&!document.activeElement?.isContentEditable){e.preventDefault();nav('search');requestAnimationFrame(()=>document.getElementById('atlas-global-search')?.focus());}if(e.key==='Escape'&&modal){if(modal==='backup-preview')pendingBackup=null;modal='';if(['course','lesson'].includes(route.view)&&route.courseId==='shadow'&&!shadowUnlocked)nav('explore');else render();} if((e.key==='Enter'||e.key===' ')&&e.target.classList?.contains('shadow-preview')) {e.preventDefault();gateConfirmed=false;modal='shadow';render();}});
 window.addEventListener('hashchange',()=>{reviewRevealed=false;stopLessonAudio();route=parseHash();if(route.view==='offline'&&offlinePack.state==='idle')queueMicrotask(()=>inspectOffline());if(route.view==='course'&&route.courseId==='shadow'&&!shadowUnlocked)modal='shadow';if(route.view==='lesson'&&route.courseId==='shadow'&&!shadowUnlocked)modal='shadow';render();});
 window.addEventListener('online',render);window.addEventListener('offline',render);
 window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();installEvent=e;});

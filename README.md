@@ -4,7 +4,7 @@
 
 ![Xyra Atlas emblem](assets/atlas-mark.svg)
 
-## Current release: Deep-Link Resilience 1.19
+## Current release: Safe Backup Restore 1.20
 
 - A violet-and-gold responsive interface, **14 distinct original vector course worlds**, Xyra's Corner artwork, landscape hero and a home-screen app icon. The same course identity appears on home tiles, category cards, course covers and lessons.
 - 14 learning subjects and **88 interactive lessons**: 52 short starters plus 36 structured, referenced field guides with real-world worked examples, exercises and quizzes (counts verified by tests).
@@ -20,6 +20,7 @@
 
 **New in 0.5:** Psychology (evidence journaling, habits, relational inference); Philippine law (Constitution, data privacy, consumer complaints); business (customer discovery, unit economics, Philippine launch steps); money (irregular bills, emergency planning, investment red flags). Sources are linked for optional online verification; lessons work offline. Links and regulations can change.
 
+- **Safe Backup Restore:** Importing a JSON progress backup now validates its format and known lesson keys, shows a preview of the restored notes, lessons, quizzes and bookmarks, and requires explicit confirmation before replacing local progress. Cancelling or selecting an invalid backup leaves the current learning data unchanged. Backup import errors do not claim success.
 - **Deep-Link Resilience:** Malformed or incomplete URL percent-encoding can no longer crash Atlas during startup or hash navigation. Browser tests verify safe recovery to Home, valid course deep links and a friendly error screen for unknown lessons.
 - **Reliable Progress Reset:** Fresh independent state is created whenever progress is reset or restored, preventing stale nested answers, notes or practice data from leaking into later sessions. A real browser regression checks repeated resets after new quiz answers and private notes, including persistence across reloads.
 - **Offline Library Center:** A dedicated illustrated settings page checks actual service-worker cache coverage, reports verified offline files, repairs missing content while connected, and checks for updated editions. No learner data is sent or removed. Browser storage can still be evicted after verification.
