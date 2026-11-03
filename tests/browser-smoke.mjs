@@ -782,6 +782,71 @@ try{
   }
  });
 
+
+ await smoke('cinematic-worlds-desktop',{viewport:{width:1365,height:900}},async(page)=>{
+  await page.locator('.home-page .hero-archive>img').waitFor();
+  expect(await page.locator('.hero-archive [data-action="goto-explore"]').count()===1,'Archive Gate offers a real learning navigation action');
+  for(const selector of ['.hero-archive>img','.atlas-scene-card img:nth-child(1)']){
+   const imgs=page.locator(selector),n=await imgs.count();
+   for(let i=0;i<n;i++){
+    const img=imgs.nth(i);
+    await img.scrollIntoViewIfNeeded();
+    const dimensions=await img.evaluate(async el=>{await el.decode();return [el.naturalWidth,el.naturalHeight];});
+    expect(dimensions[0]===1400&&dimensions[1]===700,'cinematic SVG actually renders in Chromium');
+   }
+  }
+  expect(await page.locator('.atlas-scene-card').count()===2,'both supporting illustrated worlds render');
+  await page.screenshot({path:snapshots+'/atlas-cinematic-desktop.png',fullPage:true});
+  await page.locator('.atlas-scene-card [data-action="open-corner"]').click();
+  await waitRoute(page,'#/mentor');
+  await page.locator('.mentor-page').waitFor();
+  expect(await page.locator('.mentor-page').count()===1,'Lantern Library opens Xyra’s Corner');
+  await page.goto(BASE+'/#/home',{waitUntil:'domcontentloaded'});
+  await page.locator('.atlas-scene-card [data-action="map"]').click();
+  await waitRoute(page,'#/map');
+  await page.locator('.atlas-map-page').waitFor();
+  expect(await page.locator('.atlas-map-page').count()===1,'Starlit Garden opens the real knowledge map');
+  await page.goto(BASE+'/#/home',{waitUntil:'domcontentloaded'});
+  await page.locator('.hero-archive [data-action="goto-explore"]').click();
+  await waitRoute(page,'#/explore');
+  expect(await page.locator('.explore-page').count()===1,'Archive Gate CTA opens the subject library');
+ });
+ await smoke('cinematic-worlds-mobile-offline',{viewport:{width:390,height:844}},async(page,context)=>{
+  await page.goto(BASE+'/#/home',{waitUntil:'domcontentloaded'});
+  await page.locator('.hero-archive img').waitFor();
+  await page.evaluate(async()=>{await navigator.serviceWorker.ready;});
+  await page.reload({waitUntil:'domcontentloaded'});
+  await page.waitForFunction(()=>Boolean(navigator.serviceWorker.controller));
+  for(const selector of ['.hero-archive>img','.atlas-scene-card img']){
+   const imgs=page.locator(selector);
+   for(let i=0;i<await imgs.count();i++){
+    await imgs.nth(i).scrollIntoViewIfNeeded();
+    const loaded=await imgs.nth(i).evaluate(async img=>{await img.decode();return img.naturalWidth===1400});
+    expect(loaded,'illustrated world loads on a mobile-sized viewport');
+   }
+  }
+  let overflow=await mobileOverflow(page);
+  expect(overflow.scroll<=overflow.width+8,'cinematic home and scene cards do not overflow mobile viewport');
+  await page.screenshot({path:snapshots+'/atlas-cinematic-mobile.png',fullPage:true});
+  await context.setOffline(true);
+  await page.reload({waitUntil:'domcontentloaded'});
+  await page.locator('.hero-archive').waitFor();
+  for(const selector of ['.hero-archive>img','.atlas-scene-card img']){
+   const imgs=page.locator(selector);
+   for(let i=0;i<await imgs.count();i++){
+    await imgs.nth(i).scrollIntoViewIfNeeded();
+    const dimensions=await imgs.nth(i).evaluate(async img=>{await img.decode();return [img.naturalWidth,img.naturalHeight]});
+    expect(dimensions[0]===1400&&dimensions[1]===700,'original Atlas scenes remain available with no internet');
+   }
+  }
+  await page.locator('.hero-archive [data-action="goto-explore"]').click();
+  await waitRoute(page,'#/explore');
+  expect(await page.locator('.explore-page').count()===1,'cinematic navigation works offline');
+  overflow=await mobileOverflow(page);
+  expect(overflow.scroll<=overflow.width+8,'offline navigation fits mobile viewport');
+  await context.setOffline(false);
+ });
+
 }finally{
  if(browser)await browser.close();
  server.kill('SIGTERM');
