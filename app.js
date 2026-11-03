@@ -337,6 +337,24 @@ function lessonPage() {
     </article>
   </main>`;
 }
+
+function examPage(){
+ const session=normalizeExam(saved.exam,COURSES);
+ const results=examResults(session,COURSES);
+ const header=`<main class="page exam-page"><div class="subnav">${button('Back to journey','goto-journey','back-link')}</div><header class="exam-hero"><span class="overline">TEST WHAT YOU HAVE LEARNED</span><h1>Practice <em>Exam.</em></h1><p>Every question teaches you something. Offline, private and at your own pace.</p></header>`;
+ if(!session){
+  const subjects=COURSES.filter(c=>!c.dark&&examPool(COURSES,{courseId:c.id}).length>0);
+  return header+`<section class="exam-panel"><h2>Shape your challenge</h2><label class="field-label" for="exam-course">Subject</label><select id="exam-course" class="styled-select"><option value="all">All subjects (excluding 18+)</option>${subjects.map(c=>`<option value="${esc(c.id)}">${esc(c.title)}</option>`).join('')}</select><label class="field-label" for="exam-size">Questions</label><select id="exam-size" class="styled-select">${EXAM_SIZES.map(n=>`<option value="${n}" ${n===10?'selected':''}>${n} questions</option>`).join('')}</select>${button('Begin practice','exam-start','primary-button')}<p class="fineprint">Practice exams do not grant qualifications or change lesson completions and Mistake Lab records. Mature-content lessons are excluded.</p></section></main>`;
+ }
+ if(results.done){
+  return header+`<section class="exam-panel exam-finished"><span class="overline">CHALLENGE COMPLETE</span><div class="exam-score">${results.correct}<span> / ${results.total}</span></div><h2>${results.correct===results.total?'Every answer correct!':'Discover what to revisit.'}</h2><p>Review your explanations and return to any lesson to study further.</p>${button('Create another exam','exam-new','primary-button')}</section><section class="exam-review"><h2>Answer review</h2>${results.entries.map((q,i)=>`<article class="exam-review-item"><span class="overline">QUESTION ${i+1} · ${esc(q.courseTitle)}</span><h3>${esc(q.question)}</h3><p class="${q.isCorrect?'exam-right':'exam-wrong'}">${q.isCorrect?'Correct':'Needs another look'} · Your answer: ${esc(q.options[q.selected])}</p>${!q.isCorrect?`<p><strong>Correct answer:</strong> ${esc(q.correctAnswer)}</p>`:''}<p>${esc(q.explanation)}</p>${button('Revisit lesson','open-lesson','secondary-button',`data-course="${esc(q.courseId)}" data-lesson="${esc(q.lessonId)}"`)}</article>`).join('')}</section></main>`;
+ }
+ const q=currentExamQuestion(session,COURSES);
+ if(!q)return header+`<div class="empty-state"><h2>This practice session needs a restart.</h2>${button('Start again','exam-new','primary-button')}</div></main>`;
+ const answered=Object.hasOwn(session.responses,q.id),chosen=session.responses[q.id];
+ return header+`<section class="exam-panel"><div class="exam-progress-row"><span class="overline">${esc(q.courseTitle)} · ${esc(q.title)}</span><strong>Question ${session.position+1} of ${session.ids.length}</strong></div>${bars(session.position,session.ids.length)}<h2 class="exam-question">${esc(q.question)}</h2><div class="exam-options">${q.options.map((option,i)=>`<button type="button" class="exam-option ${answered&&(i===q.correct?'exam-option-correct':i===chosen?'exam-option-wrong':'')}" data-action="exam-answer" data-index="${i}" ${answered?'disabled':''}><span>${String.fromCharCode(65+i)}</span><strong>${esc(option)}</strong></button>`).join('')}</div>${answered?`<div class="exam-explanation" role="status"><strong>${chosen===q.correct?'Well done — correct!':'Not quite — here is why.'}</strong><p>${esc(q.explanation)}</p></div>${button(session.position===session.ids.length-1?'See my results':'Next question','exam-next','primary-button')}`:`<p class="fineprint">Choose an answer to see the explanation. Leave and return any time.</p>`}</section></main>`;
+}
+
 function journey() {
   const done=finished(), active = COURSES.filter(c=>courseProgress(c)>0).sort((a,b)=>courseProgress(b)-courseProgress(a));
   const xp=done*60;
