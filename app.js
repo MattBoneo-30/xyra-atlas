@@ -633,6 +633,21 @@ function savedPage() {
   </main>`;
 }
 
+
+function phraseReviewPanel(){
+ const pack=getPhrasePack(saved.language);
+ if(!pack)return '';
+ const summary=phraseReviewStats(saved.phraseReviews,saved.language,PHRASEBOOK);
+ const item=duePhraseReviews(saved.phraseReviews,saved.language,PHRASEBOOK)[0];
+ const next=summary.nextAt?new Date(summary.nextAt).toLocaleDateString(undefined,{month:'short',day:'numeric'}):null;
+ return `<section class="phrase-review-section" aria-label="Daily phrase recall"><div class="phrase-review-head"><div><span class="overline">KEEP YOUR KNOWLEDGE CLOSE</span><h2>Daily Phrase Recall</h2><p>A private spaced-review schedule that brings phrases back when they need practice.</p></div><span class="phrase-review-count">${summary.due} due · ${summary.reviewed}/${summary.total} practiced</span></div>
+ ${item?`<div class="phrase-review-card"><span class="overline">RECALL BEFORE REVEAL</span><h3>${esc(item.english)}</h3>
+ ${phraseReviewRevealed?`<div class="phrase-review-answer" role="status"><span class="overline">ANSWER</span><p lang="${esc(pack.locale)}">${esc(item.target)}</p>${item.pronunciation?`<small>${esc(item.pronunciation)}</small>`:''}</div><p class="fineprint">Did you recall the phrase before looking? Select your result to schedule its next review.</p><div class="phrase-review-actions">${button('Practice again','phrase-review-rate','secondary-button',`data-id="${esc(item.id)}" data-outcome="again"`)}${button('I remembered','phrase-review-rate','primary-button',`data-id="${esc(item.id)}" data-outcome="remembered"`)}</div>`:button('Reveal the phrase','phrase-review-reveal','primary-button')}`</div>`:
+ `<div class="phrase-review-caught-up"><span aria-hidden="true">✧</span><h3>You're caught up for now.</h3><p>${next?`Your next scheduled phrase returns ${esc(next)}.`:'Practice a phrase to start your review schedule.'} Switch languages to see other review queues.</p></div>`}
+ <div class="phrase-review-bottom"><p class="fineprint">Forgotten phrases return after 10 minutes; remembered phrases after 1, 3, 7, 14, 30, and 60 days. Only your self-reported recall is tracked; this is not a pronunciation or fluency exam. Data stays on this device and in your backups.</p>
+ ${summary.reviewed?button('Reset this language’s reviews','phrase-review-reset','secondary-button'):''}</div></section>`;
+}
+
 function languageChallengePanel(){
  const pack=getPhrasePack(saved.language);
  if(!pack)return '';
@@ -675,6 +690,7 @@ function languagePage() {
     <div class="sprint-head"><div><span class="overline">YOUR SEVEN-DAY LAUNCH</span><h2>${language.flag} ${esc(language.name)} sprint</h2><p>Practice 20–30 minutes daily. Build a practical foundation.</p></div><strong>${completedDays}/7</strong></div>${bars(completedDays,7)}
     <div class="sprint-list">${LEARNING_SPRINT.map(([title,description],i)=>`<button type="button" class="sprint-day ${saved.languageDays.includes(`${saved.language}:${i}`)?'complete':''}" data-action="toggle-day" data-id="${i}"><span class="day-check">${saved.languageDays.includes(`${saved.language}:${i}`)?icon('check',17):`0${i+1}`}</span><span><small>DAY ${i+1}</small><strong>${esc(title)}</strong><em>${esc(description)}</em></span></button>`).join('')}</div>
     ${(() => { const pack=getPhrasePack(saved.language);if(!pack)return `<section class="phrase-lab"><h2>Phrase pack coming soon</h2><p>The seven-day practice plan remains available while this language's lessons are prepared.</p></section>`;const words=pack.phrases,word=words[phraseIndex%words.length],known=saved.phrases[saved.language]||[];return `<section class="phrase-lab"><div class="phrase-head"><span class="overline">OFFLINE PHRASE PRACTICE</span><h2>Practice for real</h2><p>${known.length} of ${words.length} learned</p></div>${bars(known.length,words.length)}<div class="phrase-card"><small>CARD ${phraseIndex%words.length+1} OF ${words.length}</small><h3>${esc(word.english)}</h3>${phraseRevealed?`<div class="phrase-answer" lang="${esc(pack.locale)}"><strong>${esc(word.target)}</strong><small>${esc(word.pronunciation)}</small></div><div class="phrase-buttons">${button(`${icon('play',17)} Listen`,'phrase-speak','secondary-button')}${button(known.includes(word.id)?'Learned ✓':'Mark learned','phrase-known','secondary-button')}</div>`:button('Reveal translation','phrase-reveal','primary-button')}<div class="phrase-controls">${button('Previous','phrase-prev','text-action')}${button(`Next phrase ${icon('arrow',16)}`,'phrase-next','text-action')}</div></div><p class="fineprint">Speak before revealing. Playback requires a compatible installed device voice. Marking learned is a self-assessment.</p></section>`;})()}
+    ${phraseReviewPanel()}
     ${languageChallengePanel()}
     <div class="language-callout">${icon('info',22)}<p><strong>From beginner to native-like?</strong> That's a long-term journey. In one week, target greetings, essential questions and short conversations. Real proficiency grows through months and years of meaningful use.</p></div>
   </main>`;
