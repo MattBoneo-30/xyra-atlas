@@ -57,7 +57,7 @@ test('choices cannot be skipped, rewritten, faked or selected outside four visib
  assert.deepEqual(advanced,advanceConversationQuest(advanced,PHRASEBOOK));
  assert.equal(normalizeConversationQuest({...advanced,position:4},PHRASEBOOK),null);
  assert.equal(normalizeConversationQuest({...advanced,answers:{'0':'invalid'}},PHRASEBOOK),null);
- assert.equal(normalizeConversationQuest({...advanced,answers:{'0':wrong,'1':'1'}},PHRASEBOOK),null);
+ assert.equal(normalizeConversationQuest({...advanced,answers:{'0':wrong,'1':'no-choice'}},PHRASEBOOK),null);
  assert.equal(normalizeConversationQuest({...advanced,questId:'fake'},PHRASEBOOK),null);
  assert.equal(normalizeConversationQuest({...advanced,seed:NaN},PHRASEBOOK),null);
  assert.equal(normalizeConversationQuest({...advanced,code:'shadow'},PHRASEBOOK),null);
