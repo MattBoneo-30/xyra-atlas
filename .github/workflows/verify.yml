@@ -34,6 +34,7 @@ jobs:
           test -s dist/sw.js
           test -s dist/data.js
           test -s dist/lifepractice.js
+          test -s dist/masterytracks.js
           test -s dist/visualmap.js
           test -s dist/narration.js
           test -s dist/storagehealth.js
