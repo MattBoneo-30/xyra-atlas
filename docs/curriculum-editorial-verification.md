@@ -25,6 +25,24 @@ These sources were inspected for the specific claims above as of the review date
 - First-answer locking, bounded input validation, explicit per-subject retry, private local persistence, JSON and AES-encrypted backup compatibility, and offline display.
 - Independent browser regression checks on narrow touch screens, plus accessibility-relevant keyboard-enabled HTML buttons and progress labels.
 
+## Automated lesson-by-lesson readiness snapshot (2026-11-04)
+
+The most recent fully successful [verification run 41684562832](https://github.com/MattBoneo-30/xyra-atlas/actions/runs/41684562832) reports **201 passing Node tests, a successful static build, and passing real Chromium mobile/desktop/offline smoke tests**. The source snapshot contains:
+
+| Mechanical measure | Coverage | What it does and does not establish |
+|---|---:|---|
+| Subjects and lessons | 14 / 134 | Stable curriculum records, not proof of expertise |
+| Authored worked examples | 134 / 134 | Every lesson includes an illustrative case, not externally validated |
+| Quiz answer rationales meeting the audit minimum | 134 / 134 | Explanation length and structural correctness, not psychometric validation |
+| Evidence and transfer prompts | 134 / 134 | Staged self-directed practice; not scored competence |
+| At least one HTTPS further-reading link | 134 / 134 | Linked source presence, not claim-level corroboration |
+| Three sections all meeting the stricter depth threshold | 73 / 134 | 61 still require section-depth revisions |
+| Standalone task meeting the stricter length threshold | 82 / 134 | 52 require expanded lesson-specific exercise instructions |
+| Distinct reference URLs | 41 | Independently check current reachability and substantive support |
+| Lessons carrying one or more editorial flags | 63 / 134 | This is an actionable backlog, **not** a completed editorial review |
+
+A generated per-lesson `curriculum-audit.json` is attached to every successful CI workflow run. The count has improved, but the stage gate remains false until every outstanding criterion has credible evidence, especially high-stakes human editorial review.
+
 ## Outstanding criteria before the Advanced curriculum completion report
 
 - Complete a **lesson-by-lesson content audit**, not merely data-shape checks: teaching objective, multi-step explanation, worked example, realistic independent exercise, multiple validated checks, non-leading distractors, and caveats where necessary.

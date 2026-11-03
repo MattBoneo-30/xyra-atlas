@@ -49,12 +49,27 @@
           "type": "ci",
           "value": "https://github.com/MattBoneo-30/xyra-atlas/actions/runs/41677493140",
           "note": "Successful unit, offline-build and desktop/mobile Chromium verification for the advanced enrichment release."
+        },
+        {
+          "type": "commit",
+          "value": "579ecedbe1277bfb2a6d51c0290703333ea16da5",
+          "note": "Every one of 134 lessons now has a two-step evidence-check and transfer-challenge guide specific to subject and level, without mutating frozen source content."
+        },
+        {
+          "type": "commit",
+          "value": "bc1dc06a11c1dcdb54b6ec6d3a453db3a7748587",
+          "note": "23 previously short worked examples and 20 brief answer rationales expanded with concrete subject-specific reasoning."
+        },
+        {
+          "type": "ci",
+          "value": "https://github.com/MattBoneo-30/xyra-atlas/actions/runs/41684562832",
+          "note": "201 unit tests passed; production build and full real Chromium desktop/mobile/offline suite passed. Coverage: 134/134 worked examples, answer rationales, source links and guided reflection prompts."
         }
       ],
       "blockers": [
-        "Full editorial review of all 134 lessons and every referenced external source is still outstanding.",
-        "Some introductory and intermediate lessons remain short; additional worked examples and assessment depth are necessary.",
-        "Independent expert review of higher-stakes health, finance and Philippine legal claims remains to be recorded."
+        "Automated editorial audit still flags 63 lessons for some short teaching sections and/or standalone practice tasks; content depth needs further substantiated revision.",
+        "The 41 distinct external source URLs are not a substitute for independent claim-by-claim verification, particularly for current Philippine law and financial/health-sensitive material.",
+        "Independent expert and native/regional subject-matter editorial signoff has not been documented for the full 134-lesson curriculum; stage must remain incomplete."
       ]
     },
     {
