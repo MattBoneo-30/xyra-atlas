@@ -22,6 +22,7 @@ import { SCENARIOS,normalizeScenarioAnswers,recordScenarioAnswer,scenarioProgres
 import { CASE_FILES,getCaseFile,evaluateCase,normalizeCasebook,advanceCase,resetCase,casebookStats } from './casebook.js';
 import { STUDIO_DEFAULTS, sanitizeStudio, calculateSavings, calculateBusiness, calculateTime } from './studio.js';
 import { PHRASEBOOK,getPhrasePack, sanitizePhraseProgress } from './phrasebook.js';
+import {LANGUAGE_CHALLENGE_MODES,createLanguageChallenge,normalizeLanguageChallenge,currentLanguageQuestion,answerLanguageChallenge,advanceLanguageChallenge,languageChallengeResults,normalizeLanguageChallengeHistory,recordLanguageChallengeHistory} from './languagechallenge.js';
 import { normalizeFieldNotes, setFieldNote, MAX_FIELD_NOTE_LENGTH } from './fieldnotes.js';
 
 import { PATH_GOALS, PATH_BUDGETS, createLearningPath, normalizeLearningPath, pathProgress } from './paths.js';
@@ -31,7 +32,7 @@ let storageProblem=null;
 let recoveryRaw=null;
 const esc = value => String(value ?? '').replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
 const plain = text => esc(text).replace(/\n/g, '<br>');
-function createInitialState(){return { completed: [], bookmarks: [], favorites: [], answers: {}, reviews: {}, fieldNotes: {}, lastOpened: null, dailyVisits: [], theme: 'dark', language: 'ja', languageDays: [], phrases: {}, studio: sanitizeStudio(null), userName: '', welcomeDismissed: false, learningPath: null, scenarios: {}, casebook: {}, mistakes:{}, exam:null, personalCards:[], reader:normalizeReaderPreferences(null) };}
+function createInitialState(){return { completed: [], bookmarks: [], favorites: [], answers: {}, reviews: {}, fieldNotes: {}, lastOpened: null, dailyVisits: [], theme: 'dark', language: 'ja', languageDays: [], phrases: {}, languageChallenge:null, languageChallengeHistory:{}, studio: sanitizeStudio(null), userName: '', welcomeDismissed: false, learningPath: null, scenarios: {}, casebook: {}, mistakes:{}, exam:null, personalCards:[], reader:normalizeReaderPreferences(null) };}
 function readStored() {
   try {
     const raw=localStorage.getItem(STORAGE_KEY);
@@ -47,6 +48,8 @@ function readStored() {
       dailyVisits: Array.isArray(data.dailyVisits) ? data.dailyVisits.filter(validDayKey).slice(-400) : [],
       languageDays: Array.isArray(data.languageDays) ? data.languageDays.filter(x => typeof x === 'string') : [],
       phrases: sanitizePhraseProgress(data.phrases),
+      languageChallenge:normalizeLanguageChallenge(data.languageChallenge,PHRASEBOOK),
+      languageChallengeHistory:normalizeLanguageChallengeHistory(data.languageChallengeHistory,PHRASEBOOK),
       answers: data.answers && typeof data.answers === 'object' && !Array.isArray(data.answers) ? data.answers : {},
       reviews: normalizeReviews(data.reviews),
       studio: sanitizeStudio(data.studio),
@@ -71,6 +74,7 @@ let reviewRevealed = false;
 let mistakeFeedback=null;
 let mistakeIndex=0;
 let phraseRevealed = false, phraseIndex = 0;
+let languageChallengePendingMode='recognition';
 let studioTab = 'savings';
 const getDueReviews = () => dueReviewCards(reviewCards, saved.completed, saved.reviews, Date.now(), shadowUnlocked);
 let route = parseHash();
@@ -685,6 +689,8 @@ function modalView() {
   const inner = modal==='shadow' ? `<div class="modal-icon dark-icon">${icon('moon',28)}</div><span class="overline">A DIFFERENT KIND OF LESSON</span><h2>Enter the Shadow Library?</h2><p>This section explores manipulation, coercive behavior, psychological pressure, deception, adult intimacy, and sexual health. The purpose is understanding and informed choice—not abuse or exploitation.</p><div class="age-warning">${icon('info',19)} Contains mature educational discussions intended for adults 18+.</div><label class="checkbox-label"><input type="checkbox" id="age-agree" ${gateConfirmed?'checked':''}/><span>I am at least 18, and I understand the purpose of this material.</span></label>${button(`Enter the library ${icon('arrow',18)}`,'enter-shadow','primary-button',gateConfirmed?'':'disabled')}` :
   modal==='install' ? `<div class="modal-icon">${icon('download',26)}</div><span class="overline">TAKE YOUR ATLAS WITH YOU</span><h2>Install Xyra Atlas</h2><p>After the first successful online visit, the app shell and included lessons can work offline once fully cached.</p><div class="install-steps"><strong>On iPhone / iPad</strong><p>Open this website in Safari. Tap Share, then “Add to Home Screen” and enable “Open as Web App”.</p><strong>On Android</strong><p>Open in Chrome. Use the browser menu and select “Install app” or “Add to Home screen”, when available.</p></div>${installEvent?button(`Install now ${icon('download',18)}`,'install-prompt','primary-button'):''}<p class="fineprint">Installing does not automatically sync data across phones. Use Export/Import backup to transfer progress.</p>` :
   modal==='personal-card-delete' && personalCardPendingDelete ? `<div class="modal-icon warning-icon">${icon('alert',26)}</div><h2>Delete this card?</h2><p>This removes the question, answer and its review schedule from this device. Other lesson progress stays unchanged.</p>${button('Keep card','close-modal','secondary-button')}${button('Delete card','personal-card-delete-confirm','outline-danger')}` :
+  modal==='challenge-replace' ? `<div class="modal-icon warning-icon">${icon('alert',26)}</div><h2>Replace saved language challenge?</h2><p>Your unfinished challenge will be replaced by a new one. Completed scores in your history are not erased.</p>${button('Keep saved challenge','close-modal','secondary-button')}${button('Replace challenge','challenge-replace-confirm','outline-danger')}` :
+  modal==='challenge-discard' ? `<div class="modal-icon warning-icon">${icon('alert',26)}</div><h2>Discard this challenge?</h2><p>Current unanswered or incomplete progress will be cleared. Your best scores and lesson progress remain.</p>${button('Keep practicing','close-modal','secondary-button')}${button('Discard challenge','challenge-discard-confirm','outline-danger')}` :
   modal==='exam-discard' ? `<div class="modal-icon warning-icon">${icon('alert',26)}</div><h2>Discard this exam?</h2><p>Current practice answers will be cleared so you can choose a different subject or question count. Your lessons, notes and other learning progress will stay untouched.</p>${button('Keep practicing','close-modal','secondary-button')}${button('Discard exam','exam-discard-confirm','outline-danger')}` :
   modal==='reset' ? `<div class="modal-icon warning-icon">${icon('alert',26)}</div><h2>Reset your Atlas?</h2><p>All lesson progress, saved lessons, language sprint checks and preferences on this browser will be erased. Export a backup first if you need it.</p>${button('Cancel','close-modal','secondary-button')}${button('Erase my local progress','confirm-reset','outline-danger')}` :
   modal==='backup-encrypt' ? `<div class="modal-icon">${icon('lock',26)}</div><span class="overline">PRIVATE PROGRESS BACKUP</span><h2>Encrypt your Atlas</h2><p>Create a password-protected JSON backup, encrypted locally with AES-256-GCM. Your passphrase is never saved or uploaded. If you lose it, the file cannot be recovered.</p><label class="field-label" for="encrypt-backup-password">Passphrase (at least 12 characters)</label><input id="encrypt-backup-password" class="encrypted-backup-input" type="password" autocomplete="new-password" maxlength="256"/><label class="field-label" for="encrypt-backup-confirm">Confirm passphrase</label><input id="encrypt-backup-confirm" class="encrypted-backup-input" type="password" autocomplete="new-password" maxlength="256"/>${button('Cancel','backup-crypto-cancel','secondary-button')}${button('Encrypt and download','backup-encrypt-confirm','primary-button')}` :
@@ -737,6 +743,8 @@ function normalizedBackupState(clean){
    language:LANGUAGES.some(x=>x.code===clean.language)?clean.language:'ja',
    languageDays:Array.isArray(clean.languageDays)?clean.languageDays.filter(x=>typeof x==='string').slice(0,200):[],
    phrases:sanitizePhraseProgress(clean.phrases),
+   languageChallenge:normalizeLanguageChallenge(clean.languageChallenge,PHRASEBOOK),
+   languageChallengeHistory:normalizeLanguageChallengeHistory(clean.languageChallengeHistory,PHRASEBOOK),
    userName:typeof clean.userName==='string'?clean.userName.slice(0,40):''
  };
 }
