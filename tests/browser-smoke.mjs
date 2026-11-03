@@ -1016,6 +1016,70 @@ try{
   await context.setOffline(false);
  });
 
+
+ await smoke('offline-local-voice-studio',{viewport:{width:390,height:844}},async(page,context)=>{
+  await page.addInitScript(()=>{
+   const voices=[
+    {lang:'ja-JP',name:'Japanese Local',voiceURI:'local-ja',localService:true},
+    {lang:'es-ES',name:'Spanish Cloud',voiceURI:'remote-es',localService:false},
+    {lang:'es-MX',name:'Spanish Regional Local',voiceURI:'local-es-mx',localService:true},
+    {lang:'en-US',name:'English Local',voiceURI:'local-en',localService:true}
+   ];
+   const handlers=[];
+   window.__atlasSpeech={voices,calls:[],cancelled:0,handlers};
+   class StubUtterance{constructor(text){this.text=text;}}
+   Object.defineProperty(window,'SpeechSynthesisUtterance',{configurable:true,value:StubUtterance});
+   Object.defineProperty(window,'speechSynthesis',{configurable:true,value:{
+    getVoices:()=>voices,
+    cancel(){window.__atlasSpeech.cancelled++;},
+    speak(u){window.__atlasSpeech.calls.push({text:u.text,lang:u.lang,rate:u.rate,uri:u.voice?.voiceURI});u.onstart?.();},
+    addEventListener(type,fn){if(type==='voiceschanged')handlers.push(fn);}
+   }});
+  });
+  await page.goto(BASE+'/#/language',{waitUntil:'domcontentloaded'});
+  await page.locator('#language-audio-controls').waitFor();
+  expect((await page.locator('.language-audio-indicator').textContent()).includes('Local voice detected'),'Japanese local voice is detected');
+  expect(await page.locator('#language-voice-picker option').count()===1,'only matching Japanese voice is offered');
+  await page.locator('#language-audio-rate').selectOption('0.75');
+  expect((await getState(page)).languageSpeechRate===.75,'playback rate persists as bounded profile setting');
+  await page.locator('[data-action="language-speak"][data-id="1"]').first().click();
+  let calls=await page.evaluate(()=>window.__atlasSpeech.calls);
+  expect(calls.length===1&&calls[0].text==='こんにちは','actual authored Japanese phrase is used for local speech');
+  expect(calls[0].uri==='local-ja'&&calls[0].lang==='ja-JP'&&calls[0].rate===.75,'speech uses the correct installed voice and selected rate');
+  await page.locator('[data-action="language-audio-stop"]').click();
+  expect((await page.locator('#language-voice-status').textContent()).includes('stopped'),'stop control gives confirmation');
+  await page.locator('#language-select').selectOption('es');
+  expect((await page.locator('.language-audio-indicator').textContent()).includes('Local voice detected'),'compatible regional local voice is offered');
+  expect(await page.locator('#language-voice-picker option').count()===1,'network-backed Spanish voice is not offered');
+  expect((await page.locator('.language-audio-panel').textContent()).includes('regional variant'),'regional accent difference is disclosed');
+  await page.locator('[data-action="language-speak"][data-id="1"]').first().click();
+  calls=await page.evaluate(()=>window.__atlasSpeech.calls);
+  expect(calls.length===2&&calls[1].text==='Hola'&&calls[1].uri==='local-es-mx','Spanish uses local regional engine, never cloud');
+  await page.locator('#language-select').selectOption('ko');
+  expect((await page.locator('.language-audio-indicator').textContent()).includes('unavailable'),'unsupported Korean voice is disclosed');
+  expect(await page.locator('#language-voice-picker').isDisabled(),'no unverified Korean voices can be selected');
+  expect(await page.locator('[data-action="language-speak"]').first().isDisabled()===false,'practice feedback controls remain accessible even without voice');
+  await page.locator('[data-action="language-speak"][data-id="1"]').first().click();
+  calls=await page.evaluate(()=>window.__atlasSpeech.calls);
+  expect(calls.length===2,'missing voice never falls back to wrong language or remote cloud');
+  await page.locator('#language-select').selectOption('ja');
+  await page.reload({waitUntil:'domcontentloaded'});
+  await page.locator('#language-audio-controls').waitFor();
+  expect((await getState(page)).languageSpeechRate===.75,'rate setting survives reload');
+  await page.evaluate(async()=>{await navigator.serviceWorker.ready;});
+  await page.reload({waitUntil:'domcontentloaded'});
+  await page.waitForFunction(()=>Boolean(navigator.serviceWorker.controller));
+  await context.setOffline(true);
+  await page.reload({waitUntil:'domcontentloaded'});
+  await page.locator('#language-audio-controls').waitFor();
+  await page.locator('[data-action="language-speak"][data-id="1"]').first().click();
+  calls=await page.evaluate(()=>window.__atlasSpeech.calls);
+  expect(calls.length===1&&calls[0].uri==='local-ja','mocked installed device voice remains selectable while website is offline');
+  const overflow=await mobileOverflow(page);
+  expect(overflow.scroll<=overflow.width+8,'voice studio fits mobile layout');
+  await context.setOffline(false);
+ });
+
 }finally{
  if(browser)await browser.close();
  server.kill('SIGTERM');
