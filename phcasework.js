@@ -118,7 +118,7 @@ const MATERIAL=[
     "sources": [
       [
         "DTI FTEB — Complaints Handling",
-        "https://fairtrade.dti.gov.ph/services/complaints-handling/"
+        "https://fairtrade.dti.gov.ph/faq/how-to-file-a-consumer-complaint/"
       ],
       [
         "DTI — Consumer CARe System",

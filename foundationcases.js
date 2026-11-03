@@ -27,7 +27,7 @@ export const FOUNDATION_CASES={
       "sources": [
         {
           "label": "DTI — Complaints Handling",
-          "url": "https://fairtrade.dti.gov.ph/services/complaints-handling/"
+          "url": "https://fairtrade.dti.gov.ph/faq/how-to-file-a-consumer-complaint/"
         }
       ]
     }

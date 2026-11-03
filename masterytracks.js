@@ -13,7 +13,7 @@ const SOURCES={
   ],
   "dti": [
     "DTI — Complaints Handling",
-    "https://fairtrade.dti.gov.ph/services/complaints-handling/"
+    "https://fairtrade.dti.gov.ph/faq/how-to-file-a-consumer-complaint/"
   ],
   "bsp": [
     "BSP — Consumer Assistance Mechanism",
