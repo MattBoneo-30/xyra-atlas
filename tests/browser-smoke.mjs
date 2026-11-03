@@ -849,6 +849,56 @@ try{
   await context.setOffline(false);
  });
 
+
+ await smoke('illustrated-case-chapters',{viewport:{width:1365,height:900}},async(page)=>{
+  const cases=[
+   ['laws','case-ph-data-access','chapter-privacy-observatory.svg','The Privacy Observatory'],
+   ['digital','case-account-takeover-drill','chapter-security-sanctum.svg','The Security Sanctum'],
+   ['business','case-pilot-unit-economics','chapter-business-atelier.svg','The Maker’s Atelier'],
+   ['science','case-study-causality','chapter-science-glasshouse.svg','The Research Glasshouse']
+  ];
+  for(const [course,lesson,file,title] of cases){
+   await page.goto(BASE+'/#/lesson/'+course+'/'+lesson,{waitUntil:'domcontentloaded'});
+   const art=page.locator('.chapter-art-feature img');
+   await art.waitFor();
+   expect(await art.getAttribute('src')==='/assets/'+file,'illustrated case opens its correct scene: '+course);
+   const image=await art.evaluate(async img=>{await img.decode();return {w:img.naturalWidth,h:img.naturalHeight,alt:img.alt};});
+   expect(image.w===1400&&image.h===700,'chapter art decodes at its native aspect ratio');
+   expect(image.alt.length>=75,'chapter art has meaningful descriptive alt text');
+   expect((await page.locator('.chapter-art-caption strong').textContent())===title,'chapter illustration includes a grounded caption');
+   expect(await page.locator('.lesson-content .worked-example').count()===1,'chapter art does not displace learning material');
+  }
+  await page.goto(BASE+'/#/lesson/psychology/thoughts',{waitUntil:'domcontentloaded'});
+  await page.locator('.reading-illustration img').waitFor();
+  expect(await page.locator('.chapter-art-feature').count()===0,'other lessons retain their existing artwork');
+  expect(await page.locator('.reading-illustration img').getAttribute('src')==='/assets/course-psychology.svg','normal reader art fallback is unchanged');
+  await page.goto(BASE+'/#/lesson/laws/case-ph-data-access',{waitUntil:'domcontentloaded'});
+  await page.locator('.chapter-art-feature').waitFor();
+  await page.screenshot({path:snapshots+'/chapter-art-desktop.png',fullPage:true});
+ });
+ await smoke('illustrated-case-chapters-mobile-offline',{viewport:{width:390,height:844}},async(page,context)=>{
+  await page.goto(BASE+'/#/lesson/laws/case-ph-data-access',{waitUntil:'domcontentloaded'});
+  await page.locator('.chapter-art-feature').waitFor();
+  await page.evaluate(async()=>{await navigator.serviceWorker.ready;});
+  await page.reload({waitUntil:'domcontentloaded'});
+  await page.waitForFunction(()=>Boolean(navigator.serviceWorker.controller));
+  await context.setOffline(true);
+  for(const [course,lesson] of [
+   ['laws','case-ph-data-access'],['digital','case-account-takeover-drill'],
+   ['business','case-pilot-unit-economics'],['science','case-study-causality']
+  ]){
+   await page.goto(BASE+'/#/lesson/'+course+'/'+lesson,{waitUntil:'domcontentloaded'});
+   const img=page.locator('.chapter-art-feature img');
+   await img.waitFor();
+   await img.scrollIntoViewIfNeeded();
+   expect(await img.evaluate(async el=>{await el.decode();return el.naturalWidth===1400&&el.naturalHeight===700}),'dedicated chapter artwork remains available offline for '+course);
+   const overflow=await mobileOverflow(page);
+   expect(overflow.scroll<=overflow.width+8,'chapter illustration and caption fit narrow mobile layout');
+  }
+  await page.screenshot({path:snapshots+'/chapter-art-mobile-offline.png',fullPage:true});
+  await context.setOffline(false);
+ });
+
 }finally{
  if(browser)await browser.close();
  server.kill('SIGTERM');
