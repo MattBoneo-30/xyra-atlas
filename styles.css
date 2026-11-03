@@ -228,3 +228,26 @@ html[data-theme=light]{color-scheme:light;--bg:#fbf5f6;--bg-raised:#fff9fa;--car
 
 /* Optional locally encrypted backups */
 .encrypted-backup-input{width:100%;min-height:45px;display:block;margin:8px 0 15px;padding:10px 13px;border:1px solid var(--line-bright);border-radius:10px;background:var(--card-soft);color:var(--text);font:inherit}.encrypted-backup-input:focus-visible{outline:2px solid var(--gold)}.modal-card:has(.encrypted-backup-input){max-height:calc(100dvh - 28px);overflow-y:auto}.modal-card:has(.encrypted-backup-input) .secondary-button{margin-right:8px}
+
+
+/* Offline Practice Exam */
+.exam-hero{margin:16px 0 24px;padding:30px 27px;border-radius:24px;border:1px solid var(--line-bright);background:radial-gradient(circle at 90% 8%,rgba(188,145,230,.2),transparent 55%),linear-gradient(130deg,var(--card),var(--bg-raised))}
+.exam-hero h1{font-size:clamp(32px,5vw,49px);line-height:1.1;margin:13px 0}.exam-hero p{color:var(--muted);line-height:1.7;max-width:560px;margin:0}
+.exam-panel{padding:26px;margin-bottom:20px;border:1px solid var(--line-bright);border-radius:22px;background:var(--card);box-shadow:var(--shadow)}
+.exam-panel h2{font-size:clamp(22px,3vw,31px);line-height:1.25;margin:10px 0 22px}
+.exam-panel .styled-select{display:block;width:100%;max-width:500px;min-height:48px;margin:8px 0 22px;padding:10px 14px;border-radius:12px;border:1px solid var(--line-bright);background:var(--card-soft);color:var(--text)}
+.exam-panel .primary-button{margin-top:15px;min-height:46px}.exam-panel .fineprint{margin-top:20px}
+.exam-progress-row{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:18px;flex-wrap:wrap}.exam-progress-row strong{font-size:12px;color:var(--gold);font-weight:600}
+.exam-question{margin:26px 0 20px!important;font-size:clamp(21px,3.2vw,29px)!important}
+.exam-options{display:grid;grid-template-columns:1fr;gap:11px}
+.exam-option{display:flex;align-items:center;gap:14px;text-align:left;padding:13px 15px;min-height:56px;border-radius:13px;border:1px solid var(--line-bright);background:var(--card-soft);color:var(--text);transition:border-color .15s,background .15s}
+.exam-option:not(:disabled):hover{border-color:var(--lavender);background:var(--card-strong)}
+.exam-option span{display:grid;place-items:center;flex:0 0 30px;height:30px;border-radius:9px;background:var(--card-strong);color:var(--gold);font-size:13px}.exam-option strong{font-size:14px;line-height:1.5;font-weight:500}
+.exam-option:disabled{opacity:1;cursor:default}.exam-option-correct{border-color:var(--good);background:color-mix(in srgb,var(--good) 12%,var(--card))}.exam-option-wrong{border-color:var(--rose);background:color-mix(in srgb,var(--rose) 12%,var(--card))}
+.exam-explanation{padding:17px 19px;margin-top:22px;background:var(--card-strong);border:1px solid var(--line-bright);border-radius:14px}.exam-explanation strong{color:var(--gold)}.exam-explanation p{margin:10px 0 0;color:var(--text);line-height:1.7}
+.exam-finished{text-align:center}.exam-score{font-size:clamp(50px,9vw,75px);font-family:Georgia,serif;line-height:1.2;color:var(--gold)}.exam-score span{font-size:.48em;color:var(--muted)}.exam-finished p{color:var(--muted);line-height:1.6}
+.exam-review h2{font-size:26px;margin:30px 0 15px}.exam-review-item{padding:21px;margin-bottom:13px;border:1px solid var(--line);border-radius:17px;background:var(--card)}.exam-review-item h3{font-size:19px;margin:10px 0 14px}.exam-review-item p{line-height:1.65;color:var(--muted)}.exam-review-item .secondary-button{margin-top:4px}.exam-right{color:var(--good)!important}.exam-wrong{color:var(--rose)!important}
+.exam-invite{display:flex;align-items:center;gap:17px;flex-wrap:wrap;padding:22px;margin:18px 0;border-radius:19px;border:1px solid var(--line-bright);background:linear-gradient(125deg,var(--card-soft),var(--card))}
+.exam-invite-icon{display:grid;place-items:center;flex:0 0 50px;height:50px;border-radius:15px;color:var(--gold);background:var(--card-strong)}
+.exam-invite>div:nth-child(2){flex:1;min-width:180px}.exam-invite h2{font-size:23px;margin:6px 0}.exam-invite p{color:var(--muted);line-height:1.55;font-size:13px;margin:0}
+@media(max-width:560px){.exam-hero{padding:23px 20px}.exam-panel{padding:20px 17px}.exam-invite{align-items:flex-start}.exam-invite .small-button{width:100%}.exam-review-item{padding:17px}.exam-option{padding:12px;gap:11px}}
