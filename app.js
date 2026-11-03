@@ -705,6 +705,42 @@ function languageChallengePanel(){
  return header+body+`</section>`;
 }
 
+
+function conversationQuestPanel(){
+ const pack=getPhrasePack(saved.language);
+ if(!pack)return '';
+ const session=normalizeConversationQuest(saved.conversationQuest,PHRASEBOOK);
+ const active=session?.code===saved.language?session:null;
+ const prior=session?conversationQuestResults(session,PHRASEBOOK):null;
+ const paused=Boolean(session&&!active&&!prior?.done);
+ const quest=active?CONVERSATION_QUESTS.find(q=>q.id===active.questId):null;
+ const result=active?conversationQuestResults(active,PHRASEBOOK):null;
+ const current=active?currentConversationQuestion(active,PHRASEBOOK):null;
+ const answered=Boolean(current&&Object.hasOwn(active.answers,current.id));
+ const selected=answered?active.answers[current.id]:null;
+ const records=saved.conversationQuestHistory[saved.language]||{};
+ let content='';
+ if(!active){
+  content=`<div class="conversation-quest-start">
+    <label for="conversation-quest-select" class="field-label">Choose a real-life situation</label>
+    <select id="conversation-quest-select" class="styled-select">${CONVERSATION_QUESTS.map(q=>`<option value="${esc(q.id)}">${esc(q.title)}</option>`).join('')}</select>
+    <div class="conversation-quest-scenarios">${CONVERSATION_QUESTS.map(q=>`<article><strong>${esc(q.title)}</strong><p>${esc(q.summary)}</p>${records[q.id]?`<small>Last: ${records[q.id].last}/5 · Best: ${records[q.id].best}/5 · ${records[q.id].attempts} ${records[q.id].attempts===1?'try':'tries'}</small>`:''}</article>`).join('')}</div>
+    ${paused?`<div class="conversation-quest-paused" role="status"><p>An unfinished ${esc(LANGUAGES.find(l=>l.code===session.code)?.name||session.code)} sequence is saved. You can resume it or explicitly replace it with a new one.</p><div class="conversation-quest-controls">${button('Resume saved sequence','conversation-resume','secondary-button')}${button('Replace with new sequence','conversation-start','primary-button')}</div></div>`:button('Start situation practice','conversation-start','primary-button')}
+    <p class="fineprint">Each activity practices five connected intentions using already-authored phrases. It is a one-person speaking rehearsal, not a simulated conversation with evaluated listening or pronunciation.</p>
+  </div>`;
+ }else if(result?.done){
+  content=`<div class="conversation-quest-complete"><span class="overline">SITUATION PRACTICE COMPLETE</span><h3>${esc(quest.title)}</h3><div class="conversation-quest-score">${result.correct}<small> / ${result.total}</small></div><p>${result.percent}% correct for written phrase selection. This is not a conversational proficiency rating.</p>${button('Choose another situation','conversation-new','primary-button')}</div>
+  <div class="conversation-quest-review"><h3>Review the sequence</h3>${result.entries.map((entry,i)=>`<article><span>STEP ${i+1} · ${entry.correct?'MATCHED':'REVISIT'}</span><strong>${esc(entry.cue)}</strong><p lang="${esc(entry.locale)}">${esc(entry.phrase)}</p><small>${esc(entry.english)}${entry.pronunciation?' · '+esc(entry.pronunciation):''}</small>${!entry.correct?`<p class="conversation-review-miss">Your choice: <span lang="${esc(entry.locale)}">${esc(entry.selectedText)}</span></p>`:''}</article>`).join('')}</div>`;
+ }else if(current){
+  content=`<div class="conversation-quest-play"><div class="conversation-quest-progress"><span>${esc(quest.title)} · Step ${active.position+1} of ${quest.steps.length}</span><strong>${active.position+1}/${quest.steps.length}</strong></div>${bars(active.position,quest.steps.length)}
+  <span class="overline">WHAT WOULD YOU SAY?</span><h3>${esc(current.cue)}</h3><p class="fineprint">Try saying the target-language phrase aloud, then select its written form. Speaking is not recorded or graded.</p>
+  <div class="conversation-quest-options">${current.options.map((option,i)=>`<button type="button" class="conversation-quest-option ${answered&&(option.id===current.phraseId?'is-correct':option.id===selected?'is-missed':'')}" data-action="conversation-answer" data-id="${esc(option.id)}" data-step="${esc(current.id)}" ${answered?'disabled':''}><span aria-hidden="true">${String.fromCharCode(65+i)}</span><strong lang="${esc(current.locale)}">${esc(option.label)}</strong></button>`).join('')}</div>
+  ${answered?`<div class="conversation-quest-feedback" role="status"><strong>${selected===current.phraseId?'That phrase fits.':'Review this step.'}</strong><p><span lang="${esc(current.locale)}">${esc(current.target)}</span> — ${esc(current.english)}</p>${current.pronunciation?`<small>Approximate pronunciation: ${esc(current.pronunciation)}</small>`:''}</div>${button(active.position===quest.steps.length-1?'See situation results':'Continue sequence','conversation-next','primary-button')}`:'<p class="fineprint">Choose one of the four phrases to check the context.</p>'}
+  ${button('Discard unfinished sequence','conversation-discard','secondary-button')}</div>`;
+ }
+ return `<section class="conversation-quest" aria-label="Situational conversation rehearsal"><div class="conversation-quest-head"><div><span class="overline">FROM WORDS TO SITUATIONS</span><h2>Conversation Quest</h2><p>Rehearse familiar phrases in practical sequences, one decision at a time.</p></div><span class="conversation-quest-count">3 situations · 5 steps each</span></div>${content}</section>`;
+}
+
 function languagePage() {
   const language=LANGUAGES.find(x=>x.code===saved.language)||LANGUAGES[1];
   const completedDays=LEARNING_SPRINT.filter((_,i)=>saved.languageDays.includes(`${saved.language}:${i}`)).length;
