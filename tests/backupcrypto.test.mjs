@@ -15,3 +15,9 @@ test('encrypted backup is available in offline app bundle and guarded by unlock'
  assert.match(a,/backup-encrypted-export/);assert.match(a,/backup-unlock-confirm/);
  assert.match(sw,/\/backupcrypto\.js/);assert.match(build,/'backupcrypto\.js'/);
 });
+
+test('encrypted backup limits UTF-8 bytes, not JavaScript code units',async()=>{
+ const pass='a sufficiently strong secret phrase';
+ const oversized='💜'.repeat(300000); // 600k UTF-16 units, 1.2 MB in UTF-8
+ await assert.rejects(encryptBackup(oversized,pass,webcrypto),/too large/);
+});
