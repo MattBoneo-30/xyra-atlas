@@ -395,14 +395,10 @@ try{
   await page.locator('#unlock-backup-password').waitFor();
   await page.locator('#unlock-backup-password').fill('incorrect passphrase');
   await page.locator('[data-action="backup-unlock-confirm"]').click();
+  await page.getByText('Could not unlock backup. Check its passphrase and file integrity.').first().waitFor();
   expect((await getState(page)).fieldNotes[key]==='New current notes','wrong passphrase does not alter saved progress');
   await page.locator('#unlock-backup-password').fill(password);
-  const cryptoCheck=await page.evaluate(async args=>{try{const cryptoModule=await import('/backupcrypto.js');const plaintext=await cryptoModule.decryptBackup(args.wrapped,args.pass);return {ok:plaintext.includes('Secret sunrise study notes'),length:plaintext.length};}catch(e){return {error:String(e?.message||e)}};},{wrapped:JSON.parse(content),pass:password});
-  console.log('  Encryption round trip in browser:',JSON.stringify(cryptoCheck));
   await page.locator('[data-action="backup-unlock-confirm"]').click();
-  await page.waitForTimeout(350);
-  console.log('  Unlock dialog:',(await page.locator('.modal-card').textContent().catch(()=>'(no dialog)')).slice(0,350));
-  console.log('  Unlock toast:',(await page.locator('.toast').allTextContents()).join(' '));
   await page.locator('.backup-preview-grid').waitFor();
   expect((await getState(page)).fieldNotes[key]==='New current notes','correct passphrase still requires restore confirmation');
   await page.locator('[data-action="backup-confirm"]').click();

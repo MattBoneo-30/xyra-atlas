@@ -79,6 +79,7 @@ let notebookQuery='';
 let modal = '';
 let pendingBackup=null;
 let encryptedFile=null;
+let unlockBusy=false;
 let gateConfirmed = false;
 let shadowUnlocked = false; // A content acknowledgment, not a secure identity or age verification system.
 let installEvent = null;
@@ -701,13 +702,16 @@ async function makeEncryptedBackup(){
  catch{flash('Could not encrypt the backup. Use a secure, up-to-date browser.');}
 }
 async function unlockEncryptedFile(){
- if(!encryptedFile)return;
+ if(!encryptedFile||unlockBusy)return;
+ unlockBusy=true;
+ const btn=document.querySelector('[data-action="backup-unlock-confirm"]');if(btn){btn.disabled=true;btn.textContent='Unlocking…';}
  const el=document.getElementById('unlock-backup-password'),password=el?.value||'';if(el)el.value='';
  let plain;
  try{plain=await decryptBackup(encryptedFile.data,password);}
- catch{flash('Could not unlock backup. Check its passphrase and file integrity.');return;}
+ catch{flash('Could not unlock backup. Check its passphrase and file integrity.');unlockBusy=false;const retry=document.querySelector('[data-action="backup-unlock-confirm"]');if(retry){retry.disabled=false;retry.textContent='Unlock and review';}return;}
  try{const name=encryptedFile.name;previewBackup(plain,name);encryptedFile=null;}
  catch{flash('Backup unlocked, but its learning data could not be imported.');}
+ finally{unlockBusy=false;const retry=document.querySelector('[data-action="backup-unlock-confirm"]');if(retry){retry.disabled=false;retry.textContent='Unlock and review';}}
 }
 function confirmBackupImport(){
  if(!pendingBackup)return;
