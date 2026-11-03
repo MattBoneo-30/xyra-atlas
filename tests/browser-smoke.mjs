@@ -292,6 +292,22 @@ try{
   expect((await getState(page)).fieldNotes['psychology:thoughts']==='Imported note','restored data survives browser reload');
   await page.screenshot({path:snapshots+'/backup-restore.png',fullPage:true});
  });
+ await smoke('keyboard-dialog-accessibility',{viewport:{width:1280,height:800}},async page=>{
+  await page.keyboard.press('Tab');
+  expect(await page.evaluate(()=>document.activeElement?.id==='skip-content'),'first keyboard Tab focuses skip link');
+  await page.keyboard.press('Enter');
+  expect(await page.evaluate(()=>document.activeElement?.id==='atlas-main'),'skip action focuses the main learning content');
+  await page.locator('.topbar [data-action="open-updates"]').click();
+  await page.locator('.modal-card').waitFor();
+  await page.waitForFunction(()=>document.activeElement?.classList.contains('modal-close'));
+  expect(await page.locator('.shell').evaluate(el=>el.inert),'background becomes inert when a dialog opens');
+  for(let i=0;i<5;i++){await page.keyboard.press(i%2?'Shift+Tab':'Tab');expect(await page.evaluate(()=>document.querySelector('.modal-card')?.contains(document.activeElement)),'Tab focus stays within the dialog');}
+  await page.keyboard.press('Escape');
+  await page.locator('.modal-card').waitFor({state:'detached'});
+  expect(!await page.locator('.shell').evaluate(el=>el.inert),'closing the dialog restores page interaction');
+  await page.waitForFunction(()=>document.activeElement?.id==='atlas-main');
+  expect(await page.evaluate(()=>document.activeElement?.id==='atlas-main'),'Escape restores focus to learning content');
+ });
 }finally{
  if(browser)await browser.close();
  server.kill('SIGTERM');

@@ -27,3 +27,12 @@ test('malformed percent encoding in a hash falls back safely without crashing ap
  assert.match(source,/try \{ decoded=decodeURIComponent\(location\.hash/);
  assert.match(source,/catch \{ return \{view:'home'\}; \}/);
 });
+
+test('keyboard skip navigation and accessible modal focus are integrated',()=>{
+ const html=fs.readFileSync('index.html','utf8'),app=fs.readFileSync('app.js','utf8');
+ assert.match(html,/id="skip-content"/);
+ assert.match(app,/el\.inert=Boolean\(modal\)/);
+ assert.match(app,/function render\(\)/);
+ assert.match(app,/const focusable=\[/);
+ assert.match(app,/id='atlas-main'/);
+});

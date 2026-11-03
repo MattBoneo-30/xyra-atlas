@@ -592,6 +592,11 @@ function render() {
   const view = route.view;
   const content = ({home,explore,journey,review:reviewPage,studio:studioPage,scenario:scenarioPage,casebook:casebookPage,map:mapPage,quest:questPage,glossary:glossaryPage,search:globalSearchPage,insights:insightsPage,mentor:mentorPage,offline:offlinePage,path:pathPage,saved:savedPage,you,course:coursePage,lesson:lessonPage,language:languagePage}[view] || errorView)();
   document.getElementById('app').innerHTML = `${topbar()}<div class="shell"><aside class="desktop-rail"><div class="rail-title">YOUR ATLAS <span>✧</span></div>${[['home','Home','home'],['explore','Explore & Learn','compass'],['journey','My Journey','spark'],['saved','Saved Library','bookmark'],['you','Your Space','user']].map(([id,label,ico])=>`<button type="button" data-action="nav" data-id="${id}" class="rail-link ${tabForRoute()===id?'active':''}">${icon(ico,20)} ${label}</button>`).join('')}<div class="rail-divider"></div><button type="button" class="rail-link" data-action="offline-open">${icon('download',20)} Offline Library</button><button type="button" class="rail-link" data-action="open-corner">${icon('spark',20)} Xyra's Corner</button><button type="button" class="rail-link" data-action="casebook">${icon('book',20)} Case Files</button><button type="button" class="rail-link" data-action="insights">${icon('chart',20)} Learning Insights</button><button type="button" class="rail-link" data-action="search">${icon('search',20)} Search Everything</button><button type="button" class="rail-link" data-action="glossary">${icon('book',20)} Glossary</button><button type="button" class="rail-link" data-action="quest">${icon('spark',20)} Daily Quest</button><button type="button" class="rail-link" data-action="map">${icon('compass',20)} Knowledge Map</button><button type="button" class="rail-link" data-action="review">${icon('orbit',20)} Review Deck</button><button type="button" class="rail-link" data-action="path">${icon('compass',20)} Guided Path</button><button type="button" class="rail-link" data-action="studio">${icon('briefcase',20)} Practice Studio</button><button type="button" class="rail-link" data-action="language">${icon('languages',20)} Language Lab</button><button type="button" class="rail-link" data-action="open-course" data-id="shadow">${icon('moon',20)} Shadow Library</button><div class="rail-note">✦<p>The world is a little bigger every time you learn.</p></div></aside><div class="main-column">${storageHealthBanner()}${content}<footer class="app-footer">Made with curiosity, for a life still unfolding. <span>✧ Xyra Atlas</span></footer></div></div>${navBar()}${modalView()}${currentToast?`<div class="toast" role="status">${icon('spark',19)} ${esc(currentToast)}</div>`:''}`;
+  const main=document.querySelector('#app main');
+  if(main){main.id='atlas-main';main.setAttribute('tabindex','-1');}
+  for(const el of document.querySelectorAll('.topbar,.shell,.bottom-nav'))el.inert=Boolean(modal);
+  document.getElementById('skip-content').inert=Boolean(modal);
+  if(modal)requestAnimationFrame(()=>document.querySelector('.modal-card .modal-close')?.focus());
   syncLessonAudioUI();
   document.title = `${view==='course' ? findCourse(route.courseId)?.title+' · ':view==='lesson' ? findLesson(route.courseId,route.lessonId)?.title+' · ' : ''}Xyra Atlas`;
 }
@@ -661,7 +666,8 @@ async function handleAction(e) {
   const button=e.target.closest('[data-action]'); if(!button) return;
   if(e.target.closest('[data-stop]') && button.dataset.action==='close-modal' && !button.classList.contains('modal-close')) return;
   const action=button.dataset.action, id=button.dataset.id;
-  if(action==='goto-home') nav('home');
+  if(action==='skip-content'){const main=document.getElementById('atlas-main');main?.focus({preventScroll:true});main?.scrollIntoView({block:'start'});}
+  else if(action==='goto-home') nav('home');
   else if(action==='goto-explore') {query='';filter='all';nav('explore');}
   else if(action==='insights') nav('insights');
   else if(action==='offline-open'){nav('offline');requestAnimationFrame(()=>inspectOffline());}
@@ -731,7 +737,7 @@ async function handleAction(e) {
   else if(action==='storage-retry'){if(storageProblem==='corrupt'||storageProblem==='read-failed'){flash('Existing data is protected. Use a valid backup or reset intentionally.');}else{const ok=persist();flash(ok?'Progress saved successfully in this browser.':'Saving is still blocked; export a backup.');}}
   else if(action==='reset-dialog') {modal='reset';render();}
   else if(action==='confirm-reset') {recoveryRaw=null;storageProblem=null;storageWarningShown=false;saved=createInitialState();shadowUnlocked=false;gateConfirmed=false;reviewRevealed=false;phraseRevealed=false;phraseIndex=0;studioTab='savings';visitToday();persist();modal='';nav('home');flash('Local progress reset.');}
-  else if(action==='close-modal') {if(modal==='backup-preview')pendingBackup=null;modal='';if(['course','lesson'].includes(route.view)&&route.courseId==='shadow'&&!shadowUnlocked)nav('explore');else render();}
+  else if(action==='close-modal') {if(modal==='backup-preview')pendingBackup=null;modal='';if(['course','lesson'].includes(route.view)&&route.courseId==='shadow'&&!shadowUnlocked)nav('explore');else render();requestAnimationFrame(()=>document.getElementById('atlas-main')?.focus());}
   else if(action==='enter-shadow') {if(!gateConfirmed)return;shadowUnlocked=true;modal='';nav('course/shadow');}
   else if(action==='open-corner') nav('mentor');
   else if(action==='open-updates') {modal='updates';render();}
@@ -757,7 +763,18 @@ document.addEventListener('input',e=>{
   if(e.target.id==='glossary-search') {const pos=e.target.selectionStart;glossaryQuery=e.target.value;render();const field=document.getElementById('glossary-search');if(field){field.focus();try{field.setSelectionRange(pos,pos);}catch{}}}
   if(e.target.id==='course-search') {const pos=e.target.selectionStart;query=e.target.value;render();const input=document.getElementById('course-search');if(input){input.focus();try{input.setSelectionRange(pos,pos);}catch{}}}
 });
-document.addEventListener('keydown',e=>{if(e.key==='/'&&!modal&&!e.altKey&&!e.ctrlKey&&!e.metaKey&&!['INPUT','TEXTAREA','SELECT'].includes(document.activeElement?.tagName)&&!document.activeElement?.isContentEditable){e.preventDefault();nav('search');requestAnimationFrame(()=>document.getElementById('atlas-global-search')?.focus());}if(e.key==='Escape'&&modal){if(modal==='backup-preview')pendingBackup=null;modal='';if(['course','lesson'].includes(route.view)&&route.courseId==='shadow'&&!shadowUnlocked)nav('explore');else render();} if((e.key==='Enter'||e.key===' ')&&e.target.classList?.contains('shadow-preview')) {e.preventDefault();gateConfirmed=false;modal='shadow';render();}});
+document.addEventListener('keydown',e=>{if(e.key==='/'&&!modal&&!e.altKey&&!e.ctrlKey&&!e.metaKey&&!['INPUT','TEXTAREA','SELECT'].includes(document.activeElement?.tagName)&&!document.activeElement?.isContentEditable){e.preventDefault();nav('search');requestAnimationFrame(()=>document.getElementById('atlas-global-search')?.focus());}if(e.key==='Escape'&&modal){if(modal==='backup-preview')pendingBackup=null;modal='';if(['course','lesson'].includes(route.view)&&route.courseId==='shadow'&&!shadowUnlocked)nav('explore');else render();requestAnimationFrame(()=>document.getElementById('atlas-main')?.focus());} if((e.key==='Enter'||e.key===' ')&&e.target.classList?.contains('shadow-preview')) {e.preventDefault();gateConfirmed=false;modal='shadow';render();}});
+document.addEventListener('keydown',e=>{
+ if(e.key!=='Tab'||!modal)return;
+ const dialog=document.querySelector('.modal-card');if(!dialog)return;
+ const focusable=[...dialog.querySelectorAll('button:not(:disabled),input:not(:disabled),a[href],select:not(:disabled),textarea:not(:disabled),[tabindex]:not([tabindex="-1"])')]
+  .filter(el=>!el.hidden&&el.getClientRects().length>0&&getComputedStyle(el).visibility!=='hidden');
+ if(!focusable.length){e.preventDefault();dialog.setAttribute('tabindex','-1');dialog.focus();return;}
+ const first=focusable[0],last=focusable[focusable.length-1],active=document.activeElement;
+ if(!dialog.contains(active)){e.preventDefault();(e.shiftKey?last:first).focus();}
+ else if(e.shiftKey&&active===first){e.preventDefault();last.focus();}
+ else if(!e.shiftKey&&active===last){e.preventDefault();first.focus();}
+});
 window.addEventListener('hashchange',()=>{reviewRevealed=false;stopLessonAudio();route=parseHash();if(route.view==='offline'&&offlinePack.state==='idle')queueMicrotask(()=>inspectOffline());if(route.view==='course'&&route.courseId==='shadow'&&!shadowUnlocked)modal='shadow';if(route.view==='lesson'&&route.courseId==='shadow'&&!shadowUnlocked)modal='shadow';render();});
 window.addEventListener('online',render);window.addEventListener('offline',render);
 window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();installEvent=e;});
