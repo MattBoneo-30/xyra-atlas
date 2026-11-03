@@ -1343,6 +1343,22 @@ try{
  });
 
 
+ await smoke('applied-reasoning-foundation-offline',{viewport:{width:390,height:844},isMobile:true,hasTouch:true,deviceScaleFactor:2},async(page,context)=>{
+   await page.goto(BASE+'/#/lesson/science/probability',{waitUntil:'domcontentloaded'});
+   await page.locator('.reading-page').waitFor();
+   expect((await page.locator('.reading-page').textContent()).includes('2 in 1,000'),'statistical risk exercise present in original science lesson');
+   const overflow=await mobileOverflow(page);
+   expect(overflow.scroll<=overflow.width+8,'science reading fits narrow phone');
+   await page.evaluate(async()=>{await navigator.serviceWorker.ready;});
+   await page.reload({waitUntil:'domcontentloaded'});
+   await page.waitForFunction(()=>Boolean(navigator.serviceWorker.controller));
+   await context.setOffline(true);
+   await page.reload({waitUntil:'domcontentloaded'});
+   expect((await page.locator('.reading-page').textContent()).includes('2 in 1,000'),'scientific reasoning remains offline');
+   await context.setOffline(false);
+ });
+
+
 }finally{
  if(browser)await browser.close();
  server.kill('SIGTERM');

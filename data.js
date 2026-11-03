@@ -9,6 +9,7 @@ import { FOUNDATION_CASES } from './foundationcases.js';
 import { FOUNDATION_CASES_TWO } from './foundationcases2.js';
 import {deepenCriticalFoundation} from './criticalfoundation.js';
 import {deepenGeneralFoundation} from './generalfoundation.js';
+import {deepenAppliedFoundation} from './appliedfoundation.js';
 /** Xyra Atlas starter curriculum. Educational content is general information, not professional advice. */
 const lesson = (id, title, minutes, stage, intro, first, second, task, question, options, correct, explanation) => ({
   id, title, minutes, stage, intro,
@@ -261,6 +262,7 @@ export const COURSES = [
 ];
 deepenCriticalFoundation(COURSES);
 deepenGeneralFoundation(COURSES);
+deepenAppliedFoundation(COURSES);
 for(const entry of COURSES){
   const extras=ADVANCED_ENRICHMENTS[entry.id]||{};
   for(const original of entry.lessons){
