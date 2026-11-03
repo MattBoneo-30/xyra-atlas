@@ -32,27 +32,57 @@ export function authoredCourseLinks(courses,clinics={}){
  return [...known.values()].map(item=>({...item,usedBy:[...new Set(item.usedBy)]})).sort((a,b)=>a.url.localeCompare(b.url));
 }
 export function sourceHTTPStatus(status){
- if(Number.isInteger(status)&&status>=200&&status<400)return 'reachable';
+ if(Number.isInteger(status)&&status>=200&&status<300)return 'reachable';
+ if(Number.isInteger(status)&&status>=300&&status<400)return 'unresolved-redirect';
  if(status===401||status===403||status===429)return 'restricted-or-rate-limited';
  if(status===404||status===410)return 'missing';
  return 'uncertain';
 }
+const REDIRECT_CODES=new Set([301,302,303,307,308]);
+const MAX_REDIRECTS=5;
+async function followSafePublicRedirects(url,request,method,timeoutMs){
+ let current=url,redirects=0;
+ const visited=new Set();
+ while(true){
+  if(visited.has(current))return {status:'redirect-loop',httpStatus:null,finalUrl:current,redirects};
+  visited.add(current);
+  // Never ask the HTTP client to follow a redirect before its destination is validated.
+  const response=await request(current,{method,redirect:'manual',signal:AbortSignal.timeout(timeoutMs),
+   headers:{'User-Agent':'XyraAtlasLinkReview/1.1 (public education source check; no learner data)'}});
+  const status=response.status;
+  if(REDIRECT_CODES.has(status)){
+   const location=response.headers?.get?.('location')||null;
+   try{await response.body?.cancel();}catch{}
+   if(!location)return {status:'unresolved-redirect',httpStatus:status,finalUrl:current,redirects};
+   let next;
+   try{next=new URL(location,current).href;}catch{
+    return {status:'unsafe-redirect',httpStatus:status,finalUrl:current,redirects};
+   }
+   if(!isSafeReferenceURL(next))return {status:'unsafe-redirect',httpStatus:status,finalUrl:current,redirects};
+   if(visited.has(next))return {status:'redirect-loop',httpStatus:status,finalUrl:current,redirects};
+   if(redirects===MAX_REDIRECTS)return {status:'redirect-limit',httpStatus:status,finalUrl:current,redirects};
+   current=next;redirects++;
+   continue;
+  }
+  // Only the HTTP status is needed, not the article body or personal browser state.
+  try{await response.body?.cancel();}catch{}
+  return {status:sourceHTTPStatus(status),httpStatus:status,finalUrl:current,redirects};
+ }
+}
 export async function probePublicSource(url,request=fetch,timeoutMs=6500){
  if(!isSafeReferenceURL(url))return {url,status:'invalid-public-url',httpStatus:null};
- let response=null,method='HEAD',lastError='';
- for(const candidate of ['HEAD','GET']){
-  method=candidate;
+ let last=null,lastError='';
+ for(const method of ['HEAD','GET']){
   try{
-   response=await request(url,{method:candidate,redirect:'follow',signal:AbortSignal.timeout(timeoutMs),
-      headers:{'User-Agent':'XyraAtlasLinkReview/1.0 (public education source check; no learner data)'}});
-   // Avoid downloading article bodies just to inspect response codes.
-   try{await response.body?.cancel();}catch{}
-   if(sourceHTTPStatus(response.status)==='reachable')break;
-   if(candidate==='GET')break;
-  }catch(error){lastError=error instanceof Error?error.name:'RequestError';if(candidate==='GET')break;}
+   last={url,method,...await followSafePublicRedirects(url,request,method,timeoutMs)};
+   if(last.status==='reachable'||['unsafe-redirect','redirect-loop','redirect-limit'].includes(last.status))return last;
+   if(method==='GET')return last;
+  }catch(error){
+   lastError=error instanceof Error?error.name:'RequestError';
+  }
  }
- return {url,status:response?sourceHTTPStatus(response.status):'network-error',
-   httpStatus:response?.status??null,method,error:response?null:lastError};
+ return last?{...last,fallbackError:lastError||undefined}:
+  {url,status:'network-error',httpStatus:null,method:'GET',error:lastError};
 }
 export async function inspectPublicSources(links,request=fetch,concurrency=4){
  const all=Array.isArray(links)?links:[];
