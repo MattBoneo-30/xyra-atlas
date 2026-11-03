@@ -26,6 +26,7 @@ import { STUDIO_DEFAULTS, sanitizeStudio, calculateSavings, calculateBusiness, c
 import { PHRASEBOOK,getPhrasePack, sanitizePhraseProgress } from './phrasebook.js';
 import {LANGUAGE_CHALLENGE_MODES,createLanguageChallenge,normalizeLanguageChallenge,currentLanguageQuestion,answerLanguageChallenge,advanceLanguageChallenge,languageChallengeResults,normalizeLanguageChallengeHistory,recordLanguageChallengeHistory} from './languagechallenge.js';
 import { normalizeFieldNotes, setFieldNote, MAX_FIELD_NOTE_LENGTH } from './fieldnotes.js';
+import {normalizeCapstoneChecks,capstoneCheckProgress,setCapstoneCheck,clearCapstoneChecks} from './capstonechecks.js';
 
 import { PATH_GOALS, PATH_BUDGETS, createLearningPath, normalizeLearningPath, pathProgress } from './paths.js';
 
@@ -34,7 +35,7 @@ let storageProblem=null;
 let recoveryRaw=null;
 const esc = value => String(value ?? '').replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
 const plain = text => esc(text).replace(/\n/g, '<br>');
-function createInitialState(){return { completed: [], bookmarks: [], favorites: [], answers: {}, reviews: {}, fieldNotes: {}, lastOpened: null, dailyVisits: [], theme: 'dark', language: 'ja', languageDays: [], phrases: {}, languageChallenge:null, languageChallengeHistory:{}, studio: sanitizeStudio(null), userName: '', welcomeDismissed: false, learningPath: null, scenarios: {}, casebook: {}, mistakes:{}, exam:null, examHistory:[], personalCards:[], reader:normalizeReaderPreferences(null) };}
+function createInitialState(){return { completed: [], bookmarks: [], favorites: [], answers: {}, reviews: {}, fieldNotes: {}, capstoneChecks: {}, lastOpened: null, dailyVisits: [], theme: 'dark', language: 'ja', languageDays: [], phrases: {}, languageChallenge:null, languageChallengeHistory:{}, studio: sanitizeStudio(null), userName: '', welcomeDismissed: false, learningPath: null, scenarios: {}, casebook: {}, mistakes:{}, exam:null, examHistory:[], personalCards:[], reader:normalizeReaderPreferences(null) };}
 function readStored() {
   try {
     const raw=localStorage.getItem(STORAGE_KEY);
@@ -64,6 +65,7 @@ function readStored() {
       reader: normalizeReaderPreferences(data.reader),
       learningPath: normalizeLearningPath(data.learningPath,COURSES),
       fieldNotes: normalizeFieldNotes(data.fieldNotes),
+       capstoneChecks:normalizeCapstoneChecks(data.capstoneChecks,COURSES),
       theme: data.theme === 'light' ? 'light' : 'dark',
       language: LANGUAGES.some(x => x.code === data.language) ? data.language : 'ja',
       userName: typeof data.userName === 'string' ? data.userName.slice(0,40) : ''
@@ -339,6 +341,7 @@ function lessonPage() {
   const next=c.lessons[idx+1];
   const chosen = saved.answers[key];
   const chapterMap=createChapterMap(c,l);
+  const capstoneReview=l.isCapstone?capstoneCheckProgress(saved.capstoneChecks,key,COURSES):null;
   return `<main class="page reading-page" data-reader-size="${esc(saved.reader.size)}"><div class="subnav">${button(`${icon('back',18)} ${esc(c.title)}`,'open-course','back-link',`data-id="${esc(c.id)}"`)}${button(icon('bookmark',21),'bookmark',`icon-button ${isBookmarked(key)?'is-favorite':''}`,`data-key="${esc(key)}" aria-label="${isBookmarked(key)?'Remove bookmark':'Bookmark lesson'}"`)}</div>
     <div class="reading-head"><span class="overline">${esc(c.title)} · ${esc(l.stage)}${l.isCapstone?" · APPLIED CAPSTONE":""}</span><div class="reading-num">LESSON ${String(idx+1).padStart(2,'0')} OF ${String(c.lessons.length).padStart(2,'0')}</div><h1>${esc(l.title)}</h1><p>${esc(l.intro)}</p><span class="reading-time">${icon('clock',17)} ${l.minutes} min read & practice</span></div>
     <div class="reader-toolbar" role="group" aria-label="Reading preferences"><div class="reader-toolbar-label">${icon('book',18)} Reading comfort</div><div class="reader-size-group" role="group" aria-label="Text size">${READER_SIZES.map(item=>button(esc(item.label),'reader-size',`reader-size-button ${saved.reader.size===item.id?'selected':''}`,`data-id="${item.id}" aria-pressed="${saved.reader.size===item.id}"`)).join('')}</div>${button(saved.reader.focus?`${icon('check',16)} Focus on`:`${icon('spark',16)} Focus mode`,'reader-focus',`reader-focus-button ${saved.reader.focus?'selected':''}`,`aria-pressed="${saved.reader.focus}"`)}</div>
@@ -349,7 +352,7 @@ function lessonPage() {
       ${l.example ? `<aside class="worked-example"><span class="overline">WORKED EXAMPLE</span><h3>See it in action</h3><p>${esc(l.example)}</p></aside>` : ''}
       ${l.sources?.length ? `<aside class="lesson-sources"><span class="overline">CHECK THE ORIGINAL SOURCES</span><h3>Sources and further reading</h3><p>Lesson content works offline. Opening references requires internet. Check current legal and financial rules before relying on them.</p><ul>${l.sources.map(ref=>`<li><a href="${esc(ref.url)}" target="_blank" rel="noopener noreferrer">${esc(ref.label)} ↗</a></li>`).join('')}</ul></aside>` : ''}
       <div class="practice-box" id="lesson-practice"><span class="overline">${icon('spark',16)} ${l.isCapstone?'YOUR CAPSTONE CASE':'PUT IT INTO PRACTICE'}</span><h3>${l.isCapstone?'Complete the case exercise':'Try this today'}</h3><p>${esc(l.task)}</p></div>
-      ${l.isCapstone && Array.isArray(l.rubric) ? `<aside class="capstone-rubric" aria-label="Self-check your capstone"><div class="capstone-rubric-head"><span class="overline">PROOF OF UNDERSTANDING</span><h3>Check your work before finishing</h3><p>Use these criteria to improve the response in your private notebook. This is a self-check, not an automatically graded assessment.</p></div><ol>${l.rubric.map(item=>`<li>${esc(item)}</li>`).join('')}</ol></aside>` : ''}
+      ${capstoneReview && Array.isArray(l.rubric) ? `<aside class="capstone-rubric" aria-label="Self-check your capstone"><div class="capstone-rubric-head"><span class="overline">PROOF OF UNDERSTANDING</span><h3>Check your work before finishing</h3><p>Use these criteria to improve the response in your private notebook. These are self-reported checks, not an automatically graded assessment or professional certification.</p><p id="capstone-check-status" role="status">${capstoneReview.count} of ${capstoneReview.total} criteria reviewed · Saved on this device</p></div><ol>${l.rubric.map((item,i)=>`<li class="${capstoneReview.checked[i]?'is-reviewed':''}"><label class="capstone-rubric-check"><input type="checkbox" data-capstone-check data-key="${esc(key)}" data-index="${i}" ${capstoneReview.checked[i]?'checked':''}/><span>${esc(item)}</span></label></li>`).join('')}</ol><div class="capstone-rubric-actions">${button('Clear my checks','capstone-checks-clear','secondary-button',`data-key="${esc(key)}"`)}</div><p class="fineprint">Your checklist and written notes are saved separately, and included in your Atlas progress backup. Checking all criteria never automatically completes a lesson.</p></aside>` : ''}
       <section class="field-notebook"><span class="overline">${icon('book',16)} YOUR PRIVATE FIELD NOTEBOOK</span><h3>Write what you learned</h3><p>Respond to the exercise in your own words. Notes save automatically on this device, work offline, and are included in your JSON backup.</p><label for="field-note-input">Your exercise notes</label><textarea id="field-note-input" data-field-note="${esc(key)}" maxlength="${MAX_FIELD_NOTE_LENGTH}" rows="5" placeholder="Your thoughts, calculations, practice answers…">${esc(saved.fieldNotes[key]||'')}</textarea><small id="field-note-status" role="status">Private · Stored locally</small></section>
       <section class="quiz-box"><div class="article-section-num">CHECK YOUR UNDERSTANDING</div><h2>One small question</h2><p>${esc(l.quiz.question)}</p><div class="quiz-options">${l.quiz.options.map((option,i)=>`<button type="button" class="quiz-option ${chosen===i?'selected':''} ${chosen!==undefined && chosen===i && i===l.quiz.correct?'correct':''}" data-action="answer" data-key="${esc(key)}" data-index="${i}"><span class="option-letter">${String.fromCharCode(65+i)}</span><span>${esc(option)}</span>${chosen===i?icon('check',17):''}</button>`).join('')}</div>${chosen!==undefined?`<div class="quiz-feedback ${chosen===l.quiz.correct?'good':'retry'}">${icon(chosen===l.quiz.correct?'check':'info',19)}<span><strong>${chosen===l.quiz.correct?'Well done.':'Not quite—try again.'}</strong><br/>${esc(l.quiz.explanation)}</span></div>`:''}</section>
       ${done ? `<div class="complete-banner">${icon('check',22)} <span>You completed this lesson. Beautiful progress.</span></div>` : button(`${icon('check',18)} Mark lesson complete`,'complete',`primary-button complete-btn`, `data-key="${esc(key)}" ${chosen !== l.quiz.correct?'disabled title="Answer the check correctly to complete"':''}`)}
@@ -795,6 +798,7 @@ function normalizedBackupState(clean){
    reader:normalizeReaderPreferences(clean.reader),
    learningPath:normalizeLearningPath(clean.learningPath,COURSES),
    fieldNotes:normalizeFieldNotes(clean.fieldNotes),
+    capstoneChecks:normalizeCapstoneChecks(clean.capstoneChecks,COURSES),
    dailyVisits:Array.isArray(clean.dailyVisits)?clean.dailyVisits.filter(validDayKey).slice(-400):[],
    lastOpened:normalizeLastOpened(clean.lastOpened,COURSES),
    theme:clean.theme==='light'?'light':'dark',
