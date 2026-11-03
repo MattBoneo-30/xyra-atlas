@@ -703,8 +703,11 @@ async function makeEncryptedBackup(){
 async function unlockEncryptedFile(){
  if(!encryptedFile)return;
  const el=document.getElementById('unlock-backup-password'),password=el?.value||'';if(el)el.value='';
- try{const plain=await decryptBackup(encryptedFile.data,password);const name=encryptedFile.name;encryptedFile=null;previewBackup(plain,name);}
- catch{flash('Could not unlock backup. Check its passphrase and file integrity.');}
+ let plain;
+ try{plain=await decryptBackup(encryptedFile.data,password);}
+ catch{flash('Could not unlock backup. Check its passphrase and file integrity.');return;}
+ try{const name=encryptedFile.name;previewBackup(plain,name);encryptedFile=null;}
+ catch{flash('Backup unlocked, but its learning data could not be imported.');}
 }
 function confirmBackupImport(){
  if(!pendingBackup)return;
