@@ -41,6 +41,9 @@ jobs:
           test -s dist/focusedexam.js
           test -s dist/capstonelabs.js
           test -s dist/capstonechecks.js
+          test -s dist/assets/atlas-archive-gate.svg
+          test -s dist/assets/atlas-lantern-library.svg
+          test -s dist/assets/atlas-starlit-garden.svg
           test -s dist/visualmap.js
           test -s dist/narration.js
           test -s dist/storagehealth.js
