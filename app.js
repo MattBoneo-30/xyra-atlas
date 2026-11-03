@@ -933,6 +933,66 @@ async function handleAction(e) {
   else if(action==='reveal-review') {reviewRevealed=true;render();}
   else if(action==='rate-review') {const card=getDueReviews()[0];if(!card||!reviewRevealed||id!==card.id)return;const outcome=button.dataset.outcome;if(!['again','remembered'].includes(outcome))return;saved.reviews[card.id]=recordReview(saved.reviews[card.id],outcome);reviewRevealed=false;persist();flash(outcome==='remembered'?'Nice recall! Your next review is scheduled.':'Good practice. This card returns in 10 minutes.');}
   else if(action==='toggle-day') toggle('languageDays',`${saved.language}:${id}`);
+
+  else if(action==='challenge-start'){
+   if(route.view!=='language'||!getPhrasePack(saved.language))return;
+   const mode=document.getElementById('language-challenge-mode')?.value;
+   if(!LANGUAGE_CHALLENGE_MODES.includes(mode))return;
+   languageChallengePendingMode=mode;
+   const existing=normalizeLanguageChallenge(saved.languageChallenge,PHRASEBOOK);
+   if(existing&&!languageChallengeResults(existing,PHRASEBOOK).done){modal='challenge-replace';render();return;}
+   saved.languageChallenge=createLanguageChallenge(PHRASEBOOK,saved.language,{mode,seed:Math.floor(Math.random()*4294967296)});
+   if(saved.languageChallenge){persist();render();}
+  }
+  else if(action==='challenge-replace-confirm'){
+   if(modal!=='challenge-replace'||!getPhrasePack(saved.language))return;
+   const next=createLanguageChallenge(PHRASEBOOK,saved.language,{mode:languageChallengePendingMode,seed:Math.floor(Math.random()*4294967296)});
+   if(!next)return;
+   saved.languageChallenge=next;modal='';persist();render();
+  }
+  else if(action==='challenge-resume'){
+   if(route.view!=='language')return;
+   const session=normalizeLanguageChallenge(saved.languageChallenge,PHRASEBOOK);
+   if(!session||!LANGUAGES.some(l=>l.code===session.code))return;
+   saved.language=session.code;phraseIndex=0;phraseRevealed=false;persist();render();
+  }
+  else if(action==='challenge-answer'){
+   if(route.view!=='language')return;
+   const current=normalizeLanguageChallenge(saved.languageChallenge,PHRASEBOOK);
+   if(!current||current.code!==saved.language)return;
+   const q=currentLanguageQuestion(current,PHRASEBOOK);
+   if(!q||button.dataset.question!==q.id)return;
+   const next=answerLanguageChallenge(current,id,PHRASEBOOK);
+   if(next&&next.answers[q.id]!==undefined&&current.answers[q.id]===undefined){
+    saved.languageChallenge=next;persist();render();
+   }
+  }
+  else if(action==='challenge-next'){
+   if(route.view!=='language')return;
+   const current=normalizeLanguageChallenge(saved.languageChallenge,PHRASEBOOK);
+   if(!current||current.code!==saved.language)return;
+   const next=advanceLanguageChallenge(current,PHRASEBOOK);
+   if(!next||next.position<=current.position)return;
+   if(languageChallengeResults(next,PHRASEBOOK).done){
+    saved.languageChallengeHistory=recordLanguageChallengeHistory(saved.languageChallengeHistory,next,PHRASEBOOK);
+   }
+   saved.languageChallenge=next;persist();render();
+  }
+  else if(action==='challenge-new'){
+   if(route.view!=='language')return;
+   const current=normalizeLanguageChallenge(saved.languageChallenge,PHRASEBOOK);
+   if(!current||current.code!==saved.language||!languageChallengeResults(current,PHRASEBOOK).done)return;
+   saved.languageChallenge=null;persist();render();
+  }
+  else if(action==='challenge-discard'){
+   const current=normalizeLanguageChallenge(saved.languageChallenge,PHRASEBOOK);
+   if(route.view!=='language'||!current||current.code!==saved.language||languageChallengeResults(current,PHRASEBOOK).done)return;
+   modal='challenge-discard';render();
+  }
+  else if(action==='challenge-discard-confirm'){
+   if(modal!=='challenge-discard')return;
+   saved.languageChallenge=null;modal='';persist();render();
+  }
   else if(action==='phrase-reveal'){phraseRevealed=true;render();}
   else if(action==='phrase-next'||action==='phrase-prev'){const p=getPhrasePack(saved.language);if(!p)return;phraseIndex=(phraseIndex+(action==='phrase-next'?1:p.phrases.length-1))%p.phrases.length;phraseRevealed=false;render();}
   else if(action==='phrase-known'){const p=getPhrasePack(saved.language);if(!p)return;const word=p.phrases[phraseIndex%p.phrases.length];const known=new Set(saved.phrases[saved.language]||[]);known.has(word.id)?known.delete(word.id):known.add(word.id);saved.phrases[saved.language]=[...known];persist();render();}
