@@ -63,6 +63,7 @@ let saved = readStored();
 const reviewCards = makeReviewCards(COURSES);
 const atlasSearchIndex = buildSearchIndex(COURSES,GLOSSARY,SCENARIOS,CASE_FILES);
 let reviewRevealed = false;
+let mistakeFeedback=null;
 let phraseRevealed = false, phraseIndex = 0;
 let studioTab = 'savings';
 const getDueReviews = () => dueReviewCards(reviewCards, saved.completed, saved.reviews, Date.now(), shadowUnlocked);
@@ -486,6 +487,7 @@ function mistakesPage(){
  ${first?`<section class="mistake-practice"><div class="mistake-heading"><span class="overline">${esc(first.courseTitle)} · ${esc(first.title)}</span><span>${first.wrong} missed ${first.wrong===1?'attempt':'attempts'}</span></div><h2>${esc(first.question)}</h2>
  <div class="mistake-options">${first.options.map((answer,i)=>`<button type="button" class="mistake-option" data-action="mistake-answer" data-id="${esc(first.id)}" data-index="${i}"><span>${String.fromCharCode(65+i)}</span><strong>${esc(answer)}</strong></button>`).join('')}</div>
  <p class="mistake-guidance">Correct answers clear questions from your practice queue. To complete a lesson, return to its full explanation and activity.</p>
+ ${mistakeFeedback?.id===first.id?`<div class="mistake-explanation" role="status"><strong>Not quite — here's what to remember.</strong><p>${esc(first.explanation)}</p></div>`:''}
  ${button(`Read the lesson ${icon('arrow',16)}`,'open-lesson','secondary-button',`data-course="${esc(first.courseId)}" data-lesson="${esc(first.lessonId)}"`)}</section>`:
  `<div class="mistake-empty"><span>✦</span><h2>Your queue is clear.</h2><p>Any missed lesson checks will appear here for another try.</p>${button('Explore lessons','goto-explore','primary-button')}</div>`}
  ${questions.length>1?`<div class="mistake-upcoming"><span class="overline">ALSO TO REVISIT</span>${questions.slice(1,7).map(c=>`<button type="button" data-action="open-lesson" class="mistake-next" data-course="${esc(c.courseId)}" data-lesson="${esc(c.lessonId)}"><span>${esc(c.title)}</span><small>${esc(c.courseTitle)}</small>${icon('arrow',15)}</button>`).join('')}</div>`:''}
@@ -728,8 +730,8 @@ async function handleAction(e) {
   else if(action==='favorite') toggle('favorites',id);
   else if(action==='bookmark') toggle('bookmarks',button.dataset.key);
   else if(action==='answer'){const key=button.dataset.key,choice=Number(button.dataset.index);if(route.view!=='lesson'||key!==idFor(route.courseId,route.lessonId))return;const lesson=findLesson(route.courseId,route.lessonId);if(!lesson||!Number.isInteger(choice)||choice<0||choice>=lesson.quiz.options.length)return;saved.answers[key]=choice;saved.mistakes=recordQuizAttempt(saved.mistakes,COURSES,key,choice);persist();render();}
-  else if(action==='mistakes-open')nav('mistakes');
-  else if(action==='mistake-answer'){if(route.view!=='mistakes')return;const first=buildMistakeQueue(COURSES,saved.mistakes,{includeMature:shadowUnlocked})[0],choice=Number(button.dataset.index);if(!first||first.id!==id||!Number.isInteger(choice)||choice<0||choice>=first.options.length)return;saved.mistakes=recordQuizAttempt(saved.mistakes,COURSES,id,choice);if(choice===first.correct){saved.answers[id]=choice;persist();flash('Correct! That question is cleared. ✦');}else{persist();flash('Not quite. Read the lesson, then try again.');}}
+  else if(action==='mistakes-open'){mistakeFeedback=null;nav('mistakes');}
+  else if(action==='mistake-answer'){if(route.view!=='mistakes')return;const first=buildMistakeQueue(COURSES,saved.mistakes,{includeMature:shadowUnlocked})[0],choice=Number(button.dataset.index);if(!first||first.id!==id||!Number.isInteger(choice)||choice<0||choice>=first.options.length)return;saved.mistakes=recordQuizAttempt(saved.mistakes,COURSES,id,choice);if(choice===first.correct){mistakeFeedback=null;saved.answers[id]=choice;persist();flash('Correct! That question is cleared. ✦');}else{mistakeFeedback={id};persist();render();}}
   else if(action==='complete') {if(button.disabled)return;const key=button.dataset.key;const [cid,lid]=key.split(':');const l=findLesson(cid,lid);if(l && saved.answers[key]===l.quiz.correct && !isCompleted(key)){saved.completed.push(key);persist();flash('Lesson complete. You earned 60 XP ✦');}}
   else if(action==='language') nav('language');
   else if(action==='goto-journey') nav('journey');

@@ -336,10 +336,14 @@ try{
   expect((await getState(page)).mistakes?.['psychology:thoughts']?.wrong===1,'incorrect quiz records a missed question');
   await page.reload({waitUntil:'domcontentloaded'});
   expect((await getState(page)).mistakes?.['psychology:thoughts']?.wrong===1,'missed question survives reload');
+  const rail=await page.locator('.desktop-rail').evaluate(el=>({overflow:getComputedStyle(el).overflowY,scrollHeight:el.scrollHeight,clientHeight:el.clientHeight}));
+  expect(rail.overflow==='auto'&&rail.scrollHeight>rail.clientHeight,'long desktop sidebar is independently scrollable');
   await page.locator('.desktop-rail [data-action="mistakes-open"]').click();
   await page.locator('.mistakes-page').waitFor();
   expect(await page.locator('.mistake-option').count()===3,'missed question appears for re-practice');
   await page.locator('.mistake-option[data-index="0"]').click();
+  await page.locator('.mistake-explanation').waitFor();
+  expect((await page.locator('.mistake-explanation').textContent()).length>60,'wrong retry shows an explanatory learning hint');
   expect((await getState(page)).mistakes?.['psychology:thoughts']?.wrong===2,'repeat incorrect answer increments count');
   await page.locator('.mistake-option[data-index="1"]').click();
   await page.locator('.mistake-empty').waitFor();
