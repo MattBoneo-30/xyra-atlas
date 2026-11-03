@@ -436,6 +436,14 @@ try{
   expect(overflow.scroll<=overflow.width+8,'exam remains within mobile screen width');
   await page.locator('[data-action="exam-new"]').click();
   expect(await page.locator('#exam-course').count()===1,'completed exam can be restarted');
+  await page.locator('[data-action="exam-start"]').click();
+  await page.locator('[data-action="exam-discard"]').click();
+  await page.getByRole('button',{name:'Keep practicing'}).click();
+  expect((await getState(page)).exam?.ids?.length>0,'cancelled discard preserves practice answers');
+  await page.locator('[data-action="exam-discard"]').click();
+  await page.locator('[data-action="exam-discard-confirm"]').click();
+  expect((await getState(page)).exam===null,'confirmed discard clears only current exam');
+  expect(await page.locator('#exam-course').count()===1,'learner can choose another exam after discard');
  });
 
 }finally{
