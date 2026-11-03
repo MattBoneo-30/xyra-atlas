@@ -1187,6 +1187,25 @@ try{
  });
 
 
+ await smoke('ph-casework-offline',{viewport:{width:390,height:844},isMobile:true,hasTouch:true,deviceScaleFactor:2},async(page,context)=>{
+  await page.goto(BASE+'/#/course/laws',{waitUntil:'domcontentloaded'});
+  await page.locator('.curriculum-ladder').waitFor();
+  await page.locator('[data-action="course-stage-filter"][data-id="Advanced"]').click();
+  await page.locator('.lesson-list [data-action="open-lesson"][data-lesson="ph-data-access-case"]').click();
+  await page.locator('.reading-page').waitFor();
+  expect((await page.locator('.reading-page').textContent()).includes('Philippine'),'jurisdiction clearly stated');
+  expect(await page.locator('.lesson-sources a').count()===2,'original official resources available');
+  await page.evaluate(async()=>{await navigator.serviceWorker.ready;});
+  await page.reload({waitUntil:'domcontentloaded'});
+  await page.waitForFunction(()=>Boolean(navigator.serviceWorker.controller));
+  await context.setOffline(true);
+  await page.reload({waitUntil:'domcontentloaded'});
+  await page.locator('.reading-page').waitFor();
+  expect((await page.locator('.reading-page').textContent()).includes('Philippine'),'casework lesson usable offline');
+  await context.setOffline(false);
+ });
+
+
 }finally{
  if(browser)await browser.close();
  server.kill('SIGTERM');

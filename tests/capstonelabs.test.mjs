@@ -5,10 +5,10 @@ import {COURSES,totalLessons,findLesson,findCourse} from '../data.js';
 import {CAPSTONE_LABS,CAPSTONE_LAB_COUNT} from '../capstonelabs.js';
 import {examPool} from '../exam.js';
 
-test('every subject has one distinct applied capstone and all 131 lessons remain accessible',()=>{
+test('every subject has one distinct applied capstone and all original lessons and casework remain accessible',()=>{
  assert.equal(CAPSTONE_LAB_COUNT,14);
  assert.equal(COURSES.length,14);
- assert.equal(totalLessons,131);
+ assert.equal(totalLessons,134);
  assert.deepEqual(new Set(Object.keys(CAPSTONE_LABS)),new Set(COURSES.map(c=>c.id)));
  for(const course of COURSES){
   const labs=CAPSTONE_LABS[course.id];
