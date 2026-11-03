@@ -11,6 +11,7 @@
     "test:browser": "node tests/browser-smoke.mjs",
     "audit:curriculum": "node scripts/audit-curriculum.mjs",
     "export:editorial": "node scripts/export-editorial-review.mjs",
+    "audit:editorial": "node scripts/audit-editorial-attestations.mjs",
     "check:sources": "node scripts/check-course-sources.mjs",
     "check": "node --check app.js && node --check paths.js && npm test && npm run build"
   },
