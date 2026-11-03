@@ -16,7 +16,7 @@ const names=[
 ];
 test('every capstone has its own accessible original offline illustration',()=>{
  assert.equal(CHAPTER_ART_COUNT,14);
- assert.equal(new Set(Object.values(CHAPTER_ART).map(a=>a.src)).size,4);
+ assert.equal(new Set(Object.values(CHAPTER_ART).map(a=>a.src)).size,14);
  const sw=fs.readFileSync('sw.js','utf8');
  for(const [key,item] of Object.entries(CHAPTER_ART)){
   const [courseId,lessonId]=key.split(':');
