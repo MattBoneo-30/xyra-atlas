@@ -497,9 +497,82 @@ const CASES={
     ]
   }
 };
+const RUBRICS={
+  "psychology": [
+    "I separated the exact message from my interpretation of its intent.",
+    "I considered at least three explanations and identified missing evidence.",
+    "I chose a respectful, specific clarification instead of diagnosing motives."
+  ],
+  "laws": [
+    "I named the particular information requested from my own account.",
+    "I selected an official privacy channel without sending passwords or OTPs.",
+    "I explained a possible legal or verification limit before escalating."
+  ],
+  "business": [
+    "I calculated unit contribution and the fixed-cost break-even quantity.",
+    "I identified a real production constraint and one plausible demand scenario.",
+    "I defined measurable evidence that would justify expanding, revising, or stopping."
+  ],
+  "savings": [
+    "I listed essential obligations by due date using money actually available.",
+    "I stress-tested a repair or income interruption with explicit cash numbers.",
+    "I separated predictable bills from emergencies and accounted for account-access limits."
+  ],
+  "time": [
+    "I represented dependencies instead of treating every task as independent.",
+    "I compared realistic available hours with required effort and a contingency buffer.",
+    "I documented one safe scope reduction without removing critical testing or sleep."
+  ],
+  "languages": [
+    "My dialogue includes requests, responses, a clarification, and a courteous close.",
+    "I attempted target-language retrieval before checking my notes.",
+    "I flagged uncertain wording or pronunciation for verification with credible examples."
+  ],
+  "communication": [
+    "I used concrete observations without insulting a person's character.",
+    "I invited an explanation and named a feasible, time-specific request.",
+    "I identified how to review the agreement while respecting confidentiality."
+  ],
+  "thinking": [
+    "I stated the exact percentage claim and the real measured population.",
+    "I examined selection, denominator, and missing methodological details.",
+    "I wrote a conclusion no stronger than the available evidence supports."
+  ],
+  "digital": [
+    "I verified suspicious events through the official service independently.",
+    "I prioritized linked-email security, account recovery, and session revocation.",
+    "I identified at least one phishing or support impersonation trap to avoid."
+  ],
+  "career": [
+    "I explained the problem and my actual role without inflating the project.",
+    "I supported one technical decision with inspectable, sanitized evidence.",
+    "I disclosed a genuine limitation and did not invent performance metrics."
+  ],
+  "science": [
+    "I identified population, method, exposure, comparison, and measured outcome.",
+    "I distinguished observed association from a supported causal claim.",
+    "I named a plausible limitation and wrote a bounded conclusion."
+  ],
+  "relationships": [
+    "I phrased a boundary as an action I can control.",
+    "I described accountable repair without demanding forgiveness.",
+    "I recognized a safety warning sign that calls for support instead of confrontation."
+  ],
+  "negotiation": [
+    "I compared total terms and workload rather than gross price alone.",
+    "I stated an actually available alternative and a realistic walk-away condition.",
+    "I sought a written, verifiable scope without bluffing or invented urgency."
+  ],
+  "shadow": [
+    "I identified the exact threat, demand, secrecy, and pressure in the scenario.",
+    "I suggested protective choices that do not depend on escalating confrontation.",
+    "I stated when trusted local or emergency support matters more than a script."
+  ]
+};
 export const CAPSTONE_LABS=Object.freeze(Object.fromEntries(
  Object.entries(CASES).map(([courseId,entry])=>[courseId,[{
   id:entry.id,title:entry.title,stage:'Advanced',minutes:24,intro:entry.intro,
+  isCapstone:true,rubric:RUBRICS[courseId],
   sections:entry.sections.map(([heading,body])=>({heading,body})),
   example:entry.example,task:entry.task,
   quiz:{question:entry.quiz[0],options:entry.quiz[1],correct:entry.quiz[2],explanation:entry.quiz[3]},
