@@ -251,3 +251,6 @@ html[data-theme=light]{color-scheme:light;--bg:#fbf5f6;--bg-raised:#fff9fa;--car
 .exam-invite-icon{display:grid;place-items:center;flex:0 0 50px;height:50px;border-radius:15px;color:var(--gold);background:var(--card-strong)}
 .exam-invite>div:nth-child(2){flex:1;min-width:180px}.exam-invite h2{font-size:23px;margin:6px 0}.exam-invite p{color:var(--muted);line-height:1.55;font-size:13px;margin:0}
 @media(max-width:560px){.exam-hero{padding:23px 20px}.exam-panel{padding:20px 17px}.exam-invite{align-items:flex-start}.exam-invite .small-button{width:100%}.exam-review-item{padding:17px}.exam-option{padding:12px;gap:11px}}
+
+.exam-control-row{display:flex;justify-content:flex-end;margin-top:22px;padding-top:18px;border-top:1px solid var(--line)}.exam-control-row .secondary-button{min-height:40px}
+@media(max-width:560px){.exam-control-row .secondary-button{width:100%}}
