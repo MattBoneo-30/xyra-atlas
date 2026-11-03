@@ -153,6 +153,48 @@ try{
   await page.screenshot({path:snapshots+'/mobile-offline.png',fullPage:true});
   await context.setOffline(false);
  });
+ await smoke('small-phone-consent', {viewport:{width:320,height:720},isMobile:true,hasTouch:true,deviceScaleFactor:2},async(page)=>{
+  const home=await mobileOverflow(page);
+  expect(home.scroll<=home.width+2,'320px home has no horizontal page overflow: '+JSON.stringify(home));
+  await page.locator('.bottom-nav [data-action="nav"][data-id="explore"]').click();
+  await page.locator('.course-list').waitFor();
+  const listing=await mobileOverflow(page);
+  expect(listing.scroll<=listing.width+2,'320px course directory fits the viewport: '+JSON.stringify(listing));
+  await page.locator('.course-list [data-action="open-course"][data-id="shadow"]').click();
+  await page.locator('.modal-card').waitFor();
+  expect(await page.locator('[data-action="enter-shadow"]').isDisabled(),'mature-content entry requires acknowledgment');
+  await page.locator('#age-agree').check();
+  expect(await page.locator('[data-action="enter-shadow"]').isEnabled(),'adult acknowledgment enables deliberate entry');
+  await page.locator('[data-action="enter-shadow"]').click();
+  await page.locator('.course-page').waitFor();
+  expect(await page.locator('.course-heading').count()===1,'age acknowledgment opens selected course');
+  const matureOverflow=await mobileOverflow(page);
+  expect(matureOverflow.scroll<=matureOverflow.width+2,'mature course does not overflow narrow phone');
+  await page.reload({waitUntil:'domcontentloaded'});
+  await page.locator('.modal-card').waitFor();
+  expect(await page.locator('[data-action="enter-shadow"]').isDisabled(),'mature-content acknowledgment is not silently persisted');
+  await page.screenshot({path:snapshots+'/small-phone-consent.png',fullPage:true});
+ });
+ await smoke('local-recovery', {viewport:{width:1280,height:800},acceptDownloads:true},async(page)=>{
+  const corrupted='{broken-progress';
+  await page.evaluate(value=>localStorage.setItem('xyra-atlas-state-v1',value),corrupted);
+  await page.reload({waitUntil:'domcontentloaded'});
+  await page.locator('.storage-health-alert').waitFor();
+  expect(await page.evaluate(()=>localStorage.getItem('xyra-atlas-state-v1'))===corrupted,'invalid original progress is protected from automatic overwrite');
+  const downloadEvent=page.waitForEvent('download');
+  await page.locator('[data-action="storage-export-recovery"]').click();
+  const download=await downloadEvent;
+  expect(download.suggestedFilename().includes('unreadable-recovery'),'corrupted progress can be exported as a recovery copy');
+  await page.locator('.desktop-rail [data-action="nav"][data-id="you"]').click();
+  await page.locator('.storage-health-panel').waitFor();
+  expect((await page.locator('.storage-health-panel').textContent()).includes('Recovery needed'),'settings explain storage recovery state');
+  await page.locator('[data-action="reset-dialog"]').click();
+  await page.locator('[data-action="confirm-reset"]').click();
+  await page.locator('.home-page').waitFor();
+  expect(await page.locator('.storage-health-alert').count()===0,'explicit reset clears the recovery warning');
+  const restored=await getState(page);
+  expect(Array.isArray(restored.completed),'normal browser storage is writable after explicit reset');
+ });
 }finally{
  if(browser)await browser.close();
  server.kill('SIGTERM');
