@@ -11,6 +11,7 @@ import {buildLessonNarration} from './narration.js';
 import {parseStoredEnvelope,storageHealthMessage} from './storagehealth.js';
 import {normalizeOfflineReport,offlineAdvice} from './offline.js';
 import {parseBackupEnvelope,normalizeLessonKeys,normalizeQuizAnswers,normalizeLastOpened,backupCounts} from './backup.js';
+import {encryptBackup,decryptBackup,isEncryptedBackup} from './backupcrypto.js';
 import {buildNotebookIndex,searchNotebook} from './notebook.js';
 import {normalizeMistakes,recordQuizAttempt,buildMistakeQueue} from './mistakes.js';
 import { createDailyQuest,dailyQuestProgress } from './dailyquest.js';
@@ -77,6 +78,7 @@ let globalSearchKind = 'all';
 let notebookQuery='';
 let modal = '';
 let pendingBackup=null;
+let encryptedFile=null;
 let gateConfirmed = false;
 let shadowUnlocked = false; // A content acknowledgment, not a secure identity or age verification system.
 let installEvent = null;
@@ -603,7 +605,7 @@ function you() {
   return `<main class="page you-page"><div class="page-title"><span class="overline">YOUR LITTLE CORNER OF THE WORLD</span><h1>Made for <em>you.</em></h1><p>Private progress. Your pace. Your rules.</p></div>
     <div class="profile-card"><div class="profile-avatar">✦</div><div><span class="overline">ATLAS EXPLORER</span><h2>${esc(actualName())}</h2><p>Level ${Math.floor(finished()/6)+1} · ${finished()} lessons completed</p></div></div>
     <div class="settings-panel"><h2>Make it yours</h2><label class="field-label" for="profile-name">What should Atlas call you?</label><div class="name-row"><input id="profile-name" value="${esc(saved.userName)}" maxlength="40" placeholder="Curious learner"/>${button('Save','save-name','small-button')}</div><div class="settings-row"><span class="setting-icon">${icon(saved.theme==='dark'?'moon':'sun',21)}</span><div><strong>Appearance</strong><small>Switch between twilight and daylight</small></div>${button(saved.theme==='dark'?'Dark':'Light','theme','small-button')}</div><div class="settings-row"><span class="setting-icon">${icon(navigator.onLine?'wifi':'wifi-off',21)}</span><div><strong>Connection</strong><small>Lessons are included in your offline app</small></div><span class="setting-value">${navigator.onLine?'Online':'Offline'}</span></div><div class="settings-row"><span class="setting-icon">${icon('book',21)}</span><div><strong>Offline Library</strong><small>Check downloaded lessons and repair missing files</small></div>${button('Manage','offline-open','small-button')}</div><div class="settings-row"><span class="setting-icon">${icon('download',21)}</span><div><strong>Install Xyra Atlas</strong><small>Keep it on your phone's home screen</small></div>${button('How?','install','small-button')}</div></div>
-    <div class="settings-panel"><h2>Your data, your choice</h2><div class="storage-health-panel"><strong>Browser storage: ${storageProblem?storageProblem==='corrupt'?'Recovery needed':'Saving unavailable':'No save error detected'}</strong><span>${storageProblem?esc(storageHealthMessage(storageProblem)):'Progress is saved only in this browser, not synced to other devices.'}</span>${button('Try saving now','storage-retry','small-button')}</div><p class="settings-description">Progress is stored only in this browser on this device. It is not synced to a server. Export a backup before switching phones or clearing browser data.</p><div class="data-actions">${button(`${icon('download',18)} Export backup`,'export','secondary-button')}${button(`${icon('upload',18)} Import backup`,'import','secondary-button')}${button(`${icon('trash',18)} Reset progress`,'reset-dialog','outline-danger')}</div><input type="file" id="backup-file" accept=".json,application/json" hidden /></div>
+    <div class="settings-panel"><h2>Your data, your choice</h2><div class="storage-health-panel"><strong>Browser storage: ${storageProblem?storageProblem==='corrupt'?'Recovery needed':'Saving unavailable':'No save error detected'}</strong><span>${storageProblem?esc(storageHealthMessage(storageProblem)):'Progress is saved only in this browser, not synced to other devices.'}</span>${button('Try saving now','storage-retry','small-button')}</div><p class="settings-description">Progress is stored only in this browser on this device. It is not synced to a server. Export a backup before switching phones or clearing browser data.</p><div class="data-actions">${button(`${icon('download',18)} Export backup`,'export','secondary-button')}${button(`${icon('lock',18)} Encrypted backup`,'backup-encrypted-export','secondary-button')}${button(`${icon('upload',18)} Import backup`,'import','secondary-button')}${button(`${icon('trash',18)} Reset progress`,'reset-dialog','outline-danger')}</div><input type="file" id="backup-file" accept=".json,application/json" hidden /></div>
     <div class="settings-panel"><h2>About Xyra Atlas</h2><p class="settings-description">A pocket atlas for the art of living—designed for curiosity, independence and the courage to learn difficult things.</p><p class="fineprint">Atlas 1.24 · Practice Queue edition. Some subjects are introductions, not complete professional courses. Laws vary by jurisdiction. Adult content is educational. There are no ads, trackers or accounts in this edition.</p>${button(`A note from Xyra ${chevron}`,'open-corner','text-action')}</div>
   </main>`;
 }
@@ -613,6 +615,8 @@ function modalView() {
   const inner = modal==='shadow' ? `<div class="modal-icon dark-icon">${icon('moon',28)}</div><span class="overline">A DIFFERENT KIND OF LESSON</span><h2>Enter the Shadow Library?</h2><p>This section explores manipulation, coercive behavior, psychological pressure, deception, adult intimacy, and sexual health. The purpose is understanding and informed choice—not abuse or exploitation.</p><div class="age-warning">${icon('info',19)} Contains mature educational discussions intended for adults 18+.</div><label class="checkbox-label"><input type="checkbox" id="age-agree" ${gateConfirmed?'checked':''}/><span>I am at least 18, and I understand the purpose of this material.</span></label>${button(`Enter the library ${icon('arrow',18)}`,'enter-shadow','primary-button',gateConfirmed?'':'disabled')}` :
   modal==='install' ? `<div class="modal-icon">${icon('download',26)}</div><span class="overline">TAKE YOUR ATLAS WITH YOU</span><h2>Install Xyra Atlas</h2><p>After the first successful online visit, the app shell and included lessons can work offline once fully cached.</p><div class="install-steps"><strong>On iPhone / iPad</strong><p>Open this website in Safari. Tap Share, then “Add to Home Screen” and enable “Open as Web App”.</p><strong>On Android</strong><p>Open in Chrome. Use the browser menu and select “Install app” or “Add to Home screen”, when available.</p></div>${installEvent?button(`Install now ${icon('download',18)}`,'install-prompt','primary-button'):''}<p class="fineprint">Installing does not automatically sync data across phones. Use Export/Import backup to transfer progress.</p>` :
   modal==='reset' ? `<div class="modal-icon warning-icon">${icon('alert',26)}</div><h2>Reset your Atlas?</h2><p>All lesson progress, saved lessons, language sprint checks and preferences on this browser will be erased. Export a backup first if you need it.</p>${button('Cancel','close-modal','secondary-button')}${button('Erase my local progress','confirm-reset','outline-danger')}` :
+  modal==='backup-encrypt' ? `<div class="modal-icon">${icon('lock',26)}</div><span class="overline">PRIVATE PROGRESS BACKUP</span><h2>Encrypt your Atlas</h2><p>Create a password-protected JSON backup, encrypted locally with AES-256-GCM. Your passphrase is never saved or uploaded. If you lose it, the file cannot be recovered.</p><label class="field-label" for="encrypt-backup-password">Passphrase (at least 12 characters)</label><input id="encrypt-backup-password" class="encrypted-backup-input" type="password" autocomplete="new-password" maxlength="256"/><label class="field-label" for="encrypt-backup-confirm">Confirm passphrase</label><input id="encrypt-backup-confirm" class="encrypted-backup-input" type="password" autocomplete="new-password" maxlength="256"/>${button('Cancel','backup-crypto-cancel','secondary-button')}${button('Encrypt and download','backup-encrypt-confirm','primary-button')}` :
+  modal==='backup-unlock' && encryptedFile ? `<div class="modal-icon">${icon('lock',26)}</div><span class="overline">PRIVATE PROGRESS BACKUP</span><h2>Unlock this backup</h2><p>Enter the original passphrase. After decryption, you will review the contents before approving any replacement of local progress.</p><label class="field-label" for="unlock-backup-password">Backup passphrase</label><input id="unlock-backup-password" class="encrypted-backup-input" type="password" autocomplete="off" maxlength="256"/>${button('Cancel','backup-crypto-cancel','secondary-button')}${button('Unlock and review','backup-unlock-confirm','primary-button')}` :
   modal==='backup-preview' && pendingBackup ? `<div class="modal-icon">${icon('upload',26)}</div><span class="overline">REVIEW BEFORE RESTORING</span><h2>Restore this backup?</h2><p>Importing will <strong>replace</strong> the learning progress, notes, and preferences currently saved on this device. It will not merge the two libraries.</p>
   <p class="backup-file-label">${esc(pendingBackup.sourceName)}${pendingBackup.exportedAt?' · '+esc(pendingBackup.exportedAt):''}</p>
   <div class="backup-preview-grid" aria-label="Imported progress summary"><div><strong>${pendingBackup.counts.lessons}</strong><span>Completed lessons</span></div><div><strong>${pendingBackup.counts.notes}</strong><span>Private notes</span></div><div><strong>${pendingBackup.counts.quizzes}</strong><span>Quiz answers</span></div><div><strong>${pendingBackup.counts.bookmarks}</strong><span>Bookmarks</span></div></div>
@@ -661,24 +665,46 @@ function normalizedBackupState(clean){
    userName:typeof clean.userName==='string'?clean.userName.slice(0,40):''
  };
 }
+function previewBackup(text,name){
+ const parsed=parseBackupEnvelope(text),candidate=normalizedBackupState(parsed.state);
+ pendingBackup={state:candidate,exportedAt:parsed.exportedAt,sourceName:String(name||'Atlas backup').slice(0,120),counts:backupCounts(candidate)};
+ modal='backup-preview';render();
+}
 function answerBackup(e){
  const file=e.target.files?.[0];if(!file)return;
  if(file.size>1024*1024){flash('Backup is too large (1 MB maximum).');e.target.value='';return;}
  const reader=new FileReader();
  reader.onload=()=>{
   try{
-   const parsed=parseBackupEnvelope(String(reader.result));
-   const candidate=normalizedBackupState(parsed.state);
-   pendingBackup={state:candidate,exportedAt:parsed.exportedAt,sourceName:String(file.name||'Atlas backup').slice(0,120),
-     counts:backupCounts(candidate)};
-   modal='backup-preview';
-   render();
-  }catch(err){
-   pendingBackup=null;flash('Import failed: '+(err instanceof Error?err.message:'Invalid backup.'));
-  }finally{e.target.value='';}
+   const raw=String(reader.result),data=JSON.parse(raw);
+   if(isEncryptedBackup(data)){encryptedFile={data,name:String(file.name||'Protected Atlas').slice(0,120)};modal='backup-unlock';render();}
+   else previewBackup(raw,file.name);
+  }catch(err){pendingBackup=null;encryptedFile=null;flash('Import failed: '+(err instanceof Error?err.message:'Invalid backup.'));}
+  finally{e.target.value='';}
  };
- reader.onerror=()=>{pendingBackup=null;e.target.value='';flash('Unable to read the selected backup.');};
+ reader.onerror=()=>{encryptedFile=null;e.target.value='';flash('Unable to read selected backup.');};
  reader.readAsText(file);
+}
+function saveBackupFile(contents,filename){
+ const blob=new Blob([contents],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');
+ a.href=url;a.download=filename;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+async function makeEncryptedBackup(){
+ if(storageProblem==='corrupt'||storageProblem==='read-failed'){flash('Recover browser storage before exporting.');return;}
+ const a=document.getElementById('encrypt-backup-password'),b=document.getElementById('encrypt-backup-confirm');
+ const password=a?.value||'',repeat=b?.value||'';
+ if(password.length<12||password.length>256){flash('Passphrase must be 12–256 characters.');return;}
+ if(password!==repeat){flash('Passphrases do not match.');return;}
+ const plain=JSON.stringify({format:'xyra-atlas-backup',version:1,exportedAt:new Date().toISOString(),state:saved});
+ a.value='';b.value='';
+ try{const payload=await encryptBackup(plain,password);saveBackupFile(payload,`xyra-atlas-private-${today()}.json`);modal='';render();flash('Encrypted backup exported. Keep its passphrase safe.');}
+ catch{flash('Could not encrypt the backup. Use a secure, up-to-date browser.');}
+}
+async function unlockEncryptedFile(){
+ if(!encryptedFile)return;
+ const el=document.getElementById('unlock-backup-password'),password=el?.value||'';if(el)el.value='';
+ try{const plain=await decryptBackup(encryptedFile.data,password);const name=encryptedFile.name;encryptedFile=null;previewBackup(plain,name);}
+ catch{flash('Could not unlock backup. Check its passphrase and file integrity.');}
 }
 function confirmBackupImport(){
  if(!pendingBackup)return;
@@ -774,6 +800,10 @@ async function handleAction(e) {
   else if(action==='install') {modal='install';render();}
   else if(action==='install-prompt' && installEvent) {const prompt=installEvent;installEvent=null;modal='';render();try{await prompt.prompt();}catch{flash('Use your browser menu to install.');}}
   else if(action==='import') document.getElementById('backup-file')?.click();
+  else if(action==='backup-encrypted-export'){modal='backup-encrypt';render();}
+  else if(action==='backup-encrypt-confirm')await makeEncryptedBackup();
+  else if(action==='backup-unlock-confirm')await unlockEncryptedFile();
+  else if(action==='backup-crypto-cancel'){encryptedFile=null;modal='';render();}
   else if(action==='backup-confirm')confirmBackupImport();
   else if(action==='backup-cancel'){pendingBackup=null;modal='';render();}
   else if(action==='export') exportBackup();
@@ -781,7 +811,7 @@ async function handleAction(e) {
   else if(action==='storage-retry'){if(storageProblem==='corrupt'||storageProblem==='read-failed'){flash('Existing data is protected. Use a valid backup or reset intentionally.');}else{const ok=persist();flash(ok?'Progress saved successfully in this browser.':'Saving is still blocked; export a backup.');}}
   else if(action==='reset-dialog') {modal='reset';render();}
   else if(action==='confirm-reset') {recoveryRaw=null;storageProblem=null;storageWarningShown=false;saved=createInitialState();shadowUnlocked=false;gateConfirmed=false;reviewRevealed=false;phraseRevealed=false;phraseIndex=0;studioTab='savings';visitToday();persist();modal='';nav('home');flash('Local progress reset.');}
-  else if(action==='close-modal') {if(modal==='backup-preview')pendingBackup=null;modal='';if(['course','lesson'].includes(route.view)&&route.courseId==='shadow'&&!shadowUnlocked)nav('explore');else render();requestAnimationFrame(()=>document.getElementById('atlas-main')?.focus());}
+  else if(action==='close-modal') {if(modal==='backup-preview')pendingBackup=null;if(modal==='backup-unlock')encryptedFile=null;modal='';if(['course','lesson'].includes(route.view)&&route.courseId==='shadow'&&!shadowUnlocked)nav('explore');else render();requestAnimationFrame(()=>document.getElementById('atlas-main')?.focus());}
   else if(action==='enter-shadow') {if(!gateConfirmed)return;shadowUnlocked=true;modal='';nav('course/shadow');}
   else if(action==='open-corner') nav('mentor');
   else if(action==='open-updates') {modal='updates';render();}
@@ -808,7 +838,7 @@ document.addEventListener('input',e=>{
   if(e.target.id==='glossary-search') {const pos=e.target.selectionStart;glossaryQuery=e.target.value;render();const field=document.getElementById('glossary-search');if(field){field.focus();try{field.setSelectionRange(pos,pos);}catch{}}}
   if(e.target.id==='course-search') {const pos=e.target.selectionStart;query=e.target.value;render();const input=document.getElementById('course-search');if(input){input.focus();try{input.setSelectionRange(pos,pos);}catch{}}}
 });
-document.addEventListener('keydown',e=>{if(e.key==='/'&&!modal&&!e.altKey&&!e.ctrlKey&&!e.metaKey&&!['INPUT','TEXTAREA','SELECT'].includes(document.activeElement?.tagName)&&!document.activeElement?.isContentEditable){e.preventDefault();nav('search');requestAnimationFrame(()=>document.getElementById('atlas-global-search')?.focus());}if(e.key==='Escape'&&modal){if(modal==='backup-preview')pendingBackup=null;modal='';if(['course','lesson'].includes(route.view)&&route.courseId==='shadow'&&!shadowUnlocked)nav('explore');else render();requestAnimationFrame(()=>document.getElementById('atlas-main')?.focus());} if((e.key==='Enter'||e.key===' ')&&e.target.classList?.contains('shadow-preview')) {e.preventDefault();gateConfirmed=false;modal='shadow';render();}});
+document.addEventListener('keydown',e=>{if(e.key==='/'&&!modal&&!e.altKey&&!e.ctrlKey&&!e.metaKey&&!['INPUT','TEXTAREA','SELECT'].includes(document.activeElement?.tagName)&&!document.activeElement?.isContentEditable){e.preventDefault();nav('search');requestAnimationFrame(()=>document.getElementById('atlas-global-search')?.focus());}if(e.key==='Escape'&&modal){if(modal==='backup-preview')pendingBackup=null;if(modal==='backup-unlock')encryptedFile=null;modal='';if(['course','lesson'].includes(route.view)&&route.courseId==='shadow'&&!shadowUnlocked)nav('explore');else render();requestAnimationFrame(()=>document.getElementById('atlas-main')?.focus());} if((e.key==='Enter'||e.key===' ')&&e.target.classList?.contains('shadow-preview')) {e.preventDefault();gateConfirmed=false;modal='shadow';render();}});
 document.addEventListener('keydown',e=>{
  if(e.key!=='Tab'||!modal)return;
  const dialog=document.querySelector('.modal-card');if(!dialog)return;

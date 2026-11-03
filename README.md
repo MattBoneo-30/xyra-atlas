@@ -4,7 +4,7 @@
 
 ![Xyra Atlas emblem](assets/atlas-mark.svg)
 
-## Current release: Practice Queue Navigation 1.24
+## Current release: Encrypted Progress Backups 1.25
 
 - A violet-and-gold responsive interface, **14 distinct original vector course worlds**, Xyra's Corner artwork, landscape hero and a home-screen app icon. The same course identity appears on home tiles, category cards, course covers and lessons.
 - 14 learning subjects and **88 interactive lessons**: 52 short starters plus 36 structured, referenced field guides with real-world worked examples, exercises and quizzes (counts verified by tests).
@@ -20,6 +20,7 @@
 
 **New in 0.5:** Psychology (evidence journaling, habits, relational inference); Philippine law (Constitution, data privacy, consumer complaints); business (customer discovery, unit economics, Philippine launch steps); money (irregular bills, emergency planning, investment red flags). Sources are linked for optional online verification; lessons work offline. Links and regulations can change.
 
+- **Encrypted Progress Backups:** Optional offline AES-256-GCM encrypted backups with PBKDF2-SHA256 (250,000 iterations), fresh salt and IV for each export. Unlocking a protected file opens the normal preview before any replacement. Passwords are not saved or sent; losing one makes the protected file unrecoverable. Plain JSON backups remain available.
 - **Practice Queue Navigation:** Mistake Lab now has accessible previous/next controls and a question counter. Learners can choose which missed topic to practice next, see the active question, and move between topics without leaving the lab. The queue still clears only after a correct response.
 - **Desktop navigation and explanations:** The growing desktop tool sidebar is independently scrollable, including keyboard/wheel navigation to lower items. Incorrect Mistake Lab retries display the lesson's explanatory feedback before another attempt.
 - **Mistake Lab:** Incorrect lesson quiz answers create a private, offline re-practice queue. Learners can retry questions without losing previous completed lessons, clear them by answering correctly, or reopen the lesson. Mature-course content remains gated. Queue state is validated and included in JSON backups.
