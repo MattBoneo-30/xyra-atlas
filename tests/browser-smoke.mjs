@@ -1253,6 +1253,25 @@ try{
  });
 
 
+ await smoke('foundation-casework-mobile-offline',{viewport:{width:390,height:844},isMobile:true,hasTouch:true,deviceScaleFactor:2},async(page,context)=>{
+   await page.goto(BASE+'/#/lesson/business/pricing',{waitUntil:'domcontentloaded'});
+   await page.locator('.reading-page').waitFor();
+   expect(await page.locator('.lesson-content section[id^="lesson-section-"]').count()===3,'foundation lesson now includes applied teaching');
+   expect((await page.locator('.worked-example').textContent()).includes('₱14,100'),'grounded business worked calculation is present');
+   expect(await page.locator('.lesson-sources a').count()===1,'independent further-reading link visible');
+   const bounds=await mobileOverflow(page);
+   expect(bounds.scroll<=bounds.width+8,'added case fits mobile width');
+   await page.evaluate(async()=>{await navigator.serviceWorker.ready;});
+   await page.reload({waitUntil:'domcontentloaded'});
+   await page.waitForFunction(()=>Boolean(navigator.serviceWorker.controller));
+   await context.setOffline(true);
+   await page.reload({waitUntil:'domcontentloaded'});
+   await page.locator('.worked-example').waitFor();
+   expect((await page.locator('.worked-example').textContent()).includes('₱14,100'),'applied practice remains available offline');
+   await context.setOffline(false);
+ });
+
+
 }finally{
  if(browser)await browser.close();
  server.kill('SIGTERM');

@@ -5,6 +5,7 @@ import { MASTERY_TRACKS } from './masterytracks.js';
 import { CAPSTONE_LABS } from './capstonelabs.js';
 import { PH_CASEWORK } from './phcasework.js';
 import { ADVANCED_ENRICHMENTS } from './advancedenrichments.js';
+import { FOUNDATION_CASES } from './foundationcases.js';
 /** Xyra Atlas starter curriculum. Educational content is general information, not professional advice. */
 const lesson = (id, title, minutes, stage, intro, first, second, task, question, options, correct, explanation) => ({
   id, title, minutes, stage, intro,
@@ -264,6 +265,16 @@ for(const entry of COURSES){
     original.example=addition.example;
     original.sources=addition.sources.map(source=>({...source}));
   }
+}
+for(const entry of COURSES) {
+ const cases=FOUNDATION_CASES[entry.id]||{};
+ for(const original of entry.lessons){
+  const extra=cases[original.id];
+  if(!extra)continue;
+  original.sections.push({...extra.section});
+  original.example=extra.example;
+  original.sources=extra.sources.map(s=>({...s}));
+ }
 }
 for(const entry of COURSES) if(DEEP_TRACKS[entry.id]) entry.lessons.push(...DEEP_TRACKS[entry.id]);
 for(const entry of COURSES) if(FIELD_GUIDES[entry.id]) entry.lessons.push(...FIELD_GUIDES[entry.id]);
