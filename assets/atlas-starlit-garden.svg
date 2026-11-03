@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 700" role="img" aria-label="The Starlit Garden Path, a glowing stone bridge through flowering trees toward an ancient golden observatory">
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="700" viewBox="0 0 1400 700" role="img" aria-label="The Starlit Garden Path, a glowing stone bridge through flowering trees toward an ancient golden observatory">
 <defs>
  <linearGradient id="sky" x2="0" y2="1"><stop stop-color="#201b52"/><stop offset=".38" stop-color="#55477f"/><stop offset=".78" stop-color="#bc87ab"/><stop offset="1" stop-color="#f5b9ba"/></linearGradient>
  <radialGradient id="moon"><stop stop-color="#fff6d9"/><stop offset=".25" stop-color="#f8dabe"/><stop offset="1" stop-color="#d8afd3" stop-opacity="0"/></radialGradient>
