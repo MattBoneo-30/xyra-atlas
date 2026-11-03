@@ -662,6 +662,64 @@ function savedPage() {
 }
 
 
+/** Browser audio uses only voices explicitly reported as locally installed.
+ * A remote-only match is deliberately not used, even when online.
+ */
+function languageSpeechSnapshot(){
+ const supported='speechSynthesis' in window&&'SpeechSynthesisUtterance' in window;
+ if(!supported)return {supported:false,voices:[]};
+ try{const voices=window.speechSynthesis.getVoices();return {supported:true,voices:Array.isArray(voices)?voices:[]};}
+ catch{return {supported:false,voices:[]};}
+}
+function languageAudioPanel(){
+ const pack=getPhrasePack(saved.language);
+ if(!pack)return '';
+ const {supported,voices}=languageSpeechSnapshot();
+ const local=matchingLanguageVoices(voices,pack.locale);
+ const selected=chooseOfflineLanguageVoice(voices,pack.locale,languageVoiceURI);
+ const status=languageVoiceMessage(voices,pack.locale,supported);
+ const regionMismatch=selected&&selected.lang.toLowerCase().replaceAll('_','-')!==pack.locale.toLowerCase();
+ return `<section class="language-audio-panel" id="language-audio-controls" aria-label="Offline language speech player">
+  <div class="language-audio-head"><div><span class="overline">LISTEN AND REPEAT</span><h2>Local Voice Studio</h2><p>Hear a phrase with a compatible voice installed on your device, then try it aloud yourself.</p></div><span class="language-audio-indicator ${selected?'is-ready':'is-unavailable'}">${selected?'Local voice detected':'Local voice unavailable'}</span></div>
+  <p id="language-voice-status" role="status" aria-live="polite">${esc(status)}</p>
+  <div class="language-audio-fields">
+   <div><label for="language-voice-picker" class="field-label">Available local voice</label><select id="language-voice-picker" class="styled-select" ${!local.length?'disabled':''}>${local.length?local.map(v=>`<option value="${esc(v.voiceURI)}" ${selected?.voiceURI===v.voiceURI?'selected':''}>${esc(v.name)} · ${esc(v.lang)}</option>`).join(''):'<option>No local voice detected</option>'}</select></div>
+   <div><label for="language-audio-rate" class="field-label">Playback speed</label><select id="language-audio-rate" class="styled-select"><option value="0.75" ${saved.languageSpeechRate===.75?'selected':''}>Slow · 0.75×</option><option value="0.9" ${saved.languageSpeechRate===.9?'selected':''}>Careful · 0.9×</option><option value="1" ${saved.languageSpeechRate===1?'selected':''}>Normal · 1×</option></select></div>
+  </div>
+  ${regionMismatch?`<p class="fineprint">The installed voice is ${esc(selected.lang)}, a regional variant of ${esc(pack.locale)}. Accents and wording may differ.</p>`:''}
+  <div class="language-audio-actions">${button('Test the voice','language-speak','primary-button',`data-id="${esc(pack.phrases[0].id)}" ${selected?'':'disabled'}`)}${button('Stop playback','language-audio-stop','secondary-button')}</div>
+  <p class="fineprint">Local voices only: Atlas does not silently use a cloud-backed voice or switch to another language. Speech is synthetic and may vary by device; this is not teacher-verified audio or automatic pronunciation grading. You may need to install a language voice in your phone or computer settings.</p>
+ </section>`;
+}
+function updateLanguageVoiceMessage(message){
+ const el=document.getElementById('language-voice-status');
+ if(el)el.textContent=message;
+}
+function stopLanguageAudio(){
+ languageAudioToken++;
+ if('speechSynthesis' in window)try{window.speechSynthesis.cancel();}catch{}
+}
+function playLanguagePhrase(id){
+ if(route.view!=='language')return;
+ const pack=getPhrasePack(saved.language),phrase=pack?.phrases.find(p=>p.id===id);
+ if(!phrase)return;
+ const snapshot=languageSpeechSnapshot();
+ const voice=chooseOfflineLanguageVoice(snapshot.voices,pack.locale,languageVoiceURI);
+ if(!snapshot.supported||!voice){updateLanguageVoiceMessage('No confirmed local voice is available for this language. Install one in device settings.');return;}
+ stopLanguageAudio();
+ const token=languageAudioToken;
+ try{
+  const utterance=new SpeechSynthesisUtterance(phrase.target);
+  utterance.voice=voice;utterance.lang=voice.lang;
+  utterance.rate=normalizeLanguageSpeechRate(saved.languageSpeechRate);
+  utterance.onstart=()=>{if(token===languageAudioToken)updateLanguageVoiceMessage('Playing: '+phrase.english+'. Repeat the target phrase aloud.');};
+  utterance.onend=()=>{if(token===languageAudioToken)updateLanguageVoiceMessage('Playback complete. Try saying the phrase again from memory.');};
+  utterance.onerror=e=>{if(token===languageAudioToken&&e.error!=='canceled'&&e.error!=='interrupted')updateLanguageVoiceMessage('Speech failed on this device. Try a different installed local voice.');};
+  window.speechSynthesis.speak(utterance);
+  updateLanguageVoiceMessage('Playing local '+voice.lang+' speech. Repeat aloud.');
+ }catch{updateLanguageVoiceMessage('Playback could not begin. Check your device voice settings.');}
+}
+
 function phraseReviewPanel(){
  const pack=getPhrasePack(saved.language);
  if(!pack)return '';
@@ -754,6 +812,7 @@ function languagePage() {
     <div class="sprint-head"><div><span class="overline">YOUR SEVEN-DAY LAUNCH</span><h2>${language.flag} ${esc(language.name)} sprint</h2><p>Practice 20–30 minutes daily. Build a practical foundation.</p></div><strong>${completedDays}/7</strong></div>${bars(completedDays,7)}
     <div class="sprint-list">${LEARNING_SPRINT.map(([title,description],i)=>`<button type="button" class="sprint-day ${saved.languageDays.includes(`${saved.language}:${i}`)?'complete':''}" data-action="toggle-day" data-id="${i}"><span class="day-check">${saved.languageDays.includes(`${saved.language}:${i}`)?icon('check',17):`0${i+1}`}</span><span><small>DAY ${i+1}</small><strong>${esc(title)}</strong><em>${esc(description)}</em></span></button>`).join('')}</div>
     ${(() => { const pack=getPhrasePack(saved.language);if(!pack)return `<section class="phrase-lab"><h2>Phrase pack coming soon</h2><p>The seven-day practice plan remains available while this language's lessons are prepared.</p></section>`;const words=pack.phrases,word=words[phraseIndex%words.length],known=saved.phrases[saved.language]||[];return `<section class="phrase-lab"><div class="phrase-head"><span class="overline">OFFLINE PHRASE PRACTICE</span><h2>Practice for real</h2><p>${known.length} of ${words.length} learned</p></div>${bars(known.length,words.length)}<div class="phrase-card"><small>CARD ${phraseIndex%words.length+1} OF ${words.length}</small><h3>${esc(word.english)}</h3>${phraseRevealed?`<div class="phrase-answer" lang="${esc(pack.locale)}"><strong>${esc(word.target)}</strong><small>${esc(word.pronunciation)}</small></div><div class="phrase-buttons">${button(`${icon('play',17)} Listen`,'phrase-speak','secondary-button')}${button(known.includes(word.id)?'Learned ✓':'Mark learned','phrase-known','secondary-button')}</div>`:button('Reveal translation','phrase-reveal','primary-button')}<div class="phrase-controls">${button('Previous','phrase-prev','text-action')}${button(`Next phrase ${icon('arrow',16)}`,'phrase-next','text-action')}</div></div><p class="fineprint">Speak before revealing. Playback requires a compatible installed device voice. Marking learned is a self-assessment.</p></section>`;})()}
+    ${languageAudioPanel()}
     ${phraseReviewPanel()}
     ${languageChallengePanel()}
     ${conversationQuestPanel()}
