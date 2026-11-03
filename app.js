@@ -9,6 +9,7 @@ import { READER_SIZES,normalizeReaderPreferences,setReaderSize,toggleReaderFocus
 import {createChapterMap} from './visualmap.js';
 import {buildLessonNarration} from './narration.js';
 import {parseStoredEnvelope,storageHealthMessage} from './storagehealth.js';
+import {normalizeOfflineReport,offlineAdvice} from './offline.js';
 import { createDailyQuest,dailyQuestProgress } from './dailyquest.js';
 import { buildKnowledgeMap } from './atlasmap.js';
 import { SCENARIOS,normalizeScenarioAnswers,recordScenarioAnswer,scenarioProgress } from './scenarios.js';
@@ -74,6 +75,8 @@ let installEvent = null;
 let toastTimer;
 let currentToast = '';
 let lessonAudio = null;
+let offlinePack={state:'idle',cached:0,total:0,ready:false,percent:0,version:'unknown'};
+let offlineJob=0;
 const today = () => localDayKey(new Date());
 const idFor = (courseId, lessonId) => `${courseId}:${lessonId}`;
 const isCompleted = key => saved.completed.includes(key);
@@ -164,6 +167,7 @@ function parseHash() {
   if (segments[0] === 'insights') return {view:'insights'};
   if (segments[0] === 'mentor') return {view:'mentor'};
   if (segments[0] === 'search') return {view:'search'};
+  if (segments[0] === 'offline') return {view:'offline'};
   if (segments[0] === 'scenario') return {view:'scenario'};
   if (segments[0] === 'casebook') return {view:'casebook',caseId:segments[1]||null};
   if (segments[0] === 'path') return {view:'path'};
@@ -172,7 +176,7 @@ function parseHash() {
 }
 function nav(path) { const next = '#/' + path; if (location.hash === next) { route = parseHash(); render(); } else location.hash = next; window.scrollTo({top:0,behavior:'instant'}); }
 function flash(text) { currentToast = text; clearTimeout(toastTimer); render(); toastTimer = setTimeout(() => {currentToast = '';render();},3200); }
-function tabForRoute() { return ['review','studio','path','scenario','casebook','quest','insights'].includes(route.view) ? 'journey' : ['course','lesson','language','map','glossary','search','mentor'].includes(route.view) ? 'explore' : route.view; }
+function tabForRoute() { return route.view==='offline'?'you':['review','studio','path','scenario','casebook','quest','insights'].includes(route.view) ? 'journey' : ['course','lesson','language','map','glossary','search','mentor'].includes(route.view) ? 'explore' : route.view; }
 function topbar() {
   return `<header class="topbar"><div class="topbar-inner">
     <button type="button" class="wordmark" data-action="goto-home" aria-label="Xyra Atlas home">${mark}<span>Xyra <em>Atlas</em></span></button>
@@ -509,10 +513,54 @@ function downloadRecoveryCopy(){
  flash('Recovery text downloaded. Keep it private; it may contain personal notes.');
 }
 
+function offlinePage(){
+ const s=offlinePack,working=['checking','repairing'].includes(s.state);
+ return `<main class="page offline-library-page"><div class="subnav">${button(`${icon('back',18)} Your space`,'offline-back','back-link')}</div>
+ <section class="offline-hero"><div class="offline-decoration" aria-hidden="true">✦</div><span class="overline">THE LIBRARY GOES WITH YOU</span><h1>Knowledge without <em>a signal.</em></h1><p>See exactly how much of the learning library is saved for offline access on this device.</p></section>
+ <section class="offline-panel"><div class="offline-panel-head"><div><span class="overline">THIS BROWSER</span><h2>Offline readiness</h2></div><span class="offline-pill ${s.ready?'ready':''}" role="status">${s.ready?'Ready':working?'Checking':s.state==='incomplete'?'Incomplete':s.state==='unsupported'?'Unsupported':s.state==='idle'?'Unchecked':'Needs attention'}</span></div>
+ <div class="offline-count"><strong>${s.total?s.cached+' / '+s.total:'—'}</strong><span>${s.total?'offline files verified':'learning files'}</span></div><div class="offline-meter" role="progressbar" aria-label="Downloaded learning files" aria-valuemin="0" aria-valuemax="${s.total||1}" aria-valuenow="${s.cached}"><span style="width:${s.percent}%"></span></div>
+ <p id="offline-message" class="offline-advice" role="status">${esc(offlineAdvice(s.state))}</p>
+ <div class="offline-buttons">${button(`${icon('check',17)} Verify library`,'offline-verify','primary-button',working?'disabled':'')}${button(`${icon('download',17)} Repair missing files`,'offline-repair','secondary-button',working||!navigator.onLine?'disabled':'')}${button(`${icon('refresh',17)} Check updates`,'offline-update','secondary-button',working||!navigator.onLine?'disabled':'')}</div>
+ <p class="fineprint">Verification checks the browser cache, not your learning history. Repair requires a connection. Browser storage may later be evicted, so check before relying on it. Narration voices and linked sources can depend on the device or internet.</p></section>
+ <section class="offline-steps"><article><b>01</b><div><h3>Open Atlas online</h3><p>The included lessons and illustrations are downloaded after the service worker installs.</p></div></article><article><b>02</b><div><h3>Verify before a trip</h3><p>Look for “Ready” and a full progress bar before turning off the connection.</p></div></article><article><b>03</b><div><h3>Back up personal progress</h3><p>Cached lessons and private notes are different. Export a backup before clearing browser data or switching phones.</p>${button('Export progress backup','export','text-action')}</div></article></section>
+ </main>`;
+}
+async function inspectOffline(repair=false){
+ const id=++offlineJob;
+ offlinePack={...offlinePack,state:repair?'repairing':'checking'};
+ if(route.view==='offline')render();
+ let timer;
+ try{
+  if(!('serviceWorker' in navigator)||!('MessageChannel' in window)){offlinePack={...offlinePack,state:'unsupported'};return;}
+  const reg=await navigator.serviceWorker.getRegistration();
+  if(!reg?.active){offlinePack={...offlinePack,state:'installing'};return;}
+  const raw=await new Promise((resolve,reject)=>{
+   const c=new MessageChannel();
+   timer=setTimeout(()=>{c.port1.close();reject(Error('timeout'));},8000);
+   c.port1.onmessage=e=>{clearTimeout(timer);c.port1.close();resolve(e.data);};
+   reg.active.postMessage({type:repair?'ATLAS_REPAIR_OFFLINE':'ATLAS_OFFLINE_STATUS'},[c.port2]);
+  });
+  if(id!==offlineJob)return;
+  if(raw?.error)throw Error('cache error');
+  const normal=normalizeOfflineReport(raw);
+  offlinePack={...normal,state:normal.ready?'ready':'incomplete'};
+ }catch{
+  if(id===offlineJob)offlinePack={...offlinePack,state:'error'};
+ }finally{
+  clearTimeout(timer);
+  if(id===offlineJob&&route.view==='offline')render();
+ }
+}
+async function updateOffline(){
+ if(!navigator.onLine){flash('Connect to check for updates.');return;}
+ try{const reg=await navigator.serviceWorker.getRegistration();if(!reg){flash('Open Atlas while connected before updating.');return;}await reg.update();await inspectOffline();flash('Update check finished. Reload if a new version is available.');}
+ catch{flash('Unable to check for updates. Try again online.');}
+}
+
 function you() {
   return `<main class="page you-page"><div class="page-title"><span class="overline">YOUR LITTLE CORNER OF THE WORLD</span><h1>Made for <em>you.</em></h1><p>Private progress. Your pace. Your rules.</p></div>
     <div class="profile-card"><div class="profile-avatar">✦</div><div><span class="overline">ATLAS EXPLORER</span><h2>${esc(actualName())}</h2><p>Level ${Math.floor(finished()/6)+1} · ${finished()} lessons completed</p></div></div>
-    <div class="settings-panel"><h2>Make it yours</h2><label class="field-label" for="profile-name">What should Atlas call you?</label><div class="name-row"><input id="profile-name" value="${esc(saved.userName)}" maxlength="40" placeholder="Curious learner"/>${button('Save','save-name','small-button')}</div><div class="settings-row"><span class="setting-icon">${icon(saved.theme==='dark'?'moon':'sun',21)}</span><div><strong>Appearance</strong><small>Switch between twilight and daylight</small></div>${button(saved.theme==='dark'?'Dark':'Light','theme','small-button')}</div><div class="settings-row"><span class="setting-icon">${icon(navigator.onLine?'wifi':'wifi-off',21)}</span><div><strong>Connection</strong><small>Lessons are included in your offline app</small></div><span class="setting-value">${navigator.onLine?'Online':'Offline'}</span></div><div class="settings-row"><span class="setting-icon">${icon('download',21)}</span><div><strong>Install Xyra Atlas</strong><small>Keep it on your phone's home screen</small></div>${button('How?','install','small-button')}</div></div>
+    <div class="settings-panel"><h2>Make it yours</h2><label class="field-label" for="profile-name">What should Atlas call you?</label><div class="name-row"><input id="profile-name" value="${esc(saved.userName)}" maxlength="40" placeholder="Curious learner"/>${button('Save','save-name','small-button')}</div><div class="settings-row"><span class="setting-icon">${icon(saved.theme==='dark'?'moon':'sun',21)}</span><div><strong>Appearance</strong><small>Switch between twilight and daylight</small></div>${button(saved.theme==='dark'?'Dark':'Light','theme','small-button')}</div><div class="settings-row"><span class="setting-icon">${icon(navigator.onLine?'wifi':'wifi-off',21)}</span><div><strong>Connection</strong><small>Lessons are included in your offline app</small></div><span class="setting-value">${navigator.onLine?'Online':'Offline'}</span></div><div class="settings-row"><span class="setting-icon">${icon('book',21)}</span><div><strong>Offline Library</strong><small>Check downloaded lessons and repair missing files</small></div>${button('Manage','offline-open','small-button')}</div><div class="settings-row"><span class="setting-icon">${icon('download',21)}</span><div><strong>Install Xyra Atlas</strong><small>Keep it on your phone's home screen</small></div>${button('How?','install','small-button')}</div></div>
     <div class="settings-panel"><h2>Your data, your choice</h2><div class="storage-health-panel"><strong>Browser storage: ${storageProblem?storageProblem==='corrupt'?'Recovery needed':'Saving unavailable':'No save error detected'}</strong><span>${storageProblem?esc(storageHealthMessage(storageProblem)):'Progress is saved only in this browser, not synced to other devices.'}</span>${button('Try saving now','storage-retry','small-button')}</div><p class="settings-description">Progress is stored only in this browser on this device. It is not synced to a server. Export a backup before switching phones or clearing browser data.</p><div class="data-actions">${button(`${icon('download',18)} Export backup`,'export','secondary-button')}${button(`${icon('upload',18)} Import backup`,'import','secondary-button')}${button(`${icon('trash',18)} Reset progress`,'reset-dialog','outline-danger')}</div><input type="file" id="backup-file" accept=".json,application/json" hidden /></div>
     <div class="settings-panel"><h2>About Xyra Atlas</h2><p class="settings-description">A pocket atlas for the art of living—designed for curiosity, independence and the courage to learn difficult things.</p><p class="fineprint">Atlas 1.16 · Offline & browser-verified edition. Some subjects are introductions, not complete professional courses. Laws vary by jurisdiction. Adult content is educational. There are no ads, trackers or accounts in this edition.</p>${button(`A note from Xyra ${chevron}`,'open-corner','text-action')}</div>
   </main>`;
@@ -532,8 +580,8 @@ function render() {
   document.body.classList.toggle('dialog-open',Boolean(modal));
   document.body.classList.toggle('reader-focus-mode',route.view==='lesson'&&saved.reader.focus);
   const view = route.view;
-  const content = ({home,explore,journey,review:reviewPage,studio:studioPage,scenario:scenarioPage,casebook:casebookPage,map:mapPage,quest:questPage,glossary:glossaryPage,search:globalSearchPage,insights:insightsPage,mentor:mentorPage,path:pathPage,saved:savedPage,you,course:coursePage,lesson:lessonPage,language:languagePage}[view] || errorView)();
-  document.getElementById('app').innerHTML = `${topbar()}<div class="shell"><aside class="desktop-rail"><div class="rail-title">YOUR ATLAS <span>✧</span></div>${[['home','Home','home'],['explore','Explore & Learn','compass'],['journey','My Journey','spark'],['saved','Saved Library','bookmark'],['you','Your Space','user']].map(([id,label,ico])=>`<button type="button" data-action="nav" data-id="${id}" class="rail-link ${tabForRoute()===id?'active':''}">${icon(ico,20)} ${label}</button>`).join('')}<div class="rail-divider"></div><button type="button" class="rail-link" data-action="open-corner">${icon('spark',20)} Xyra's Corner</button><button type="button" class="rail-link" data-action="casebook">${icon('book',20)} Case Files</button><button type="button" class="rail-link" data-action="insights">${icon('chart',20)} Learning Insights</button><button type="button" class="rail-link" data-action="search">${icon('search',20)} Search Everything</button><button type="button" class="rail-link" data-action="glossary">${icon('book',20)} Glossary</button><button type="button" class="rail-link" data-action="quest">${icon('spark',20)} Daily Quest</button><button type="button" class="rail-link" data-action="map">${icon('compass',20)} Knowledge Map</button><button type="button" class="rail-link" data-action="review">${icon('orbit',20)} Review Deck</button><button type="button" class="rail-link" data-action="path">${icon('compass',20)} Guided Path</button><button type="button" class="rail-link" data-action="studio">${icon('briefcase',20)} Practice Studio</button><button type="button" class="rail-link" data-action="language">${icon('languages',20)} Language Lab</button><button type="button" class="rail-link" data-action="open-course" data-id="shadow">${icon('moon',20)} Shadow Library</button><div class="rail-note">✦<p>The world is a little bigger every time you learn.</p></div></aside><div class="main-column">${storageHealthBanner()}${content}<footer class="app-footer">Made with curiosity, for a life still unfolding. <span>✧ Xyra Atlas</span></footer></div></div>${navBar()}${modalView()}${currentToast?`<div class="toast" role="status">${icon('spark',19)} ${esc(currentToast)}</div>`:''}`;
+  const content = ({home,explore,journey,review:reviewPage,studio:studioPage,scenario:scenarioPage,casebook:casebookPage,map:mapPage,quest:questPage,glossary:glossaryPage,search:globalSearchPage,insights:insightsPage,mentor:mentorPage,offline:offlinePage,path:pathPage,saved:savedPage,you,course:coursePage,lesson:lessonPage,language:languagePage}[view] || errorView)();
+  document.getElementById('app').innerHTML = `${topbar()}<div class="shell"><aside class="desktop-rail"><div class="rail-title">YOUR ATLAS <span>✧</span></div>${[['home','Home','home'],['explore','Explore & Learn','compass'],['journey','My Journey','spark'],['saved','Saved Library','bookmark'],['you','Your Space','user']].map(([id,label,ico])=>`<button type="button" data-action="nav" data-id="${id}" class="rail-link ${tabForRoute()===id?'active':''}">${icon(ico,20)} ${label}</button>`).join('')}<div class="rail-divider"></div><button type="button" class="rail-link" data-action="offline-open">${icon('download',20)} Offline Library</button><button type="button" class="rail-link" data-action="open-corner">${icon('spark',20)} Xyra's Corner</button><button type="button" class="rail-link" data-action="casebook">${icon('book',20)} Case Files</button><button type="button" class="rail-link" data-action="insights">${icon('chart',20)} Learning Insights</button><button type="button" class="rail-link" data-action="search">${icon('search',20)} Search Everything</button><button type="button" class="rail-link" data-action="glossary">${icon('book',20)} Glossary</button><button type="button" class="rail-link" data-action="quest">${icon('spark',20)} Daily Quest</button><button type="button" class="rail-link" data-action="map">${icon('compass',20)} Knowledge Map</button><button type="button" class="rail-link" data-action="review">${icon('orbit',20)} Review Deck</button><button type="button" class="rail-link" data-action="path">${icon('compass',20)} Guided Path</button><button type="button" class="rail-link" data-action="studio">${icon('briefcase',20)} Practice Studio</button><button type="button" class="rail-link" data-action="language">${icon('languages',20)} Language Lab</button><button type="button" class="rail-link" data-action="open-course" data-id="shadow">${icon('moon',20)} Shadow Library</button><div class="rail-note">✦<p>The world is a little bigger every time you learn.</p></div></aside><div class="main-column">${storageHealthBanner()}${content}<footer class="app-footer">Made with curiosity, for a life still unfolding. <span>✧ Xyra Atlas</span></footer></div></div>${navBar()}${modalView()}${currentToast?`<div class="toast" role="status">${icon('spark',19)} ${esc(currentToast)}</div>`:''}`;
   syncLessonAudioUI();
   document.title = `${view==='course' ? findCourse(route.courseId)?.title+' · ':view==='lesson' ? findLesson(route.courseId,route.lessonId)?.title+' · ' : ''}Xyra Atlas`;
 }
@@ -586,6 +634,11 @@ async function handleAction(e) {
   if(action==='goto-home') nav('home');
   else if(action==='goto-explore') {query='';filter='all';nav('explore');}
   else if(action==='insights') nav('insights');
+  else if(action==='offline-open'){nav('offline');requestAnimationFrame(()=>inspectOffline());}
+  else if(action==='offline-back')nav('you');
+  else if(action==='offline-verify')await inspectOffline();
+  else if(action==='offline-repair')await inspectOffline(true);
+  else if(action==='offline-update')await updateOffline();
   else if(action==='search') {nav('search');requestAnimationFrame(()=>document.getElementById('atlas-global-search')?.focus());}
   else if(action==='search-filter') {globalSearchKind=SEARCH_KINDS.some(k=>k.id===id)?id:'all';render();}
   else if(action==='search-clear') {globalQuery='';render();requestAnimationFrame(()=>document.getElementById('atlas-global-search')?.focus());}
@@ -673,7 +726,7 @@ document.addEventListener('input',e=>{
   if(e.target.id==='course-search') {const pos=e.target.selectionStart;query=e.target.value;render();const input=document.getElementById('course-search');if(input){input.focus();try{input.setSelectionRange(pos,pos);}catch{}}}
 });
 document.addEventListener('keydown',e=>{if(e.key==='/'&&!modal&&!e.altKey&&!e.ctrlKey&&!e.metaKey&&!['INPUT','TEXTAREA','SELECT'].includes(document.activeElement?.tagName)&&!document.activeElement?.isContentEditable){e.preventDefault();nav('search');requestAnimationFrame(()=>document.getElementById('atlas-global-search')?.focus());}if(e.key==='Escape'&&modal){modal='';if(['course','lesson'].includes(route.view)&&route.courseId==='shadow'&&!shadowUnlocked)nav('explore');else render();} if((e.key==='Enter'||e.key===' ')&&e.target.classList?.contains('shadow-preview')) {e.preventDefault();gateConfirmed=false;modal='shadow';render();}});
-window.addEventListener('hashchange',()=>{reviewRevealed=false;stopLessonAudio();route=parseHash();if(route.view==='course'&&route.courseId==='shadow'&&!shadowUnlocked)modal='shadow';if(route.view==='lesson'&&route.courseId==='shadow'&&!shadowUnlocked)modal='shadow';render();});
+window.addEventListener('hashchange',()=>{reviewRevealed=false;stopLessonAudio();route=parseHash();if(route.view==='offline'&&offlinePack.state==='idle')queueMicrotask(()=>inspectOffline());if(route.view==='course'&&route.courseId==='shadow'&&!shadowUnlocked)modal='shadow';if(route.view==='lesson'&&route.courseId==='shadow'&&!shadowUnlocked)modal='shadow';render();});
 window.addEventListener('online',render);window.addEventListener('offline',render);
 window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();installEvent=e;});
 if('serviceWorker' in navigator && location.protocol.startsWith('http')){
@@ -682,3 +735,4 @@ if('serviceWorker' in navigator && location.protocol.startsWith('http')){
 if(route.view==='course'&&route.courseId==='shadow') modal='shadow';
 if(route.view==='lesson'&&route.courseId==='shadow') modal='shadow';
 render();
+if(route.view==='offline')requestAnimationFrame(()=>inspectOffline());

@@ -4,7 +4,7 @@
 
 ![Xyra Atlas emblem](assets/atlas-mark.svg)
 
-## Current release: Browser & Privacy Hardening 1.16
+## Current release: Offline Library Center 1.17
 
 - A violet-and-gold responsive interface, **14 distinct original vector course worlds**, Xyra's Corner artwork, landscape hero and a home-screen app icon. The same course identity appears on home tiles, category cards, course covers and lessons.
 - 14 learning subjects and **88 interactive lessons**: 52 short starters plus 36 structured, referenced field guides with real-world worked examples, exercises and quizzes (counts verified by tests).
@@ -20,6 +20,7 @@
 
 **New in 0.5:** Psychology (evidence journaling, habits, relational inference); Philippine law (Constitution, data privacy, consumer complaints); business (customer discovery, unit economics, Philippine launch steps); money (irregular bills, emergency planning, investment red flags). Sources are linked for optional online verification; lessons work offline. Links and regulations can change.
 
+- **Offline Library Center:** A dedicated illustrated settings page checks actual service-worker cache coverage, reports verified offline files, repairs missing content while connected, and checks for updated editions. No learner data is sent or removed. Browser storage can still be evicted after verification.
 - **Browser & privacy hardening:** Five passing Chromium interaction suites cover lesson completion, private notes, search, replayable Case Files, phone layouts at 320 and 390 pixels, offline PWA reloads, the Shadow Library acknowledgment and corrupted-progress recovery. The About screen now reflects this verified development edition.
 - **Offline precache integrity:** A regression test rejects duplicate service-worker precache URLs and missing files before browser install. Fixed a duplicate illustration path that interfered with offline activation.
 - **Real browser smoke tests:** Automated Chromium runs in GitHub Actions exercise desktop lesson completion and field notes, reader settings, offline search, branching Case Files, mobile viewport width, and actual service-worker-powered offline reloads. Browser tooling is installed only during CI; production remains zero-dependency.

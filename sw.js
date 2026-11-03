@@ -1,9 +1,9 @@
 /* Xyra Atlas: privacy-first, same-origin offline app shell. */
 const CACHE_PREFIX = 'xyra-atlas-';
-const CACHE = CACHE_PREFIX + 'v26';
+const CACHE = CACHE_PREFIX + 'v27';
 const APP_SHELL = [
   '/', '/index.html', '/styles.css', '/app.js', '/data.js', '/review.js', '/phrasebook.js', '/deeptracks.js', '/fieldnotes.js', '/studio.js', '/paths.js', '/scenarios.js', '/atlasmap.js', '/dailyquest.js', '/glossary.js', '/search.js', '/calendar.js', '/insights.js',
-  '/fieldguides.js', '/lifepractice.js', '/mentor.js', '/casebook.js', '/reader.js', '/visualmap.js', '/narration.js', '/storagehealth.js', '/manifest.webmanifest', '/assets/atlas-mark.svg',
+  '/fieldguides.js', '/lifepractice.js', '/mentor.js', '/casebook.js', '/reader.js', '/visualmap.js', '/narration.js', '/storagehealth.js', '/offline.js', '/manifest.webmanifest', '/assets/atlas-mark.svg',
   '/assets/atlas-horizon.svg', '/assets/xyra-guide.svg', '/assets/course-library.svg',
   '/assets/course-business.svg',
   '/assets/course-career.svg',
@@ -31,6 +31,27 @@ self.addEventListener('activate', event => {
     self.clients.claim()
   ]));
 });
+async function offlineStatus(){
+ const cache=await caches.open(CACHE);
+ const stored=await Promise.all(APP_SHELL.map(path=>cache.match(path).then(Boolean)));
+ const count=stored.filter(Boolean).length;
+ return {cached:count,total:APP_SHELL.length,ready:count===APP_SHELL.length,version:CACHE};
+}
+async function offlineRepair(){
+ const cache=await caches.open(CACHE);
+ const missing=(await Promise.all(APP_SHELL.map(async path=>(await cache.match(path))?null:path))).filter(Boolean);
+ await Promise.allSettled(missing.map(path=>cache.add(path)));
+ return offlineStatus();
+}
+self.addEventListener('message',event=>{
+ const type=event.data?.type,port=event.ports?.[0];
+ if(!port||!['ATLAS_OFFLINE_STATUS','ATLAS_REPAIR_OFFLINE'].includes(type))return;
+ event.waitUntil((async()=>{
+  try{port.postMessage(type==='ATLAS_OFFLINE_STATUS'?await offlineStatus():await offlineRepair());}
+  catch{port.postMessage({error:'Unable to inspect offline files'});}
+ })());
+});
+
 self.addEventListener('fetch', event => {
   const req = event.request;
   if (req.method !== 'GET' || new URL(req.url).origin !== self.location.origin) return;
