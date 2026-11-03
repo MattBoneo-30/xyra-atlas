@@ -315,7 +315,7 @@ try{
   await page.locator('#field-note-input').waitFor();
   await page.locator('#field-note-input').fill('Copper orchid reflection: check the facts first.');
   await page.locator('.bottom-nav [data-action="nav"][data-id="saved"]').click();
-  await page.locator('[data-action="notebook-open"]').click();
+  await page.locator('.notebook-invite [data-action="notebook-open"]').click();
   await page.locator('.notebook-page').waitFor();
   expect(await page.locator('.notebook-entry').count()===1,'private notes appear in notebook library');
   await page.locator('#notebook-search').fill('copper orchid');
