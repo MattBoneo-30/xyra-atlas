@@ -7,7 +7,7 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const out = path.join(root, 'dist');
 fs.rmSync(out, { recursive:true, force:true });
 fs.mkdirSync(out, {recursive:true});
-for (const name of ['index.html','styles.css','app.js','data.js','review.js','phrasebook.js','deeptracks.js','fieldnotes.js','studio.js','paths.js','scenarios.js','atlasmap.js','sw.js','manifest.webmanifest']) {
+for (const name of ['index.html','styles.css','app.js','data.js','review.js','phrasebook.js','deeptracks.js','fieldnotes.js','studio.js','paths.js','scenarios.js','atlasmap.js','dailyquest.js','sw.js','manifest.webmanifest']) {
   fs.copyFileSync(path.join(root, name), path.join(out, name));
 }
 fs.cpSync(path.join(root,'assets'),path.join(out,'assets'),{recursive:true});
