@@ -100,7 +100,7 @@ const MATERIAL={
       "concept": "A person being quiet in one meeting is an observation, not proof of insecurity, hostility, or a disorder. Strong conclusions require repeated context-aware evidence. Alternative explanations matter especially when emotions are high.",
       "practice": "Use a three-column record: exact behavior, at least two plausible explanations, and a respectful way to learn more. Ask an open question rather than diagnosing: 'I noticed the meeting was quieter than usual; is anything getting in the way?'",
       "limits": "Do not treat a self-made behavior chart as clinical assessment. If there is coercion, threats, or a safety risk, prioritize professional or protective support instead of collecting more observations.",
-      "example": "A colleague misses two deadlines. Workload and unclear requirements may both explain it. Ask what blocked progress and agree on concrete next steps.",
+      "example": "A colleague misses two deadlines. Workload and unclear requirements may both explain it. Ask what blocked progress and agree on concrete next steps. A manager checks whether the tasks were clearly assigned and whether a system outage affected the timeline. The meeting ends with a specific responsibility and deadline, rather than an unsupported label about the colleague's personality or mental health.",
       "task": "Pick one ambiguous situation, record two explanations and draft a neutral clarifying question that does not accuse anyone.",
       "question": "Which statement stays closest to evidence?",
       "options": [
@@ -121,7 +121,7 @@ const MATERIAL={
       "concept": "Under the Philippine Data Privacy Act, data subjects have rights including information, access, correction, objection, and, where conditions apply, erasure or blocking. These are not unlimited: lawful processing requirements and exceptions may affect the outcome.",
       "practice": "Find an organization's official privacy contact. Identify yourself through its approved secure process, state the data or correction requested, ask about the processing purpose and response procedure, and retain a dated copy of the exchange. Share only the identification information reasonably required.",
       "limits": "Do not send identity documents to unverified email addresses or assume every deletion request must be granted. The National Privacy Commission provides official rights guidance; this is general education, not legal advice.",
-      "example": "A shopping app has the wrong phone number on file. You ask its privacy team to correct the record, specify the incorrect field, and keep the request reference number.",
+      "example": "A shopping app has the wrong phone number on file. You ask its privacy team to correct the record, specify the incorrect field, and keep the request reference number. A learner writes to the retailer's verified privacy office with a correction request that names the inaccurate field and the preferred secure response route. They document dates but do not attach unrelated transaction records or assume any particular outcome is guaranteed.",
       "task": "Draft a six-line privacy correction request and identify which official channel you would use.",
       "question": "Which request best protects your privacy?",
       "options": [
@@ -180,7 +180,7 @@ const MATERIAL={
       "concept": "Positive reactions to an imagined product are weak evidence of actual demand. Interviews reveal real behavior when they focus on recent events, current alternatives, costs, and the consequences of a problem.",
       "practice": "Recruit five people who plausibly face the problem. Ask for the last time it occurred, what they tried, what they paid, and which workaround they use. Record quotes and contradictions. Summarize patterns without promising a product or leading people toward your preferred answer.",
       "limits": "A small interview sample cannot estimate a market share. Do not treat compliments as preorders or use false urgency to obtain commitments.",
-      "example": "Rather than 'Would you buy my organizer?', ask 'When did you last lose a file, and how did you find it?' Concrete answers reveal whether search is painful.",
+      "example": "Rather than 'Would you buy my organizer?', ask 'When did you last lose a file, and how did you find it?' Concrete answers reveal whether search is painful. One respondent says files go missing every day but another reports that an existing search tool resolves the issue in seconds. The founder notes both observations, asks about the last real incident and refrains from treating a friendly interview as a paid commitment.",
       "task": "Prepare six neutral questions, interview three consenting participants, and extract one hypothesis that you can test next.",
       "question": "Which question reduces leading bias?",
       "options": [
@@ -199,7 +199,7 @@ const MATERIAL={
       "concept": "Break-even units equal fixed costs divided by contribution per unit, where contribution per unit is price minus variable cost. If contribution is zero or negative, selling more units does not cover fixed costs under that model.",
       "practice": "For a product priced at ₱250 with ₱100 variable cost and ₱15,000 monthly fixed costs, contribution is ₱150; break-even is 100 units. Then model a 10% price cut, higher packaging cost, and lower sales to see how fragile the estimate is.",
       "limits": "This is a single-product educational model. It omits taxes, financing, spoilage, changing prices, and other real-world factors unless you include them. Do not describe an estimate as guaranteed profit.",
-      "example": "At ₱250 price and ₱100 variable cost, 100 units contribute ₱15,000: exactly enough for ₱15,000 fixed costs, with no operating profit before excluded costs.",
+      "example": "At ₱250 price and ₱100 variable cost, 100 units contribute ₱15,000: exactly enough for ₱15,000 fixed costs, with no operating profit before excluded costs. If price drops by ten percent to ₱225 while variable cost stays ₱100, contribution falls to ₱125. Covering ₱15,000 in fixed costs would now need 120 sales rather than 100, excluding other real operating obligations and changing customer demand.",
       "task": "Compute break-even for your imagined business, then change one assumption and explain how the required units move.",
       "question": "If fixed costs are ₱12,000 and contribution per unit is ₱120, break-even units are:",
       "options": [
@@ -208,7 +208,7 @@ const MATERIAL={
         "1,440"
       ],
       "correct": 1,
-      "explanation": "12,000 divided by 120 equals 100 units.",
+      "explanation": "12,000 divided by 120 equals 100 units. Break-even is fixed costs divided by positive contribution per unit: ₱12,000 ÷ ₱120 = 100 units, before excluded expenses or any demand constraints.",
       "source": "breakEven"
     }
   ],
@@ -220,7 +220,7 @@ const MATERIAL={
       "concept": "An emergency fund is money set aside for unplanned costs or financial shocks. A useful target depends on essential obligations, income stability, household support, and how quickly you could replace earnings.",
       "practice": "List essential monthly costs and three plausible disruptions: urgent repair, medical travel, and lost income. Calculate the cash needed for each scenario. Choose a reachable first target and separate it from money earmarked for regular bills.",
       "limits": "Do not put money needed tomorrow into volatile assets simply to earn more. The safety, access conditions, and deposit protections of financial products vary by country and provider.",
-      "example": "Essential costs total ₱18,000 per month; a two-month work interruption suggests ₱36,000 plus any urgent repair costs. This is a planning example, not a universal rule.",
+      "example": "Essential costs total ₱18,000 per month; a two-month work interruption suggests ₱36,000 plus any urgent repair costs. This is a planning example, not a universal rule. If an additional urgent repair might cost ₱7,000 during that interruption, the illustrative combined need rises to ₱43,000. The learner compares what is reachable with present income, separates the estimate from a universal recommendation and checks access restrictions.",
       "task": "Create three buffer targets—starter, realistic, stretch—and identify what each could cover without debt.",
       "question": "Which expense most clearly fits an emergency fund?",
       "options": [
@@ -300,7 +300,7 @@ const MATERIAL={
       "concept": "Recognizing a phrase on a screen is easier than producing it in conversation. Retrieval practice means hiding the answer, attempting it from memory, checking, then using the phrase in a new context.",
       "practice": "Choose ten practical phrases for a specific scenario. First read with meaning, then hide the target-language line and say it aloud. Check pronunciation using a credible learning resource; repeat incorrect phrases later and place known ones in a short role-play.",
       "limits": "Fluency requires listening and interaction over time. Text-based cards alone cannot evaluate accent or authentic speech; speech synthesis may mispronounce some names and languages.",
-      "example": "To ask for directions, first recall a short question without reading, then role-play asking where a station is and respond to an imagined answer.",
+      "example": "To ask for directions, first recall a short question without reading, then role-play asking where a station is and respond to an imagined answer. When the partner answers with an unfamiliar destination, the learner asks for slower repetition and marks the misunderstanding for later listening practice. The phrase card still counts as recalled, but the learner does not claim that one rehearsed exchange demonstrates conversational fluency.",
       "task": "Create ten short cards, test them without hints, and use at least three in a thirty-second dialogue.",
       "question": "Which action is active recall?",
       "options": [
@@ -340,7 +340,7 @@ const MATERIAL={
       "concept": "A listener often hears the first sentence and jumps to advice. That can overlook what the other person wants: emotional support, a decision partner, or a concrete technical fix.",
       "practice": "Reflect the observed concern in one neutral sentence, ask one clarifying question, and check whether advice is welcome. Summarize the person's answer in your own words and invite correction. Respect a refusal to discuss.",
       "limits": "Listening is not agreement, and a paraphrase should not invent motives. In immediate safety situations, appropriate emergency help may matter more than conversation technique.",
-      "example": "A friend says work was exhausting. Instead of listing productivity tips, ask: 'Do you want me to listen, or help you sort out options?'",
+      "example": "A friend says work was exhausting. Instead of listing productivity tips, ask: 'Do you want me to listen, or help you sort out options?' The friend says they mainly want to be heard, so the listener reflects the stressful deadline rather than proposing a productivity app. Later, if the friend requests options, they can brainstorm together. The exercise checks whether advice was actually invited.",
       "task": "Write a three-turn response that includes reflection, clarification, and consent before offering a suggestion.",
       "question": "Which response checks what help is wanted?",
       "options": [
@@ -460,7 +460,7 @@ const MATERIAL={
       "concept": "A portfolio claim is more credible when a reviewer can inspect work or evidence. Explain who the project served, the constraints, your role, what you built, how you evaluated it, and what remained unfinished.",
       "practice": "Write a concise case study: context, problem, approach, contribution, outcome, and limitations. Add screenshots, architecture notes, sanitized code, or a demo where permissions allow. State clearly whether results are measured, estimated, or unverified.",
       "limits": "Never reveal private client data, credentials, or proprietary code without permission. Do not invent metrics or claim production usage for an unlaunched prototype.",
-      "example": "Instead of 'I made an amazing vault,' explain how its local encryption flow works, which risks it addresses, and what tests you actually ran.",
+      "example": "Instead of 'I made an amazing vault,' explain how its local encryption flow works, which risks it addresses, and what tests you actually ran. The case study includes the owner's role, design decisions, actual automated test results and an honest note about untested platforms. It avoids invented adoption numbers and removes confidential sample accounts. A reviewer can inspect the demo or code evidence.",
       "task": "Prepare a six-heading case study for one project, including one limitation and one artifact that supports your claim.",
       "question": "What strengthens a portfolio result?",
       "options": [
@@ -479,7 +479,7 @@ const MATERIAL={
       "concept": "A clear resume connects role-relevant skills to concrete work. A reader should be able to identify your contribution, tool or method, and result without decoding buzzwords or unsupported numbers.",
       "practice": "Select three requirements from an actual role. For each, map one genuine project example. Write bullets using action, scope, and outcome; include numbers only if you can explain how they were measured. Use a simple, readable layout.",
       "limits": "Recruitment expectations vary, and automated resume systems are imperfect. Do not add skills you have not used or misrepresent a solo project as a team achievement.",
-      "example": "A developer bullet becomes 'Built a Laravel/React inventory flow with server-side validation and documented test cases' instead of 'Passionate full-stack ninja.'",
+      "example": "A developer bullet becomes 'Built a Laravel/React inventory flow with server-side validation and documented test cases' instead of 'Passionate full-stack ninja.' A role requests API validation, so the applicant describes a specific Laravel endpoint, the request constraints enforced and the tests run. They omit an unverified claim of production-scale usage and adjust the bullet to match documented experience.",
       "task": "Choose one target role and write three truthful skills-to-evidence bullets; remove claims you cannot defend.",
       "question": "Which resume line gives testable evidence?",
       "options": [
@@ -519,7 +519,7 @@ const MATERIAL={
       "concept": "A precise-looking graph can conceal uncertain measurements. Units, sampling method, missing data, time window, and measurement instruments all affect what a result can support.",
       "practice": "Choose a public data visualization. Write the unit, observation period, sample size or denominator, and source method. Then identify one plausible measurement error and whether the chart implies more precision than the data warrant.",
       "limits": "Error bars and intervals require correct interpretation; they are not automatically the probability that an individual outcome falls inside the range. Statistical uncertainty is only one kind of uncertainty.",
-      "example": "An online poll reports 82% support. If its participants self-selected, the percentage may describe only respondents, not the wider population.",
+      "example": "An online poll reports 82% support. If its participants self-selected, the percentage may describe only respondents, not the wider population. The reader checks who could respond, how the sample was recruited, when the poll ran and how questions were worded. Without a representative sampling method, the precise-looking percentage should not be generalized to every member of the population.",
       "task": "Annotate one chart with units, source, sample, time period, and two unanswered questions.",
       "question": "What should be clarified first about a reported 82%?",
       "options": [
@@ -540,7 +540,7 @@ const MATERIAL={
       "concept": "A boundary describes what you are willing to participate in and what you will do to protect that limit. It is different from commanding another person to feel or behave a certain way. Respectful communication leaves room for the other person's own choices.",
       "practice": "State the situation, your limit, and the action you can control. Ask about the other person's needs without bargaining away a safety boundary. Revisit agreements when circumstances change, and notice whether words match actions.",
       "limits": "If someone responds with threats, stalking, intimidation, or violence, ordinary negotiation advice may not be safe. Seek trusted local help and appropriate protective services.",
-      "example": "Instead of 'You are forbidden to speak to anyone else,' say 'I won't continue a conversation when there is shouting; I will return when we can speak calmly.'",
+      "example": "Instead of 'You are forbidden to speak to anyone else,' say 'I won't continue a conversation when there is shouting; I will return when we can speak calmly.' The speaker clarifies that they can return after a break, but the other person remains free to disagree or end the discussion. If the behavior involves threats or violence rather than ordinary raised voices, they prioritize safety and appropriate support.",
       "task": "Write two boundary statements focused on your own behavior, then rewrite one controlling demand as a respectful limit.",
       "question": "Which statement is a personal boundary?",
       "options": [
@@ -639,7 +639,7 @@ const MATERIAL={
       "concept": "Consent to one activity does not create permission for every later use. Someone may agree to share a message privately without agreeing to publication, forwarding, impersonation, or continued access. Pressure, threats, or inability to decline compromise meaningful choice.",
       "practice": "Before collecting or sharing another person's private material, ask a specific question about the intended use and accept refusal. Protect shared accounts with distinct access, avoid retaining unnecessary intimate information, and honor requests to stop unless an overriding lawful duty applies.",
       "limits": "The law on recording, intimate imagery, and data processing varies by jurisdiction. This lesson is ethical literacy, not legal advice; urgent threats or nonconsensual disclosure should be handled with trusted support.",
-      "example": "A private photo was shared for one conversation. Forwarding it to a group without permission is a different use and cannot be justified by the original exchange.",
+      "example": "A private photo was shared for one conversation. Forwarding it to a group without permission is a different use and cannot be justified by the original exchange. A person receiving the image should ask before forwarding or storing it in a shared folder, and must accept a refusal. The original private exchange does not provide permanent permission for redistribution, impersonation or access to other accounts.",
       "task": "Write a short privacy agreement for a fictional shared-project chat covering forwarding, retention, account access, and consent to publication.",
       "question": "What does private sharing automatically authorize?",
       "options": [

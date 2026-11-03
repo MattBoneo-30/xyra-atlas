@@ -59,7 +59,7 @@ export const DEEP_TRACKS = {
           "body": "No fixed number of repetitions guarantees a lifelong habit. This is a personal experiment, not an identity test. Keep revising the plan as circumstances change."
         }
       ],
-      "example": "After brushing your teeth, say three Japanese greetings. On exhausting days, say only one. Review the next Sunday how often the plan actually worked.",
+      "example": "After brushing your teeth, say three Japanese greetings. On exhausting days, say only one. Review the next Sunday how often the plan actually worked. On a missed morning, the learner uses a one-minute fallback rather than marking the whole week ruined. After seven days, the record shows four full sessions, two short sessions and one missed day. They then adjust the cue to a time that better fits their real routine.",
       "task": "Write your cue, minimum action, fallback action and seven-day observation plan in a note. Change only one variable after reviewing results.",
       "quiz": {
         "question": "Which is a testable habit?",
@@ -98,7 +98,7 @@ export const DEEP_TRACKS = {
           "body": "Direct discussion is not suitable in every unsafe situation. Threats, coercion or abuse require a safety-first approach and potentially trusted professional or community support."
         }
       ],
-      "example": "Instead of “You never care,” try “Our plans changed twice. I feel uncertain. Could we agree how to update each other?”",
+      "example": "Instead of “You never care,” try “Our plans changed twice. I feel uncertain. Could we agree how to update each other?” The other person explains that an unpredictable shift schedule disrupted the plans. The learner can still state a need for earlier notice and choose alternative arrangements. This protects a reasonable boundary without claiming access to the other person's motives.",
       "task": "Turn one accusation into an observation, a sincere question and a boundary based on your own decisions.",
       "quiz": {
         "question": "Which is a boundary?",
@@ -178,7 +178,7 @@ export const DEEP_TRACKS = {
           "body": "Data subject rights have limits and procedures. Avoid uploading identity documents into public complaint threads; verify the legitimate channel before sharing sensitive data."
         }
       ],
-      "example": "An app displays your outdated address. Contact its privacy team privately, explain the inaccurate record and request a correction according to its procedure.",
+      "example": "An app displays your outdated address. Contact its privacy team privately, explain the inaccurate record and request a correction according to its procedure. In a fictional account case, a customer identifies the official privacy contact, asks what categories of their own details are processed and requests an explanation of an inaccurate entry. They keep the reference number and do not email credentials or a relative's records.",
       "task": "Review one privacy notice. List its purposes, retention policy and contact route, then draft a simple request for clarification.",
       "quiz": {
         "question": "Does Philippine privacy law use consent as its only possible lawful basis?",
@@ -188,7 +188,7 @@ export const DEEP_TRACKS = {
           "A privacy notice makes everything lawful"
         ],
         "correct": 1,
-        "explanation": "The Act sets out multiple grounds and safeguards."
+        "explanation": "The Act sets out multiple grounds and safeguards. A privacy notice does not replace all legal safeguards; consent is one lawful ground among others, and the relevant data-subject rights and exceptions depend on the specific processing."
       },
       "sources": [
         {
@@ -221,7 +221,7 @@ export const DEEP_TRACKS = {
           "body": "Not every poor experience guarantees a refund. Rights and remedies vary with the facts and law. The Consumer Act (RA 7394) is an important reference, not the only potentially applicable rule."
         }
       ],
-      "example": "“Order #123 arrived damaged on 3 May. Attached are my receipt and photos. Could you advise the applicable repair, replacement or refund option?”",
+      "example": "“Order #123 arrived damaged on 3 May. Attached are my receipt and photos. Could you advise the applicable repair, replacement or refund option?” The buyer saves the date-stamped advertisement and receipt, compares the delivered model with the promised specification, and politely requests a resolution. If the seller disagrees, the buyer checks the current official consumer channel and its jurisdiction before filing.",
       "task": "Draft a fictional complaint using four elements: what happened, evidence, requested remedy and response deadline.",
       "quiz": {
         "question": "Which complaint is strongest?",
@@ -262,7 +262,7 @@ export const DEEP_TRACKS = {
           "body": "Interviewees are people, not sales funnels. Explain the purpose, respect their privacy and do not pressure them into saying they would buy."
         }
       ],
-      "example": "To test a file manager, ask five people how they last recovered a misplaced file. Listen before showing your prototype.",
+      "example": "To test a file manager, ask five people how they last recovered a misplaced file. Listen before showing your prototype. A second interview reveals that the user already searches files successfully but struggles to name downloaded documents. Rather than assuming both problems prove demand for the same app, the founder compares the distinct workarounds and tests one small prototype.",
       "task": "Write six non-leading interview questions and one assumption that genuine answers could disprove.",
       "quiz": {
         "question": "Which is the least leading question?",
@@ -301,7 +301,7 @@ export const DEEP_TRACKS = {
           "body": "Demand, taxes, cash flow and unforeseen costs still matter. Run optimistic and pessimistic scenarios; a break-even formula is not proof that enough customers will buy."
         }
       ],
-      "example": "Price ₱250; variable cost ₱150; fixed monthly costs ₱5,000. Contribution ₱100; roughly 50 sales cover the simplified fixed costs.",
+      "example": "Price ₱250; variable cost ₱150; fixed monthly costs ₱5,000. Contribution ₱100; roughly 50 sales cover the simplified fixed costs. At ₱200 per sale and ₱120 of variable costs, the unit contributes ₱80. Covering ₱4,000 of simplified fixed costs requires 50 sales; at ₱130 variable cost it would take 58 sales after rounding up. Neither figure guarantees sufficient actual demand.",
       "task": "Pick a product and calculate its contribution and break-even units. Recalculate after increasing the variable cost by 20%.",
       "quiz": {
         "question": "Price ₱200, variable cost ₱120, fixed costs ₱4,000. Break-even units?",
@@ -311,7 +311,7 @@ export const DEEP_TRACKS = {
           "80"
         ],
         "correct": 1,
-        "explanation": "₱4,000 ÷ (₱200 − ₱120) = 50 units."
+        "explanation": "₱4,000 ÷ (₱200 − ₱120) = 50 units. Each sale contributes ₱80 before fixed expenses, so ₱4,000 divided by ₱80 gives 50 units. This simple break-even calculation excludes taxes, changing costs and demand uncertainty."
       },
       "sources": [
         {
@@ -340,7 +340,7 @@ export const DEEP_TRACKS = {
           "body": "Do not treat old checklists or this educational guide as a definitive compliance opinion. Fees and filing rules change; confirm requirements before operating."
         }
       ],
-      "example": "A person receives a DTI name certificate for a shop. Before opening, they still check local operating permits and tax registration obligations.",
+      "example": "A person receives a DTI name certificate for a shop. Before opening, they still check local operating permits and tax registration obligations. A home-based food seller first identifies business form and city, then checks the relevant current DTI or SEC process, local government permit rules, tax registration and any food-related requirements. They record official URLs and dates instead of relying on a viral one-page checklist.",
       "task": "Create a table of agency, requirement, verified source, fee, due date and status for a hypothetical business.",
       "quiz": {
         "question": "Does a DTI name certificate usually replace all operating permits?",
@@ -381,7 +381,7 @@ export const DEEP_TRACKS = {
           "body": "Budgeting is planning, not punishment. Your necessary expenses and available resources matter; there is no universal percentage that works for everyone."
         }
       ],
-      "example": "A ₱6,000 annual fee due in twelve months calls for saving around ₱500 each month. Count that reserve once, not as both savings and a monthly purchase.",
+      "example": "A ₱6,000 annual fee due in twelve months calls for saving around ₱500 each month. Count that reserve once, not as both savings and a monthly purchase. The saver also expects a ₱2,400 repair bill in six months, adding ₱400 to the monthly set-aside. They place both future bills in the budget before assigning leftover money to flexible spending, preventing a planned expense from being mistaken for an emergency.",
       "task": "Identify three irregular expenses and calculate how much to reserve each month until each is due.",
       "quiz": {
         "question": "How much monthly for a ₱12,000 bill due in one year?",
@@ -424,7 +424,7 @@ export const DEEP_TRACKS = {
           "body": "A suggested number of months is a planning convention, not a guaranteed safe threshold. Support systems, job stability and obligations differ between households."
         }
       ],
-      "example": "With essentials of ₱16,000 a month, three months equals ₱48,000. Saving ₱2,000 monthly takes about 24 months from zero, ignoring interest and withdrawals.",
+      "example": "With essentials of ₱16,000 a month, three months equals ₱48,000. Saving ₱2,000 monthly takes about 24 months from zero, ignoring interest and withdrawals. A household with irregular earnings first targets a smaller accessible cushion while listing rent, food, transport and required bills. When an unexpected repair uses part of that reserve, they revise the replenishment plan instead of borrowing automatically or treating the withdrawal as failure.",
       "task": "Calculate your monthly essentials, choose a first savings milestone and note what situations would justify using it.",
       "quiz": {
         "question": "What determines an emergency-fund target?",
@@ -463,7 +463,7 @@ export const DEEP_TRACKS = {
           "body": "Do not risk money you need for emergencies or share banking credentials to follow a pitch. Independent review is more useful than a countdown timer or influencer endorsement."
         }
       ],
-      "example": "A stranger promises 8% every week if you transfer money today. Pause, verify the entity and offer, and reject pressure to decide immediately.",
+      "example": "A stranger promises 8% every week if you transfer money today. Pause, verify the entity and offer, and reject pressure to decide immediately. A careful learner searches the relevant regulator's official website for the actual provider and offering, checks contractual withdrawals and evaluates loss scenarios. They do not interpret a polished screenshot or influencer testimonial as evidence of a guaranteed return.",
       "task": "Write six questions to ask before an unfamiliar investment, including verification, fees, losses and withdrawal restrictions.",
       "quiz": {
         "question": "Which claim most needs scrutiny?",
