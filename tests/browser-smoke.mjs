@@ -308,6 +308,26 @@ try{
   await page.waitForFunction(()=>document.activeElement?.id==='atlas-main');
   expect(await page.evaluate(()=>document.activeElement?.id==='atlas-main'),'Escape restores focus to learning content');
  });
+ await smoke('field-notebook-library',{viewport:{width:390,height:844},isMobile:true,hasTouch:true},async page=>{
+  await page.locator('.bottom-nav [data-action="nav"][data-id="explore"]').click();
+  await page.locator('[data-action="open-course"][data-id="psychology"]').first().click();
+  await page.locator('[data-action="open-lesson"]').first().click();
+  await page.locator('#field-note-input').waitFor();
+  await page.locator('#field-note-input').fill('Copper orchid reflection: check the facts first.');
+  await page.locator('.bottom-nav [data-action="nav"][data-id="saved"]').click();
+  await page.locator('[data-action="notebook-open"]').click();
+  await page.locator('.notebook-page').waitFor();
+  expect(await page.locator('.notebook-entry').count()===1,'private notes appear in notebook library');
+  await page.locator('#notebook-search').fill('copper orchid');
+  expect(await page.locator('.notebook-entry').count()===1,'note full-text search finds saved thought');
+  await page.locator('#notebook-search').fill('unfindable-word');
+  expect(await page.locator('.notebook-entry').count()===0,'unmatched term filters all notes');
+  await page.locator('[data-action="notebook-clear"]').click();
+  await page.locator('.notebook-entry').first().click();
+  await page.locator('#field-note-input').waitFor();
+  expect((await page.locator('#field-note-input').inputValue()).includes('Copper orchid'),'notebook opens the exact lesson and original note');
+  await page.screenshot({path:snapshots+'/notebook-lesson.png',fullPage:true});
+ });
 }finally{
  if(browser)await browser.close();
  server.kill('SIGTERM');

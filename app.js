@@ -11,6 +11,7 @@ import {buildLessonNarration} from './narration.js';
 import {parseStoredEnvelope,storageHealthMessage} from './storagehealth.js';
 import {normalizeOfflineReport,offlineAdvice} from './offline.js';
 import {parseBackupEnvelope,normalizeLessonKeys,normalizeQuizAnswers,normalizeLastOpened,backupCounts} from './backup.js';
+import {buildNotebookIndex,searchNotebook} from './notebook.js';
 import { createDailyQuest,dailyQuestProgress } from './dailyquest.js';
 import { buildKnowledgeMap } from './atlasmap.js';
 import { SCENARIOS,normalizeScenarioAnswers,recordScenarioAnswer,scenarioProgress } from './scenarios.js';
@@ -69,6 +70,7 @@ let query = '';
 let glossaryQuery = '';
 let globalQuery = '';
 let globalSearchKind = 'all';
+let notebookQuery='';
 let modal = '';
 let pendingBackup=null;
 let gateConfirmed = false;
@@ -173,6 +175,7 @@ function parseHash() {
   if (segments[0] === 'mentor') return {view:'mentor'};
   if (segments[0] === 'search') return {view:'search'};
   if (segments[0] === 'offline') return {view:'offline'};
+  if (segments[0] === 'notebook') return {view:'notebook'};
   if (segments[0] === 'scenario') return {view:'scenario'};
   if (segments[0] === 'casebook') return {view:'casebook',caseId:segments[1]||null};
   if (segments[0] === 'path') return {view:'path'};
@@ -181,7 +184,7 @@ function parseHash() {
 }
 function nav(path) { const next = '#/' + path; if (location.hash === next) { route = parseHash(); render(); } else location.hash = next; window.scrollTo({top:0,behavior:'instant'}); }
 function flash(text) { currentToast = text; clearTimeout(toastTimer); render(); toastTimer = setTimeout(() => {currentToast = '';render();},3200); }
-function tabForRoute() { return route.view==='offline'?'you':['review','studio','path','scenario','casebook','quest','insights'].includes(route.view) ? 'journey' : ['course','lesson','language','map','glossary','search','mentor'].includes(route.view) ? 'explore' : route.view; }
+function tabForRoute() { return route.view==='notebook'?'saved':route.view==='offline'?'you':['review','studio','path','scenario','casebook','quest','insights'].includes(route.view) ? 'journey' : ['course','lesson','language','map','glossary','search','mentor'].includes(route.view) ? 'explore' : route.view; }
 function topbar() {
   return `<header class="topbar"><div class="topbar-inner">
     <button type="button" class="wordmark" data-action="goto-home" aria-label="Xyra Atlas home">${mark}<span>Xyra <em>Atlas</em></span></button>
@@ -486,10 +489,22 @@ function reviewPage() {
     <div class="review-info">${icon('info',20)}<span>Forgotten cards return after 10 minutes. Remembered cards return after 1, 3, 7, 14, 30 and 60 days. Your answers and next review times are saved in your local backup.</span></div>
   </main>`;
 }
+function notebookPage(){
+ const all=buildNotebookIndex(COURSES,saved.fieldNotes,{allowMature:shadowUnlocked});
+ const matches=searchNotebook(all,notebookQuery);
+ return `<main class="page notebook-page"><div class="subnav">${button(`${icon('back',18)} Saved library`,'goto-saved','back-link')}</div>
+ <header class="notebook-hero"><span class="overline">YOUR THOUGHTS. YOUR ATLAS.</span><h1>The Field <em>Notebook.</em></h1><p>A private space to revisit your practical exercises, discoveries, and learning reflections. All saved only in this browser.</p><span class="notebook-total">${all.length} saved ${all.length===1?'note':'notes'}</span></header>
+ <label class="notebook-search" for="notebook-search">${icon('search',20)}<input id="notebook-search" type="search" value="${esc(notebookQuery)}" placeholder="Search your lessons and notes…" autocomplete="off" aria-label="Search private field notes"/></label>
+ <div class="notebook-results-head"><span class="overline">${notebookQuery.trim()?'MATCHING REFLECTIONS':'YOUR WRITTEN REFLECTIONS'}</span><small>${matches.length} ${matches.length===1?'result':'results'}</small></div>
+ ${matches.length?`<div class="notebook-results">${matches.map(item=>`<button type="button" class="notebook-entry" data-action="open-lesson" data-course="${esc(item.courseId)}" data-lesson="${esc(item.lessonId)}"><span class="notebook-entry-icon">${icon('book',21)}</span><span class="notebook-entry-body"><small>${esc(item.course)}</small><strong>${esc(item.lesson)}</strong><span>${esc(item.preview)}</span><em>Open lesson and edit note ${icon('arrow',15)}</em></span></button>`).join('')}</div>`:`<div class="empty-state">${icon('book',32)}<h3>${all.length?'No matching notes yet':'Your first note is waiting'}</h3><p>${all.length?'Try searching for a different word or subject.':'Open any lesson and write a response to its practice exercise. Your notes will appear here.'}</p>${notebookQuery?button('Clear search','notebook-clear','secondary-button'):button('Explore lessons','goto-explore','primary-button')}</div>`}
+ <p class="info-line">Notes are stored only on this device. Shadow Library notes remain hidden until you acknowledge the mature-content gate. Export a backup before switching browsers or clearing site data.</p></main>`;
+}
+
 function savedPage() {
   const favorites=COURSES.filter(c=>saved.favorites.includes(c.id) && (!c.dark || shadowUnlocked));
   const entries=saved.bookmarks.map(key=>{ const [cid,...rest]=key.split(':');const lid=rest.join(':');const c=findCourse(cid),l=findLesson(cid,lid);return c&&l&&(!c.dark||shadowUnlocked)?{c,l,key}:null;}).filter(Boolean);
   return `<main class="page"><div class="page-title"><span class="overline">A LIBRARY THAT REMEMBERS</span><h1>Your <em>saved</em> pages.</h1><p>Keep the knowledge you want to return to.</p></div>
+    <section class="notebook-invite"><span class="notebook-invite-icon">✍</span><div><span class="overline">YOUR PRIVATE REFLECTIONS</span><h2>Field Notebook</h2><p>Search all the practice notes you've written while learning.</p></div>${button('Open notebook','notebook-open','small-button')}</section>
     <section class="section"><div class="section-heading"><div><span class="overline">BACK TO WHAT MATTERS</span><h2>Favorite subjects</h2></div></div><div class="course-list">${favorites.length?favorites.map(c=>card(c,'horizontal')).join(''):`<p class="empty-text">Tap the heart on a subject to keep it here.</p>`}</div></section>
     <section class="section"><div class="section-heading"><div><span class="overline">YOUR PERSONAL REFERENCES</span><h2>Bookmarked lessons</h2></div></div><div class="lesson-list">${entries.length?entries.map(({c,l,key})=>`<button type="button" class="lesson-row" data-action="open-lesson" data-course="${esc(c.id)}" data-lesson="${esc(l.id)}"><span class="lesson-number">${icon('bookmark',19)}</span><span class="lesson-info"><strong>${esc(l.title)}</strong><small>${esc(c.title)} · ${l.minutes} min</small></span>${chevron}</button>`).join(''):`<p class="empty-text">Bookmark a lesson while reading to find it here later.</p>`}</div></section>
   </main>`;
@@ -590,8 +605,8 @@ function render() {
   document.body.classList.toggle('dialog-open',Boolean(modal));
   document.body.classList.toggle('reader-focus-mode',route.view==='lesson'&&saved.reader.focus);
   const view = route.view;
-  const content = ({home,explore,journey,review:reviewPage,studio:studioPage,scenario:scenarioPage,casebook:casebookPage,map:mapPage,quest:questPage,glossary:glossaryPage,search:globalSearchPage,insights:insightsPage,mentor:mentorPage,offline:offlinePage,path:pathPage,saved:savedPage,you,course:coursePage,lesson:lessonPage,language:languagePage}[view] || errorView)();
-  document.getElementById('app').innerHTML = `${topbar()}<div class="shell"><aside class="desktop-rail"><div class="rail-title">YOUR ATLAS <span>✧</span></div>${[['home','Home','home'],['explore','Explore & Learn','compass'],['journey','My Journey','spark'],['saved','Saved Library','bookmark'],['you','Your Space','user']].map(([id,label,ico])=>`<button type="button" data-action="nav" data-id="${id}" class="rail-link ${tabForRoute()===id?'active':''}">${icon(ico,20)} ${label}</button>`).join('')}<div class="rail-divider"></div><button type="button" class="rail-link" data-action="offline-open">${icon('download',20)} Offline Library</button><button type="button" class="rail-link" data-action="open-corner">${icon('spark',20)} Xyra's Corner</button><button type="button" class="rail-link" data-action="casebook">${icon('book',20)} Case Files</button><button type="button" class="rail-link" data-action="insights">${icon('chart',20)} Learning Insights</button><button type="button" class="rail-link" data-action="search">${icon('search',20)} Search Everything</button><button type="button" class="rail-link" data-action="glossary">${icon('book',20)} Glossary</button><button type="button" class="rail-link" data-action="quest">${icon('spark',20)} Daily Quest</button><button type="button" class="rail-link" data-action="map">${icon('compass',20)} Knowledge Map</button><button type="button" class="rail-link" data-action="review">${icon('orbit',20)} Review Deck</button><button type="button" class="rail-link" data-action="path">${icon('compass',20)} Guided Path</button><button type="button" class="rail-link" data-action="studio">${icon('briefcase',20)} Practice Studio</button><button type="button" class="rail-link" data-action="language">${icon('languages',20)} Language Lab</button><button type="button" class="rail-link" data-action="open-course" data-id="shadow">${icon('moon',20)} Shadow Library</button><div class="rail-note">✦<p>The world is a little bigger every time you learn.</p></div></aside><div class="main-column">${storageHealthBanner()}${content}<footer class="app-footer">Made with curiosity, for a life still unfolding. <span>✧ Xyra Atlas</span></footer></div></div>${navBar()}${modalView()}${currentToast?`<div class="toast" role="status">${icon('spark',19)} ${esc(currentToast)}</div>`:''}`;
+  const content = ({home,explore,journey,review:reviewPage,studio:studioPage,scenario:scenarioPage,casebook:casebookPage,map:mapPage,quest:questPage,glossary:glossaryPage,search:globalSearchPage,insights:insightsPage,mentor:mentorPage,offline:offlinePage,notebook:notebookPage,path:pathPage,saved:savedPage,you,course:coursePage,lesson:lessonPage,language:languagePage}[view] || errorView)();
+  document.getElementById('app').innerHTML = `${topbar()}<div class="shell"><aside class="desktop-rail"><div class="rail-title">YOUR ATLAS <span>✧</span></div>${[['home','Home','home'],['explore','Explore & Learn','compass'],['journey','My Journey','spark'],['saved','Saved Library','bookmark'],['you','Your Space','user']].map(([id,label,ico])=>`<button type="button" data-action="nav" data-id="${id}" class="rail-link ${tabForRoute()===id?'active':''}">${icon(ico,20)} ${label}</button>`).join('')}<div class="rail-divider"></div><button type="button" class="rail-link" data-action="notebook-open">${icon('book',20)} Field Notebook</button><button type="button" class="rail-link" data-action="offline-open">${icon('download',20)} Offline Library</button><button type="button" class="rail-link" data-action="open-corner">${icon('spark',20)} Xyra's Corner</button><button type="button" class="rail-link" data-action="casebook">${icon('book',20)} Case Files</button><button type="button" class="rail-link" data-action="insights">${icon('chart',20)} Learning Insights</button><button type="button" class="rail-link" data-action="search">${icon('search',20)} Search Everything</button><button type="button" class="rail-link" data-action="glossary">${icon('book',20)} Glossary</button><button type="button" class="rail-link" data-action="quest">${icon('spark',20)} Daily Quest</button><button type="button" class="rail-link" data-action="map">${icon('compass',20)} Knowledge Map</button><button type="button" class="rail-link" data-action="review">${icon('orbit',20)} Review Deck</button><button type="button" class="rail-link" data-action="path">${icon('compass',20)} Guided Path</button><button type="button" class="rail-link" data-action="studio">${icon('briefcase',20)} Practice Studio</button><button type="button" class="rail-link" data-action="language">${icon('languages',20)} Language Lab</button><button type="button" class="rail-link" data-action="open-course" data-id="shadow">${icon('moon',20)} Shadow Library</button><div class="rail-note">✦<p>The world is a little bigger every time you learn.</p></div></aside><div class="main-column">${storageHealthBanner()}${content}<footer class="app-footer">Made with curiosity, for a life still unfolding. <span>✧ Xyra Atlas</span></footer></div></div>${navBar()}${modalView()}${currentToast?`<div class="toast" role="status">${icon('spark',19)} ${esc(currentToast)}</div>`:''}`;
   const main=document.querySelector('#app main');
   if(main){main.id='atlas-main';main.setAttribute('tabindex','-1');}
   for(const el of document.querySelectorAll('.topbar,.shell,.bottom-nav'))el.inert=Boolean(modal);
@@ -669,6 +684,9 @@ async function handleAction(e) {
   if(action==='skip-content'){const main=document.getElementById('atlas-main');main?.focus({preventScroll:true});main?.scrollIntoView({block:'start'});}
   else if(action==='goto-home') nav('home');
   else if(action==='goto-explore') {query='';filter='all';nav('explore');}
+  else if(action==='goto-saved')nav('saved');
+  else if(action==='notebook-open'){notebookQuery='';nav('notebook');}
+  else if(action==='notebook-clear'){notebookQuery='';render();requestAnimationFrame(()=>document.getElementById('notebook-search')?.focus());}
   else if(action==='insights') nav('insights');
   else if(action==='offline-open'){nav('offline');requestAnimationFrame(()=>inspectOffline());}
   else if(action==='offline-back')nav('you');
@@ -759,6 +777,7 @@ document.addEventListener('input',e=>{
       if(status) status.textContent='Saved on this device · Export a backup to keep it safe';
     }
   }
+  if(e.target.id==='notebook-search'){const pos=e.target.selectionStart;notebookQuery=e.target.value.slice(0,100);render();const field=document.getElementById('notebook-search');if(field){field.focus();try{field.setSelectionRange(pos,pos);}catch{}}}
   if(e.target.id==='atlas-global-search') {const pos=e.target.selectionStart;globalQuery=e.target.value.slice(0,100);render();const field=document.getElementById('atlas-global-search');if(field){field.focus();try{field.setSelectionRange(pos,pos);}catch{}}}
   if(e.target.id==='glossary-search') {const pos=e.target.selectionStart;glossaryQuery=e.target.value;render();const field=document.getElementById('glossary-search');if(field){field.focus();try{field.setSelectionRange(pos,pos);}catch{}}}
   if(e.target.id==='course-search') {const pos=e.target.selectionStart;query=e.target.value;render();const input=document.getElementById('course-search');if(input){input.focus();try{input.setSelectionRange(pos,pos);}catch{}}}

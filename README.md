@@ -4,7 +4,7 @@
 
 ![Xyra Atlas emblem](assets/atlas-mark.svg)
 
-## Current release: Keyboard Accessibility 1.21
+## Current release: Private Field Notebook Library 1.22
 
 - A violet-and-gold responsive interface, **14 distinct original vector course worlds**, Xyra's Corner artwork, landscape hero and a home-screen app icon. The same course identity appears on home tiles, category cards, course covers and lessons.
 - 14 learning subjects and **88 interactive lessons**: 52 short starters plus 36 structured, referenced field guides with real-world worked examples, exercises and quizzes (counts verified by tests).
@@ -20,6 +20,7 @@
 
 **New in 0.5:** Psychology (evidence journaling, habits, relational inference); Philippine law (Constitution, data privacy, consumer complaints); business (customer discovery, unit economics, Philippine launch steps); money (irregular bills, emergency planning, investment red flags). Sources are linked for optional online verification; lessons work offline. Links and regulations can change.
 
+- **Private Field Notebook Library:** A searchable offline collection of your own lesson exercise notes, with safe excerpts, direct links back to their lessons and gated access for mature-course notes. Entries remain entirely in browser storage and travel with existing JSON backups.
 - **Keyboard Accessibility:** A visible-on-focus Skip to learning content control, true main-region focus, and modal keyboard focus trapping. Background navigation is made inert while a dialog is open; Escape closes dialogs and restores focus to the learning content. Chromium verifies real keyboard navigation.
 - **Safe Backup Restore:** Importing a JSON progress backup now validates its format and known lesson keys, shows a preview of the restored notes, lessons, quizzes and bookmarks, and requires explicit confirmation before replacing local progress. Cancelling or selecting an invalid backup leaves the current learning data unchanged. Backup import errors do not claim success.
 - **Deep-Link Resilience:** Malformed or incomplete URL percent-encoding can no longer crash Atlas during startup or hash navigation. Browser tests verify safe recovery to Home, valid course deep links and a friendly error screen for unknown lessons.
