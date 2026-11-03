@@ -7,6 +7,7 @@ import { summarizeLearning,activityCalendar } from './insights.js';
 import { mentorMoment } from './mentor.js';
 import { READER_SIZES,normalizeReaderPreferences,setReaderSize,toggleReaderFocus } from './reader.js';
 import {createChapterMap} from './visualmap.js';
+import {buildLessonNarration} from './narration.js';
 import { createDailyQuest,dailyQuestProgress } from './dailyquest.js';
 import { buildKnowledgeMap } from './atlasmap.js';
 import { SCENARIOS,normalizeScenarioAnswers,recordScenarioAnswer,scenarioProgress } from './scenarios.js';
@@ -67,6 +68,7 @@ let shadowUnlocked = false; // A content acknowledgment, not a secure identity o
 let installEvent = null;
 let toastTimer;
 let currentToast = '';
+let lessonAudio = null;
 const today = () => localDayKey(new Date());
 const idFor = (courseId, lessonId) => `${courseId}:${lessonId}`;
 const isCompleted = key => saved.completed.includes(key);
@@ -243,6 +245,42 @@ function coursePage() {
     <p class="info-line">${icon('info',16)} Educational guidance, not a substitute for individualized legal, medical, financial or mental-health advice.</p>
   </main>`;
 }
+function lessonAudioAvailable(){return 'speechSynthesis' in window && 'SpeechSynthesisUtterance' in window;}
+function syncLessonAudioUI(){
+ if(route.view!=='lesson')return;
+ const key=idFor(route.courseId,route.lessonId),active=lessonAudio?.key===key;
+ const start=document.getElementById('lesson-audio-start'),pause=document.getElementById('lesson-audio-pause'),stop=document.getElementById('lesson-audio-stop'),status=document.getElementById('lesson-audio-status');
+ if(start)start.hidden=active;
+ if(pause){pause.hidden=!active;pause.textContent=lessonAudio?.paused?'Resume listening':'Pause listening';pause.setAttribute('aria-pressed',String(Boolean(lessonAudio?.paused)));}
+ if(stop)stop.hidden=!active;
+ if(status)status.textContent=active?(lessonAudio.paused?'Narration paused':`Listening to part ${lessonAudio.index+1} of ${lessonAudio.parts.length}`):lessonAudioAvailable()?'Uses an available browser speech voice. Playback quality varies by device.':'Speech playback is not supported by this browser.';
+}
+function stopLessonAudio(){
+ lessonAudio=null;
+ if(lessonAudioAvailable())try{window.speechSynthesis.cancel();}catch{}
+ syncLessonAudioUI();
+}
+function speakNextLessonChunk(){
+ const context=lessonAudio;
+ if(!context||context.paused)return;
+ if(context.index>=context.parts.length){stopLessonAudio();return;}
+ const u=new SpeechSynthesisUtterance(context.parts[context.index]);
+ u.lang='en-US';u.rate=.94;
+ context.utterance=u;
+ u.onend=()=>{if(lessonAudio!==context||context.utterance!==u)return;context.index++;speakNextLessonChunk();};
+ u.onerror=(event)=>{if(lessonAudio!==context||context.utterance!==u)return;stopLessonAudio();if(event.error!=='interrupted'&&event.error!=='canceled')flash('Narration stopped. Try another browser voice.');};
+ try{window.speechSynthesis.speak(u);syncLessonAudioUI();}catch{stopLessonAudio();flash('Speech playback is unavailable on this device.');}
+}
+function startLessonAudio(){
+ if(!lessonAudioAvailable()){flash('Speech playback is unavailable in this browser.');return;}
+ const c=findCourse(route.courseId),l=findLesson(route.courseId,route.lessonId);
+ if(!c||!l||c.dark&&!shadowUnlocked)return;
+ const parts=buildLessonNarration(c,l);
+ if(!parts.length){flash('This lesson has no narration content.');return;}
+ stopLessonAudio();lessonAudio={key:idFor(c.id,l.id),parts,index:0,utterance:null,paused:false};
+ speakNextLessonChunk();
+}
+
 function lessonPage() {
   const c = findCourse(route.courseId), l = findLesson(route.courseId,route.lessonId);
   if (!c || !l) return errorView();
@@ -255,6 +293,7 @@ function lessonPage() {
   return `<main class="page reading-page" data-reader-size="${esc(saved.reader.size)}"><div class="subnav">${button(`${icon('back',18)} ${esc(c.title)}`,'open-course','back-link',`data-id="${esc(c.id)}"`)}${button(icon('bookmark',21),'bookmark',`icon-button ${isBookmarked(key)?'is-favorite':''}`,`data-key="${esc(key)}" aria-label="${isBookmarked(key)?'Remove bookmark':'Bookmark lesson'}"`)}</div>
     <div class="reading-head"><span class="overline">${esc(c.title)} · ${esc(l.stage)}</span><div class="reading-num">LESSON ${String(idx+1).padStart(2,'0')} OF ${String(c.lessons.length).padStart(2,'0')}</div><h1>${esc(l.title)}</h1><p>${esc(l.intro)}</p><span class="reading-time">${icon('clock',17)} ${l.minutes} min read & practice</span></div>
     <div class="reader-toolbar" role="group" aria-label="Reading preferences"><div class="reader-toolbar-label">${icon('book',18)} Reading comfort</div><div class="reader-size-group" role="group" aria-label="Text size">${READER_SIZES.map(item=>button(esc(item.label),'reader-size',`reader-size-button ${saved.reader.size===item.id?'selected':''}`,`data-id="${item.id}" aria-pressed="${saved.reader.size===item.id}"`)).join('')}</div>${button(saved.reader.focus?`${icon('check',16)} Focus on`:`${icon('spark',16)} Focus mode`,'reader-focus',`reader-focus-button ${saved.reader.focus?'selected':''}`,`aria-pressed="${saved.reader.focus}"`)}</div>
+    <section class="lesson-audio-panel" aria-label="Listen to this lesson"><span class="lesson-audio-symbol">${icon('play',20)}</span><div class="lesson-audio-description"><strong>Listen to this lesson</strong><small id="lesson-audio-status" role="status">Uses an available browser speech voice. Playback quality varies by device.</small></div><div class="lesson-audio-actions"><button type="button" data-action="lesson-audio-start" id="lesson-audio-start" class="reader-audio-button" ${lessonAudioAvailable()?'':'disabled aria-disabled="true"'}>Listen</button><button type="button" data-action="lesson-audio-pause" id="lesson-audio-pause" class="reader-audio-button" hidden aria-pressed="false">Pause listening</button><button type="button" data-action="lesson-audio-stop" id="lesson-audio-stop" class="reader-audio-stop" hidden>Stop</button></div></section>
     <div class="reading-illustration"><img src="/assets/${esc(c.art)}.svg" alt=""/><span class="reading-illustration-glow">✧</span></div>
     <section class="chapter-map" aria-label="Visual chapter map"><div class="chapter-map-heading"><div><span class="overline">SEE THE BIG PICTURE</span><h2>Your learning constellation</h2><p>Follow the connected ideas, or jump straight to a section.</p></div><span class="chapter-map-count">${chapterMap.steps.length} insights</span></div><div class="chapter-map-track">${chapterMap.steps.map((step,i)=>`<button type="button" class="chapter-map-node" data-action="jump-chapter" data-index="${i}" aria-label="Jump to section ${i+1}: ${esc(step.heading)}"><span class="chapter-map-bubble">${step.label}</span><span class="chapter-map-node-text"><strong>${esc(step.heading)}</strong><small>${esc(step.preview)}</small></span><span class="chapter-map-go">${icon('arrow',16)}</span></button>`).join('')}</div>${chapterMap.practice?`<button type="button" class="chapter-map-practice" data-action="jump-chapter" data-index="practice"><span class="chapter-map-practice-icon">${icon('spark',18)}</span><span><strong>${esc(chapterMap.practice.heading)}</strong><small>${esc(chapterMap.practice.preview)}</small></span><span>${icon('arrow',16)}</span></button>`:''}</section>
     <article class="lesson-content">${l.sections.map((s,i)=>`<section id="lesson-section-${i}"><div class="article-section-num">0${i+1} / LEARN</div><h2>${esc(s.heading)}</h2><p>${esc(s.body)}</p></section>`).join('')}
@@ -476,6 +515,7 @@ function render() {
   const view = route.view;
   const content = ({home,explore,journey,review:reviewPage,studio:studioPage,scenario:scenarioPage,casebook:casebookPage,map:mapPage,quest:questPage,glossary:glossaryPage,search:globalSearchPage,insights:insightsPage,mentor:mentorPage,path:pathPage,saved:savedPage,you,course:coursePage,lesson:lessonPage,language:languagePage}[view] || errorView)();
   document.getElementById('app').innerHTML = `${topbar()}<div class="shell"><aside class="desktop-rail"><div class="rail-title">YOUR ATLAS <span>✧</span></div>${[['home','Home','home'],['explore','Explore & Learn','compass'],['journey','My Journey','spark'],['saved','Saved Library','bookmark'],['you','Your Space','user']].map(([id,label,ico])=>`<button type="button" data-action="nav" data-id="${id}" class="rail-link ${tabForRoute()===id?'active':''}">${icon(ico,20)} ${label}</button>`).join('')}<div class="rail-divider"></div><button type="button" class="rail-link" data-action="open-corner">${icon('spark',20)} Xyra's Corner</button><button type="button" class="rail-link" data-action="casebook">${icon('book',20)} Case Files</button><button type="button" class="rail-link" data-action="insights">${icon('chart',20)} Learning Insights</button><button type="button" class="rail-link" data-action="search">${icon('search',20)} Search Everything</button><button type="button" class="rail-link" data-action="glossary">${icon('book',20)} Glossary</button><button type="button" class="rail-link" data-action="quest">${icon('spark',20)} Daily Quest</button><button type="button" class="rail-link" data-action="map">${icon('compass',20)} Knowledge Map</button><button type="button" class="rail-link" data-action="review">${icon('orbit',20)} Review Deck</button><button type="button" class="rail-link" data-action="path">${icon('compass',20)} Guided Path</button><button type="button" class="rail-link" data-action="studio">${icon('briefcase',20)} Practice Studio</button><button type="button" class="rail-link" data-action="language">${icon('languages',20)} Language Lab</button><button type="button" class="rail-link" data-action="open-course" data-id="shadow">${icon('moon',20)} Shadow Library</button><div class="rail-note">✦<p>The world is a little bigger every time you learn.</p></div></aside><div class="main-column">${content}<footer class="app-footer">Made with curiosity, for a life still unfolding. <span>✧ Xyra Atlas</span></footer></div></div>${navBar()}${modalView()}${currentToast?`<div class="toast" role="status">${icon('spark',19)} ${esc(currentToast)}</div>`:''}`;
+  syncLessonAudioUI();
   document.title = `${view==='course' ? findCourse(route.courseId)?.title+' · ':view==='lesson' ? findLesson(route.courseId,route.lessonId)?.title+' · ' : ''}Xyra Atlas`;
 }
 function toggle(list,value) { saved[list]=saved[list].includes(value)?saved[list].filter(x=>x!==value):[...saved[list],value];persist();render(); }
@@ -549,6 +589,9 @@ async function handleAction(e) {
   else if(action==='create-path') {const goal=document.getElementById('path-goal')?.value;const minutes=Number(document.getElementById('path-minutes')?.value);const stamp=today();const next=createLearningPath(COURSES,goal,minutes,saved.completed,stamp);if(!next){flash('No unfinished lessons fit this focus and study time. Try another goal.');return;}saved.learningPath=next;persist();flash('Your seven-session learning path is ready!');}
   else if(action==='studio') nav('studio');
   else if(action==='jump-chapter'){if(route.view==='lesson'){const target=button.dataset.index==='practice'?'lesson-practice':Number.isInteger(Number(button.dataset.index))?'lesson-section-'+button.dataset.index:null;const el=target?document.getElementById(target):null;if(el){el.scrollIntoView({behavior:window.matchMedia?.('(prefers-reduced-motion: reduce)').matches?'instant':'smooth',block:'start'});el.setAttribute('tabindex','-1');el.focus({preventScroll:true});}}}
+  else if(action==='lesson-audio-start') {if(route.view==='lesson')startLessonAudio();}
+  else if(action==='lesson-audio-pause'){if(route.view==='lesson'&&lessonAudio&&lessonAudio.key===idFor(route.courseId,route.lessonId)&&lessonAudioAvailable()){try{if(lessonAudio.paused){window.speechSynthesis.resume();lessonAudio.paused=false;}else{window.speechSynthesis.pause();lessonAudio.paused=true;}syncLessonAudioUI();}catch{flash('Audio controls are unavailable on this device.');}}}
+  else if(action==='lesson-audio-stop'){stopLessonAudio();}
   else if(action==='reader-size'){if(route.view==='lesson'){saved.reader=setReaderSize(saved.reader,id);persist();render();}}
   else if(action==='reader-focus'){if(route.view==='lesson'){saved.reader=toggleReaderFocus(saved.reader);persist();render();}}
   else if(action==='scenario') nav('scenario');
@@ -607,7 +650,7 @@ document.addEventListener('input',e=>{
   if(e.target.id==='course-search') {const pos=e.target.selectionStart;query=e.target.value;render();const input=document.getElementById('course-search');if(input){input.focus();try{input.setSelectionRange(pos,pos);}catch{}}}
 });
 document.addEventListener('keydown',e=>{if(e.key==='/'&&!modal&&!e.altKey&&!e.ctrlKey&&!e.metaKey&&!['INPUT','TEXTAREA','SELECT'].includes(document.activeElement?.tagName)&&!document.activeElement?.isContentEditable){e.preventDefault();nav('search');requestAnimationFrame(()=>document.getElementById('atlas-global-search')?.focus());}if(e.key==='Escape'&&modal){modal='';if(['course','lesson'].includes(route.view)&&route.courseId==='shadow'&&!shadowUnlocked)nav('explore');else render();} if((e.key==='Enter'||e.key===' ')&&e.target.classList?.contains('shadow-preview')) {e.preventDefault();gateConfirmed=false;modal='shadow';render();}});
-window.addEventListener('hashchange',()=>{reviewRevealed=false;route=parseHash();if(route.view==='course'&&route.courseId==='shadow'&&!shadowUnlocked)modal='shadow';if(route.view==='lesson'&&route.courseId==='shadow'&&!shadowUnlocked)modal='shadow';render();});
+window.addEventListener('hashchange',()=>{reviewRevealed=false;stopLessonAudio();route=parseHash();if(route.view==='course'&&route.courseId==='shadow'&&!shadowUnlocked)modal='shadow';if(route.view==='lesson'&&route.courseId==='shadow'&&!shadowUnlocked)modal='shadow';render();});
 window.addEventListener('online',render);window.addEventListener('offline',render);
 window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();installEvent=e;});
 if('serviceWorker' in navigator && location.protocol.startsWith('http')){
