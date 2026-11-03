@@ -353,6 +353,28 @@ try{
   expect((state.completed||[]).length===0,'re-practice does not mark lesson completed');
   await page.screenshot({path:snapshots+'/mistake-lab.png',fullPage:true});
  });
+ await smoke('multi-question-mistake-navigation',{viewport:{width:1280,height:800}},async page=>{
+  await page.locator('.desktop-rail [data-action="nav"][data-id="explore"]').click();
+  await page.locator('[data-action="open-course"][data-id="psychology"]').first().click();
+  await page.locator('[data-action="open-lesson"]').first().click();
+  await page.locator('.quiz-option[data-index="0"]').click();
+  await page.locator('.next-lesson[data-action="open-lesson"]').click();
+  await page.locator('.quiz-option[data-index="0"]').click();
+  await page.locator('.desktop-rail [data-action="nav"][data-id="journey"]').click();
+  await page.locator('.mistakes-invite [data-action="mistakes-open"]').click();
+  await page.locator('.mistake-pager').waitFor();
+  expect((await page.locator('.mistake-pager').textContent()).includes('1 of 2'),'two missed questions are available');
+  await page.locator('[data-action="mistake-cycle"][data-id="next"]').click();
+  expect((await page.locator('.mistake-pager').textContent()).includes('2 of 2'),'next moves to the second missed question');
+  await page.locator('[data-action="mistake-cycle"][data-id="prev"]').click();
+  expect((await page.locator('.mistake-pager').textContent()).includes('1 of 2'),'previous returns to first');
+  await page.locator('.mistake-option[data-index="1"]').click();
+  expect(Object.keys((await getState(page)).mistakes||{}).length===1,'correcting one question preserves the other');
+  await page.locator('.mistake-option[data-index="1"]').click();
+  await page.locator('.mistake-empty').waitFor();
+  expect(Object.keys((await getState(page)).mistakes||{}).length===0,'both missed topics can be resolved');
+  await page.screenshot({path:snapshots+'/mistake-lab-multi.png',fullPage:true});
+ });
 }finally{
  if(browser)await browser.close();
  server.kill('SIGTERM');

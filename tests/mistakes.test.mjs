@@ -29,3 +29,11 @@ test('Mistake Lab route and backup work from offline bundle',()=>{
  assert.match(a,/action==='mistake-answer'/);
  assert.match(s,/\/mistakes\.js/);assert.match(b,/'mistakes\.js'/);
 });
+
+test('the practice lab includes navigation controls for queues of multiple questions',()=>{
+ const app=fs.readFileSync('app.js','utf8');
+ assert.match(app,/mistakeIndex%questions\.length/);
+ assert.match(app,/data-id="next"/);
+ assert.match(app,/data-id="prev"/);
+ assert.match(app,/action==='mistake-cycle'/);
+});
