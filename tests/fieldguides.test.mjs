@@ -1,7 +1,7 @@
 import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';
 import {COURSES,findLesson,totalLessons} from '../data.js';import {FIELD_GUIDES,FIELD_GUIDE_COUNT} from '../fieldguides.js';
 test('twelve substantial field guides integrate into four existing subjects',()=>{
- assert.equal(FIELD_GUIDE_COUNT,12);assert.equal(totalLessons,88);
+ assert.equal(FIELD_GUIDE_COUNT,12);assert.ok(totalLessons>=88,'existing curriculum preserved as new tracks are added');
  assert.deepEqual(Object.keys(FIELD_GUIDES).sort(),['career','communication','digital','thinking']);
  for(const [cid,lessons] of Object.entries(FIELD_GUIDES)){assert.equal(lessons.length,3);
   assert.ok(COURSES.some(c=>c.id===cid&&!c.dark));
