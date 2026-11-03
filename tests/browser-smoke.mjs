@@ -809,7 +809,8 @@ try{
   await page.goto(BASE+'/#/home',{waitUntil:'domcontentloaded'});
   await page.locator('.hero-archive [data-action="goto-explore"]').click();
   await waitRoute(page,'#/explore');
-  expect(await page.locator('.explore-page').count()===1,'Archive Gate CTA opens the subject library');
+  await page.locator('#course-search').waitFor();
+  expect(await page.locator('#course-search').count()===1,'Archive Gate CTA opens the subject library');
  });
  await smoke('cinematic-worlds-mobile-offline',{viewport:{width:390,height:844}},async(page,context)=>{
   await page.goto(BASE+'/#/home',{waitUntil:'domcontentloaded'});
@@ -841,7 +842,8 @@ try{
   }
   await page.locator('.hero-archive [data-action="goto-explore"]').click();
   await waitRoute(page,'#/explore');
-  expect(await page.locator('.explore-page').count()===1,'cinematic navigation works offline');
+  await page.locator('#course-search').waitFor();
+  expect(await page.locator('#course-search').count()===1,'cinematic navigation works offline');
   overflow=await mobileOverflow(page);
   expect(overflow.scroll<=overflow.width+8,'offline navigation fits mobile viewport');
   await context.setOffline(false);
