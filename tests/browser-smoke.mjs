@@ -375,6 +375,35 @@ try{
   expect(Object.keys((await getState(page)).mistakes||{}).length===0,'both missed topics can be resolved');
   await page.screenshot({path:snapshots+'/mistake-lab-multi.png',fullPage:true});
  });
+ await smoke('encrypted-backup-restore',{viewport:{width:1280,height:800},acceptDownloads:true},async page=>{
+  const key='psychology:thoughts',password='a long purple archive passphrase';
+  await page.evaluate(key=>{const state=JSON.parse(localStorage.getItem('xyra-atlas-state-v1'));state.fieldNotes={[key]:'Secret sunrise study notes'};localStorage.setItem('xyra-atlas-state-v1',JSON.stringify(state));},key);
+  await page.reload({waitUntil:'domcontentloaded'});
+  await page.locator('.desktop-rail [data-action="nav"][data-id="you"]').click();
+  await page.locator('[data-action="backup-encrypted-export"]').click();
+  await page.locator('#encrypt-backup-password').fill(password);
+  await page.locator('#encrypt-backup-confirm').fill(password);
+  const pending=page.waitForEvent('download');
+  await page.locator('[data-action="backup-encrypt-confirm"]').click();
+  const dl=await pending;const content=await (await import('node:fs/promises')).readFile(await dl.path(),'utf8');
+  expect(dl.suggestedFilename().startsWith('xyra-atlas-private-'),'encrypted backup gets a protected filename');
+  expect(!content.includes('Secret sunrise study notes'),'encrypted backup does not expose note text');
+  expect(JSON.parse(content).cipher==='AES-256-GCM','protected file declares authenticated encryption');
+  await page.evaluate(key=>{const state=JSON.parse(localStorage.getItem('xyra-atlas-state-v1'));state.fieldNotes={[key]:'New current notes'};localStorage.setItem('xyra-atlas-state-v1',JSON.stringify(state));},key);
+  await page.reload({waitUntil:'domcontentloaded'});
+  await page.locator('#backup-file').setInputFiles({name:'atlas-protected.json',mimeType:'application/json',buffer:Buffer.from(content)});
+  await page.locator('#unlock-backup-password').waitFor();
+  await page.locator('#unlock-backup-password').fill('incorrect passphrase');
+  await page.locator('[data-action="backup-unlock-confirm"]').click();
+  expect((await getState(page)).fieldNotes[key]==='New current notes','wrong passphrase does not alter saved progress');
+  await page.locator('#unlock-backup-password').fill(password);
+  await page.locator('[data-action="backup-unlock-confirm"]').click();
+  await page.locator('.backup-preview-grid').waitFor();
+  expect((await getState(page)).fieldNotes[key]==='New current notes','correct passphrase still requires restore confirmation');
+  await page.locator('[data-action="backup-confirm"]').click();
+  await page.waitForFunction(key=>JSON.parse(localStorage.getItem('xyra-atlas-state-v1')).fieldNotes?.[key]==='Secret sunrise study notes',key);
+  expect((await getState(page)).fieldNotes[key]==='Secret sunrise study notes','confirmed restore recovers encrypted progress');
+ });
 }finally{
  if(browser)await browser.close();
  server.kill('SIGTERM');
