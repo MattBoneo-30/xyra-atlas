@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "repository": "MattBoneo-30/xyra-atlas",
+  "order": [
+    "advanced-curriculum",
+    "final-visual-experience",
+    "language-quality",
+    "release-readiness"
+  ],
+  "gates": [
+    {
+      "id": "advanced-curriculum",
+      "name": "Advanced curriculum",
+      "complete": false,
+      "reportSent": false,
+      "criteria": [
+        "Pedagogically coherent and deep 14-subject beginner-to-advanced paths",
+        "Multiple well-validated questions, worked examples and real practice per topic",
+        "Primary official links and jurisdiction-correct Philippine legal guidance editorially verified",
+        "Latest curriculum CI plus accessibility tests pass"
+      ],
+      "evidence": [],
+      "blockers": [
+        "Curriculum breadth and source/editorial validation are not yet complete."
+      ]
+    },
+    {
+      "id": "final-visual-experience",
+      "name": "Final visual experience",
+      "complete": false,
+      "reportSent": false,
+      "criteria": [
+        "Final original painterly/cinematic worlds, chapter art and consistent character assets integrated",
+        "Accessible and performance-budgeted responsive art",
+        "Real browser screenshot and multi-viewport visual QA complete"
+      ],
+      "evidence": [],
+      "blockers": [
+        "Final painterly art and visual signoff outstanding."
+      ]
+    },
+    {
+      "id": "language-quality",
+      "name": "Language quality",
+      "complete": false,
+      "reportSent": false,
+      "criteria": [
+        "All advertised translations and cultural variants independently vetted",
+        "Reliable provenance and honest limitations for audio/pronunciation",
+        "Multidevice offline language practice tested"
+      ],
+      "evidence": [],
+      "blockers": [
+        "No independent native-speaker/editor verification yet; synthesized device speech is not reference audio."
+      ]
+    },
+    {
+      "id": "release-readiness",
+      "name": "Release readiness",
+      "complete": false,
+      "reportSent": false,
+      "criteria": [
+        "Content and visuals signed off, latest security/accessibility/performance/privacy CI green",
+        "Production Vercel deployment live and tested",
+        "Actual iOS and Android PWA installation, offline, update, restore tests completed",
+        "Licensing and release docs finalized"
+      ],
+      "evidence": [],
+      "blockers": [
+        "Deployment and real iOS/Android verification not established."
+      ]
+    }
+  ]
+}

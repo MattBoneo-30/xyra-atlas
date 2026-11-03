@@ -1164,6 +1164,29 @@ try{
  });
 
 
+ await smoke('offline-curriculum-ladders',{viewport:{width:390,height:844},isMobile:true,hasTouch:true,deviceScaleFactor:2},async(page,context)=>{
+  await page.goto(BASE+'/#/course/psychology',{waitUntil:'domcontentloaded'});
+  await page.locator('.curriculum-ladder').waitFor();
+  expect(await page.locator('.curriculum-level').count()===3,'learning objectives appear at three levels');
+  expect(await page.locator('.curriculum-next-action').count()===3,'each stage links a genuine lesson');
+  const width=await mobileOverflow(page);
+  expect(width.scroll<=width.width+8,'curriculum ladder fits mobile view');
+  await page.locator('.curriculum-level').nth(2).locator('[data-action="open-lesson"]').click();
+  await page.locator('.reading-page').waitFor();
+  expect(await page.locator('.reading-page').count()===1,'advanced recommendation opens real lesson');
+  await page.goto(BASE+'/#/course/psychology',{waitUntil:'domcontentloaded'});
+  await page.locator('.curriculum-ladder').waitFor();
+  await page.evaluate(async()=>{await navigator.serviceWorker.ready;});
+  await page.reload({waitUntil:'domcontentloaded'});
+  await page.waitForFunction(()=>Boolean(navigator.serviceWorker.controller));
+  await context.setOffline(true);
+  await page.reload({waitUntil:'domcontentloaded'});
+  await page.locator('.curriculum-ladder').waitFor();
+  expect(await page.locator('.curriculum-level').count()===3,'curriculum ladder works offline');
+  await context.setOffline(false);
+ });
+
+
 }finally{
  if(browser)await browser.close();
  server.kill('SIGTERM');
