@@ -403,3 +403,35 @@ html[data-theme=light]{color-scheme:light;--bg:#fbf5f6;--bg-raised:#fff9fa;--car
 /* Subtle update indicator in the persistent topbar. */
 .update-ready-topbar{color:var(--gold);border:1px solid var(--line-bright);border-radius:50%;background:var(--card-strong)}
 .update-ready-topbar:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+
+
+/* Atlas Worlds v1.36: original illustrated archive, lantern library and starlit garden. */
+.home-page .hero-archive{height:clamp(280px,38vw,410px);isolation:isolate;background:#242043;border-color:rgba(246,205,182,.26);box-shadow:0 18px 45px rgba(17,11,40,.24)}
+.hero-archive>img{width:100%;height:100%;object-fit:cover;object-position:63% center}
+.hero-archive .landscape-shade{background:linear-gradient(90deg,rgba(12,12,35,.86) 0%,rgba(20,14,48,.71) 33%,rgba(25,14,45,.11) 82%),linear-gradient(0deg,rgba(13,11,36,.56),transparent 70%)}
+.hero-archive .hero-caption{left:clamp(19px,4vw,43px);right:16px;bottom:clamp(20px,3vw,37px);gap:11px;max-width:480px;color:#fff8f1}
+.hero-archive .hero-caption strong{font:normal clamp(31px,5.1vw,53px)/1.08 Georgia,"Times New Roman",serif;letter-spacing:-.7px;color:#fff3e5;text-shadow:0 2px 19px #19142a}
+.hero-archive .hero-caption p{font-size:13px;line-height:1.7;color:#f4dfe9;margin:0;max-width:300px;text-shadow:0 2px 8px #1c1738}
+.hero-enter-button{align-self:flex-start;display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:11px 21px;margin-top:5px;border-radius:12px;border:1px solid #ffe6b9;background:linear-gradient(115deg,#ffeac7,#dcaeaa);color:#2b1b36;font-size:12px;font-weight:800;box-shadow:0 9px 25px rgba(14,8,32,.27)}
+.hero-enter-button:hover{filter:brightness(1.07);transform:translateY(-1px)}
+.hero-enter-button:focus-visible{outline:3px solid #fff3c7;outline-offset:3px}
+.hero-archive .hero-moon{top:16px;right:22px;opacity:.82;pointer-events:none}
+.atlas-scene-section{margin:32px 0 36px}
+.atlas-scene-section .section-heading{margin-bottom:15px}
+.atlas-scene-section .section-heading h2{margin:7px 0 5px}
+.atlas-scene-lead{font-size:13px;line-height:1.7;color:var(--muted);margin:0;max-width:620px}
+.atlas-scene-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px}
+.atlas-scene-card{position:relative;isolation:isolate;overflow:hidden;min-width:0;height:285px;border-radius:19px;border:1px solid rgba(252,213,200,.22);background:#3a3159;box-shadow:0 12px 33px rgba(24,14,52,.14)}
+.atlas-scene-card>img{width:100%;height:100%;display:block;object-fit:cover;object-position:center;transition:transform .55s ease,filter .45s ease}
+.atlas-scene-overlay{position:absolute;inset:0;background:linear-gradient(0deg,rgba(14,12,39,.95),rgba(19,15,40,.52) 46%,transparent 94%);pointer-events:none}
+.atlas-scene-copy{position:absolute;left:20px;right:16px;bottom:20px;display:flex;flex-direction:column;align-items:flex-start;gap:6px;color:#fff6ef}
+.atlas-scene-copy .overline{color:#ffe0b7}
+.atlas-scene-copy h3{font:normal clamp(22px,2.9vw,28px)/1.22 Georgia,"Times New Roman",serif;margin:3px 0 0;color:#fff3e6}
+.atlas-scene-copy p{font-size:12px;line-height:1.58;color:#e5d6e9;margin:0 0 6px;max-width:310px}
+.scene-link{border:1px solid rgba(255,224,185,.55);border-radius:999px;background:rgba(19,14,41,.7);padding:10px 16px;min-height:40px;display:inline-flex;align-items:center;justify-content:center;color:#ffe5c0;font-size:12px;font-weight:750;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+.scene-link:hover{background:rgba(255,226,201,.17);border-color:#ffe4b7}
+.scene-link:focus-visible{outline:3px solid #ffe4b7;outline-offset:3px}
+@media(hover:hover) and (prefers-reduced-motion:no-preference){.atlas-scene-card:hover>img{transform:scale(1.055)}}
+@media(max-width:680px){.atlas-scene-grid{grid-template-columns:minmax(0,1fr);gap:13px}.atlas-scene-card{height:265px}.atlas-scene-section{margin-top:26px}}
+@media(max-width:420px){.home-page .hero-archive{height:336px}.hero-archive>img{object-position:61% center}.hero-archive .landscape-shade{background:linear-gradient(90deg,rgba(14,10,35,.87),rgba(22,14,49,.52) 70%,rgba(20,12,37,.22)),linear-gradient(0deg,rgba(13,11,36,.43),transparent)}.hero-archive .hero-caption{left:18px;right:14px;bottom:21px;gap:10px}.hero-archive .hero-caption strong{font-size:36px}.hero-archive .hero-caption p{max-width:260px;font-size:12px}.atlas-scene-card{height:260px}.atlas-scene-copy{left:18px;bottom:17px}}
+@media(prefers-reduced-motion:reduce){.atlas-scene-card>img,.hero-enter-button{transition:none!important;transform:none!important}}
