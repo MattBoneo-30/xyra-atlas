@@ -111,7 +111,8 @@ studio.js
 paths.js                Seven-session study planner, validation and progress              Validated savings, business, and time scenario calculations
 phrasebook.js          Nine offline starter phrase packs and progress validation
 languagechallenge.js   Offline two-way recognition questions and persisted scores
-examhistory.js         Validated private exam results and subject-review summaries\nfocusedexam.js         Prioritized missed-question revision exams
+examhistory.js         Validated private exam results and subject-review summaries
+focusedexam.js         Prioritized missed-question revision exams
 assets/                14 distinct course scenes, a corner scene, vector identity
 sw.js                  Offline service worker
 manifest.webmanifest   Installability metadata
