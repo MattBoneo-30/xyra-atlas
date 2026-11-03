@@ -446,6 +446,59 @@ try{
   expect(await page.locator('#exam-course').count()===1,'learner can choose another exam after discard');
  });
 
+
+ await smoke('personal-study-card-workshop',{viewport:{width:390,height:844}},async(page)=>{
+  await page.goto(BASE+'/#/personalcards',{waitUntil:'domcontentloaded'});
+  await page.locator('.personal-cards-page').waitFor();
+  expect(await page.locator('#personal-card-course option[value="shadow"]').count()===0,'mature courses are excluded from personal card subject selection');
+  await page.locator('#personal-card-front').fill('Why use active recall?');
+  await page.locator('#personal-card-back').fill('It practices retrieving ideas before looking at the answer.');
+  await page.locator('#personal-card-course').selectOption('psychology');
+  await page.locator('[data-action="personal-card-save"]').click();
+  let state=await getState(page);
+  expect(state.personalCards?.length===1,'new custom card saved locally');
+  expect(state.personalCards[0].courseId==='psychology','card subject saved privately');
+  await page.locator('[data-action="personal-card-reveal"]').click();
+  expect(await page.locator('.personal-cards-answer').count()===1,'answer can be revealed');
+  await page.locator('[data-action="personal-card-rate"][data-outcome="remembered"]').click();
+  expect(await page.locator('.personal-cards-practice-empty').count()===1,'reviewed card no longer due immediately');
+  state=await getState(page);
+  expect(state.personalCards[0].review?.step===0,'remembered result schedules next review');
+  await page.reload({waitUntil:'domcontentloaded'});
+  await page.locator('.personal-cards-page').waitFor();
+  expect((await getState(page)).personalCards?.length===1,'custom card persists after reload');
+  await page.locator('#personal-card-search').fill('active recall');
+  expect(await page.locator('.personal-cards-list-item').count()===1,'card search finds matching question');
+  await page.locator('.personal-cards-list-item [data-action="personal-card-edit"]').click();
+  await page.locator('#personal-card-front').fill('Why retrieve before rereading?');
+  await page.locator('[data-action="personal-card-save"]').click();
+  state=await getState(page);
+  expect(state.personalCards[0].review===null,'editing a question restarts its review schedule');
+  expect(await page.locator('[data-action="personal-card-reveal"]').count()===1,'edited card returns to due queue');
+  await page.locator('#personal-card-search').fill('');
+  const backupEvent=page.waitForEvent('download');
+  await page.goto(BASE+'/#/you',{waitUntil:'domcontentloaded'});
+  await page.locator('[data-action="export"]').click();
+  const backup=await backupEvent,fs=await import('node:fs/promises');
+  const exportText=await fs.readFile(await backup.path(),'utf8');
+  expect(JSON.parse(exportText).state.personalCards?.length===1,'plain JSON backup contains custom study cards');
+  await page.goto(BASE+'/#/personalcards',{waitUntil:'domcontentloaded'});
+  await page.locator('.personal-cards-list-item [data-action="personal-card-delete"]').click();
+  await page.getByRole('button',{name:'Keep card'}).click();
+  expect((await getState(page)).personalCards?.length===1,'cancelled card deletion preserves data');
+  await page.locator('.personal-cards-list-item [data-action="personal-card-delete"]').click();
+  await page.locator('[data-action="personal-card-delete-confirm"]').click();
+  expect((await getState(page)).personalCards?.length===0,'confirmed deletion removes card');
+  const overflow=await mobileOverflow(page);
+  expect(overflow.scroll<=overflow.width+8,'study card interface fits mobile screen');
+  await page.goto(BASE+'/#/you',{waitUntil:'domcontentloaded'});
+  await page.locator('#backup-file').setInputFiles({name:'personal-cards-backup.json',mimeType:'application/json',buffer:Buffer.from(exportText)});
+  await page.locator('.backup-preview-grid').waitFor();
+  await page.locator('[data-action="backup-confirm"]').click();
+  await page.waitForFunction(()=>JSON.parse(localStorage.getItem('xyra-atlas-state-v1')).personalCards?.length===1);
+  expect((await getState(page)).personalCards[0].front==='Why retrieve before rereading?','confirmed backup restore recovers private flashcards');
+ });
+
 }finally{
  if(browser)await browser.close();
  server.kill('SIGTERM');
