@@ -24,12 +24,14 @@ test('daily quests reject dates which do not actually exist',()=>{
 });
 test('service worker only removes older Atlas caches and leaves unrelated caches',async()=>{
  const code=fs.readFileSync('sw.js','utf8'),events={};const deleted=[];
- const cacheNames=['xyra-atlas-v11','xyra-atlas-v13','xyra-atlas-v14','another-pwa-cache','site-content-v3'];
+ const suffix=code.match(/const CACHE = CACHE_PREFIX \\+ '([^']+)'/);assert.ok(suffix,'current Atlas cache version');
+ const active='xyra-atlas-'+suffix[1];
+ const cacheNames=['xyra-atlas-v11','xyra-atlas-v13','xyra-atlas-v14',active,'another-pwa-cache','site-content-v3'];
  const caches={keys:async()=>cacheNames,delete:async name=>{deleted.push(name);return true;}};
  const self={addEventListener:(type,cb)=>{events[type]=cb;},clients:{claim:async()=>true},location:{origin:'https://example.test'}};
  vm.runInNewContext(code,{self,caches,Promise,URL});
  let pending;events.activate({waitUntil(p){pending=p;}});await pending;
- assert.deepEqual(deleted.sort(),['xyra-atlas-v11','xyra-atlas-v13']);
+ assert.deepEqual(deleted.sort(),cacheNames.filter(key=>key.startsWith('xyra-atlas-')&&key!==active).sort());
 });
 test('app and production output use consistent local dates and offline module',()=>{
  const app=fs.readFileSync('app.js','utf8'),build=fs.readFileSync('scripts/build.mjs','utf8'),sw=fs.readFileSync('sw.js','utf8');
