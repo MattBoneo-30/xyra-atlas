@@ -12,7 +12,7 @@ export const DATA_GROUPS=Object.freeze([
   fields:['studio','scenarios','casebook']},
  {id:'saved',label:'Saved references',description:'Favorite subject worlds and bookmarked lessons.',
   fields:['favorites','bookmarks']}
-].map(group=>Object.freeze({...group,fields:Object.freeze([...group.fields])}))));
+].map(group=>Object.freeze({...group,fields:Object.freeze([...group.fields])})));
 const known=new Map(DATA_GROUPS.map(group=>[group.id,group]));
 const count=value=>Array.isArray(value)?value.length:value&&typeof value==='object'?Object.keys(value).length:0;
 export function describeDataGroups(state){
