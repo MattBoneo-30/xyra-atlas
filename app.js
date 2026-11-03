@@ -32,6 +32,7 @@ import {CONVERSATION_QUESTS,createConversationQuest,normalizeConversationQuest,c
 import { normalizeFieldNotes, setFieldNote, MAX_FIELD_NOTE_LENGTH } from './fieldnotes.js';
 import {DATA_GROUPS,describeDataGroups,clearDataGroup} from './datacontrols.js';
 import {learningLadder} from './curriculumpath.js';
+import {getClinic,normalizeClinicAnswers,answerClinic,clinicStats,resetClinic} from './clinics.js';
 import {normalizeCapstoneChecks,capstoneCheckProgress,setCapstoneCheck,clearCapstoneChecks} from './capstonechecks.js';
 
 import { PATH_GOALS, PATH_BUDGETS, createLearningPath, normalizeLearningPath, pathProgress } from './paths.js';
@@ -41,7 +42,7 @@ let storageProblem=null;
 let recoveryRaw=null;
 const esc = value => String(value ?? '').replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
 const plain = text => esc(text).replace(/\n/g, '<br>');
-function createInitialState(){return { completed: [], bookmarks: [], favorites: [], answers: {}, reviews: {}, fieldNotes: {}, capstoneChecks: {}, lastOpened: null, dailyVisits: [], theme: 'dark', language: 'ja', languageSpeechRate:0.9, languageDays: [], phrases: {}, phraseReviews:{}, languageChallenge:null, languageChallengeHistory:{}, conversationQuest:null, conversationQuestHistory:{}, studio: sanitizeStudio(null), userName: '', welcomeDismissed: false, learningPath: null, scenarios: {}, casebook: {}, mistakes:{}, exam:null, examHistory:[], personalCards:[], reader:normalizeReaderPreferences(null) };}
+function createInitialState(){return { completed: [], bookmarks: [], favorites: [], answers: {}, reviews: {}, fieldNotes: {}, capstoneChecks: {}, clinicAnswers:{}, lastOpened: null, dailyVisits: [], theme: 'dark', language: 'ja', languageSpeechRate:0.9, languageDays: [], phrases: {}, phraseReviews:{}, languageChallenge:null, languageChallengeHistory:{}, conversationQuest:null, conversationQuestHistory:{}, studio: sanitizeStudio(null), userName: '', welcomeDismissed: false, learningPath: null, scenarios: {}, casebook: {}, mistakes:{}, exam:null, examHistory:[], personalCards:[], reader:normalizeReaderPreferences(null) };}
 function readStored() {
   try {
     const raw=localStorage.getItem(STORAGE_KEY);
@@ -76,6 +77,7 @@ function readStored() {
       learningPath: normalizeLearningPath(data.learningPath,COURSES),
       fieldNotes: normalizeFieldNotes(data.fieldNotes),
        capstoneChecks:normalizeCapstoneChecks(data.capstoneChecks,COURSES),
+       clinicAnswers:normalizeClinicAnswers(data.clinicAnswers),
       theme: data.theme === 'light' ? 'light' : 'dark',
       language: LANGUAGES.some(x => x.code === data.language) ? data.language : 'ja',
       userName: typeof data.userName === 'string' ? data.userName.slice(0,40) : ''
@@ -304,6 +306,32 @@ function explore() {
     <div class="learning-invite"><div class="learning-invite-icon">${icon('languages',25)}</div><div><strong>Learning a new language?</strong><p>Choose one of 20 starting paths and try a seven-day sprint.</p></div>${button(chevron,'language','icon-button','aria-label="Open Language Lab"')}</div>
   </main>`;
 }
+function clinicPanel(course){
+ const clinic=getClinic(course.id);
+ if(!clinic)return '';
+ const stats=clinicStats(saved.clinicAnswers,course.id);
+ return `<section class="clinic-panel" aria-label="Applied decision clinic">
+  <div class="clinic-head"><div><span class="overline">APPLIED JUDGMENT • TWO DECISIONS</span><h2>${esc(clinic.title)}</h2><p>${esc(clinic.intro)}</p></div>
+  <span class="clinic-score" aria-label="${stats.answered} of ${stats.total} questions answered">${stats.answered}/${stats.total} answered</span></div>
+  <div class="clinic-grid">${clinic.questions.map((q,i)=>{
+   const key=course.id+':'+q.id;
+   const picked=Object.hasOwn(saved.clinicAnswers,key)?saved.clinicAnswers[key]:null;
+   const answered=picked!==null;
+   return `<article class="clinic-question"><div class="clinic-question-number">Decision ${i+1}</div><h3>${esc(q.prompt)}</h3>
+    <div class="clinic-choices" role="group" aria-label="Possible actions for decision ${i+1}">
+      ${q.options.map((option,n)=>button(`<span class="clinic-choice-label">${String.fromCharCode(65+n)}</span> ${esc(option)}`,'clinic-answer',`clinic-choice ${answered&&picked===n?'selected':''}`,`data-course="${esc(course.id)}" data-id="${esc(q.id)}" data-index="${n}" aria-pressed="${answered&&picked===n}" ${answered?'disabled':''}`)).join('')}
+    </div>
+    ${answered?`<div class="clinic-feedback ${picked===q.correct?'is-correct':'is-review'}" role="status"><strong>${picked===q.correct?'Reasoned choice':'Review the reasoning'}</strong><p>${esc(q.explanation)}</p><span>Recommended response: ${esc(q.options[q.correct])}</span></div>`:''}
+   </article>`;
+  }).join('')}</div>
+  <div class="clinic-foot"><p>Sources to check when connected:
+    ${clinic.references.map(ref=>`<a href="${esc(ref.url)}" target="_blank" rel="noopener noreferrer">${esc(ref.label)}</a>`).join(' · ')}.
+    This is educational practice, not a competence certificate or professional advice.</p>
+    ${stats.answered?button('Practice these decisions again','clinic-retry','secondary-button',`data-id="${esc(course.id)}"`):''}
+  </div>
+ </section>`;
+}
+
 function coursePage() {
   const c=findCourse(route.courseId);
   if(!c) return errorView();
@@ -329,6 +357,7 @@ function coursePage() {
        ${level.nextLesson?button(`Study next: ${esc(level.nextLesson.title)} ${icon('arrow',15)}`,'open-lesson','curriculum-next-action',`data-course="${esc(c.id)}" data-lesson="${esc(level.nextLesson.id)}"`):`<span class="curriculum-level-complete">${icon('check',16)} ${level.total?'All lessons complete':'Lessons are being prepared'}</span>`}
      </article>`).join('')}</div><p class="fineprint">Advanced lessons remain open for independent exploration. Completion is not a credential, assessment of professional judgment or guarantee of expertise.</p>
     </section>
+    ${clinicPanel(c)}
     <div class="section-heading lesson-list-title"><div><span class="overline">A PATH WORTH TAKING</span><h2>Your lessons</h2></div></div>
     <div class="course-stage-tabs" role="group" aria-label="Filter lessons by learning level">${[['all','All levels',c.lessons.length],...stages.map(stage=>[stage,stage,stageCount(stage)])].map(([id,label,count])=>button(`${esc(label)} <span>${count}</span>`,'course-stage-filter',`course-stage-button ${courseStageFilter===id?'selected':''}`,`data-id="${esc(id)}" aria-pressed="${courseStageFilter===id}"`)).join('')}</div>
     <div class="lesson-list">${visible.map(({lesson:l,index:i})=>`<button type="button" data-action="open-lesson" data-course="${esc(c.id)}" data-lesson="${esc(l.id)}" class="lesson-row"><span class="lesson-number ${isCompleted(idFor(c.id,l.id))?'done':''}">${isCompleted(idFor(c.id,l.id))?icon('check',19):String(i+1).padStart(2,'0')}</span><span class="lesson-info"><strong>${esc(l.title)}</strong><small>${esc(l.stage)} · ${l.minutes} min${l.isCapstone?" · Applied lab":""}</small></span><span>${chevron}</span></button>`).join('')}</div>
@@ -940,7 +969,7 @@ function you() {
     <div class="profile-card"><div class="profile-avatar">✦</div><div><span class="overline">ATLAS EXPLORER</span><h2>${esc(actualName())}</h2><p>Level ${Math.floor(finished()/6)+1} · ${finished()} lessons completed</p></div></div>
     <div class="settings-panel"><h2>Make it yours</h2><label class="field-label" for="profile-name">What should Atlas call you?</label><div class="name-row"><input id="profile-name" value="${esc(saved.userName)}" maxlength="40" placeholder="Curious learner"/>${button('Save','save-name','small-button')}</div><div class="settings-row"><span class="setting-icon">${icon(saved.theme==='dark'?'moon':'sun',21)}</span><div><strong>Appearance</strong><small>Switch between twilight and daylight</small></div>${button(saved.theme==='dark'?'Dark':'Light','theme','small-button')}</div><div class="settings-row"><span class="setting-icon">${icon(navigator.onLine?'wifi':'wifi-off',21)}</span><div><strong>Connection</strong><small>Lessons are included in your offline app</small></div><span class="setting-value">${navigator.onLine?'Online':'Offline'}</span></div><div class="settings-row"><span class="setting-icon">${icon('book',21)}</span><div><strong>Offline Library</strong><small>Check downloaded lessons and repair missing files</small></div>${button('Manage','offline-open','small-button')}</div><div class="settings-row"><span class="setting-icon">${icon('download',21)}</span><div><strong>Install Xyra Atlas</strong><small>Keep it on your phone's home screen</small></div>${button('How?','install','small-button')}</div></div>
     <div class="settings-panel"><h2>Your data, your choice</h2><div class="storage-health-panel"><strong>Browser storage: ${storageProblem?storageProblem==='corrupt'?'Recovery needed':'Saving unavailable':'No save error detected'}</strong><span>${storageProblem?esc(storageHealthMessage(storageProblem)):'Progress is saved only in this browser, not synced to other devices.'}</span>${button('Try saving now','storage-retry','small-button')}</div><p class="settings-description">Progress is stored only in this browser on this device. It is not synced to a server. Export a backup before switching phones or clearing browser data.</p><div class="data-actions">${button(`${icon('download',18)} Export backup`,'export','secondary-button')}${button(`${icon('lock',18)} Encrypted backup`,'backup-encrypted-export','secondary-button')}${button(`${icon('upload',18)} Import backup`,'import','secondary-button')}${button(`${icon('shield',18)} Privacy controls`,'privacy-open','secondary-button')}${button(`${icon('trash',18)} Reset progress`,'reset-dialog','outline-danger')}</div><input type="file" id="backup-file" accept=".json,application/json" hidden /></div>
-    <div class="settings-panel"><h2>About Xyra Atlas</h2><p class="settings-description">A pocket atlas for the art of living—designed for curiosity, independence and the courage to learn difficult things.</p><p class="fineprint">Atlas 1.44 · Philippine Casework edition. Some subjects are introductions, not complete professional courses. Laws vary by jurisdiction. Adult content is educational. There are no ads, trackers or accounts in this edition.</p>${button(`A note from Xyra ${chevron}`,'open-corner','text-action')}</div>
+    <div class="settings-panel"><h2>About Xyra Atlas</h2><p class="settings-description">A pocket atlas for the art of living—designed for curiosity, independence and the courage to learn difficult things.</p><p class="fineprint">Atlas 1.45 · Applied Decision Clinics edition. Some subjects are introductions, not complete professional courses. Laws vary by jurisdiction. Adult content is educational. There are no ads, trackers or accounts in this edition.</p>${button(`A note from Xyra ${chevron}`,'open-corner','text-action')}</div>
   </main>`;
 }
 function privacyPage(){
@@ -978,6 +1007,7 @@ function modalView() {
   <p class="backup-file-label">${esc(pendingBackup.sourceName)}${pendingBackup.exportedAt?' · '+esc(pendingBackup.exportedAt):''}</p>
   <div class="backup-preview-grid" aria-label="Imported progress summary"><div><strong>${pendingBackup.counts.lessons}</strong><span>Completed lessons</span></div><div><strong>${pendingBackup.counts.notes}</strong><span>Private notes</span></div><div><strong>${pendingBackup.counts.quizzes}</strong><span>Quiz answers</span></div><div><strong>${pendingBackup.counts.bookmarks}</strong><span>Bookmarks</span></div></div>
   <p class="fineprint">This backup includes ${pendingBackup.state.personalCards?.length||0} personal study cards.</p>
+  <p class="fineprint">Subject decision answers in backup: ${Object.keys(pendingBackup.state.clinicAnswers||{}).length}.</p>
   <p class="fineprint">Capstone self-review checklists in backup: ${Object.keys(pendingBackup.state.capstoneChecks||{}).length}.</p>
   <p class="fineprint">Completed practice exam records: ${(pendingBackup.state.examHistory||[]).length} (up to 12 recent summaries).</p>
   <p class="fineprint">Language practice in this backup: ${pendingBackup.state.languageChallenge?'one saved challenge':'no active challenge'} · ${Object.keys(pendingBackup.state.languageChallengeHistory||{}).length} score histories.</p>
@@ -986,7 +1016,7 @@ function modalView() {
   <p class="backup-replace-warning">Current device: ${finished()} completed lessons and ${Object.keys(saved.fieldNotes).length} notes. Export those first if you want to preserve them.</p>
   <div class="backup-preview-actions">${button('Cancel','backup-cancel','secondary-button')}${button('Restore and replace','backup-confirm','outline-danger')}</div>` :
   modal==='corner' ? `<div class="modal-icon">${icon('spark',26)}</div><span class="overline">XYRA'S CORNER</span><h2>A little note, just for you ♡</h2><p>“You are allowed to be new at something. You are allowed to ask strange questions. And you are allowed to change your mind when you learn more.”</p><div class="xyra-signature">With curiosity, Xyra ✦</div><p class="fineprint">One thought I want to leave you with: knowledge is power, but wisdom is knowing when and how to use it.</p>` :
-  modal==='updates' ? `<div class="modal-icon">${icon('book',26)}</div><span class="overline">ABOUT THIS EDITION</span><h2>Welcome to your pocket atlas</h2><p>Atlas v1.44 includes ${COURSES.length} subjects and ${totalLessons} lessons, three illustrated portal worlds and all 14 illustrated case chapters, including 14 applied capstone labs with saved self-review checks and 29 mastery guides, Focused Revision Exams, Practice Exam Insights, custom Study Cards, quizzes, Local Voice Studio, situational Conversation Quests, two-way Language Challenges, Daily Phrase Recall, the Language Lab, Practice Studio, branching Case Files, private notes, study paths selective privacy controls, learning ladders, and user-approved offline updates.</p><p>This remains a development edition: the complete advanced curriculum, final cinematic artwork, production deployment and real-device verification are not finished. You can export your progress at any time.</p>` : '';
+  modal==='updates' ? `<div class="modal-icon">${icon('book',26)}</div><span class="overline">ABOUT THIS EDITION</span><h2>Welcome to your pocket atlas</h2><p>Atlas v1.45 includes ${COURSES.length} subjects and ${totalLessons} lessons, three illustrated portal worlds and all 14 illustrated case chapters, including 14 applied capstone labs with saved self-review checks and 29 mastery guides, Focused Revision Exams, Practice Exam Insights, custom Study Cards, quizzes, Local Voice Studio, situational Conversation Quests, two-way Language Challenges, Daily Phrase Recall, the Language Lab, Practice Studio, branching Case Files, private notes, study paths selective privacy controls, learning ladders, and user-approved offline updates.</p><p>This remains a development edition: the complete advanced curriculum, final cinematic artwork, production deployment and real-device verification are not finished. You can export your progress at any time.</p>` : '';
   return `<div class="modal-backdrop" data-action="close-modal"><div class="modal-card" role="dialog" aria-modal="true" aria-label="Xyra Atlas dialog" data-stop="true">${button(icon('close',21),'close-modal','modal-close','aria-label="Close dialog"')}${inner}</div></div>`;
 }
 function render() {
@@ -1023,6 +1053,7 @@ function normalizedBackupState(clean){
    learningPath:normalizeLearningPath(clean.learningPath,COURSES),
    fieldNotes:normalizeFieldNotes(clean.fieldNotes),
     capstoneChecks:normalizeCapstoneChecks(clean.capstoneChecks,COURSES),
+    clinicAnswers:normalizeClinicAnswers(clean.clinicAnswers),
    dailyVisits:Array.isArray(clean.dailyVisits)?clean.dailyVisits.filter(validDayKey).slice(-400):[],
    lastOpened:normalizeLastOpened(clean.lastOpened,COURSES),
    theme:clean.theme==='light'?'light':'dark',
@@ -1147,6 +1178,18 @@ async function handleAction(e) {
   else if(action==='filter') {filter=id;render();}
   else if(action==='reset-search') {query='';filter='all';render();}
   else if(action==='open-course') {const c=findCourse(id);if(!c)return; if(c.dark&&!shadowUnlocked){gateConfirmed=false;modal='shadow';render();return;}if(route.courseId!==c.id)courseStageFilter='all';nav(`course/${c.id}`);}
+  else if(action==='clinic-answer') {
+    if(route.view!=='course'||route.courseId!==button.dataset.course||!getClinic(route.courseId))return;
+    const index=Number(button.dataset.index);
+    const next=answerClinic(saved.clinicAnswers,route.courseId,id,index);
+    const prev=Object.keys(saved.clinicAnswers).length;
+    if(Object.keys(next).length===prev)return;
+    saved.clinicAnswers=next;persist();render();
+  }
+  else if(action==='clinic-retry'){
+    if(route.view!=='course'||route.courseId!==id)return;
+    saved.clinicAnswers=resetClinic(saved.clinicAnswers,id);persist();render();
+  }
   else if(action==='course-stage-filter') {if(route.view!=='course'||!['all','Beginner','Intermediate','Advanced'].includes(id))return;courseStageFilter=id;render();}
   else if(action==='open-lesson') {const cid=button.dataset.course, lid=button.dataset.lesson;const c=findCourse(cid);if(c?.dark&&!shadowUnlocked){gateConfirmed=false;modal='shadow';render();return;} if(findLesson(cid,lid)){saved.lastOpened={courseId:cid,lessonId:lid};persist();nav(`lesson/${cid}/${lid}`);}}
   else if(action==='favorite') toggle('favorites',id);

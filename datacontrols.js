@@ -3,7 +3,7 @@
  */
 export const DATA_GROUPS=Object.freeze([
  {id:'study',label:'Learning records',description:'Completed lessons, quiz attempts, reviews, exams, study paths and activity history.',
-  fields:['completed','answers','reviews','mistakes','exam','examHistory','learningPath','capstoneChecks','dailyVisits','lastOpened']},
+  fields:['completed','answers','reviews','mistakes','exam','examHistory','learningPath','capstoneChecks','clinicAnswers','dailyVisits','lastOpened']},
  {id:'writing',label:'Private notes & study cards',description:'Field Notebook writing and custom Study Card Workshop questions and answers.',
   fields:['fieldNotes','personalCards']},
  {id:'language',label:'Language practice',description:'Learned phrases, recall schedules, sprint checks and both kinds of language challenges.',

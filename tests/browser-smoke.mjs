@@ -1206,6 +1206,34 @@ try{
  });
 
 
+ await smoke('subject-decision-clinics-offline',{viewport:{width:390,height:844},isMobile:true,hasTouch:true,deviceScaleFactor:2},async(page,context)=>{
+  await page.goto(BASE+'/#/course/laws',{waitUntil:'domcontentloaded'});
+  await page.locator('.clinic-panel').waitFor();
+  expect(await page.locator('.clinic-question').count()===2,'Philippine legal clinic has two independent decisions');
+  const overflow=await mobileOverflow(page);
+  expect(overflow.scroll<=overflow.width+8,'evidence clinic fits mobile screen');
+  await page.locator('.clinic-question').first().locator('.clinic-choice').nth(2).click();
+  let state=await getState(page);
+  expect(state.clinicAnswers['laws:decision-1']===2,'first choice saved locally');
+  expect(await page.locator('.clinic-feedback').count()===1,'choice gets feedback and reasoning');
+  await page.reload({waitUntil:'domcontentloaded'});
+  expect(await page.locator('.clinic-feedback').count()===1,'clinic explanation resumes after reload');
+  await page.evaluate(async()=>{await navigator.serviceWorker.ready;});
+  await page.reload({waitUntil:'domcontentloaded'});
+  await page.waitForFunction(()=>Boolean(navigator.serviceWorker.controller));
+  await context.setOffline(true);
+  await page.reload({waitUntil:'domcontentloaded'});
+  await page.locator('.clinic-panel').waitFor();
+  expect((await getState(page)).clinicAnswers['laws:decision-1']===2,'offline clinic retains response');
+  await context.setOffline(false);
+  await page.locator('[data-action="clinic-retry"]').click();
+  expect((await getState(page)).clinicAnswers['laws:decision-1']===undefined,'retry clears only selected clinic answers');
+  await page.goto(BASE+'/#/course/psychology',{waitUntil:'domcontentloaded'});
+  await page.locator('.clinic-panel').waitFor();
+  expect(await page.locator('.clinic-question').count()===2,'a distinct nonlegal course has original case practice');
+ });
+
+
 }finally{
  if(browser)await browser.close();
  server.kill('SIGTERM');
