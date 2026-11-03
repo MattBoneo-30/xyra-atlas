@@ -1,0 +1,66 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 920" role="img" aria-labelledby="xyraTitle xyraDesc">
+<title id="xyraTitle">Xyra, the amethyst guide of Atlas</title>
+<desc id="xyraDesc">Original illustrated fantasy woman with violet eyes, long dark hair with lavender highlights, natural human ears, gold amethyst crown, and embroidered purple clothes, against a moonlit sky.</desc>
+<defs>
+ <radialGradient id="sky"><stop stop-color="#7146a7"/><stop offset=".65" stop-color="#271646"/><stop offset="1" stop-color="#0c0b23"/></radialGradient>
+ <linearGradient id="hair" x1="0" x2="1" y2="1"><stop stop-color="#10122c"/><stop offset=".42" stop-color="#231638"/><stop offset=".74" stop-color="#43305d"/><stop offset="1" stop-color="#16132e"/></linearGradient>
+ <linearGradient id="skin" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#ffe1cb"/><stop offset=".55" stop-color="#f1bcae"/><stop offset="1" stop-color="#d9999b"/></linearGradient>
+ <linearGradient id="dress" x1="0" x2="1" y2="1"><stop stop-color="#a17cce"/><stop offset=".5" stop-color="#5a3b88"/><stop offset="1" stop-color="#24143e"/></linearGradient>
+ <linearGradient id="gold" x1="0" x2="1" y2=".4"><stop stop-color="#ffecb9"/><stop offset=".5" stop-color="#ce9949"/><stop offset="1" stop-color="#ffdf92"/></linearGradient>
+ <radialGradient id="gem"><stop stop-color="#e7bdff"/><stop offset=".45" stop-color="#ab67e8"/><stop offset="1" stop-color="#4f267f"/></radialGradient>
+ <radialGradient id="moon"><stop stop-color="#fff4d2"/><stop offset=".4" stop-color="#e8d7fe"/><stop offset="1" stop-color="#bc9bd7" stop-opacity="0"/></radialGradient>
+ <filter id="halo"><feGaussianBlur stdDeviation="18"/></filter>
+ <filter id="soft"><feGaussianBlur stdDeviation="4"/></filter>
+</defs>
+<rect width="800" height="920" fill="url(#sky)"/>
+<ellipse cx="402" cy="410" rx="315" ry="365" fill="#b47bdd" opacity=".11"/>
+<circle cx="402" cy="257" r="175" fill="url(#moon)" opacity=".42"/>
+<circle cx="402" cy="257" r="120" fill="#f7e8fc" opacity=".19" filter="url(#halo)"/>
+<g fill="#ffe8b5"><circle cx="98" cy="170" r="3"/><circle cx="700" cy="145" r="3"/><circle cx="110" cy="480" r="2"/><circle cx="680" cy="540" r="2"/><circle cx="610" cy="83" r="2"/><circle cx="170" cy="92" r="2"/></g>
+<g stroke="#eec9ff" opacity=".6" stroke-width="2"><path d="M80 310v24M68 322h24M685 302v30M670 317h30M112 740v18M103 749h18M701 721v20M691 731h20"/></g>
+<path d="M208 910C181 736 205 604 215 426 221 231 310 157 401 158c105 0 193 79 194 256 5 183 26 343-17 496Z" fill="url(#hair)"/>
+<path d="M234 768C180 808 132 850 108 920H694c-25-83-76-136-127-161l-166-52Z" fill="#1b102d"/>
+<path d="M171 918c19-92 79-160 148-189l82 34 87-35c83 38 135 100 156 190Z" fill="url(#dress)"/>
+<path d="M245 795c45-4 98 18 156 57 52-38 112-56 159-60" fill="none" stroke="url(#gold)" stroke-width="6" opacity=".85"/>
+<g fill="none" stroke="#e4b969" opacity=".75"><path d="M210 875q71-70 161-30M594 872q-63-68-149-30"/><path d="M244 895q65-54 117-23M570 895q-65-55-112-24"/></g>
+<path d="M333 659c14 54 17 91-30 110 25 33 62 57 98 64 38-7 74-35 97-65-48-21-45-60-31-109Z" fill="url(#skin)"/>
+<path d="M310 741q92 80 182 0" fill="none" stroke="#f9d3b0" stroke-width="9" opacity=".65"/>
+<!-- rounded human ears -->
+<ellipse cx="269" cy="469" rx="24" ry="42" fill="#e5a8a5"/>
+<ellipse cx="531" cy="469" rx="24" ry="42" fill="#e5a8a5"/>
+<path d="M276 449q-19 11-8 36M524 449q19 11 8 36" fill="none" stroke="#ba7e85" stroke-width="4" stroke-linecap="round"/>
+<path d="M400 218c-96 0-145 94-138 254 8 161 77 243 138 243s131-83 139-242c8-159-41-255-139-255Z" fill="url(#skin)"/>
+<path d="M284 521q21 78 80 106M513 520q-17 79-75 108" fill="none" stroke="#fff1d6" stroke-width="9" opacity=".12" filter="url(#soft)"/>
+<path d="M306 430q40-22 68-4M427 426q30-20 70 3" fill="none" stroke="#38233e" stroke-width="10" stroke-linecap="round"/>
+<path d="M297 464q37-34 80 0-40 33-80 0ZM421 463q42-36 83 1-38 35-83-1Z" fill="#fff4eb"/>
+<ellipse cx="342" cy="463" rx="18" ry="22" fill="url(#gem)"/><ellipse cx="462" cy="463" rx="18" ry="22" fill="url(#gem)"/>
+<ellipse cx="342" cy="464" rx="8" ry="15" fill="#302044"/><ellipse cx="462" cy="464" rx="8" ry="15" fill="#302044"/>
+<circle cx="337" cy="456" r="5" fill="#fff"/><circle cx="457" cy="456" r="5" fill="#fff"/>
+<path d="M299 455q35-34 77 0M422 455q41-35 80 1" fill="none" stroke="#39243b" stroke-width="6" stroke-linecap="round"/>
+<path d="M399 484q-13 39-10 52 11 7 25 1" fill="none" stroke="#bd7f84" stroke-width="5" stroke-linecap="round"/>
+<path d="M365 585q35-14 70 1-37 26-70-1Z" fill="#b45e7a"/>
+<path d="M367 585q35 9 67 1" fill="none" stroke="#e9a1a1" stroke-width="4"/>
+<ellipse cx="309" cy="531" rx="27" ry="11" fill="#df8a9a" opacity=".26"/>
+<ellipse cx="494" cy="531" rx="27" ry="11" fill="#df8a9a" opacity=".26"/>
+<!-- natural flowing dark hair and lavender highlights -->
+<path d="M379 193c-98 0-139 62-151 185-7 68 15 128 18 208l53 8c-15-112-16-192 19-241 23-32 55-64 61-160Z" fill="url(#hair)"/>
+<path d="M412 188c114 5 170 84 172 199 1 107-1 203 22 292l-68-3c-10-91-22-177-12-260-37-37-82-81-114-228Z" fill="url(#hair)"/>
+<path d="M281 242c42-79 147-96 220-35 42 36 57 92 43 157-25-35-61-76-85-114-31 61-84 90-172 117-21-38-25-89-6-125Z" fill="#19152f"/>
+<path d="M291 305q-20 106-8 226M515 285q46 124 32 295M245 490q-11 172 9 280M575 468q17 191-4 317" fill="none" stroke="#8063ad" stroke-width="8" opacity=".57" stroke-linecap="round"/>
+<path d="M289 230c30-32 101-47 165-25" fill="none" stroke="#9474bc" stroke-width="11" opacity=".35" stroke-linecap="round"/>
+<!-- golden amethyst crown -->
+<path d="M268 264 291 172 342 210 400 131 458 210 509 169 532 263 489 249 462 270 401 252 341 272 311 250Z" fill="url(#gold)" stroke="#fff0bd" stroke-width="4"/>
+<path d="M288 249q109 33 225 0" fill="none" stroke="#9b652c" stroke-width="8"/>
+<path d="m399 150 31 61-29 47-30-47Z" fill="url(#gem)" stroke="#ffe7ba" stroke-width="6"/>
+<path d="m319 193 19 29-19 30-19-30Z" fill="url(#gem)" stroke="#ffe7ba" stroke-width="4"/>
+<path d="m481 193 19 29-19 30-19-30Z" fill="url(#gem)" stroke="#ffe7ba" stroke-width="4"/>
+<g fill="#fff4d6"><circle cx="348" cy="237" r="5"/><circle cx="454" cy="236" r="5"/><circle cx="366" cy="227" r="3"/><circle cx="435" cy="226" r="3"/></g>
+<!-- violet drop earrings -->
+<path d="M262 525q-8 28 0 47M539 525q9 28 0 47" stroke="url(#gold)" stroke-width="6" fill="none"/>
+<path d="m261 565-13 20 13 20 13-20Z" fill="url(#gem)" stroke="#e9c384" stroke-width="4"/>
+<path d="m540 565-13 20 13 20 13-20Z" fill="url(#gem)" stroke="#e9c384" stroke-width="4"/>
+<!-- necklace -->
+<path d="M329 746q73 84 144 0" stroke="#e3b76d" stroke-width="7" fill="none"/>
+<path d="m401 798-20 26 20 38 20-38Z" fill="url(#gem)" stroke="#f5d69b" stroke-width="5"/>
+<path d="M159 903H646" stroke="#eec89a" stroke-opacity=".25" stroke-width="3"/>
+</svg>
