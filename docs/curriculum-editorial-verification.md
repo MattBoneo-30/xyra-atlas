@@ -41,7 +41,7 @@ The verified [release audit 41687979197](https://github.com/MattBoneo-30/xyra-at
 | Distinct referenced URLs | 42 | Automated source-reachability report is available separately |
 | Lessons with automated structural editorial flags | **0 / 134** | No remaining *mechanical* gaps under the current checks |
 
-**This is not an independent expert signoff.** Length thresholds cannot establish nuanced pedagogy, correct legal interpretation, healthy practice advice or validated assessments. Content claims and source relevance need specialist review before the Advanced Curriculum stage can be marked complete. The stage machine-readable gate deliberately remains `complete:false`, and the owner's notification remains deferred.
+**This is not an independent expert signoff.** Length thresholds cannot establish nuanced pedagogy, correct legal interpretation, healthy practice advice or validated assessments. Content claims and source relevance need specialist review before the Advanced Curriculum stage can be marked complete. The stage machine-readable gate deliberately remains `complete:false`, and the owner's notification remains deferred. Advanced-only practice exams have been added; source monitoring now checks redirects safely, and six limited NPC/BSP/DTI claim checks are documented. **None of these substitute for qualified independent editorial signoff.**
 
 ## Official Philippine agency claim spot-checks
 
@@ -68,6 +68,6 @@ These spot-checks support the limited claims above only. They do not attest to t
 
 ## Reproducible checks
 
-Run `npm run check` for the Node unit suite and built static artifacts. CI also installs test-only Chromium for live desktop, small-mobile and offline integration smoke checks. Latest confirmed successful curriculum review run before this update: [Actions run 41690928095](https://github.com/MattBoneo-30/xyra-atlas/actions/runs/41690928095).
+Run `npm run check` for the Node unit suite and built static artifacts. CI also installs test-only Chromium for live desktop, small-mobile and offline integration smoke checks. Latest confirmed successful full regression: [Actions run 41691573300](https://github.com/MattBoneo-30/xyra-atlas/actions/runs/41691573300).
 
 **Source availability note (2026-11-04):** The former FTEB `/services/complaints-handling/` URL returned an inconsistent 404 on direct access despite an indexed result. Lesson references now use the official, directly retrievable [DTI consumer complaint FAQ](https://fairtrade.dti.gov.ph/faq/how-to-file-a-consumer-complaint/) instead. This is a link correction, not a full expert legal validation.

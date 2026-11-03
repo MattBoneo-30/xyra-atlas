@@ -89,12 +89,32 @@
           "type": "ci",
           "value": "https://github.com/MattBoneo-30/xyra-atlas/actions/runs/41687979197",
           "note": "209 passing unit tests, verified static/offline build and desktop/mobile Chromium integration. Automated audit: 134/134 sections, examples, assignments, rationales, guided practice, links; 0 structural flags."
+        },
+        {
+          "type": "commit",
+          "value": "c9fccfcfe75f439ec5fc0b3340fa966c95b74b04",
+          "note": "Practice exams can now target Beginner, Intermediate, Advanced or all lessons, with mature material excluded and existing exam backups preserved."
+        },
+        {
+          "type": "commit",
+          "value": "1ff7663ce103a228eaa9076994aa6d101ab171ee",
+          "note": "Weekly official-course source checker now validates every public HTTPS redirect before following it and rejects unsafe, looping or excessive redirect chains."
+        },
+        {
+          "type": "commit",
+          "value": "de762ffe283beaa9f0b39650f187142a3b897577",
+          "note": "Official-source register expanded to six limited date-stamped NPC/BSP/DTI claim checks; DTI casework links the official post-mediation adjudication procedure."
+        },
+        {
+          "type": "ci",
+          "value": "https://github.com/MattBoneo-30/xyra-atlas/actions/runs/41691573300",
+          "note": "Latest branch build, Node tests and Chromium desktop/mobile/offline smoke tests passed after source traceability changes."
         }
       ],
       "blockers": [
         "Independent qualified subject-matter reviewers have not signed off all 134 lessons, especially applicable Philippine legal/financial rules, health/safety claims and cultural context.",
-        "Automated coverage checks prove structure and code behavior, not the substantive correctness, reliability or psychometric validation of every lesson and quiz.",
-        "The 41 public source URLs and each material claim still require a dated per-claim substantive editorial review; automated link reachability or maintainer spot-checks are insufficient for certification."
+        "Automated lesson coverage and running quizzes verify software and content structure, not the accuracy of all pedagogy, the reliability of every answer, or the psychometric validation of assessments.",
+        "The 42 distinct course reference URLs and material claims still require a dated, comprehensive expert-supported claim-level review; six official-agency spot-checks do not constitute signoff."
       ]
     },
     {
