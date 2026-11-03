@@ -544,6 +544,39 @@ function reviewPage() {
     <div class="review-info">${icon('info',20)}<span>Forgotten cards return after 10 minutes. Remembered cards return after 1, 3, 7, 14, 30 and 60 days. Your answers and next review times are saved in your local backup.</span></div>
   </main>`;
 }
+
+function personalCardsPage(){
+ const cards=normalizePersonalCards(saved.personalCards,COURSES);
+ const due=duePersonalCards(cards,COURSES);
+ const active=due[0]||null;
+ const editing=cards.find(c=>c.id===personalCardEditingId)||null;
+ const matches=searchPersonalCards(cards,personalCardQuery,COURSES);
+ const subjects=COURSES.filter(c=>!c.dark);
+ const subjectOptions=subjects.map(c=>`<option value="${esc(c.id)}" ${editing?.courseId===c.id?'selected':''}>${esc(c.title)}</option>`).join('');
+ return `<main class="page personal-cards-page"><div class="subnav">${button('Back to saved library','goto-saved','back-link')}</div>
+ <header class="personal-cards-hero"><span class="overline">YOUR QUESTIONS, YOUR GROWTH</span><h1>Study Card <em>Workshop.</em></h1><p>Turn what you learn into your own questions. Write them once, remember them through practice. Your cards stay in this browser and can travel in an Atlas backup.</p></header>
+ <div class="personal-cards-metrics"><div><strong>${cards.length}</strong><span>Created cards</span></div><div><strong>${due.length}</strong><span>Due for review</span></div><div><strong>${cards.length-due.length}</strong><span>Scheduled later</span></div></div>
+ <section class="personal-cards-practice" aria-label="Custom card practice"><div class="personal-cards-section-heading"><div><span class="overline">ACTIVE RECALL</span><h2>Your next question</h2></div><span class="personal-cards-counter">${due.length} ready</span></div>
+ ${active?`<div class="personal-cards-flash"><span class="overline">${esc(subjects.find(c=>c.id===active.courseId)?.title||'General')}</span><h3>${esc(active.front)}</h3>
+ ${personalCardRevealed?`<div class="personal-cards-answer" role="status"><span class="overline">YOUR ANSWER</span><p>${plain(active.back)}</p></div><p class="fineprint">Did you remember it before revealing the answer?</p><div class="personal-cards-rate-actions">${button('Practice again','personal-card-rate','secondary-button',`data-id="${esc(active.id)}" data-outcome="again"`)}${button('I remembered','personal-card-rate','primary-button',`data-id="${esc(active.id)}" data-outcome="remembered"`)}</div>`:${button('Reveal my answer','personal-card-reveal','primary-button')}`}</div>`:
+ `<div class="personal-cards-practice-empty"><span>✦</span><h3>${cards.length?'All caught up!':'Your first question starts here.'}</h3><p>${cards.length?'No cards are due yet. They will return on their scheduled review days.':'Create a question and its answer below to begin practicing.'}</p></div>`}
+ <p class="fineprint">Forgotten cards return after 10 minutes. Remembered cards return after 1, 3, 7, 14, 30 and 60 days. The schedule stays on your device.</p></section>
+ <section class="personal-cards-editor" id="personal-cards-editor"><div class="personal-cards-section-heading"><div><span class="overline">${editing?'EDIT YOUR CARD':'WRITE WHAT MATTERS'}</span><h2>${editing?'Edit your question':'Create a new card'}</h2></div><span class="personal-cards-counter">${cards.length}/${PERSONAL_CARD_LIMIT}</span></div>
+ <label for="personal-card-front">Question</label><textarea id="personal-card-front" rows="3" maxlength="${CARD_FRONT_LIMIT}" required placeholder="What do I want to remember?">${esc(editing?.front||'')}</textarea>
+ <label for="personal-card-back">Answer</label><textarea id="personal-card-back" rows="5" maxlength="${CARD_BACK_LIMIT}" required placeholder="Explain the idea in your own words...">${esc(editing?.back||'')}</textarea>
+ <label for="personal-card-course">Subject</label><select class="styled-select" id="personal-card-course"><option value="general" ${!editing||editing.courseId==='general'?'selected':''}>General knowledge</option>${subjectOptions}</select>
+ <div class="personal-cards-editor-actions">${button(editing?'Save changes':'Create card','personal-card-save','primary-button')}${editing?button('Cancel editing','personal-card-edit-cancel','secondary-button'):''}</div>
+ ${editing?'<p class="fineprint">Changing the question, answer or subject restarts that card’s review schedule.</p>':'<p class="fineprint">Use a short, specific prompt and an answer you can check. There is no account or upload.</p>'}</section>
+ <section class="personal-cards-library"><div class="personal-cards-section-heading"><div><span class="overline">YOUR OWN COLLECTION</span><h2>Card library</h2></div><span class="personal-cards-counter">${matches.length} shown</span></div>
+ <label class="personal-cards-search" for="personal-card-search">${icon('search',18)}<input id="personal-card-search" type="search" value="${esc(personalCardQuery)}" maxlength="100" placeholder="Find a question, answer or subject" aria-label="Search your custom study cards"/></label>
+ ${matches.length?`<div class="personal-cards-list">${matches.map(card=>{
+ const course=subjects.find(c=>c.id===card.courseId);
+ const dueNow=!card.review||Date.parse(card.review.dueAt)<=Date.now();
+ return `<article class="personal-cards-list-item"><div><span class="overline">${esc(course?.title||'General')} · ${dueNow?'DUE NOW':'SCHEDULED'}</span><h3>${esc(card.front)}</h3><p>${esc(card.back)}</p></div><div class="personal-cards-item-actions">${button('Edit','personal-card-edit','secondary-button',`data-id="${esc(card.id)}"`)}${button('Delete','personal-card-delete','outline-danger',`data-id="${esc(card.id)}"`)}</div></article>`;
+ }).join('')}</div>`:`<div class="personal-cards-practice-empty"><h3>${cards.length?'Nothing matches this search':'No cards yet'}</h3><p>${cards.length?'Try a different term.':'Create your first question above to begin your own collection.'}</p></div>`}
+ </section><p class="info-line">Custom cards are saved locally, included in regular and encrypted progress backups, and removed by a progress reset. They do not change your lesson completion. Export a backup before clearing browser data.</p></main>`;
+}
+
 function notebookPage(){
  const all=buildNotebookIndex(COURSES,saved.fieldNotes,{allowMature:shadowUnlocked});
  const matches=searchNotebook(all,notebookQuery);
