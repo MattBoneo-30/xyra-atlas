@@ -621,6 +621,13 @@ try{
   expect((await page.locator('.capstone-rubric').textContent()).includes('not an automatically graded assessment'),'self-check is not represented as automated grading');
   expect(await page.locator('.lesson-content .worked-example').count()===1,'case lab has a worked example');
   expect(await page.locator('.lesson-content .lesson-sources a[href*="privacy.gov.ph"]').count()===1,'case law lesson links to official NPC guidance');
+  expect(await page.locator('input[data-capstone-check]').count()===3,'capstone self-review has three accessible checkboxes');
+  expect((await page.locator('#capstone-check-status').textContent()).includes('0 of 3'),'capstone starts with no self-reported checks');
+  await page.locator('input[data-capstone-check]').nth(0).check();
+  await page.locator('input[data-capstone-check]').nth(2).check();
+  expect((await getState(page)).capstoneChecks['laws:case-ph-data-access'].filter(Boolean).length===2,'two rubric checks persist locally');
+  expect((await getState(page)).completed.length===0,'self-reported checks do not award lesson completion');
+  expect((await page.locator('#capstone-check-status').textContent()).includes('2 of 3'),'progress counter updates without a reload');
   await page.locator('#field-note-input').fill('Fictional request: verify the privacy office; ask only about my own stored profile fields.');
   const correct=COURSES.find(c=>c.id==='laws').lessons.find(l=>l.id==='case-ph-data-access').quiz.correct;
   await page.locator('.quiz-option[data-index="'+correct+'"]').click();
@@ -630,6 +637,11 @@ try{
   await page.reload({waitUntil:'domcontentloaded'});
   await page.locator('.capstone-rubric li').first().waitFor();
   expect(await page.locator('.capstone-rubric li').count()===3,'rubric survives a refresh');
+  expect(await page.locator('input[data-capstone-check]:checked').count()===2,'self-reviewed criteria survive a browser refresh');
+  await page.locator('[data-action="capstone-checks-clear"]').click();
+  expect((await getState(page)).capstoneChecks['laws:case-ph-data-access']===undefined,'reset clears only that rubric');
+  expect((await getState(page)).completed.length===1,'resetting checks does not undo lesson completion');
+  expect((await page.locator('#field-note-input').inputValue()).includes('Fictional request'),'resetting checks does not delete exercise notes');
   expect((await page.locator('#field-note-input').inputValue()).includes('Fictional request'),'capstone exercise notes persist after reload');
   const overflow=await mobileOverflow(page);
   expect(overflow.scroll<=overflow.width+8,'capstone rubric fits narrow mobile screens');
@@ -637,6 +649,24 @@ try{
   await page.locator('.capstone-rubric li').first().waitFor();
   expect(await page.locator('.lesson-sources a[href*="nist.gov"]').count()===1,'security case points to NIST authentication guidance');
   expect(await page.locator('.capstone-rubric li').count()===3,'security lab has subject-specific review criteria');
+  await page.locator('input[data-capstone-check]').nth(1).check();
+  expect((await getState(page)).capstoneChecks['digital:case-account-takeover-drill'][1]===true,'independent capstone saves only its own rubric');
+  await page.goto(BASE+'/#/you',{waitUntil:'domcontentloaded'});
+  const downloadEvent=page.waitForEvent('download');
+  await page.locator('[data-action="export"]').click();
+  const download=await downloadEvent;
+  const fs=await import('node:fs/promises');
+  const backup=await fs.readFile(await download.path(),'utf8');
+  expect(JSON.parse(backup).state.capstoneChecks['digital:case-account-takeover-drill'][1]===true,'backup export includes self-review progress');
+  await page.goto(BASE+'/#/lesson/digital/case-account-takeover-drill',{waitUntil:'domcontentloaded'});
+  await page.locator('input[data-capstone-check]').nth(1).uncheck();
+  expect((await getState(page)).capstoneChecks['digital:case-account-takeover-drill']===undefined,'manual uncheck removes blank rubric record');
+  await page.goto(BASE+'/#/you',{waitUntil:'domcontentloaded'});
+  await page.locator('#backup-file').setInputFiles({name:'capstone-checks-backup.json',mimeType:'application/json',buffer:Buffer.from(backup)});
+  await page.locator('.backup-preview-grid').waitFor();
+  await page.locator('[data-action="backup-confirm"]').click();
+  await page.waitForFunction(()=>JSON.parse(localStorage.getItem('xyra-atlas-state-v1')||'{}').capstoneChecks?.['digital:case-account-takeover-drill']?.[1]===true);
+  expect((await getState(page)).capstoneChecks['digital:case-account-takeover-drill'][1]===true,'confirmed restore recovers rubric checks');
  });
 
 }finally{
