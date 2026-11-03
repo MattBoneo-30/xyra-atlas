@@ -8,6 +8,7 @@ import { mentorMoment } from './mentor.js';
 import { createDailyQuest,dailyQuestProgress } from './dailyquest.js';
 import { buildKnowledgeMap } from './atlasmap.js';
 import { SCENARIOS,normalizeScenarioAnswers,recordScenarioAnswer,scenarioProgress } from './scenarios.js';
+import { CASE_FILES,getCaseFile,evaluateCase,normalizeCasebook,advanceCase,resetCase,casebookStats } from './casebook.js';
 import { STUDIO_DEFAULTS, sanitizeStudio, calculateSavings, calculateBusiness, calculateTime } from './studio.js';
 import { PHRASEBOOK,getPhrasePack, sanitizePhraseProgress } from './phrasebook.js';
 import { normalizeFieldNotes, setFieldNote, MAX_FIELD_NOTE_LENGTH } from './fieldnotes.js';
@@ -17,7 +18,7 @@ import { PATH_GOALS, PATH_BUDGETS, createLearningPath, normalizeLearningPath, pa
 const STORAGE_KEY = 'xyra-atlas-state-v1';
 const esc = value => String(value ?? '').replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
 const plain = text => esc(text).replace(/\n/g, '<br>');
-const initial = { completed: [], bookmarks: [], favorites: [], answers: {}, reviews: {}, fieldNotes: {}, lastOpened: null, dailyVisits: [], theme: 'dark', language: 'ja', languageDays: [], phrases: {}, studio: sanitizeStudio(null), userName: '', welcomeDismissed: false, learningPath: null, scenarios: {} };
+const initial = { completed: [], bookmarks: [], favorites: [], answers: {}, reviews: {}, fieldNotes: {}, lastOpened: null, dailyVisits: [], theme: 'dark', language: 'ja', languageDays: [], phrases: {}, studio: sanitizeStudio(null), userName: '', welcomeDismissed: false, learningPath: null, scenarios: {}, casebook: {} };
 function readStored() {
   try {
     const data = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
@@ -35,6 +36,7 @@ function readStored() {
       reviews: normalizeReviews(data.reviews),
       studio: sanitizeStudio(data.studio),
       scenarios: normalizeScenarioAnswers(data.scenarios),
+      casebook: normalizeCasebook(data.casebook),
       learningPath: normalizeLearningPath(data.learningPath,COURSES),
       fieldNotes: normalizeFieldNotes(data.fieldNotes),
       theme: data.theme === 'light' ? 'light' : 'dark',
@@ -151,13 +153,14 @@ function parseHash() {
   if (segments[0] === 'mentor') return {view:'mentor'};
   if (segments[0] === 'search') return {view:'search'};
   if (segments[0] === 'scenario') return {view:'scenario'};
+  if (segments[0] === 'casebook') return {view:'casebook',caseId:segments[1]||null};
   if (segments[0] === 'path') return {view:'path'};
   if (['home','explore','journey','saved','you'].includes(segments[0])) return {view:segments[0]};
   return {view:'home'};
 }
 function nav(path) { const next = '#/' + path; if (location.hash === next) { route = parseHash(); render(); } else location.hash = next; window.scrollTo({top:0,behavior:'instant'}); }
 function flash(text) { currentToast = text; clearTimeout(toastTimer); render(); toastTimer = setTimeout(() => {currentToast = '';render();},3200); }
-function tabForRoute() { return ['review','studio','path','scenario','quest','insights'].includes(route.view) ? 'journey' : ['course','lesson','language','map','glossary','search','mentor'].includes(route.view) ? 'explore' : route.view; }
+function tabForRoute() { return ['review','studio','path','scenario','casebook','quest','insights'].includes(route.view) ? 'journey' : ['course','lesson','language','map','glossary','search','mentor'].includes(route.view) ? 'explore' : route.view; }
 function topbar() {
   return `<header class="topbar"><div class="topbar-inner">
     <button type="button" class="wordmark" data-action="goto-home" aria-label="Xyra Atlas home">${mark}<span>Xyra <em>Atlas</em></span></button>
@@ -191,6 +194,7 @@ function home() {
     ${last ? `<section class="resume-card"><div class="section-heading compact"><div><span class="overline">PICK UP WHERE YOU LEFT OFF</span><h2>Keep going</h2></div></div><button type="button" data-action="open-lesson" data-course="${esc(last.courseId)}" data-lesson="${esc(last.lessonId)}" class="resume-inner"><span class="resume-icon">${icon('play',22)}</span><span><strong>${esc(findLesson(last.courseId,last.lessonId).title)}</strong><small>${esc(findCourse(last.courseId).title)}</small></span>${chevron}</button></section>`:''}
     <section class="review-invite"><div class="review-invite-icon">${icon('orbit',27)}</div><div><span class="overline">MAKE KNOWLEDGE STICK</span><h2>Your Review Deck</h2><p>${reviewsDue ? `${plural(reviewsDue,'flashcard')} ready to practice.` : 'Complete a lesson to unlock its flashcard.'}</p></div>${button(`Practice ${icon('arrow',17)}`,'review','small-button')}</section>
     <section class="path-invite"><div class="path-invite-icon">${icon('compass',27)}</div><div><span class="overline">YOUR OWN ROADMAP</span><h2>Guided Learning Paths</h2><p>Pick a goal and get a seven-session plan that follows your progress.</p></div>${button('Plan my week','path','small-button')}</section>
+    <section class="casebook-invite"><span class="casebook-icon">✧</span><div><span class="overline">STORIES SHAPED BY YOUR CHOICES</span><h2>Interactive Case Files</h2><p>Practice decisions through branching stories with different outcomes.</p></div>${button('Explore cases','casebook','small-button')}</section>
     <section class="scenario-invite"><div class="studio-invite-icon">${icon('compass',27)}</div><div><span class="overline">THINK BEFORE YOU ACT</span><h2>Scenario Lab</h2><p>Six real-life decisions with feedback and explanations.</p></div>${button('Open lab','scenario','small-button')}</section>
     <section class="studio-invite"><div class="studio-invite-icon">${icon('briefcase',27)}</div><div><span class="overline">LEARN BY DOING</span><h2>The Practice Studio</h2><p>Build a savings goal, test a business, or map your week.</p></div>${button('Try a tool','studio','small-button')}</section>
     <section class="daily-quest-invite"><div class="quest-gem">✦</div><div><span class="overline">THREE SMALL STEPS</span><h2>Today's Quest</h2><p>Two lessons and one practical decision. Learn at your pace.</p></div>${button('Start quest','quest','small-button')}</section>
@@ -287,6 +291,18 @@ function pathPage() {
         ${day.length?day.map(item=>{const course=findCourse(item.courseId),lesson=findLesson(item.courseId,item.lessonId),done=isCompleted(idFor(item.courseId,item.lessonId));return `<button type="button" class="path-lesson ${done?'path-done':''}" data-action="open-lesson" data-course="${esc(item.courseId)}" data-lesson="${esc(item.lessonId)}"><span class="path-lesson-icon">${done?icon('check',18):icon(course?.icon||'book',20)}</span><span><strong>${esc(lesson?.title||'Lesson')}</strong><small>${esc(course?.title||'Atlas')} · ${item.minutes} min</small></span><span>${done?'Done':chevron}</span></button>`;}).join(''):`<p class="fineprint">You have already completed the available lessons in this area. Choose another focus or review earlier material.</p>`}</section>`).join('')}</div>` : `<div class="path-empty">${icon('compass',36)}<h2>Your first map awaits.</h2><p>Choose what matters to you and the time available. Atlas will turn it into a realistic seven-session learning plan.</p></div>`}
     <p class="info-line">${icon('info',16)} A learning plan is a flexible guide, not a promise of mastery in seven days. Plans and progress remain on your device and are included in backups.</p>
   </main>`;
+}
+
+function casebookPage(){
+ const file=route.caseId?getCaseFile(route.caseId):null;
+ if(route.caseId&&!file)return errorView();
+ if(!file){const s=casebookStats(saved.casebook);return `<main class="page casebook-page"><div class="subnav">${button('Back to journey','goto-journey','back-link')}</div><header class="casebook-hero"><span class="overline">THINK BEYOND THE FIRST CHOICE</span><h1>Interactive <em>Case Files.</em></h1><p>Explore what happens after a decision, then replay the story to discover another outcome. Your choices remain private and work offline.</p><span class="casebook-count">${s.finished} of ${s.total} files completed</span></header><div class="casebook-list">${CASE_FILES.map((c,i)=>{const progress=(saved.casebook[c.id]||[]).length;return `<button type="button" class="casebook-tile" data-action="casebook-open" data-id="${esc(c.id)}"><img src="/assets/${esc(c.art)}.svg" alt="" loading="lazy"/><span class="casebook-tile-text"><small>CASE ${i+1} · ${esc(c.subject)}</small><strong>${esc(c.title)}</strong><span>${esc(c.intro)}</span><em>${progress===2?'Completed — explore another outcome':progress===1?'Continue your story':'Begin case'}</em></span>${chevron}</button>`;}).join('')}</div><p class="info-line">These fictional cases are educational exercises, not guaranteed real-life results or professional advice.</p></main>`;}
+ const state=evaluateCase(file,saved.casebook[file.id]||[]);
+ if(!state)return errorView();
+ return `<main class="page casebook-page"><div class="subnav">${button('Back to Case Files','casebook','back-link')}</div><section class="casebook-stage"><img src="/assets/${esc(file.art)}.svg" alt="" /><div><span class="overline">${esc(file.subject)}</span><h1>${esc(file.title)}</h1><p>${esc(file.intro)}</p></div></section>
+ ${state.history.length?`<section class="casebook-history"><span class="overline">YOUR DECISIONS SO FAR</span>${state.history.map((h,i)=>`<div><b>${i+1}</b><span><strong>${esc(h.label)}</strong><p>${esc(h.insight)}</p></span></div>`).join('')}</section>`:''}
+ ${state.complete?`<section class="casebook-result" role="status"><span class="overline">YOUR STORY'S OUTCOME</span><h2>${esc(state.ending.title)}</h2><p>${esc(state.ending.outcome)}</p><div class="casebook-takeaway"><strong>What to remember</strong><p>${esc(state.ending.takeaway)}</p></div>${button('Try another path','casebook-reset','primary-button',`data-id="${esc(file.id)}"`)}</section>`:`<section class="casebook-decision"><span class="overline">DECISION ${state.history.length+1} OF 2</span><p class="casebook-scene">${esc(state.scene)}</p><h2>${esc(state.prompt)}</h2><div class="casebook-options">${state.options.map((c,i)=>`<button type="button" data-action="casebook-choice" class="casebook-choice" data-id="${esc(file.id)}" data-index="${i}"><span>${String.fromCharCode(65+i)}</span><strong>${esc(c.label)}</strong>${chevron}</button>`).join('')}</div></section>`}
+ <p class="casebook-source">Learn more: <a href="${esc(file.sourceUrl)}" target="_blank" rel="noopener noreferrer">${esc(file.sourceLabel)} ↗</a> (online only)</p></main>`;
 }
 
 function scenarioPage(){
@@ -451,8 +467,8 @@ function render() {
   document.documentElement.dataset.theme=saved.theme;
   document.body.classList.toggle('dialog-open',Boolean(modal));
   const view = route.view;
-  const content = ({home,explore,journey,review:reviewPage,studio:studioPage,scenario:scenarioPage,map:mapPage,quest:questPage,glossary:glossaryPage,search:globalSearchPage,insights:insightsPage,mentor:mentorPage,path:pathPage,saved:savedPage,you,course:coursePage,lesson:lessonPage,language:languagePage}[view] || errorView)();
-  document.getElementById('app').innerHTML = `${topbar()}<div class="shell"><aside class="desktop-rail"><div class="rail-title">YOUR ATLAS <span>✧</span></div>${[['home','Home','home'],['explore','Explore & Learn','compass'],['journey','My Journey','spark'],['saved','Saved Library','bookmark'],['you','Your Space','user']].map(([id,label,ico])=>`<button type="button" data-action="nav" data-id="${id}" class="rail-link ${tabForRoute()===id?'active':''}">${icon(ico,20)} ${label}</button>`).join('')}<div class="rail-divider"></div><button type="button" class="rail-link" data-action="open-corner">${icon('spark',20)} Xyra's Corner</button><button type="button" class="rail-link" data-action="insights">${icon('chart',20)} Learning Insights</button><button type="button" class="rail-link" data-action="search">${icon('search',20)} Search Everything</button><button type="button" class="rail-link" data-action="glossary">${icon('book',20)} Glossary</button><button type="button" class="rail-link" data-action="quest">${icon('spark',20)} Daily Quest</button><button type="button" class="rail-link" data-action="map">${icon('compass',20)} Knowledge Map</button><button type="button" class="rail-link" data-action="review">${icon('orbit',20)} Review Deck</button><button type="button" class="rail-link" data-action="path">${icon('compass',20)} Guided Path</button><button type="button" class="rail-link" data-action="studio">${icon('briefcase',20)} Practice Studio</button><button type="button" class="rail-link" data-action="language">${icon('languages',20)} Language Lab</button><button type="button" class="rail-link" data-action="open-course" data-id="shadow">${icon('moon',20)} Shadow Library</button><div class="rail-note">✦<p>The world is a little bigger every time you learn.</p></div></aside><div class="main-column">${content}<footer class="app-footer">Made with curiosity, for a life still unfolding. <span>✧ Xyra Atlas</span></footer></div></div>${navBar()}${modalView()}${currentToast?`<div class="toast" role="status">${icon('spark',19)} ${esc(currentToast)}</div>`:''}`;
+  const content = ({home,explore,journey,review:reviewPage,studio:studioPage,scenario:scenarioPage,casebook:casebookPage,map:mapPage,quest:questPage,glossary:glossaryPage,search:globalSearchPage,insights:insightsPage,mentor:mentorPage,path:pathPage,saved:savedPage,you,course:coursePage,lesson:lessonPage,language:languagePage}[view] || errorView)();
+  document.getElementById('app').innerHTML = `${topbar()}<div class="shell"><aside class="desktop-rail"><div class="rail-title">YOUR ATLAS <span>✧</span></div>${[['home','Home','home'],['explore','Explore & Learn','compass'],['journey','My Journey','spark'],['saved','Saved Library','bookmark'],['you','Your Space','user']].map(([id,label,ico])=>`<button type="button" data-action="nav" data-id="${id}" class="rail-link ${tabForRoute()===id?'active':''}">${icon(ico,20)} ${label}</button>`).join('')}<div class="rail-divider"></div><button type="button" class="rail-link" data-action="open-corner">${icon('spark',20)} Xyra's Corner</button><button type="button" class="rail-link" data-action="casebook">${icon('book',20)} Case Files</button><button type="button" class="rail-link" data-action="insights">${icon('chart',20)} Learning Insights</button><button type="button" class="rail-link" data-action="search">${icon('search',20)} Search Everything</button><button type="button" class="rail-link" data-action="glossary">${icon('book',20)} Glossary</button><button type="button" class="rail-link" data-action="quest">${icon('spark',20)} Daily Quest</button><button type="button" class="rail-link" data-action="map">${icon('compass',20)} Knowledge Map</button><button type="button" class="rail-link" data-action="review">${icon('orbit',20)} Review Deck</button><button type="button" class="rail-link" data-action="path">${icon('compass',20)} Guided Path</button><button type="button" class="rail-link" data-action="studio">${icon('briefcase',20)} Practice Studio</button><button type="button" class="rail-link" data-action="language">${icon('languages',20)} Language Lab</button><button type="button" class="rail-link" data-action="open-course" data-id="shadow">${icon('moon',20)} Shadow Library</button><div class="rail-note">✦<p>The world is a little bigger every time you learn.</p></div></aside><div class="main-column">${content}<footer class="app-footer">Made with curiosity, for a life still unfolding. <span>✧ Xyra Atlas</span></footer></div></div>${navBar()}${modalView()}${currentToast?`<div class="toast" role="status">${icon('spark',19)} ${esc(currentToast)}</div>`:''}`;
   document.title = `${view==='course' ? findCourse(route.courseId)?.title+' · ':view==='lesson' ? findLesson(route.courseId,route.lessonId)?.title+' · ' : ''}Xyra Atlas`;
 }
 function toggle(list,value) { saved[list]=saved[list].includes(value)?saved[list].filter(x=>x!==value):[...saved[list],value];persist();render(); }
@@ -473,6 +489,7 @@ function answerBackup(e) {
         reviews:normalizeReviews(clean.reviews),
         studio:sanitizeStudio(clean.studio),
         scenarios:normalizeScenarioAnswers(clean.scenarios),
+        casebook:normalizeCasebook(clean.casebook),
         learningPath:normalizeLearningPath(clean.learningPath,COURSES),
         fieldNotes:normalizeFieldNotes(clean.fieldNotes),
         dailyVisits:Array.isArray(clean.dailyVisits)?clean.dailyVisits.filter(validDayKey).slice(-400):[],
@@ -524,6 +541,10 @@ async function handleAction(e) {
   else if(action==='create-path') {const goal=document.getElementById('path-goal')?.value;const minutes=Number(document.getElementById('path-minutes')?.value);const stamp=today();const next=createLearningPath(COURSES,goal,minutes,saved.completed,stamp);if(!next){flash('No unfinished lessons fit this focus and study time. Try another goal.');return;}saved.learningPath=next;persist();flash('Your seven-session learning path is ready!');}
   else if(action==='studio') nav('studio');
   else if(action==='scenario') nav('scenario');
+  else if(action==='casebook') nav('casebook');
+  else if(action==='casebook-open'){if(getCaseFile(id))nav('casebook/'+id);}
+  else if(action==='casebook-choice'){if(route.view==='casebook'&&route.caseId===id){saved.casebook=advanceCase(saved.casebook,id,Number(button.dataset.index));persist();render();}}
+  else if(action==='casebook-reset'){if(route.view==='casebook'&&route.caseId===id){saved.casebook=resetCase(saved.casebook,id);persist();render();}}
   else if(action==='map') nav('map');
   else if(action==='quest') nav('quest');
   else if(action==='glossary') nav('glossary');

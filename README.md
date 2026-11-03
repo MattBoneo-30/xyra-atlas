@@ -4,7 +4,7 @@
 
 ![Xyra Atlas emblem](assets/atlas-mark.svg)
 
-## Current release: Xyra's Corner 1.7
+## Current release: Interactive Case Files 1.8
 
 - A violet-and-gold responsive interface, **14 distinct original vector course worlds**, Xyra's Corner artwork, landscape hero and a home-screen app icon. The same course identity appears on home tiles, category cards, course covers and lessons.
 - 14 learning subjects and **76 interactive lessons**: 52 short starters plus 24 structured, referenced field guides with real-world worked examples, exercises and quizzes (counts verified by tests).
@@ -20,6 +20,7 @@
 
 **New in 0.5:** Psychology (evidence journaling, habits, relational inference); Philippine law (Constitution, data privacy, consumer complaints); business (customer discovery, unit economics, Philippine launch steps); money (irregular bills, emergency planning, investment red flags). Sources are linked for optional online verification; lessons work offline. Links and regulations can change.
 
+- **Interactive Case Files:** Three two-step branching stories with twelve endings, covering suspicious bank alerts, workplace boundaries and consumer disputes. Story choices are local-only, included in JSON backup and cached for offline replay. The cases promote informed, noncoercive judgment.
 - **Xyra's Corner:** A dedicated storybook guide page with an original lightweight amethyst-crowned Xyra portrait, accessible human-eared character design, 14 rotating daily reflections, and an offline recommendation to try an unfinished non-adult lesson. The artwork is vector illustration, not yet the intended final cinematic painterly character art.
 - **New applied field guides:** Twelve additional three-section lessons on phishing, account protection, recovery backups, verifying evidence, causation, calibration, listening, constructive feedback, difficult conversations, project portfolios, interview stories and safer job searches. Each includes an example, practice activity, quiz and external further-reading source; all instructional text is available offline.
 - **Learning Insights:** Local-only illustrated progress dashboard showing subject completion, latest quiz selections, learned phrases, and a 14-day activity calendar. Percentages describe activity, not expertise.
