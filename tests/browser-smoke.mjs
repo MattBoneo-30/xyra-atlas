@@ -1327,6 +1327,22 @@ try{
  });
 
 
+ await smoke('general-foundation-pricing-offline',{viewport:{width:390,height:844},isMobile:true,hasTouch:true,deviceScaleFactor:2},async(page,context)=>{
+   await page.goto(BASE+'/#/lesson/business/pricing',{waitUntil:'domcontentloaded'});
+   await page.locator('.reading-page').waitFor();
+   expect((await page.locator('.reading-page').textContent()).includes('₱14,100'),'concrete break-even assignment in original business lesson');
+   const width=await mobileOverflow(page);
+   expect(width.scroll<=width.width+8,'business scenario fits phone');
+   await page.evaluate(async()=>{await navigator.serviceWorker.ready;});
+   await page.reload({waitUntil:'domcontentloaded'});
+   await page.waitForFunction(()=>Boolean(navigator.serviceWorker.controller));
+   await context.setOffline(true);
+   await page.reload({waitUntil:'domcontentloaded'});
+   expect((await page.locator('.reading-page').textContent()).includes('₱14,100'),'business scenario persists offline');
+   await context.setOffline(false);
+ });
+
+
 }finally{
  if(browser)await browser.close();
  server.kill('SIGTERM');
