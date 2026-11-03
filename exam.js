@@ -1,11 +1,12 @@
 /** Self-contained offline practice exams. Exam answers never mark lessons complete. */
 export const EXAM_SIZES=Object.freeze([5,10,20]);
+export const EXAM_STAGES=Object.freeze(['all','Beginner','Intermediate','Advanced']);
 
-export function examPool(courses,{courseId='all'}={}){
- if(!Array.isArray(courses))return [];
+export function examPool(courses,{courseId='all',stage='all'}={}){
+ if(!Array.isArray(courses)||!EXAM_STAGES.includes(stage))return [];
  return courses.filter(c=>c&&!c.dark&&(courseId==='all'||c.id===courseId))
   .flatMap(c=>(Array.isArray(c.lessons)?c.lessons:[]).filter(l=>
-   l&&typeof l.id==='string'&&l.quiz&&typeof l.quiz.question==='string'&&
+   l&&(stage==='all'||l.stage===stage)&&typeof l.id==='string'&&l.quiz&&typeof l.quiz.question==='string'&&
    Array.isArray(l.quiz.options)&&l.quiz.options.length>=2&&l.quiz.options.length<=8&&
    l.quiz.options.every(o=>typeof o==='string')&&Number.isInteger(l.quiz.correct)&&
    l.quiz.correct>=0&&l.quiz.correct<l.quiz.options.length)
@@ -21,8 +22,8 @@ function shuffled(items,seed){
  }
  return out;
 }
-export function createExam(courses,{size=10,courseId='all',seed=Date.now()}={}){
- const pool=examPool(courses,{courseId});
+export function createExam(courses,{size=10,courseId='all',stage='all',seed=Date.now()}={}){
+ const pool=examPool(courses,{courseId,stage});
  if(!pool.length)return null;
  const count=EXAM_SIZES.includes(size)?size:10;
  return {version:1,ids:shuffled(pool.map(q=>q.id),Number(seed)||0).slice(0,count),

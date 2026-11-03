@@ -1359,6 +1359,36 @@ try{
  });
 
 
+ await smoke('advanced-curriculum-practice-filter',{viewport:{width:390,height:844},isMobile:true,hasTouch:true,deviceScaleFactor:2},async(page)=>{
+   await page.goto(BASE+'/#/exam',{waitUntil:'domcontentloaded'});
+   await page.locator('#exam-stage').selectOption('Advanced');
+   await page.locator('#exam-size').selectOption('20');
+   await page.locator('[data-action="exam-start"]').click();
+   await page.locator('.exam-options').waitFor();
+   const state=await getState(page);
+   expect(state.exam.ids.length===20,'advanced practice samples 20 available lessons');
+   expect(state.exam.ids.every(key=>{
+      const [cid,lid]=key.split(':');
+      const subject=COURSES.find(c=>c.id===cid);
+      return subject&&!subject.dark&&subject.lessons.find(l=>l.id===lid)?.stage==='Advanced';
+   }),'advanced practice contains only advanced lessons, never mature library material');
+   const overflow=await mobileOverflow(page);
+   expect(overflow.scroll<=overflow.width+8,'level-scoped exam fits mobile');
+   await page.reload({waitUntil:'domcontentloaded'});
+   expect((await getState(page)).exam.ids.length===20,'stage-scoped exam resumes normally');
+   await page.locator('[data-action="exam-discard"]').click();
+   await page.locator('[data-action="exam-discard-confirm"]').click();
+   await page.locator('#exam-course').selectOption('psychology');
+   await page.locator('#exam-stage').selectOption('Intermediate');
+   await page.locator('#exam-size').selectOption('5');
+   await page.locator('[data-action="exam-start"]').click();
+   const focused=await getState(page);
+   expect(focused.exam.ids.every(key=>{
+     const [cid,lid]=key.split(':');
+     return cid==='psychology'&&COURSES.find(c=>c.id===cid).lessons.find(l=>l.id===lid)?.stage==='Intermediate';
+   }),'subject and level filters compose safely');
+ });
+
 }finally{
  if(browser)await browser.close();
  server.kill('SIGTERM');

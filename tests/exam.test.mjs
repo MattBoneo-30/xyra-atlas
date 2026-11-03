@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {COURSES} from '../data.js';
-import {EXAM_SIZES,examPool,createExam,normalizeExam,currentExamQuestion,answerExam,advanceExam,examResults} from '../exam.js';
+import {EXAM_SIZES,EXAM_STAGES,examPool,createExam,normalizeExam,currentExamQuestion,answerExam,advanceExam,examResults} from '../exam.js';
 
 test('practice exams include valid lesson quizzes but never mature-content questions',()=>{
  const pool=examPool(COURSES);
@@ -22,6 +22,27 @@ test('exam generation is seeded, unique, limited, and scoped to selected subject
  assert.ok(subject.ids.length>0&&subject.ids.length<=20);
  assert.ok(subject.ids.every(id=>id.startsWith('psychology:')));
 });
+test('learning-level filters produce scoped practice without exposing mature questions or corrupting old sessions',()=>{
+ assert.deepEqual(EXAM_STAGES,['all','Beginner','Intermediate','Advanced']);
+ for(const stage of EXAM_STAGES.slice(1)){
+  const pool=examPool(COURSES,{stage});
+  assert.ok(pool.length>=10);
+  assert.ok(pool.every(q=>{
+   const lesson=COURSES.find(c=>c.id===q.courseId)?.lessons.find(l=>l.id===q.lessonId);
+   return lesson?.stage===stage&&q.courseId!=='shadow';
+  }));
+  const session=createExam(COURSES,{stage,size:20,seed:2026});
+  assert.ok(session?.ids.length>=5);
+  assert.ok(session.ids.every(id=>pool.some(q=>q.id===id)));
+  assert.deepEqual(normalizeExam(JSON.parse(JSON.stringify(session)),COURSES),session);
+ }
+ assert.equal(examPool(COURSES,{stage:'Expert'}).length,0);
+ assert.equal(createExam(COURSES,{stage:'Expert'}),null);
+ assert.equal(examPool(COURSES,{courseId:'shadow',stage:'Advanced'}).length,0);
+ const old=createExam(COURSES,{size:5,courseId:'psychology',seed:1});
+ assert.ok(normalizeExam(old,COURSES),'existing exam state needs no migration');
+});
+
 test('exam questions cannot be skipped, changed after answering, or marked complete before finishing',()=>{
  const session=createExam(COURSES,{size:5,seed:12});
  assert.equal(advanceExam(session,COURSES).position,0);
