@@ -1,6 +1,7 @@
 import { DEEP_TRACKS } from './deeptracks.js';
 import { FIELD_GUIDES } from './fieldguides.js';
 import { LIFE_PRACTICE } from './lifepractice.js';
+import { MASTERY_TRACKS } from './masterytracks.js';
 /** Xyra Atlas starter curriculum. Educational content is general information, not professional advice. */
 const lesson = (id, title, minutes, stage, intro, first, second, task, question, options, correct, explanation) => ({
   id, title, minutes, stage, intro,
@@ -254,6 +255,7 @@ export const COURSES = [
 for(const entry of COURSES) if(DEEP_TRACKS[entry.id]) entry.lessons.push(...DEEP_TRACKS[entry.id]);
 for(const entry of COURSES) if(FIELD_GUIDES[entry.id]) entry.lessons.push(...FIELD_GUIDES[entry.id]);
 for(const entry of COURSES) if(LIFE_PRACTICE[entry.id]) entry.lessons.push(...LIFE_PRACTICE[entry.id]);
+for(const entry of COURSES) if(MASTERY_TRACKS[entry.id]) entry.lessons.push(...MASTERY_TRACKS[entry.id]);
 export const LANGUAGES = [
   {name:'English',flag:'🇬🇧',code:'en'}, {name:'Japanese',flag:'🇯🇵',code:'ja'},
   {name:'Korean',flag:'🇰🇷',code:'ko'}, {name:'Spanish',flag:'🇪🇸',code:'es'},
