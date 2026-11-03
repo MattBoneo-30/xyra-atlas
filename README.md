@@ -4,7 +4,7 @@
 
 ![Xyra Atlas emblem](assets/atlas-mark.svg)
 
-## Current release: Field Guides 0.5
+## Current release: Field Notebook 0.6
 
 - A violet-and-gold responsive interface, **14 distinct original vector course worlds**, Xyra's Corner artwork, landscape hero and a home-screen app icon. The same course identity appears on home tiles, category cards, course covers and lessons.
 - 14 learning subjects and **64 interactive lessons**: 52 short starters plus 12 new sourced, three-section field guides with real-world worked examples, exercises and quizzes (counts verified by tests).
@@ -12,6 +12,7 @@
 - **The Shadow Library (18+ educational content)** covers manipulation, gaslighting, lies, emotional leverage, deceptive interface design, consent and adult media literacy. The age acknowledgment is a *content gate*, not verified age or identity security.
 - Seven-day language practice framework for 20 languages, with **72 practical offline phrases across nine starter languages**: Japanese, Korean, Spanish, French, Mandarin Chinese, German, Filipino, Italian and English.
 - Interactive phrase-recall cards, local mastery marking, backup/import and optional speech synthesis where installed voices support it. Other languages retain the seven-day training plan.
+- **Field Notebook:** private per-lesson exercise writing, automatic offline saving and JSON backup/restore, with validation and a 2,000-character limit per note.
 - Local bookmarks, favorites, quizzes, progress, achievement badges, themes, and JSON export/import for transferring between devices.
 - **Review Deck:** recall flashcards unlocked by completed lessons; spaced practice at 1, 3, 7, 14, 30, and 60-day intervals, with 10-minute repeats for forgotten material. Review schedules are stored locally and included in progress backups.
 - Offline app shell and included course library, cached by a same-origin service worker.
@@ -66,6 +67,7 @@ app.js                 Navigation, interface, storage, quizzes, review UX, insta
 data.js                Offline learning curriculum and language sprint
 deeptracks.js          12 sourced field-guide lessons with examples and quizzes
 review.js              Dependency-free spaced repetition logic and input validation
+fieldnotes.js          Offline per-lesson notebook validation and saving
 phrasebook.js          Nine offline starter phrase packs and progress validation
 assets/                14 distinct course scenes, a corner scene, vector identity
 sw.js                  Offline service worker

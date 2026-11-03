@@ -1,11 +1,12 @@
 import { COURSES, LANGUAGES, LEARNING_SPRINT, DAILY_NOTES, findCourse, findLesson, totalLessons } from './data.js';
 import { makeReviewCards, dueReviewCards, recordReview, normalizeReviews } from './review.js';
 import { getPhrasePack, sanitizePhraseProgress } from './phrasebook.js';
+import { normalizeFieldNotes, setFieldNote, MAX_FIELD_NOTE_LENGTH } from './fieldnotes.js';
 
 const STORAGE_KEY = 'xyra-atlas-state-v1';
 const esc = value => String(value ?? '').replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
 const plain = text => esc(text).replace(/\n/g, '<br>');
-const initial = { completed: [], bookmarks: [], favorites: [], answers: {}, reviews: {}, lastOpened: null, dailyVisits: [], theme: 'dark', language: 'ja', languageDays: [], phrases: {}, userName: '', welcomeDismissed: false };
+const initial = { completed: [], bookmarks: [], favorites: [], answers: {}, reviews: {}, fieldNotes: {}, lastOpened: null, dailyVisits: [], theme: 'dark', language: 'ja', languageDays: [], phrases: {}, userName: '', welcomeDismissed: false };
 function readStored() {
   try {
     const data = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
@@ -21,6 +22,7 @@ function readStored() {
       phrases: sanitizePhraseProgress(data.phrases),
       answers: data.answers && typeof data.answers === 'object' && !Array.isArray(data.answers) ? data.answers : {},
       reviews: normalizeReviews(data.reviews),
+      fieldNotes: normalizeFieldNotes(data.fieldNotes),
       theme: data.theme === 'light' ? 'light' : 'dark',
       language: LANGUAGES.some(x => x.code === data.language) ? data.language : 'ja',
       userName: typeof data.userName === 'string' ? data.userName.slice(0,40) : ''
@@ -226,6 +228,7 @@ function lessonPage() {
       ${l.example ? `<aside class="worked-example"><span class="overline">WORKED EXAMPLE</span><h3>See it in action</h3><p>${esc(l.example)}</p></aside>` : ''}
       ${l.sources?.length ? `<aside class="lesson-sources"><span class="overline">CHECK THE ORIGINAL SOURCES</span><h3>Sources and further reading</h3><p>Lesson content works offline. Opening references requires internet. Check current legal and financial rules before relying on them.</p><ul>${l.sources.map(ref=>`<li><a href="${esc(ref.url)}" target="_blank" rel="noopener noreferrer">${esc(ref.label)} ↗</a></li>`).join('')}</ul></aside>` : ''}
       <div class="practice-box"><span class="overline">${icon('spark',16)} PUT IT INTO PRACTICE</span><h3>Try this today</h3><p>${esc(l.task)}</p></div>
+      <section class="field-notebook"><span class="overline">${icon('book',16)} YOUR PRIVATE FIELD NOTEBOOK</span><h3>Write what you learned</h3><p>Respond to the exercise in your own words. Notes save automatically on this device, work offline, and are included in your JSON backup.</p><label for="field-note-input">Your exercise notes</label><textarea id="field-note-input" data-field-note="${esc(key)}" maxlength="${MAX_FIELD_NOTE_LENGTH}" rows="5" placeholder="Your thoughts, calculations, practice answers…">${esc(saved.fieldNotes[key]||'')}</textarea><small id="field-note-status" role="status">Private · Stored locally</small></section>
       <section class="quiz-box"><div class="article-section-num">CHECK YOUR UNDERSTANDING</div><h2>One small question</h2><p>${esc(l.quiz.question)}</p><div class="quiz-options">${l.quiz.options.map((option,i)=>`<button type="button" class="quiz-option ${chosen===i?'selected':''} ${chosen!==undefined && chosen===i && i===l.quiz.correct?'correct':''}" data-action="answer" data-key="${esc(key)}" data-index="${i}"><span class="option-letter">${String.fromCharCode(65+i)}</span><span>${esc(option)}</span>${chosen===i?icon('check',17):''}</button>`).join('')}</div>${chosen!==undefined?`<div class="quiz-feedback ${chosen===l.quiz.correct?'good':'retry'}">${icon(chosen===l.quiz.correct?'check':'info',19)}<span><strong>${chosen===l.quiz.correct?'Well done.':'Not quite—try again.'}</strong><br/>${esc(l.quiz.explanation)}</span></div>`:''}</section>
       ${done ? `<div class="complete-banner">${icon('check',22)} <span>You completed this lesson. Beautiful progress.</span></div>` : button(`${icon('check',18)} Mark lesson complete`,'complete',`primary-button complete-btn`, `data-key="${esc(key)}" ${chosen !== l.quiz.correct?'disabled title="Answer the check correctly to complete"':''}`)}
       ${next ? button(`Next lesson ${icon('arrow',18)}`,'open-lesson','secondary-button next-lesson',`data-course="${esc(c.id)}" data-lesson="${esc(next.id)}"`) : button(`Back to ${esc(c.title)} ${icon('arrow',18)}`,'open-course','secondary-button next-lesson',`data-id="${esc(c.id)}"`)}
@@ -320,6 +323,7 @@ function answerBackup(e) {
         favorites:Array.isArray(clean.favorites)?clean.favorites.filter(x=>typeof x==='string'):[],
         answers:clean.answers && typeof clean.answers==='object'&&!Array.isArray(clean.answers)?clean.answers:{},
         reviews:normalizeReviews(clean.reviews),
+        fieldNotes:normalizeFieldNotes(clean.fieldNotes),
         dailyVisits:Array.isArray(clean.dailyVisits)?clean.dailyVisits.filter(x=>/^\d{4}-\d{2}-\d{2}$/.test(x)):[],
         lastOpened:clean.lastOpened&&typeof clean.lastOpened==='object'?clean.lastOpened:null,
         theme:clean.theme==='light'?'light':'dark',
@@ -383,6 +387,16 @@ document.addEventListener('change',e=>{
   if(e.target.id==='backup-file') answerBackup(e);
 });
 document.addEventListener('input',e=>{
+  if (e.target.matches?.('textarea[data-field-note]')) {
+    const key=e.target.dataset.fieldNote;
+    const [cid,lid] = (key || '').split(':');
+    if (findLesson(cid,lid)) {
+      saved.fieldNotes=setFieldNote(saved.fieldNotes,key,e.target.value);
+      persist();
+      const status=document.getElementById('field-note-status');
+      if(status) status.textContent='Saved on this device · Export a backup to keep it safe';
+    }
+  }
   if(e.target.id==='course-search') {const pos=e.target.selectionStart;query=e.target.value;render();const input=document.getElementById('course-search');if(input){input.focus();try{input.setSelectionRange(pos,pos);}catch{}}}
 });
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&modal){modal='';if(['course','lesson'].includes(route.view)&&route.courseId==='shadow'&&!shadowUnlocked)nav('explore');else render();} if((e.key==='Enter'||e.key===' ')&&e.target.classList?.contains('shadow-preview')) {e.preventDefault();gateConfirmed=false;modal='shadow';render();}});

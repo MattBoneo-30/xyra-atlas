@@ -47,3 +47,12 @@ html[data-theme=light]{color-scheme:light;--bg:#fbf5f6;--bg-raised:#fff9fa;--car
 .lesson-sources ul{list-style:none;margin:.7rem 0 0;padding:0;display:grid;gap:.6rem}
 .lesson-sources li a{display:inline-flex;gap:.4rem;align-items:center;color:var(--gold,#f8d79b);font-weight:600;text-decoration:underline;text-underline-offset:.2rem;overflow-wrap:anywhere;line-height:1.5}
 .lesson-sources li a:focus-visible{outline:3px solid #eebc78;outline-offset:4px;border-radius:3px}
+
+/* Field Notebook: offline, private and readable on touch screens. */
+.field-notebook{padding:18px;border:1px solid var(--line-bright);border-radius:18px;background:linear-gradient(135deg,var(--card),var(--card-soft));margin:21px 0}
+.field-notebook h3{font:normal 24px/1.3 Georgia,serif;margin:10px 0}
+.field-notebook p{font-size:12px;line-height:1.7;color:var(--muted)}
+.field-notebook label{display:block;font-size:12px;font-weight:700;color:var(--text);margin:14px 0 7px}
+.field-notebook textarea{box-sizing:border-box;display:block;width:100%;min-height:128px;resize:vertical;border:1px solid var(--line-bright);border-radius:13px;color:var(--text);background:var(--bg-raised);font:400 15px/1.65 system-ui,sans-serif;padding:13px;outline-offset:3px}
+.field-notebook textarea:focus-visible{outline:2px solid var(--gold)}
+.field-notebook small{display:block;margin-top:9px;color:var(--muted);font-size:11px;line-height:1.5}
