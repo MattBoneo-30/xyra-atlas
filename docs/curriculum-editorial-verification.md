@@ -27,21 +27,34 @@ These sources were inspected for the specific claims above as of the review date
 
 ## Automated lesson-by-lesson readiness snapshot (2026-11-04)
 
-The most recent fully successful [verification run 41684562832](https://github.com/MattBoneo-30/xyra-atlas/actions/runs/41684562832) reports **201 passing Node tests, a successful static build, and passing real Chromium mobile/desktop/offline smoke tests**. The source snapshot contains:
+The verified [release audit 41687979197](https://github.com/MattBoneo-30/xyra-atlas/actions/runs/41687979197) reports **209 passing Node tests, no failing tests, successful production/offline asset generation, and passing real desktop/mobile Chromium smoke scenarios**. The audit's structural coverage now includes:
 
-| Mechanical measure | Coverage | What it does and does not establish |
+| Mechanical measure | Coverage | What this actually verifies |
 |---|---:|---|
-| Subjects and lessons | 14 / 134 | Stable curriculum records, not proof of expertise |
-| Authored worked examples | 134 / 134 | Every lesson includes an illustrative case, not externally validated |
-| Quiz answer rationales meeting the audit minimum | 134 / 134 | Explanation length and structural correctness, not psychometric validation |
-| Evidence and transfer prompts | 134 / 134 | Staged self-directed practice; not scored competence |
-| At least one HTTPS further-reading link | 134 / 134 | Linked source presence, not claim-level corroboration |
-| Three sections all meeting the stricter depth threshold | 73 / 134 | 61 still require section-depth revisions |
-| Standalone task meeting the stricter length threshold | 82 / 134 | 52 require expanded lesson-specific exercise instructions |
-| Distinct reference URLs | 41 | Independently check current reachability and substantive support |
-| Lessons carrying one or more editorial flags | 63 / 134 | This is an actionable backlog, **not** a completed editorial review |
+| Subject records and lessons | 14 / 134 | Stable, nonduplicate content with all three learning levels |
+| Sections meeting the stricter teaching-length threshold | 134 / 134 | Explanatory text is present and sufficiently developed for structural inspection |
+| Worked examples meeting the audit threshold | 134 / 134 | An applied illustration is present |
+| Lesson-specific independent exercises meeting the threshold | 134 / 134 | An observable practice task is present |
+| Two-stage evidence and transfer guidance | 134 / 134 | A linked self-guided practice scaffold is present |
+| Answer explanations meeting the audit threshold | 134 / 134 | Each lesson has an explanatory quiz rationale |
+| At least one HTTPS further-reading link | 134 / 134 | Links are syntactically present, not necessarily live or relevant |
+| Distinct referenced URLs | 41 | Automated source-reachability report is available separately |
+| Lessons with automated structural editorial flags | **0 / 134** | No remaining *mechanical* gaps under the current checks |
 
-A generated per-lesson `curriculum-audit.json` is attached to every successful CI workflow run. The count has improved, but the stage gate remains false until every outstanding criterion has credible evidence, especially high-stakes human editorial review.
+**This is not an independent expert signoff.** Length thresholds cannot establish nuanced pedagogy, correct legal interpretation, healthy practice advice or validated assessments. Content claims and source relevance need specialist review before the Advanced Curriculum stage can be marked complete. The stage machine-readable gate deliberately remains `complete:false`, and the owner's notification remains deferred.
+
+## Official Philippine agency claim spot-checks
+
+Maintainer source checks on 2026-11-04 compared high-stakes language against these official publications:
+
+| Claim verified to limited scope | Source | Remaining caution |
+|---|---|---|
+| A data subject may request information about processing of their own personal data, but not another unrelated person's data | [NPC — Right to Access](https://privacy.gov.ph/right-to-access/) | NPC describes legal qualifications and limits; do not interpret them for a particular dispute without facts |
+| NPC lists rights including access and rectification and indicates appropriate authorized/legal representation may matter | [NPC — Data Subject Rights](https://privacy.gov.ph/data-subject-rights/) | Rights and exceptions should be read from current official text |
+| A financial consumer should first use a BSP-supervised institution's own complaint channel before an eligible BSP-CAM escalation | [BSP — Consumer Assistance Mechanism](https://www.bsp.gov.ph/Pages/Forms/DispForm.aspx?ID=1869) | Check the institution, product, current route and documentary requirements |
+| Current DTI consumer guidance provides official complaint submission options including Consumer CARe | [DTI FTEB — How to file a consumer complaint](https://fairtrade.dti.gov.ph/faq/how-to-file-a-consumer-complaint/) | Determine jurisdiction and whether other regulators or processes apply |
+
+These spot-checks support the limited claims above only. They do not attest to the remaining curriculum, check every live URL, or establish an attorney/regulator/specialist review. A machine-readable claim register records the evidence and review limits.
 
 ## Outstanding criteria before the Advanced curriculum completion report
 
@@ -53,6 +66,6 @@ A generated per-lesson `curriculum-audit.json` is attached to every successful C
 
 ## Reproducible checks
 
-Run `npm run check` for the Node unit suite and built static artifacts. CI also installs test-only Chromium for live desktop, small-mobile and offline integration smoke checks. Latest confirmed successful workflow for the source described here: [Actions run 41676416698](https://github.com/MattBoneo-30/xyra-atlas/actions/runs/41676416698).
+Run `npm run check` for the Node unit suite and built static artifacts. CI also installs test-only Chromium for live desktop, small-mobile and offline integration smoke checks. Latest confirmed successful full suite: [Actions run 41687979197](https://github.com/MattBoneo-30/xyra-atlas/actions/runs/41687979197).
 
 **Source availability note (2026-11-04):** The former FTEB `/services/complaints-handling/` URL returned an inconsistent 404 on direct access despite an indexed result. Lesson references now use the official, directly retrievable [DTI consumer complaint FAQ](https://fairtrade.dti.gov.ph/faq/how-to-file-a-consumer-complaint/) instead. This is a link correction, not a full expert legal validation.

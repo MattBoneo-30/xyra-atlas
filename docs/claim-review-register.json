@@ -1,0 +1,67 @@
+{
+  "schemaVersion": 1,
+  "reviewDate": "2026-11-04",
+  "status": "partial-maintainer-spot-check-not-expert-signoff",
+  "primaryLinksChecked": 4,
+  "totalDistinctCourseURLs": 41,
+  "claims": [
+    {
+      "key": "npc-access-own-data",
+      "topic": "Philippine personal-data rights",
+      "claim": "The requesting person can seek access to their own processed personal data, subject to qualifications, but not unrelated third-party data.",
+      "url": "https://privacy.gov.ph/right-to-access/",
+      "publisher": "National Privacy Commission",
+      "jurisdiction": "Philippines",
+      "checkDate": "2026-11-04",
+      "method": "maintainer-official-page-spot-check",
+      "status": "limited-claim-checked",
+      "independentExpertSignoff": false,
+      "limitation": "Does not evaluate all exceptions or individual eligibility."
+    },
+    {
+      "key": "npc-rights-categories",
+      "topic": "Philippine personal-data rights",
+      "claim": "The NPC describes separate rights including access and rectification and sets conditions for asserting rights.",
+      "url": "https://privacy.gov.ph/data-subject-rights/",
+      "publisher": "National Privacy Commission",
+      "jurisdiction": "Philippines",
+      "checkDate": "2026-11-04",
+      "method": "maintainer-official-page-spot-check",
+      "status": "limited-claim-checked",
+      "independentExpertSignoff": false,
+      "limitation": "Verify applicability and current procedures for particular facts."
+    },
+    {
+      "key": "bsp-bank-first-complaint",
+      "topic": "Philippine banking and consumer recourse",
+      "claim": "BSP-CAM is a consumer escalation mechanism after complaints through a BSP-supervised institution's own consumer assistance process.",
+      "url": "https://www.bsp.gov.ph/Pages/Forms/DispForm.aspx?ID=1869",
+      "publisher": "Bangko Sentral ng Pilipinas",
+      "jurisdiction": "Philippines",
+      "checkDate": "2026-11-04",
+      "method": "maintainer-official-page-spot-check",
+      "status": "limited-claim-checked",
+      "independentExpertSignoff": false,
+      "limitation": "The relevant provider must be BSP supervised and eligibility and steps require current checking."
+    },
+    {
+      "key": "dti-complaint-route",
+      "topic": "Philippine consumer complaints",
+      "claim": "DTI's FTEB publishes official consumer complaint filing options, including the Consumer CARe platform for qualifying complaints.",
+      "url": "https://fairtrade.dti.gov.ph/faq/how-to-file-a-consumer-complaint/",
+      "publisher": "Department of Trade and Industry",
+      "jurisdiction": "Philippines",
+      "checkDate": "2026-11-04",
+      "method": "maintainer-official-page-spot-check",
+      "status": "limited-claim-checked",
+      "independentExpertSignoff": false,
+      "limitation": "A matter may be outside DTI authority; eligibility and available remedies are not guaranteed."
+    }
+  ],
+  "expertReviewRequired": true,
+  "notes": [
+    "These are limited independent-source spot checks by a project maintainer, not legal or financial advice.",
+    "Full material claim-by-claim review by qualified reviewers has not been obtained.",
+    "Never switch the advanced-curriculum gate to complete based only on these checks."
+  ]
+}

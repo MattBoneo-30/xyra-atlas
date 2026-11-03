@@ -64,12 +64,37 @@
           "type": "ci",
           "value": "https://github.com/MattBoneo-30/xyra-atlas/actions/runs/41684562832",
           "note": "201 unit tests passed; production build and full real Chromium desktop/mobile/offline suite passed. Coverage: 134/134 worked examples, answer rationales, source links and guided reflection prompts."
+        },
+        {
+          "type": "commit",
+          "value": "cdab549aefec89be3bf6253a1e28df8560d7ff24",
+          "note": "Deepened 18 high-stakes Philippine legal, finance, digital-security and anti-coercion foundation lessons with specific applied cases."
+        },
+        {
+          "type": "commit",
+          "value": "9874b085b7d2687e56d389486863d100153aaa93",
+          "note": "Expanded 16 psychology, business, time and language foundations with evidence-based examples and assignments."
+        },
+        {
+          "type": "commit",
+          "value": "b0d50c8d41e673251656b117a19158f9e7105bf5",
+          "note": "Expanded 18 communication, reasoning, career, science, relationships and negotiation foundation lessons."
+        },
+        {
+          "type": "commit",
+          "value": "6f55d535c063b78b92613d3ab77e9af5c7399442",
+          "note": "Addressed 11 remaining section-depth and applied-task gaps in the sourced applied and advanced learning library."
+        },
+        {
+          "type": "ci",
+          "value": "https://github.com/MattBoneo-30/xyra-atlas/actions/runs/41687979197",
+          "note": "209 passing unit tests, verified static/offline build and desktop/mobile Chromium integration. Automated audit: 134/134 sections, examples, assignments, rationales, guided practice, links; 0 structural flags."
         }
       ],
       "blockers": [
-        "Automated editorial audit still flags 63 lessons for some short teaching sections and/or standalone practice tasks; content depth needs further substantiated revision.",
-        "The 41 distinct external source URLs are not a substitute for independent claim-by-claim verification, particularly for current Philippine law and financial/health-sensitive material.",
-        "Independent expert and native/regional subject-matter editorial signoff has not been documented for the full 134-lesson curriculum; stage must remain incomplete."
+        "Independent qualified subject-matter reviewers have not signed off all 134 lessons, especially applicable Philippine legal/financial rules, health/safety claims and cultural context.",
+        "Automated coverage checks prove structure and code behavior, not the substantive correctness, reliability or psychometric validation of every lesson and quiz.",
+        "The 41 public source URLs and each material claim still require a dated per-claim substantive editorial review; automated link reachability or maintainer spot-checks are insufficient for certification."
       ]
     },
     {
