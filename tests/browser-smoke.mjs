@@ -1036,7 +1036,11 @@ try{
     addEventListener(type,fn){if(type==='voiceschanged')handlers.push(fn);}
    }});
   });
+  // The smoke harness first opens '/' before this callback. A hash-only
+  // navigation does not create a new document and cannot run addInitScript.
+  // Reload deliberately so the installed-voice stub runs before app.js.
   await page.goto(BASE+'/#/language',{waitUntil:'domcontentloaded'});
+  await page.reload({waitUntil:'domcontentloaded'});
   await page.locator('#language-audio-controls').waitFor();
   expect((await page.locator('.language-audio-indicator').textContent()).includes('Local voice detected'),'Japanese local voice is detected');
   expect(await page.locator('#language-voice-picker option').count()===1,'only matching Japanese voice is offered');
