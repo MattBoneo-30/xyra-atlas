@@ -69,6 +69,7 @@ try{
   await waitRoute(page,'#/course/psychology');
   await page.locator('[data-action="open-lesson"]').first().click();
   await waitRoute(page,'#/lesson/psychology/');
+  await page.locator('.reading-page').waitFor();
   expect(await page.locator('.reading-page').count()===1,'lesson page renders');
   expect(await page.locator('.chapter-map-node').count()>=2,'chapter map has navigation links');
   await page.locator('[data-action="jump-chapter"][data-index="0"]').click();
@@ -106,14 +107,18 @@ try{
   expect(await page.locator('[data-action="casebook-open"]').count()===3,'Case Files catalogue renders');
   await page.locator('[data-action="casebook-open"]').first().click();
   await waitRoute(page,'#/casebook/');
+  await page.locator('[data-action="casebook-choice"]').first().waitFor();
   expect(await page.locator('[data-action="casebook-choice"]').count()===2,'first decision available');
   await page.locator('[data-action="casebook-choice"]').first().click();
+  await page.locator('.casebook-history').waitFor();
   expect(await page.locator('[data-action="casebook-choice"]').count()===2,'second decision available');
   await page.locator('[data-action="casebook-choice"]').first().click();
+  await page.locator('.casebook-result').waitFor();
   expect(await page.locator('.casebook-result').count()===1,'branch ends with consequence');
   let state=await getState(page);
   expect(Object.values(state.casebook).some(v=>v.length===2),'branch choices persisted');
   await page.locator('[data-action="casebook-reset"]').click();
+  await page.locator('[data-action="casebook-choice"]').first().waitFor();
   expect(await page.locator('[data-action="casebook-choice"]').count()===2,'case can be replayed');
  });
  await smoke('mobile-offline', {viewport:{width:390,height:844},isMobile:true,hasTouch:true,deviceScaleFactor:2},async(page,context)=>{
@@ -143,6 +148,7 @@ try{
   expect(await page.locator('.chapter-map-node').count()>=2,'cached lessons remain available offline');
   await page.locator('.bottom-nav [data-action="nav"][data-id="explore"]').click();
   await waitRoute(page,'#/explore');
+  await page.locator('.explore-page').waitFor();
   expect(await page.locator('.explore-page').count()===1,'offline navigation works');
   await page.screenshot({path:snapshots+'/mobile-offline.png',fullPage:true});
   await context.setOffline(false);
