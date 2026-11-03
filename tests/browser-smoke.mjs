@@ -104,7 +104,8 @@ try{
  await smoke('desktop-branching', {viewport:{width:1280,height:800}},async(page)=>{
   await page.locator('.desktop-rail [data-action="casebook"]').click();
   await waitRoute(page,'#/casebook');
-  expect(await page.locator('[data-action="casebook-open"]').count()===3,'Case Files catalogue renders');
+  await page.locator('.casebook-list [data-action="casebook-open"]').first().waitFor();
+  expect(await page.locator('.casebook-list [data-action="casebook-open"]').count()===3,'Case Files catalogue renders');
   await page.locator('[data-action="casebook-open"]').first().click();
   await waitRoute(page,'#/casebook/');
   await page.locator('[data-action="casebook-choice"]').first().waitFor();
@@ -513,7 +514,8 @@ try{
   expect(stages.every(t=>t.includes('Advanced')),'advanced filter hides beginner and intermediate lessons');
   await page.locator('[data-action="open-lesson"][data-lesson="privacy-access-request-ph"]').click();
   await waitRoute(page,'#/lesson/laws/privacy-access-request-ph');
-  expect(await page.locator('.lesson-content .worked-example').count()===1,'new advanced lesson includes a worked example');
+  await page.locator('.reading-page .lesson-content .worked-example').waitFor();
+  expect(await page.locator('.reading-page .lesson-content .worked-example').count()===1,'new advanced lesson includes a worked example');
   expect(await page.locator('.lesson-sources a[href*="privacy.gov.ph"]').count()>=1,'primary-source reference is linked in lesson');
   await page.locator('.reading-page .subnav [data-action="open-course"]').click();
   expect(await page.locator('.course-stage-button[data-id="Advanced"]').getAttribute('aria-pressed')==='true','level filter remains selected when returning from a lesson');
