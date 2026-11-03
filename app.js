@@ -25,6 +25,7 @@ import { SCENARIOS,normalizeScenarioAnswers,recordScenarioAnswer,scenarioProgres
 import { CASE_FILES,getCaseFile,evaluateCase,normalizeCasebook,advanceCase,resetCase,casebookStats } from './casebook.js';
 import { STUDIO_DEFAULTS, sanitizeStudio, calculateSavings, calculateBusiness, calculateTime } from './studio.js';
 import { PHRASEBOOK,getPhrasePack, sanitizePhraseProgress } from './phrasebook.js';
+import {normalizeLanguageSpeechRate,matchingLanguageVoices,languageVoiceAvailability,chooseOfflineLanguageVoice,languageVoiceMessage} from './voicecoach.js';
 import {normalizePhraseReviews,duePhraseReviews,phraseReviewStats,ratePhraseReview,clearPhraseReviews} from './phrasereview.js';
 import {LANGUAGE_CHALLENGE_MODES,createLanguageChallenge,normalizeLanguageChallenge,currentLanguageQuestion,answerLanguageChallenge,advanceLanguageChallenge,languageChallengeResults,normalizeLanguageChallengeHistory,recordLanguageChallengeHistory} from './languagechallenge.js';
 import {CONVERSATION_QUESTS,createConversationQuest,normalizeConversationQuest,currentConversationQuestion,answerConversationQuestion,advanceConversationQuest,conversationQuestResults,normalizeConversationQuestHistory,recordConversationQuestHistory} from './conversationquest.js';
@@ -38,7 +39,7 @@ let storageProblem=null;
 let recoveryRaw=null;
 const esc = value => String(value ?? '').replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
 const plain = text => esc(text).replace(/\n/g, '<br>');
-function createInitialState(){return { completed: [], bookmarks: [], favorites: [], answers: {}, reviews: {}, fieldNotes: {}, capstoneChecks: {}, lastOpened: null, dailyVisits: [], theme: 'dark', language: 'ja', languageDays: [], phrases: {}, phraseReviews:{}, languageChallenge:null, languageChallengeHistory:{}, conversationQuest:null, conversationQuestHistory:{}, studio: sanitizeStudio(null), userName: '', welcomeDismissed: false, learningPath: null, scenarios: {}, casebook: {}, mistakes:{}, exam:null, examHistory:[], personalCards:[], reader:normalizeReaderPreferences(null) };}
+function createInitialState(){return { completed: [], bookmarks: [], favorites: [], answers: {}, reviews: {}, fieldNotes: {}, capstoneChecks: {}, lastOpened: null, dailyVisits: [], theme: 'dark', language: 'ja', languageSpeechRate:0.9, languageDays: [], phrases: {}, phraseReviews:{}, languageChallenge:null, languageChallengeHistory:{}, conversationQuest:null, conversationQuestHistory:{}, studio: sanitizeStudio(null), userName: '', welcomeDismissed: false, learningPath: null, scenarios: {}, casebook: {}, mistakes:{}, exam:null, examHistory:[], personalCards:[], reader:normalizeReaderPreferences(null) };}
 function readStored() {
   try {
     const raw=localStorage.getItem(STORAGE_KEY);
@@ -53,6 +54,7 @@ function readStored() {
       favorites: Array.isArray(data.favorites) ? data.favorites.filter(x => typeof x === 'string') : [],
       dailyVisits: Array.isArray(data.dailyVisits) ? data.dailyVisits.filter(validDayKey).slice(-400) : [],
       languageDays: Array.isArray(data.languageDays) ? data.languageDays.filter(x => typeof x === 'string') : [],
+      languageSpeechRate:normalizeLanguageSpeechRate(data.languageSpeechRate),
       phrases: sanitizePhraseProgress(data.phrases),
       phraseReviews:normalizePhraseReviews(data.phraseReviews,PHRASEBOOK),
       languageChallenge:normalizeLanguageChallenge(data.languageChallenge,PHRASEBOOK),
@@ -86,6 +88,8 @@ let mistakeFeedback=null;
 let mistakeIndex=0;
 let phraseRevealed = false, phraseIndex = 0;
 let phraseReviewRevealed=false;
+let languageVoiceURI='';
+let languageAudioToken=0;
 let languageChallengePendingMode='recognition';
 let conversationQuestPendingId='directions';
 let studioTab = 'savings';
@@ -937,6 +941,7 @@ function normalizedBackupState(clean){
    theme:clean.theme==='light'?'light':'dark',
    language:LANGUAGES.some(x=>x.code===clean.language)?clean.language:'ja',
    languageDays:Array.isArray(clean.languageDays)?clean.languageDays.filter(x=>typeof x==='string').slice(0,200):[],
+   languageSpeechRate:normalizeLanguageSpeechRate(clean.languageSpeechRate),
    phrases:sanitizePhraseProgress(clean.phrases),
    phraseReviews:normalizePhraseReviews(clean.phraseReviews,PHRASEBOOK),
    languageChallenge:normalizeLanguageChallenge(clean.languageChallenge,PHRASEBOOK),
