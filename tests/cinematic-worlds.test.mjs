@@ -13,7 +13,7 @@ test('all three original cinematic world assets are lightweight, safe and access
   const filename=names[i]+'.svg',asset=path.join(root,'assets',filename);
   assert.ok(fs.existsSync(asset),'expected original scene '+filename);
   const s=fs.readFileSync(asset,'utf8');
-  assert.match(s,/^<svg xmlns="http:\/\/www\.w3\.org\/2000\/svg" viewBox="0 0 1400 700" role="img" aria-label="[^"]+">/);
+  assert.match(s,/^<svg xmlns="http:\/\/www\.w3\.org\/2000\/svg" width="1400" height="700" viewBox="0 0 1400 700" role="img" aria-label="[^"]+">/);
   assert.ok(s.includes(labels[i]),'scene describes distinct subject '+names[i]);
   assert.match(s,/<\/svg>$/);
   assert.ok((s.match(/<linearGradient\b/g)||[]).length>=2,'multi-layered local gradients');
