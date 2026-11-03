@@ -39,12 +39,22 @@
           "type": "ci",
           "value": "https://github.com/MattBoneo-30/xyra-atlas/actions/runs/41676416698",
           "note": "Automated test/build/browser verification passed for the decision clinic release."
+        },
+        {
+          "type": "commit",
+          "value": "8f48b1367ab9a0355c8f61e298b58f51834207ab",
+          "note": "Twelve previously short advanced foundation lessons now have substantive applied section, worked example and supporting source."
+        },
+        {
+          "type": "ci",
+          "value": "https://github.com/MattBoneo-30/xyra-atlas/actions/runs/41677493140",
+          "note": "Successful unit, offline-build and desktop/mobile Chromium verification for the advanced enrichment release."
         }
       ],
       "blockers": [
-        "Not every one of 134 lessons has received a documented editorial review or a second applied assessment.",
-        "An independent, current link-and-claim audit remains necessary for every legal/financial/health-sensitive course source.",
-        "More worked examples, differentiated practice and subject-specific assessment rubrics remain to be validated."
+        "Full editorial review of all 134 lessons and every referenced external source is still outstanding.",
+        "Some introductory and intermediate lessons remain short; additional worked examples and assessment depth are necessary.",
+        "Independent expert review of higher-stakes health, finance and Philippine legal claims remains to be recorded."
       ]
     },
     {

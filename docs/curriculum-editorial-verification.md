@@ -21,6 +21,7 @@ These sources were inspected for the specific claims above as of the review date
 - 14 subjects, with beginner, intermediate and advanced objective ladders and related actual lessons.
 - 134 interactive lessons, including 14 original applied capstones and three advanced Philippine casework guides.
 - 28 differentiated applied decision questions across the 14 subjects (two per subject) with explanation and reliable further-reading reference links.
+- Twelve original advanced starter lessons enriched with another applied teaching section, a substantive worked example and links to respected references, without changing lesson IDs or student progress.
 - First-answer locking, bounded input validation, explicit per-subject retry, private local persistence, JSON and AES-encrypted backup compatibility, and offline display.
 - Independent browser regression checks on narrow touch screens, plus accessibility-relevant keyboard-enabled HTML buttons and progress labels.
 
