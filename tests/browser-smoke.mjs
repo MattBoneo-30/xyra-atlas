@@ -2,7 +2,7 @@
  * Installed only in CI; Playwright is NOT a production dependency. */
 import { spawn } from 'node:child_process';
 import { strict as assert } from 'node:assert';
-import { mkdir, writeFile } from 'node:fs/promises';
+import { mkdir, writeFile, readFile } from 'node:fs/promises';
 import { chromium } from 'playwright';
 import {COURSES} from '../data.js';
 
@@ -722,6 +722,64 @@ try{
   await page.goto(BASE+'/#/language',{waitUntil:'domcontentloaded'});
   const overflow=await mobileOverflow(page);
   expect(overflow.scroll<=overflow.width+8,'phrase review interface fits mobile viewport');
+ });
+
+
+ await smoke('manual-offline-update-lifecycle',{viewport:{width:390,height:844}},async(page,context)=>{
+  await page.goto(BASE+'/#/offline',{waitUntil:'domcontentloaded'});
+  await page.evaluate(async()=>{await navigator.serviceWorker.ready;});
+  await page.reload({waitUntil:'domcontentloaded'});
+  await page.locator('.offline-library-page').waitFor();
+  await page.waitForFunction(()=>Boolean(navigator.serviceWorker.controller));
+  const swFile='dist/sw.js',oldSource=await readFile(swFile,'utf8');
+  const match=oldSource.match(/CACHE_PREFIX \+ 'v(\d+)'/);
+  expect(Boolean(match),'test can identify active offline cache version');
+  const original='xyra-atlas-v'+match[1],replacement='xyra-atlas-v'+(Number(match[1])+1);
+  const status=async()=>{
+   return page.evaluate(async()=>{
+    const registration=await navigator.serviceWorker.getRegistration(),worker=registration?.active;
+    if(!worker)return null;
+    return new Promise((resolve,reject)=>{
+     const channel=new MessageChannel();
+     const timeout=setTimeout(()=>reject(Error('Offline status timeout')),7000);
+     channel.port1.onmessage=e=>{clearTimeout(timeout);channel.port1.close();resolve(e.data);};
+     worker.postMessage({type:'ATLAS_OFFLINE_STATUS'},[channel.port2]);
+    });
+   });
+  };
+  try{
+   const nextSource=oldSource.replace("CACHE_PREFIX + 'v"+match[1]+"'", "CACHE_PREFIX + 'v"+(Number(match[1])+1)+"'");
+   expect(nextSource!==oldSource,'test generates a new service-worker script');
+   await writeFile(swFile,nextSource);
+   await page.evaluate(async()=>{
+    const registration=await navigator.serviceWorker.getRegistration();
+    await registration.update();
+   });
+   await page.waitForFunction(async()=>{
+    const registration=await navigator.serviceWorker.getRegistration();
+    return Boolean(registration?.waiting&&navigator.serviceWorker.controller);
+   },{},{timeout:25000});
+   await page.locator('.offline-update-ready').waitFor();
+   expect((await status()).version===original,'active release remains unchanged while update waits');
+   expect(await page.locator('.update-ready-topbar').count()===1,'mobile toolbar indicates available update');
+   expect((await page.locator('.offline-update-ready').textContent()).includes('Apply update'),'update needs explicit user consent');
+   await context.setOffline(true);
+   await page.locator('[data-action="offline-apply-update"]').click();
+   await page.waitForFunction(async expected=>{
+    const registration=await navigator.serviceWorker.getRegistration();
+    return Boolean(registration?.active&&!registration.waiting&&navigator.serviceWorker.controller&&document.querySelector('.offline-library-page'));
+   },replacement,{timeout:25000});
+   await page.locator('.offline-library-page').waitFor();
+   const final=await status();
+   expect(final?.version===replacement,'approved update activated using already cached offline assets');
+   expect(final?.ready===true,'new release remains complete while fully offline');
+   expect(await page.locator('.offline-update-ready').count()===0,'update notice closes after activation');
+   const overflow=await mobileOverflow(page);
+   expect(overflow.scroll<=overflow.width+8,'update notification and offline manager fit mobile');
+  }finally{
+   await context.setOffline(false);
+   await writeFile(swFile,oldSource);
+  }
  });
 
 }finally{
