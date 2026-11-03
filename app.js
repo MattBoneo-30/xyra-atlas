@@ -1,5 +1,6 @@
 import { COURSES, LANGUAGES, LEARNING_SPRINT, DAILY_NOTES, findCourse, findLesson, totalLessons } from './data.js';
 import { makeReviewCards, dueReviewCards, recordReview, normalizeReviews } from './review.js';
+import { buildKnowledgeMap } from './atlasmap.js';
 import { SCENARIOS,normalizeScenarioAnswers,recordScenarioAnswer,scenarioProgress } from './scenarios.js';
 import { STUDIO_DEFAULTS, sanitizeStudio, calculateSavings, calculateBusiness, calculateTime } from './studio.js';
 import { getPhrasePack, sanitizePhraseProgress } from './phrasebook.js';
@@ -144,6 +145,7 @@ function parseHash() {
   if (segments[0] === 'language') return {view:'language'};
   if (segments[0] === 'review') return {view:'review'};
   if (segments[0] === 'studio') return {view:'studio'};
+  if (segments[0] === 'map') return {view:'map'};
   if (segments[0] === 'scenario') return {view:'scenario'};
   if (segments[0] === 'path') return {view:'path'};
   if (['home','explore','journey','saved','you'].includes(segments[0])) return {view:segments[0]};
@@ -151,7 +153,7 @@ function parseHash() {
 }
 function nav(path) { const next = '#/' + path; if (location.hash === next) { route = parseHash(); render(); } else location.hash = next; window.scrollTo({top:0,behavior:'instant'}); }
 function flash(text) { currentToast = text; clearTimeout(toastTimer); render(); toastTimer = setTimeout(() => {currentToast = '';render();},3200); }
-function tabForRoute() { return ['review','studio','path','scenario'].includes(route.view) ? 'journey' : ['course','lesson','language'].includes(route.view) ? 'explore' : route.view; }
+function tabForRoute() { return ['review','studio','path','scenario'].includes(route.view) ? 'journey' : ['course','lesson','language','map'].includes(route.view) ? 'explore' : route.view; }
 function topbar() {
   return `<header class="topbar"><div class="topbar-inner">
     <button type="button" class="wordmark" data-action="goto-home" aria-label="Xyra Atlas home">${mark}<span>Xyra <em>Atlas</em></span></button>
@@ -187,6 +189,7 @@ function home() {
     <section class="path-invite"><div class="path-invite-icon">${icon('compass',27)}</div><div><span class="overline">YOUR OWN ROADMAP</span><h2>Guided Learning Paths</h2><p>Pick a goal and get a seven-session plan that follows your progress.</p></div>${button('Plan my week','path','small-button')}</section>
     <section class="scenario-invite"><div class="studio-invite-icon">${icon('compass',27)}</div><div><span class="overline">THINK BEFORE YOU ACT</span><h2>Scenario Lab</h2><p>Six real-life decisions with feedback and explanations.</p></div>${button('Open lab','scenario','small-button')}</section>
     <section class="studio-invite"><div class="studio-invite-icon">${icon('briefcase',27)}</div><div><span class="overline">LEARN BY DOING</span><h2>The Practice Studio</h2><p>Build a savings goal, test a business, or map your week.</p></div>${button('Try a tool','studio','small-button')}</section>
+    <section class="atlas-map-invite"><div><span class="overline">EXPLORE THE CONSTELLATION</span><h2>See the worlds of learning</h2><p>Navigate all fourteen illustrated subjects as a connected knowledge map.</p></div>${button('Open map','map','small-button')}</section>
     <section class="section"><div class="section-heading"><div><span class="overline">DISCOVER NEW WORLDS</span><h2>Explore & learn</h2></div>${button(`See all ${chevron}`,'goto-explore','text-action')}</div><div class="topic-grid">${COURSES.filter(c=>!c.dark).slice(0,6).map(c=>`<button type="button" class="topic-tile" data-action="open-course" data-id="${esc(c.id)}"><img class="topic-image" src="/assets/${esc(c.art)}.svg" alt="" loading="lazy" decoding="async"/><span class="topic-icon">${icon(c.icon,24)}</span><strong>${esc(c.title)}</strong></button>`).join('')}</div></section>
     <section class="section"><div class="section-heading"><div><span class="overline">HANDPICKED FOR YOU</span><h2>Begin your journey</h2></div></div><div class="feature-scroller">${featured.map(c=>card(c)).join('')}</div></section>
     <section class="xyra-note"><div class="note-art"><img src="/assets/xyra-corner.svg" alt="Illustrated glowing book from Xyra's corner" loading="lazy" decoding="async" /></div><div><span class="overline">A LITTLE NOTE FROM XYRA</span><h2>From my corner to yours</h2><p>“${esc(note)}”</p>${button(`Explore my corner ${chevron}`,'open-corner','text-action')}</div></section>
@@ -283,6 +286,23 @@ function scenarioPage(){
  return `<main class="page scenario-page"><div class="subnav">${button('Back to journey','goto-journey','back-link')}</div><header class="scenario-hero"><span class="overline">LEARN THROUGH DECISIONS</span><h1>Scenario <em>Lab.</em></h1><p>Make a choice, examine the reasoning and try again. No connection required.</p><strong>${progress.done}/${progress.total} explored · ${progress.thoughtful} evidence-aligned choices</strong></header><div class="scenario-list">${SCENARIOS.map((s,i)=>{const chosen=saved.scenarios[s.id],answered=Number.isInteger(chosen);return `<section class="scenario-card"><div class="scenario-meta"><span class="overline">${esc(s.category)}</span><small>${i+1}/${SCENARIOS.length}</small></div><h2>${esc(s.title)}</h2><p>${esc(s.setup)}</p><h3>${esc(s.question)}</h3><div class="scenario-choices">${s.choices.map((c,j)=>button(`${String.fromCharCode(65+j)}. ${esc(c.label)}`,'scenario-answer',`scenario-choice ${chosen===j?'selected':''}`,`data-id="${esc(s.id)}" data-index="${j}" aria-pressed="${chosen===j}"`)).join('')}</div>${answered?`<aside class="scenario-feedback" role="status"><span class="overline">${s.choices[chosen].preferred?'A STRONG FIRST RESPONSE':'CONSIDER THIS'}</span><p>${esc(s.choices[chosen].result)}</p><p><strong>Takeaway:</strong> ${esc(s.takeaway)}</p><a href="${esc(s.source)}" target="_blank" rel="noopener noreferrer">Further reading ↗</a><div>${button('Try another choice','scenario-retry','text-action',`data-id="${esc(s.id)}"`)}</div></aside>`:''}</section>`}).join('')}</div><p class="info-line">Educational scenarios, not individualized professional advice. Opening sources requires internet.</p></main>`;
 }
 
+function mapPage(){
+ const atlas=buildKnowledgeMap(COURSES,saved.completed);
+ const spots=atlas.nodes.map(n=>`<button type="button" class="atlas-star-node ${n.done?'has-progress':''} ${n.percent===100?'is-mastered':''} ${n.dark?'is-shadow':''}" style="--node-x:${n.x}%;--node-y:${n.y}%" data-action="open-course" data-id="${esc(n.id)}" aria-label="Open ${esc(n.title)}. ${n.done} of ${n.total} lessons complete">
+   <span class="atlas-node-art"><img src="/assets/${esc(n.art)}.svg" alt="" loading="lazy" decoding="async"/></span>
+   <span class="atlas-node-label"><strong>${esc(n.title)}</strong><small>${n.dark?'18+ · content acknowledgment required':`${n.done}/${n.total} lessons`}</small><span class="atlas-node-track"><span style="width:${n.percent}%"></span></span></span>
+ </button>`).join('');
+ const links=atlas.links.map(l=>`<line x1="${l.x1}%" y1="${l.y1}%" x2="${l.x2}%" y2="${l.y2}%"/>`).join('');
+ return `<main class="page atlas-map-page"><div class="subnav">${button(`${icon('back',18)} Back to learning`,'goto-explore','back-link')}</div><div class="page-title"><span class="overline">A UNIVERSE OF QUESTIONS</span><h1>Your Knowledge <em>Constellation.</em></h1><p>Fourteen connected worlds of learning. Choose any illustrated star to open a subject and follow your curiosity.</p></div>
+  <section class="atlas-map-wrap" aria-label="Interactive knowledge map of ${atlas.nodes.length} subjects">
+   <div class="atlas-sky" aria-hidden="true"><div class="atlas-sky-nebula"></div><svg viewBox="0 0 100 100" preserveAspectRatio="none"><g class="atlas-connections">${links}</g><g class="atlas-background-stars"><circle cx="8" cy="9" r=".12"/><circle cx="23" cy="35" r=".16"/><circle cx="69" cy="7" r=".12"/><circle cx="94" cy="29" r=".16"/><circle cx="31" cy="77" r=".14"/><circle cx="77" cy="77" r=".12"/><circle cx="53" cy="52" r=".2"/></g></svg></div>
+   <div class="atlas-map-orbit">${spots}</div>
+  </section>
+  <section class="atlas-map-summary"><span>${icon('spark',20)} ${atlas.nodes.length} learning worlds</span><span>${icon('book',20)} ${atlas.completed} of ${atlas.total} lessons finished</span><span>${icon('compass',20)} Follow your own path</span></section>
+  <p class="info-line">${icon('info',16)} Lines show suggested topic connections—not required prerequisites. Mature subjects still require acknowledgment.</p>
+ </main>`;
+}
+
 function studioPage(){
   const kind=studioTab, values=saved.studio[kind];
   const config={
@@ -369,8 +389,8 @@ function render() {
   document.documentElement.dataset.theme=saved.theme;
   document.body.classList.toggle('dialog-open',Boolean(modal));
   const view = route.view;
-  const content = ({home,explore,journey,review:reviewPage,studio:studioPage,scenario:scenarioPage,path:pathPage,saved:savedPage,you,course:coursePage,lesson:lessonPage,language:languagePage}[view] || errorView)();
-  document.getElementById('app').innerHTML = `${topbar()}<div class="shell"><aside class="desktop-rail"><div class="rail-title">YOUR ATLAS <span>✧</span></div>${[['home','Home','home'],['explore','Explore & Learn','compass'],['journey','My Journey','spark'],['saved','Saved Library','bookmark'],['you','Your Space','user']].map(([id,label,ico])=>`<button type="button" data-action="nav" data-id="${id}" class="rail-link ${tabForRoute()===id?'active':''}">${icon(ico,20)} ${label}</button>`).join('')}<div class="rail-divider"></div><button type="button" class="rail-link" data-action="review">${icon('orbit',20)} Review Deck</button><button type="button" class="rail-link" data-action="path">${icon('compass',20)} Guided Path</button><button type="button" class="rail-link" data-action="studio">${icon('briefcase',20)} Practice Studio</button><button type="button" class="rail-link" data-action="language">${icon('languages',20)} Language Lab</button><button type="button" class="rail-link" data-action="open-course" data-id="shadow">${icon('moon',20)} Shadow Library</button><div class="rail-note">✦<p>The world is a little bigger every time you learn.</p></div></aside><div class="main-column">${content}<footer class="app-footer">Made with curiosity, for a life still unfolding. <span>✧ Xyra Atlas</span></footer></div></div>${navBar()}${modalView()}${currentToast?`<div class="toast" role="status">${icon('spark',19)} ${esc(currentToast)}</div>`:''}`;
+  const content = ({home,explore,journey,review:reviewPage,studio:studioPage,scenario:scenarioPage,map:mapPage,path:pathPage,saved:savedPage,you,course:coursePage,lesson:lessonPage,language:languagePage}[view] || errorView)();
+  document.getElementById('app').innerHTML = `${topbar()}<div class="shell"><aside class="desktop-rail"><div class="rail-title">YOUR ATLAS <span>✧</span></div>${[['home','Home','home'],['explore','Explore & Learn','compass'],['journey','My Journey','spark'],['saved','Saved Library','bookmark'],['you','Your Space','user']].map(([id,label,ico])=>`<button type="button" data-action="nav" data-id="${id}" class="rail-link ${tabForRoute()===id?'active':''}">${icon(ico,20)} ${label}</button>`).join('')}<div class="rail-divider"></div><button type="button" class="rail-link" data-action="map">${icon('compass',20)} Knowledge Map</button><button type="button" class="rail-link" data-action="review">${icon('orbit',20)} Review Deck</button><button type="button" class="rail-link" data-action="path">${icon('compass',20)} Guided Path</button><button type="button" class="rail-link" data-action="studio">${icon('briefcase',20)} Practice Studio</button><button type="button" class="rail-link" data-action="language">${icon('languages',20)} Language Lab</button><button type="button" class="rail-link" data-action="open-course" data-id="shadow">${icon('moon',20)} Shadow Library</button><div class="rail-note">✦<p>The world is a little bigger every time you learn.</p></div></aside><div class="main-column">${content}<footer class="app-footer">Made with curiosity, for a life still unfolding. <span>✧ Xyra Atlas</span></footer></div></div>${navBar()}${modalView()}${currentToast?`<div class="toast" role="status">${icon('spark',19)} ${esc(currentToast)}</div>`:''}`;
   document.title = `${view==='course' ? findCourse(route.courseId)?.title+' · ':view==='lesson' ? findLesson(route.courseId,route.lessonId)?.title+' · ' : ''}Xyra Atlas`;
 }
 function toggle(list,value) { saved[list]=saved[list].includes(value)?saved[list].filter(x=>x!==value):[...saved[list],value];persist();render(); }
@@ -434,6 +454,7 @@ async function handleAction(e) {
   else if(action==='create-path') {const goal=document.getElementById('path-goal')?.value;const minutes=Number(document.getElementById('path-minutes')?.value);const stamp=new Date().toISOString().slice(0,10);const next=createLearningPath(COURSES,goal,minutes,saved.completed,stamp);if(!next){flash('No unfinished lessons fit this focus and study time. Try another goal.');return;}saved.learningPath=next;persist();flash('Your seven-session learning path is ready!');}
   else if(action==='studio') nav('studio');
   else if(action==='scenario') nav('scenario');
+  else if(action==='map') nav('map');
   else if(action==='scenario-answer') {saved.scenarios=recordScenarioAnswer(saved.scenarios,id,Number(button.dataset.index));persist();render();}
   else if(action==='scenario-retry') {delete saved.scenarios[id];persist();render();}
   else if(action==='studio-tab') {if(['savings','business','time'].includes(id)){studioTab=id;render();}}
