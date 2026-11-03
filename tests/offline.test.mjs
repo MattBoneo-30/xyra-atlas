@@ -14,7 +14,7 @@ test('readiness messages distinguish success from missing or unsupported offline
 });
 test('worker inspection sees missing files and repair fills them',async()=>{
  const code=fs.readFileSync('sw.js','utf8');const listeners={};const existing=new Set(['/index.html','/app.js']);
- const cache={match:async p=>existing.has(p)?{}:undefined,add:async p=>{existing.add(p);},addAll:async paths=>paths.forEach(p=>existing.add(p))};
+ const cache={match:async p=>existing.has(p)?{ok:true}:undefined,add:async p=>{existing.add(p);},addAll:async paths=>paths.forEach(p=>existing.add(p))};
  const caches={open:async()=>cache,keys:async()=>[],delete:async()=>true};
  const self={location:{origin:'https://example.test'},clients:{claim:async()=>true},skipWaiting:async()=>{},addEventListener:(n,fn)=>{listeners[n]=fn;}};
  vm.runInNewContext(code,{self,caches,Promise,URL,fetch:async()=>({ok:true})});
