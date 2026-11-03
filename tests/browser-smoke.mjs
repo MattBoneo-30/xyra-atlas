@@ -405,6 +405,39 @@ try{
   await page.waitForFunction(key=>JSON.parse(localStorage.getItem('xyra-atlas-state-v1')).fieldNotes?.[key]==='Secret sunrise study notes',key);
   expect((await getState(page)).fieldNotes[key]==='Secret sunrise study notes','confirmed restore recovers encrypted progress');
  });
+
+ await smoke('offline-practice-exam',{viewport:{width:390,height:844}},async(page)=>{
+  await page.goto(BASE+'/#/exam',{waitUntil:'domcontentloaded'});
+  await page.locator('#exam-course').selectOption('psychology');
+  await page.locator('#exam-size').selectOption('5');
+  await page.locator('[data-action="exam-start"]').click();
+  await page.locator('.exam-options').waitFor();
+  let state=await getState(page);
+  expect(state.exam.ids.length===5,'exam creates the requested number of questions');
+  expect(state.exam.ids.every(id=>id.startsWith('psychology:')),'subject-scoped exam contains only chosen course');
+  await page.locator('.exam-option').first().click();
+  await page.locator('.exam-explanation').waitFor();
+  state=await getState(page);
+  expect(Object.keys(state.exam.responses).length===1,'answers persist immediately');
+  await page.reload({waitUntil:'domcontentloaded'});
+  await page.locator('.exam-explanation').waitFor();
+  expect(Object.keys((await getState(page)).exam.responses).length===1,'answered question survives reload');
+  for(let i=0;i<5;i++){
+   if(i>0){await page.locator('.exam-option').first().click();await page.locator('.exam-explanation').waitFor();}
+   await page.locator('[data-action="exam-next"]').click();
+  }
+  expect(await page.locator('.exam-review-item').count()===5,'final review shows each answer');
+  state=await getState(page);
+  expect(state.exam.position===5,'exam completed without losing session');
+  expect(state.completed.length===0,'practice exam does not award lesson completions');
+  await page.reload({waitUntil:'domcontentloaded'});
+  expect(await page.locator('.exam-review-item').count()===5,'results remain after page reload');
+  const overflow=await mobileOverflow(page);
+  expect(overflow.scroll<=overflow.width+8,'exam remains within mobile screen width');
+  await page.locator('[data-action="exam-new"]').click();
+  expect(await page.locator('#exam-course').count()===1,'completed exam can be restarted');
+ });
+
 }finally{
  if(browser)await browser.close();
  server.kill('SIGTERM');
