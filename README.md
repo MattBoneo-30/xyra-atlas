@@ -4,10 +4,10 @@
 
 ![Xyra Atlas emblem](assets/atlas-mark.svg)
 
-## Current release: Focused Revision Exams 1.31
+## Current release: Applied Capstone Labs 1.32
 
 - A violet-and-gold responsive interface, **14 distinct original vector course worlds**, Xyra's Corner artwork, landscape hero and a home-screen app icon. The same course identity appears on home tiles, category cards, course covers and lessons.
-- 14 learning subjects and **117 interactive lessons**: 52 short starters, 36 prior field guides and **29 new advanced mastery lessons** with worked examples, exercises, quizzes and optional online references (counts verified by tests).
+- 14 learning subjects and **131 interactive lessons**: 117 existing lessons plus **14 new applied capstone labs**, one in every subject. Each capstone contains an original decision case, worked example, hands-on exercise, self-check rubric, knowledge question, and optional source for further reading (counts verified by tests).
 - Psychology, legal literacy, business, money, productivity, communication, critical thinking, language study, digital literacy, career, science, relationships and influence.
 - **The Shadow Library (18+ educational content)** covers manipulation, gaslighting, lies, emotional leverage, deceptive interface design, consent and adult media literacy. The age acknowledgment is a *content gate*, not verified age or identity security.
 - Seven-day language practice framework for 20 languages, with **72 practical offline phrases across nine starter languages**: Japanese, Korean, Spanish, French, Mandarin Chinese, German, Filipino, Italian and English.
@@ -20,6 +20,7 @@
 
 **New in 0.5:** Psychology (evidence journaling, habits, relational inference); Philippine law (Constitution, data privacy, consumer complaints); business (customer discovery, unit economics, Philippine launch steps); money (irregular bills, emergency planning, investment red flags). Sources are linked for optional online verification; lessons work offline. Links and regulations can change.
 
+- **Applied Capstone Labs (1.32):** Fourteen original advanced decision cases, one per subject, including a Philippine privacy-access exercise, a practical small-business pilot calculation, a phishing-resistant account recovery drill, and a research-methods appraisal. Each lab includes a three-point, subject-specific self-check rubric in the lesson reader and works offline with the existing Field Notebook, source links, quizzes and completion tracking. Self-check criteria guide revision; they are not automatically assessed or evidence of professional certification. National rules and scientific guidance can change: verify primary references online before real-world decisions.
 - **Focused Revision Exams (1.31):** Turn missed-question insights into a private, offline revision exam with one click. Choose a maximum of 5, 10, or 20 questions; Atlas uses only lessons actually missed in validated exam history, prioritizes repeated misses, never pads with unrelated questions, and excludes all mature Shadow Library topics. Small pools produce appropriately short exams. Sessions use the existing answer feedback, resume-after-reload, score history, ordinary/encrypted backups, and lesson review flows. No learner scores are transmitted, and completing revision does not award lesson completion or prove mastery. New unit and real Chromium mobile tests cover this journey.
 - **Exam Insights & Practice History (1.30):** Completed Practice Exams now create a bounded, private history of the latest 12 attempts. See per-subject question accuracy, recent scores, and direct review shortcuts to missed lesson questions. Results are recorded once on completion and persist after reload, through ordinary and encrypted backups. Historical records contain summary counts and missed lesson identifiers—not raw selected answers—and are validated on import, including checks that mature-course content cannot enter the general exam history. Clearing history needs confirmation and leaves other learning data untouched. These are practice signals, not professional competence or standardized test scores.
 - **Two-Way Language Challenges (1.29):** The nine authored eight-phrase starter packs now support offline, seeded multiple-choice practice in either direction (English meaning → target-language phrase or target phrase → English meaning). Each of the eight questions includes four choices, immediate feedback, and an end-of-challenge answer review. Unfinished sessions resume after reload and are included in plain/encrypted progress backups; saved score history tracks attempts, best and latest result per supported language. Switching languages preserves an unfinished session, while replacement/deletion require confirmation. This exercises recognition—not conversational proficiency, pronunciation accuracy, or listening comprehension—and does not silently mark phrases learned.
@@ -104,7 +105,8 @@ styles.css             Responsive design system and screen styles
 app.js                 Navigation, interface, storage, quizzes, review UX, install UX
 data.js                Offline learning curriculum and language sprint
 deeptracks.js          Earlier sourced field guides with examples and quizzes
-masterytracks.js        29 advanced applied guides across all 14 learning subjects
+masterytracks.js       29 advanced applied guides across all 14 learning subjects
+capstonelabs.js         14 advanced case-based capstones with evidence rubrics
 review.js              Dependency-free spaced repetition logic and input validation
 fieldnotes.js          Offline per-lesson notebook validation and saving
 studio.js
