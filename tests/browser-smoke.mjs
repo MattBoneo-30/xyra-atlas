@@ -669,6 +669,61 @@ try{
   expect((await getState(page)).capstoneChecks['digital:case-account-takeover-drill'][1]===true,'confirmed restore recovers rubric checks');
  });
 
+
+ await smoke('offline-spaced-phrase-recall',{viewport:{width:390,height:844}},async(page)=>{
+  await page.goto(BASE+'/#/language',{waitUntil:'domcontentloaded'});
+  await page.locator('.phrase-review-section').waitFor();
+  await page.locator('#language-select').selectOption('es');
+  expect((await page.locator('.phrase-review-count').textContent()).includes('8 due'),'all eight new Spanish phrases start due');
+  expect(await page.locator('.phrase-review-answer').count()===0,'answer is initially hidden');
+  await page.locator('[data-action="phrase-review-reveal"]').click();
+  await page.locator('.phrase-review-answer').waitFor();
+  expect((await page.locator('.phrase-review-answer').textContent()).includes('Hola'),'first Spanish translation is correct');
+  await page.locator('[data-action="phrase-review-rate"][data-outcome="remembered"]').click();
+  let state=await getState(page);
+  expect(state.phraseReviews['es:1'].step===0,'remembered phrase is scheduled for tomorrow');
+  expect((state.phrases.es||[]).length===0,'self-rated review does not silently mark phrase learned');
+  expect((await page.locator('.phrase-review-count').textContent()).includes('7 due'),'scheduled phrase exits current due queue');
+  await page.reload({waitUntil:'domcontentloaded'});
+  await page.locator('.phrase-review-section').waitFor();
+  expect((await getState(page)).phraseReviews['es:1'].step===0,'review schedule survives refresh');
+  await page.locator('#language-select').selectOption('ko');
+  expect((await page.locator('.phrase-review-count').textContent()).includes('8 due'),'Korean has its own independent review queue');
+  await page.locator('[data-action="phrase-review-reveal"]').click();
+  await page.locator('[data-action="phrase-review-rate"][data-outcome="again"]').click();
+  state=await getState(page);
+  expect(state.phraseReviews['ko:1'].step===-1,'forgotten Korean phrase is scheduled for a ten-minute retry');
+  expect((await page.locator('.phrase-review-count').textContent()).includes('7 due'),'ten-minute retry is not immediately counted due');
+  await page.locator('#language-select').selectOption('es');
+  expect((await page.locator('.phrase-review-count').textContent()).includes('7 due'),'Spanish schedule remains unchanged after language switch');
+  await page.locator('[data-action="phrase-review-reset"]').click();
+  await page.getByRole('button',{name:'Keep my reviews'}).click();
+  expect((await getState(page)).phraseReviews['es:1'].step===0,'cancel preserves saved review');
+  const downloadEvent=page.waitForEvent('download');
+  await page.goto(BASE+'/#/you',{waitUntil:'domcontentloaded'});
+  await page.locator('[data-action="export"]').click();
+  const savedFile=await downloadEvent,fs=await import('node:fs/promises');
+  const backup=await fs.readFile(await savedFile.path(),'utf8');
+  expect(JSON.parse(backup).state.phraseReviews['es:1'].step===0,'phrase schedule is included in the offline JSON backup');
+  expect(JSON.parse(backup).state.phraseReviews['ko:1'].step===-1,'both language schedules transfer in backups');
+  await page.goto(BASE+'/#/language',{waitUntil:'domcontentloaded'});
+  await page.locator('[data-action="phrase-review-reset"]').click();
+  await page.locator('[data-action="phrase-review-reset-confirm"]').click();
+  state=await getState(page);
+  expect(state.phraseReviews['es:1']===undefined,'confirmed reset clears selected language review schedule');
+  expect(state.phraseReviews['ko:1'].step===-1,'reset does not erase another language review');
+  expect((await page.locator('.phrase-review-count').textContent()).includes('8 due'),'cleared phrases become due again');
+  await page.goto(BASE+'/#/you',{waitUntil:'domcontentloaded'});
+  await page.locator('#backup-file').setInputFiles({name:'phrase-review-backup.json',mimeType:'application/json',buffer:Buffer.from(backup)});
+  await page.locator('.backup-preview-grid').waitFor();
+  await page.locator('[data-action="backup-confirm"]').click();
+  await page.waitForFunction(()=>JSON.parse(localStorage.getItem('xyra-atlas-state-v1')||'{}').phraseReviews?.['es:1']?.step===0);
+  expect((await getState(page)).phraseReviews['ko:1'].step===-1,'restoring backup recovers independent phrase schedules');
+  await page.goto(BASE+'/#/language',{waitUntil:'domcontentloaded'});
+  const overflow=await mobileOverflow(page);
+  expect(overflow.scroll<=overflow.width+8,'phrase review interface fits mobile viewport');
+ });
+
 }finally{
  if(browser)await browser.close();
  server.kill('SIGTERM');
