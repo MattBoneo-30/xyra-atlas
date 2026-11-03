@@ -28,6 +28,16 @@ jobs:
           package-manager-cache: false
       - name: Validate curriculum and build
         run: npm run check
+      - name: Audit lesson pedagogy and source inventory
+        run: npm run audit:curriculum
+      - name: Save curriculum audit
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: xyra-atlas-curriculum-audit
+          path: artifacts/curriculum-audit.json
+          if-no-files-found: ignore
+          retention-days: 14
       - name: Verify offline artifacts
         run: |
           test -s dist/index.html
