@@ -8,6 +8,7 @@ import { mentorMoment } from './mentor.js';
 import { READER_SIZES,normalizeReaderPreferences,setReaderSize,toggleReaderFocus } from './reader.js';
 import {createChapterMap} from './visualmap.js';
 import {buildLessonNarration} from './narration.js';
+import {parseStoredEnvelope,storageHealthMessage} from './storagehealth.js';
 import { createDailyQuest,dailyQuestProgress } from './dailyquest.js';
 import { buildKnowledgeMap } from './atlasmap.js';
 import { SCENARIOS,normalizeScenarioAnswers,recordScenarioAnswer,scenarioProgress } from './scenarios.js';
@@ -19,13 +20,17 @@ import { normalizeFieldNotes, setFieldNote, MAX_FIELD_NOTE_LENGTH } from './fiel
 import { PATH_GOALS, PATH_BUDGETS, createLearningPath, normalizeLearningPath, pathProgress } from './paths.js';
 
 const STORAGE_KEY = 'xyra-atlas-state-v1';
+let storageProblem=null;
+let recoveryRaw=null;
 const esc = value => String(value ?? '').replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
 const plain = text => esc(text).replace(/\n/g, '<br>');
 const initial = { completed: [], bookmarks: [], favorites: [], answers: {}, reviews: {}, fieldNotes: {}, lastOpened: null, dailyVisits: [], theme: 'dark', language: 'ja', languageDays: [], phrases: {}, studio: sanitizeStudio(null), userName: '', welcomeDismissed: false, learningPath: null, scenarios: {}, casebook: {}, reader:normalizeReaderPreferences(null) };
 function readStored() {
   try {
-    const data = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
-    if (!data || typeof data !== 'object') return {...initial};
+    const raw=localStorage.getItem(STORAGE_KEY);
+    const envelope=parseStoredEnvelope(raw);
+    if(envelope.status==='corrupt'){storageProblem='corrupt';recoveryRaw=raw;return {...initial};}
+    const data=envelope.value;
     return {
       ...initial,
       ...data,
@@ -47,7 +52,7 @@ function readStored() {
       language: LANGUAGES.some(x => x.code === data.language) ? data.language : 'ja',
       userName: typeof data.userName === 'string' ? data.userName.slice(0,40) : ''
     };
-  } catch { return {...initial}; }
+  } catch {storageProblem='read-failed';return {...initial};}
 }
 let saved = readStored();
 const reviewCards = makeReviewCards(COURSES);
@@ -81,14 +86,16 @@ const plural = (n, noun) => `${n} ${noun}${n === 1 ? '' : 's'}`;
 const wasVisited = date => saved.dailyVisits.includes(date);
 let storageWarningShown = false;
 function persist() {
-  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(saved)); }
+  // Preserve unreadable original storage until the person explicitly imports or resets.
+  if(storageProblem==='corrupt'||storageProblem==='read-failed')return false;
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(saved));storageProblem=null;return true; }
   catch {
-    // Some private/locked-down browsers reject storage. Never render synchronously
-    // while the module is still initializing (or recursively show warnings).
-    if (!storageWarningShown) {
-      storageWarningShown = true;
-      queueMicrotask(() => flash('This browser could not save progress. Export a backup before closing the app.'));
+    storageProblem='write-failed';
+    if(!storageWarningShown){
+      storageWarningShown=true;
+      queueMicrotask(() => flash('Progress could not be saved. Export a backup before closing the app.'));
     }
+    return false;
   }
 }
 function visitToday() {
@@ -490,11 +497,23 @@ function languagePage() {
     <div class="language-callout">${icon('info',22)}<p><strong>From beginner to native-like?</strong> That's a long-term journey. In one week, target greetings, essential questions and short conversations. Real proficiency grows through months and years of meaningful use.</p></div>
   </main>`;
 }
+function storageHealthBanner(){
+ if(!storageProblem)return '';
+ return `<section class="storage-health-alert" role="alert" aria-label="Storage warning"><span class="storage-health-alert-icon">${icon('alert',22)}</span><div><strong>Progress storage needs attention</strong><p>${esc(storageHealthMessage(storageProblem))}</p>${storageProblem==='corrupt'&&recoveryRaw?`${button('Download recovery copy','storage-export-recovery','small-button')}`:''}</div></section>`;
+}
+function downloadRecoveryCopy(){
+ if(!recoveryRaw)return;
+ const blob=new Blob([recoveryRaw],{type:'text/plain;charset=utf-8'}),url=URL.createObjectURL(blob),a=document.createElement('a');
+ a.href=url;a.download=`xyra-atlas-unreadable-recovery-${today()}.txt`;
+ document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);
+ flash('Recovery text downloaded. Keep it private; it may contain personal notes.');
+}
+
 function you() {
   return `<main class="page you-page"><div class="page-title"><span class="overline">YOUR LITTLE CORNER OF THE WORLD</span><h1>Made for <em>you.</em></h1><p>Private progress. Your pace. Your rules.</p></div>
     <div class="profile-card"><div class="profile-avatar">✦</div><div><span class="overline">ATLAS EXPLORER</span><h2>${esc(actualName())}</h2><p>Level ${Math.floor(finished()/6)+1} · ${finished()} lessons completed</p></div></div>
     <div class="settings-panel"><h2>Make it yours</h2><label class="field-label" for="profile-name">What should Atlas call you?</label><div class="name-row"><input id="profile-name" value="${esc(saved.userName)}" maxlength="40" placeholder="Curious learner"/>${button('Save','save-name','small-button')}</div><div class="settings-row"><span class="setting-icon">${icon(saved.theme==='dark'?'moon':'sun',21)}</span><div><strong>Appearance</strong><small>Switch between twilight and daylight</small></div>${button(saved.theme==='dark'?'Dark':'Light','theme','small-button')}</div><div class="settings-row"><span class="setting-icon">${icon(navigator.onLine?'wifi':'wifi-off',21)}</span><div><strong>Connection</strong><small>Lessons are included in your offline app</small></div><span class="setting-value">${navigator.onLine?'Online':'Offline'}</span></div><div class="settings-row"><span class="setting-icon">${icon('download',21)}</span><div><strong>Install Xyra Atlas</strong><small>Keep it on your phone's home screen</small></div>${button('How?','install','small-button')}</div></div>
-    <div class="settings-panel"><h2>Your data, your choice</h2><p class="settings-description">Progress is stored only in this browser on this device. It is not synced to a server. Export a backup before switching phones or clearing browser data.</p><div class="data-actions">${button(`${icon('download',18)} Export backup`,'export','secondary-button')}${button(`${icon('upload',18)} Import backup`,'import','secondary-button')}${button(`${icon('trash',18)} Reset progress`,'reset-dialog','outline-danger')}</div><input type="file" id="backup-file" accept=".json,application/json" hidden /></div>
+    <div class="settings-panel"><h2>Your data, your choice</h2><div class="storage-health-panel"><strong>Browser storage: ${storageProblem?storageProblem==='corrupt'?'Recovery needed':'Saving unavailable':'No save error detected'}</strong><span>${storageProblem?esc(storageHealthMessage(storageProblem)):'Progress is saved only in this browser, not synced to other devices.'}</span>${button('Try saving now','storage-retry','small-button')}</div><p class="settings-description">Progress is stored only in this browser on this device. It is not synced to a server. Export a backup before switching phones or clearing browser data.</p><div class="data-actions">${button(`${icon('download',18)} Export backup`,'export','secondary-button')}${button(`${icon('upload',18)} Import backup`,'import','secondary-button')}${button(`${icon('trash',18)} Reset progress`,'reset-dialog','outline-danger')}</div><input type="file" id="backup-file" accept=".json,application/json" hidden /></div>
     <div class="settings-panel"><h2>About Xyra Atlas</h2><p class="settings-description">A pocket atlas for the art of living—designed for curiosity, independence and the courage to learn difficult things.</p><p class="fineprint">Atlas 1.7 · Xyra's Corner edition. Some subjects are introductions, not complete professional courses. Laws vary by jurisdiction. Adult content is educational. There are no ads, trackers or accounts in this edition.</p>${button(`A note from Xyra ${chevron}`,'open-corner','text-action')}</div>
   </main>`;
 }
@@ -514,7 +533,7 @@ function render() {
   document.body.classList.toggle('reader-focus-mode',route.view==='lesson'&&saved.reader.focus);
   const view = route.view;
   const content = ({home,explore,journey,review:reviewPage,studio:studioPage,scenario:scenarioPage,casebook:casebookPage,map:mapPage,quest:questPage,glossary:glossaryPage,search:globalSearchPage,insights:insightsPage,mentor:mentorPage,path:pathPage,saved:savedPage,you,course:coursePage,lesson:lessonPage,language:languagePage}[view] || errorView)();
-  document.getElementById('app').innerHTML = `${topbar()}<div class="shell"><aside class="desktop-rail"><div class="rail-title">YOUR ATLAS <span>✧</span></div>${[['home','Home','home'],['explore','Explore & Learn','compass'],['journey','My Journey','spark'],['saved','Saved Library','bookmark'],['you','Your Space','user']].map(([id,label,ico])=>`<button type="button" data-action="nav" data-id="${id}" class="rail-link ${tabForRoute()===id?'active':''}">${icon(ico,20)} ${label}</button>`).join('')}<div class="rail-divider"></div><button type="button" class="rail-link" data-action="open-corner">${icon('spark',20)} Xyra's Corner</button><button type="button" class="rail-link" data-action="casebook">${icon('book',20)} Case Files</button><button type="button" class="rail-link" data-action="insights">${icon('chart',20)} Learning Insights</button><button type="button" class="rail-link" data-action="search">${icon('search',20)} Search Everything</button><button type="button" class="rail-link" data-action="glossary">${icon('book',20)} Glossary</button><button type="button" class="rail-link" data-action="quest">${icon('spark',20)} Daily Quest</button><button type="button" class="rail-link" data-action="map">${icon('compass',20)} Knowledge Map</button><button type="button" class="rail-link" data-action="review">${icon('orbit',20)} Review Deck</button><button type="button" class="rail-link" data-action="path">${icon('compass',20)} Guided Path</button><button type="button" class="rail-link" data-action="studio">${icon('briefcase',20)} Practice Studio</button><button type="button" class="rail-link" data-action="language">${icon('languages',20)} Language Lab</button><button type="button" class="rail-link" data-action="open-course" data-id="shadow">${icon('moon',20)} Shadow Library</button><div class="rail-note">✦<p>The world is a little bigger every time you learn.</p></div></aside><div class="main-column">${content}<footer class="app-footer">Made with curiosity, for a life still unfolding. <span>✧ Xyra Atlas</span></footer></div></div>${navBar()}${modalView()}${currentToast?`<div class="toast" role="status">${icon('spark',19)} ${esc(currentToast)}</div>`:''}`;
+  document.getElementById('app').innerHTML = `${topbar()}<div class="shell"><aside class="desktop-rail"><div class="rail-title">YOUR ATLAS <span>✧</span></div>${[['home','Home','home'],['explore','Explore & Learn','compass'],['journey','My Journey','spark'],['saved','Saved Library','bookmark'],['you','Your Space','user']].map(([id,label,ico])=>`<button type="button" data-action="nav" data-id="${id}" class="rail-link ${tabForRoute()===id?'active':''}">${icon(ico,20)} ${label}</button>`).join('')}<div class="rail-divider"></div><button type="button" class="rail-link" data-action="open-corner">${icon('spark',20)} Xyra's Corner</button><button type="button" class="rail-link" data-action="casebook">${icon('book',20)} Case Files</button><button type="button" class="rail-link" data-action="insights">${icon('chart',20)} Learning Insights</button><button type="button" class="rail-link" data-action="search">${icon('search',20)} Search Everything</button><button type="button" class="rail-link" data-action="glossary">${icon('book',20)} Glossary</button><button type="button" class="rail-link" data-action="quest">${icon('spark',20)} Daily Quest</button><button type="button" class="rail-link" data-action="map">${icon('compass',20)} Knowledge Map</button><button type="button" class="rail-link" data-action="review">${icon('orbit',20)} Review Deck</button><button type="button" class="rail-link" data-action="path">${icon('compass',20)} Guided Path</button><button type="button" class="rail-link" data-action="studio">${icon('briefcase',20)} Practice Studio</button><button type="button" class="rail-link" data-action="language">${icon('languages',20)} Language Lab</button><button type="button" class="rail-link" data-action="open-course" data-id="shadow">${icon('moon',20)} Shadow Library</button><div class="rail-note">✦<p>The world is a little bigger every time you learn.</p></div></aside><div class="main-column">${storageHealthBanner()}${content}<footer class="app-footer">Made with curiosity, for a life still unfolding. <span>✧ Xyra Atlas</span></footer></div></div>${navBar()}${modalView()}${currentToast?`<div class="toast" role="status">${icon('spark',19)} ${esc(currentToast)}</div>`:''}`;
   syncLessonAudioUI();
   document.title = `${view==='course' ? findCourse(route.courseId)?.title+' · ':view==='lesson' ? findLesson(route.courseId,route.lessonId)?.title+' · ' : ''}Xyra Atlas`;
 }
@@ -548,12 +567,14 @@ function answerBackup(e) {
         phrases:sanitizePhraseProgress(clean.phrases),
         userName:typeof clean.userName==='string'?clean.userName.slice(0,40):''
       };
+      recoveryRaw=null;storageProblem=null;storageWarningShown=false;
       visitToday(); persist();flash('Backup imported successfully.');
     }catch(err){flash('Import failed: '+(err instanceof Error?err.message:'Invalid file'));}
   };
   reader.readAsText(file);
 }
 function exportBackup() {
+  if(storageProblem==='corrupt'){flash('Stored progress is unreadable. Download the recovery text first, then restore a valid backup.');return;}
   const blob=new Blob([JSON.stringify({format:'xyra-atlas-backup',version:1,exportedAt:new Date().toISOString(),state:saved},null,2)],{type:'application/json'});
   const url=URL.createObjectURL(blob);
   const a=document.createElement('a');a.href=url;a.download=`xyra-atlas-backup-${today()}.json`;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);flash('Backup exported. Store it somewhere safe.');
@@ -621,8 +642,10 @@ async function handleAction(e) {
   else if(action==='install-prompt' && installEvent) {const prompt=installEvent;installEvent=null;modal='';render();try{await prompt.prompt();}catch{flash('Use your browser menu to install.');}}
   else if(action==='import') document.getElementById('backup-file')?.click();
   else if(action==='export') exportBackup();
+  else if(action==='storage-export-recovery')downloadRecoveryCopy();
+  else if(action==='storage-retry'){if(storageProblem==='corrupt'||storageProblem==='read-failed'){flash('Existing data is protected. Use a valid backup or reset intentionally.');}else{const ok=persist();flash(ok?'Progress saved successfully in this browser.':'Saving is still blocked; export a backup.');}}
   else if(action==='reset-dialog') {modal='reset';render();}
-  else if(action==='confirm-reset') {saved={...initial};visitToday();persist();modal='';nav('home');flash('Local progress reset.');}
+  else if(action==='confirm-reset') {recoveryRaw=null;storageProblem=null;storageWarningShown=false;saved={...initial};visitToday();persist();modal='';nav('home');flash('Local progress reset.');}
   else if(action==='close-modal') {modal='';if(['course','lesson'].includes(route.view)&&route.courseId==='shadow'&&!shadowUnlocked)nav('explore');else render();}
   else if(action==='enter-shadow') {if(!gateConfirmed)return;shadowUnlocked=true;modal='';nav('course/shadow');}
   else if(action==='open-corner') nav('mentor');

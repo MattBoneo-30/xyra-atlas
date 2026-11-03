@@ -4,7 +4,7 @@
 
 ![Xyra Atlas emblem](assets/atlas-mark.svg)
 
-## Current release: Listen to Lesson 1.12
+## Current release: Storage Recovery Guard 1.13
 
 - A violet-and-gold responsive interface, **14 distinct original vector course worlds**, Xyra's Corner artwork, landscape hero and a home-screen app icon. The same course identity appears on home tiles, category cards, course covers and lessons.
 - 14 learning subjects and **76 interactive lessons**: 52 short starters plus 24 structured, referenced field guides with real-world worked examples, exercises and quizzes (counts verified by tests).
@@ -20,6 +20,7 @@
 
 **New in 0.5:** Psychology (evidence journaling, habits, relational inference); Philippine law (Constitution, data privacy, consumer complaints); business (customer discovery, unit economics, Philippine launch steps); money (irregular bills, emergency planning, investment red flags). Sources are linked for optional online verification; lessons work offline. Links and regulations can change.
 
+- **Storage Recovery Guard:** Unreadable browser progress is protected from automatic overwrite. A persistent warning offers a raw recovery download, and users can explicitly restore a valid JSON backup or reset. Failed saves are visibly flagged, and browser storage is never described as cloud-synced.
 - **Listen to Lesson:** Browser speech synthesis reads lessons in short manageable chunks with pause, resume and stop controls, avoids external app APIs, and cancels when navigating away. Available voices and offline audio behavior vary by browser, system and voice implementation.
 - **Visual Chapter Maps:** Every lesson now contains a responsive interactive topic pathway using its authored teaching sections and practice exercise. Accessible buttons jump to the matching content, supporting screen-reader and keyboard navigation without extra image downloads.
 - **Comfort Reader:** Three adjustable lesson text sizes and a distraction-reduced focus mode, with accessible pressed-state controls. Preferences remain on-device, survive navigation, are included in JSON backups and work offline.
