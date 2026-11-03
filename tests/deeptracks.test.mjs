@@ -4,7 +4,7 @@ import fs from 'node:fs';
 import { COURSES, findLesson, totalLessons } from '../data.js';
 import { DEEP_TRACKS, DEEP_TRACK_COUNT } from '../deeptracks.js';
 test('four advanced tracks add twelve complete and sourced lessons',()=>{
- assert.equal(DEEP_TRACK_COUNT,12);assert.equal(totalLessons,64);
+ assert.equal(DEEP_TRACK_COUNT,12);assert.equal(totalLessons,76);
  assert.deepEqual(Object.keys(DEEP_TRACKS).sort(),['business','laws','psychology','savings']);
  for(const [id,lessons] of Object.entries(DEEP_TRACKS)) {assert.equal(lessons.length,3);for(const lesson of lessons){
   assert.equal(findLesson(id,lesson.id),lesson);

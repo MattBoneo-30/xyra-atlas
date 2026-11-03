@@ -4,10 +4,10 @@
 
 ![Xyra Atlas emblem](assets/atlas-mark.svg)
 
-## Current release: Learning Insights 1.5
+## Current release: Applied Field Guides 1.6
 
 - A violet-and-gold responsive interface, **14 distinct original vector course worlds**, Xyra's Corner artwork, landscape hero and a home-screen app icon. The same course identity appears on home tiles, category cards, course covers and lessons.
-- 14 learning subjects and **64 interactive lessons**: 52 short starters plus 12 new sourced, three-section field guides with real-world worked examples, exercises and quizzes (counts verified by tests).
+- 14 learning subjects and **76 interactive lessons**: 52 short starters plus 24 structured, referenced field guides with real-world worked examples, exercises and quizzes (counts verified by tests).
 - Psychology, legal literacy, business, money, productivity, communication, critical thinking, language study, digital literacy, career, science, relationships and influence.
 - **The Shadow Library (18+ educational content)** covers manipulation, gaslighting, lies, emotional leverage, deceptive interface design, consent and adult media literacy. The age acknowledgment is a *content gate*, not verified age or identity security.
 - Seven-day language practice framework for 20 languages, with **72 practical offline phrases across nine starter languages**: Japanese, Korean, Spanish, French, Mandarin Chinese, German, Filipino, Italian and English.
@@ -20,6 +20,7 @@
 
 **New in 0.5:** Psychology (evidence journaling, habits, relational inference); Philippine law (Constitution, data privacy, consumer complaints); business (customer discovery, unit economics, Philippine launch steps); money (irregular bills, emergency planning, investment red flags). Sources are linked for optional online verification; lessons work offline. Links and regulations can change.
 
+- **New applied field guides:** Twelve additional three-section lessons on phishing, account protection, recovery backups, verifying evidence, causation, calibration, listening, constructive feedback, difficult conversations, project portfolios, interview stories and safer job searches. Each includes an example, practice activity, quiz and external further-reading source; all instructional text is available offline.
 - **Learning Insights:** Local-only illustrated progress dashboard showing subject completion, latest quiz selections, learned phrases, and a 14-day activity calendar. Percentages describe activity, not expertise.
 - **Offline reliability:** Local calendar-day tracking for visit streaks, quest selection, learning path dates and backups; invalid dates rejected. Service worker now cleans up only Xyra Atlas caches, never caches from unrelated applications on the same origin. Includes executable cache-lifecycle regression tests.
 - **Universal Search:** Search the entire bundled offline Atlas—subjects, individual lessons, glossary terms and interactive scenarios—with category filters, relevance ranking, deep links, a keyboard shortcut (/), and privacy-safe mature-content filtering. No queries leave the device.
