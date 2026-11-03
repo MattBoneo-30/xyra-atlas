@@ -254,3 +254,31 @@ html[data-theme=light]{color-scheme:light;--bg:#fbf5f6;--bg-raised:#fff9fa;--car
 
 .exam-control-row{display:flex;justify-content:flex-end;margin-top:22px;padding-top:18px;border-top:1px solid var(--line)}.exam-control-row .secondary-button{min-height:40px}
 @media(max-width:560px){.exam-control-row .secondary-button{width:100%}}
+
+
+/* Study Card Workshop — private custom recall cards. */
+.personal-cards-hero{position:relative;overflow:hidden;padding:32px 29px;margin:13px 0 18px;border:1px solid var(--line-bright);border-radius:25px;background:radial-gradient(circle at 86% 20%,rgba(194,151,233,.24),transparent 52%),linear-gradient(135deg,var(--card-strong),var(--bg-raised))}
+.personal-cards-hero h1{font-size:clamp(32px,5.4vw,51px);line-height:1.12;margin:13px 0}.personal-cards-hero p{max-width:560px;font-size:14px;line-height:1.75;color:var(--muted);margin:0}
+.personal-cards-metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:11px;margin:17px 0 24px}
+.personal-cards-metrics>div{padding:16px 18px;border-radius:16px;border:1px solid var(--line);background:var(--card);display:flex;flex-direction:column;gap:6px}
+.personal-cards-metrics strong{font:normal 30px Georgia,serif;color:var(--gold)}.personal-cards-metrics span{font-size:12px;color:var(--muted)}
+.personal-cards-practice,.personal-cards-editor,.personal-cards-library{background:var(--card);border:1px solid var(--line-bright);border-radius:21px;padding:24px;margin:17px 0}
+.personal-cards-section-heading{display:flex;align-items:center;justify-content:space-between;gap:15px;margin-bottom:20px;flex-wrap:wrap}
+.personal-cards-section-heading h2{font-size:25px;margin:6px 0 0}.personal-cards-counter{font-size:12px;color:var(--gold);border:1px solid var(--line-bright);border-radius:99px;padding:8px 13px;white-space:nowrap}
+.personal-cards-flash{padding:22px;border:1px solid var(--line-bright);border-radius:16px;background:radial-gradient(circle at 85% 20%,rgba(193,157,224,.1),transparent 58%),var(--card-soft)}
+.personal-cards-flash h3{font-size:clamp(21px,3.4vw,29px);line-height:1.35;margin:12px 0 21px;overflow-wrap:anywhere;white-space:pre-wrap}
+.personal-cards-answer{border-top:1px solid var(--line-bright);padding:20px 0 0;margin-top:20px}.personal-cards-answer p{line-height:1.8;color:var(--text);overflow-wrap:anywhere;white-space:normal;margin:13px 0}.personal-cards-rate-actions{display:flex;gap:10px;flex-wrap:wrap}
+.personal-cards-rate-actions .primary-button,.personal-cards-rate-actions .secondary-button{flex:1;min-width:150px;min-height:46px}
+.personal-cards-practice-empty{text-align:center;padding:23px 16px;color:var(--muted);line-height:1.65}.personal-cards-practice-empty>span{font-size:42px;color:var(--gold)}.personal-cards-practice-empty h3{font-size:24px;color:var(--text);margin:8px 0}
+.personal-cards-editor label{display:block;font-size:13px;color:var(--text);margin:18px 0 8px}.personal-cards-editor textarea,.personal-cards-editor .styled-select{width:100%;display:block;border-radius:13px;background:var(--card-soft);border:1px solid var(--line-bright);color:var(--text);padding:12px 14px;font:inherit;line-height:1.6;resize:vertical}
+.personal-cards-editor textarea:focus-visible,.personal-cards-editor .styled-select:focus-visible{outline:2px solid var(--gold);outline-offset:2px}.personal-cards-editor textarea::placeholder,.personal-cards-search input::placeholder{color:var(--faint)}
+.personal-cards-editor .styled-select{min-height:48px}.personal-cards-editor-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:21px}.personal-cards-editor-actions button{min-height:44px}
+.personal-cards-search{display:flex;align-items:center;gap:10px;padding:11px 15px;min-height:48px;border:1px solid var(--line-bright);background:var(--card-soft);border-radius:13px;color:var(--gold);margin-bottom:15px}
+.personal-cards-search:focus-within{outline:2px solid var(--gold)}.personal-cards-search input{min-width:0;width:100%;font:inherit;color:var(--text);background:none;border:0;outline:none}
+.personal-cards-list{display:flex;flex-direction:column;gap:12px}.personal-cards-list-item{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;padding:19px;border:1px solid var(--line);border-radius:16px;background:var(--card-soft)}
+.personal-cards-list-item>div:first-child{flex:1;min-width:0}.personal-cards-list-item h3{font-size:19px;margin:9px 0;line-height:1.4;overflow-wrap:anywhere}.personal-cards-list-item p{color:var(--muted);font-size:13px;line-height:1.65;white-space:pre-line;overflow-wrap:anywhere;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;margin:0}
+.personal-cards-item-actions{display:flex;gap:8px;flex-wrap:wrap;flex-shrink:0}.personal-cards-item-actions button{min-height:37px;padding:8px 12px;font-size:12px}
+.personal-cards-invite{display:flex;align-items:center;flex-wrap:wrap;gap:16px;border-radius:19px;border:1px solid var(--line-bright);background:linear-gradient(115deg,var(--card-soft),var(--card));padding:22px;margin:17px 0}.personal-cards-invite-icon{width:50px;height:50px;border-radius:16px;background:var(--card-strong);color:var(--gold);display:grid;place-items:center}
+.personal-cards-invite>div:nth-child(2){flex:1;min-width:180px}.personal-cards-invite h2{font-size:22px;margin:6px 0}.personal-cards-invite p{font-size:13px;color:var(--muted);line-height:1.65;margin:0}
+@media(max-width:600px){.personal-cards-hero{padding:25px 20px}.personal-cards-practice,.personal-cards-editor,.personal-cards-library{padding:19px 16px}.personal-cards-metrics>div{padding:14px 10px}.personal-cards-metrics strong{font-size:26px}.personal-cards-metrics span{font-size:11px}.personal-cards-flash{padding:18px}.personal-cards-list-item{flex-direction:column;padding:15px}.personal-cards-item-actions{width:100%}.personal-cards-item-actions button{flex:1}.personal-cards-invite .small-button{width:100%}.personal-cards-rate-actions button{width:100%;min-width:0}}
+@media(max-width:350px){.personal-cards-metrics{gap:6px}.personal-cards-metrics strong{font-size:23px}.personal-cards-metrics span{font-size:10px}}
