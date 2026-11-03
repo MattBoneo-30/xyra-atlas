@@ -943,6 +943,14 @@ async function handleAction(e) {
   else if(action==='lesson-audio-start') {if(route.view==='lesson')startLessonAudio();}
   else if(action==='lesson-audio-pause'){if(route.view==='lesson'&&lessonAudio&&lessonAudio.key===idFor(route.courseId,route.lessonId)&&lessonAudioAvailable()){try{if(lessonAudio.paused){window.speechSynthesis.resume();lessonAudio.paused=false;}else{window.speechSynthesis.pause();lessonAudio.paused=true;}syncLessonAudioUI();}catch{flash('Audio controls are unavailable on this device.');}}}
   else if(action==='lesson-audio-stop'){stopLessonAudio();}
+  else if(action==='capstone-checks-clear'){
+    const key=button.dataset.key;
+    if(route.view!=='lesson'||key!==idFor(route.courseId,route.lessonId)||
+      !findLesson(route.courseId,route.lessonId)?.isCapstone||
+      (findCourse(route.courseId)?.dark&&!shadowUnlocked))return;
+    saved.capstoneChecks=clearCapstoneChecks(saved.capstoneChecks,key,COURSES);
+    persist();render();
+  }
   else if(action==='reader-size'){if(route.view==='lesson'){saved.reader=setReaderSize(saved.reader,id);persist();render();}}
   else if(action==='reader-focus'){if(route.view==='lesson'){saved.reader=toggleReaderFocus(saved.reader);persist();render();}}
   else if(action==='scenario') nav('scenario');
@@ -1049,6 +1057,20 @@ async function handleAction(e) {
 }
 document.addEventListener('click',handleAction);
 document.addEventListener('change',e=>{
+  if(e.target.matches?.('input[data-capstone-check]')){
+    const el=e.target,key=el.dataset.key;
+    const [courseId,lessonId]=(key||'').split(':');
+    const lesson=findLesson(courseId,lessonId);
+    if(route.view!=='lesson'||route.courseId!==courseId||route.lessonId!==lessonId||
+      !lesson?.isCapstone||(findCourse(courseId)?.dark&&!shadowUnlocked))return;
+    const index=Number(el.dataset.index);
+    saved.capstoneChecks=setCapstoneCheck(saved.capstoneChecks,key,index,el.checked,COURSES);
+    persist();
+    const progress=capstoneCheckProgress(saved.capstoneChecks,key,COURSES);
+    const status=document.getElementById('capstone-check-status');
+    if(status&&progress)status.textContent=progress.count+' of '+progress.total+' criteria reviewed · Saved on this device';
+    el.closest('li')?.classList.toggle('is-reviewed',el.checked);
+  }
   if(e.target.id==='language-select') {saved.language=e.target.value;phraseIndex=0;phraseRevealed=false;persist();render();}
   if(e.target.id==='age-agree') {gateConfirmed=e.target.checked;const btn=document.querySelector('[data-action="enter-shadow"]');if(btn)btn.disabled=!gateConfirmed;}
   if(e.target.id==='backup-file') answerBackup(e);
