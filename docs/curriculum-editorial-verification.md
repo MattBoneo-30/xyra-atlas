@@ -79,3 +79,12 @@ These spot-checks support the limited claims above only. They do not attest to t
 Run `npm run check` for the Node unit suite and built static artifacts. CI also installs test-only Chromium for live desktop, small-mobile and offline integration smoke checks. Latest confirmed successful full regression: [Actions run 41691573300](https://github.com/MattBoneo-30/xyra-atlas/actions/runs/41691573300).
 
 **Source availability note (2026-11-04):** The former FTEB `/services/complaints-handling/` URL returned an inconsistent 404 on direct access despite an indexed result. Lesson references now use the official, directly retrievable [DTI consumer complaint FAQ](https://fairtrade.dti.gov.ph/faq/how-to-file-a-consumer-complaint/) instead. This is a link correction, not a full expert legal validation.
+
+## Independent reviewer provenance and cross-engine verification (2026-11-04)
+
+- The new editorial attestation intake checks the full content SHA-256 digest against a reviewer public Ed25519 key, registered subject expertise, owner-verified identity/credentials, review date and full scope. No private keys are stored. It rejects changed text, expired or unsigned evidence, or unvetted reviewers.
+- The reviewer roster and signed attestation ledger are deliberately empty. The [verified CI run 41696480488](https://github.com/MattBoneo-30/xyra-atlas/actions/runs/41696480488) reports **0 independent approvals** for 134 lessons and 42 case decisions; this is a genuine external-work blocker, not a software crash.
+- The [verified CI run 41697134134](https://github.com/MattBoneo-30/xyra-atlas/actions/runs/41697134134) passed **222 Node tests, full desktop/mobile/offline Chromium smoke tests, and separate Linux WebKit mobile/desktop engine checks** with visual evidence archived.
+- Passing WebKit on Linux is **not** a claim of testing physical iOS Safari. Native device accessibility, performance and visual signoff remain open. None of these changes authorize the Advanced Curriculum stage to be marked complete.
+- To proceed with real independent signoff, see `docs/independent-editorial-attestations.md`; the reviewer must inspect actual material, not merely sign a hash.
+

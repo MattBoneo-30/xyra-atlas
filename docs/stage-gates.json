@@ -129,12 +129,22 @@
           "type": "ci",
           "value": "https://github.com/MattBoneo-30/xyra-atlas/actions/runs/41694707356",
           "note": "217 Node tests passed, offline build and real desktop/mobile browser checks succeeded. Editorial reviewer packet archived in GitHub Actions."
+        },
+        {
+          "type": "commit",
+          "value": "6eb6aa05eea92c0066fe72b376a5fa4a9673ea8a",
+          "note": "Independent editorial provenance: reviewer roster and content-hash-matched Ed25519 attestation ledger are verified without creating reviewers or approvals; no automatic stage completion."
+        },
+        {
+          "type": "ci",
+          "value": "https://github.com/MattBoneo-30/xyra-atlas/actions/runs/41696480488",
+          "note": "221 tests passed, browser smoke passed; editorial audit correctly returned 0/134 lesson and 0/42 decision approvals."
         }
       ],
       "blockers": [
-        "Qualified independent reviewers still need to inspect and sign off all 134 lessons, especially the Philippine legal/financial and safety-related content; the editorial packet is prepared, not approved.",
-        "Assessments, distractors and pedagogy require independent validity and suitability review. A passing automated test suite or an unverified reviewer field cannot establish substantive accuracy.",
-        "The 42 referenced URLs, all material claims, and language/cultural guidance still require dated claim-level or specialist review. Six official-source spot checks remain only partial evidence."
+        "Independent qualified and verified reviewers have approved 0 of 134 lessons and 0 of 42 advanced/applied decisions. The signed-review intake is implemented but genuine external attestations have not been submitted.",
+        "Expert pedagogical, Philippine jurisdiction-specific, finance/health-safety, cultural and quiz validity signoff is still outstanding; software tests do not establish content accuracy.",
+        "All 42 distinct course reference URLs and their material claims need complete dated claim-by-claim expert review; six official-source spot checks remain only partial evidence."
       ]
     },
     {
@@ -147,9 +157,21 @@
         "Accessible and performance-budgeted responsive art",
         "Real browser screenshot and multi-viewport visual QA complete"
       ],
-      "evidence": [],
+      "evidence": [
+        {
+          "type": "commit",
+          "value": "470e9d7b9c5c14909239b2c85c71bae13929e360",
+          "note": "Second rendering engine QA: Linux WebKit mobile/desktop tests for lesson reader, advanced practice, responsive overflow and screenshots. Does not substitute for actual physical iOS Safari."
+        },
+        {
+          "type": "ci",
+          "value": "https://github.com/MattBoneo-30/xyra-atlas/actions/runs/41697134134",
+          "note": "222 Node tests passed, real Chromium desktop/mobile/offline suite and separate WebKit Linux engine mobile/desktop scenarios passed; screenshots archived."
+        }
+      ],
       "blockers": [
-        "Final painterly art and visual signoff outstanding."
+        "Although Linux Chromium and WebKit automated visual/interaction smoke checks pass, full final painterly art direction and manual visual signoff have not been completed.",
+        "Real iPhone Safari, Android Chrome and low-end mobile performance/accessibility QA are not yet established; WebKit on Linux is an engine check, not physical iOS testing."
       ]
     },
     {
