@@ -4,6 +4,9 @@ import fs from 'node:fs';
 import vm from 'node:vm';
 
 const script=fs.readFileSync('sw.js','utf8');
+const version=Number(script.match(/CACHE_PREFIX \+ 'v(\d+)'/)?.[1]);
+assert.ok(Number.isInteger(version)&&version>1,'worker has a release cache version');
+const CURRENT='xyra-atlas-v'+version,PREVIOUS='xyra-atlas-v'+(version-1);
 function fixture(){
  const listeners=new Map(),stores=new Map();
  let skipped=0,claimed=0,networkDown=false,networkCalls=0;
@@ -40,25 +43,25 @@ function fixture(){
 }
 test('update lifecycle stages complete assets and requires an explicit activation message',async()=>{
  const f=fixture();
- const pre=await f.caches.open('xyra-atlas-v44');
+ const pre=await f.caches.open(PREVIOUS);
  pre.entries.set('/styles.css',f.result('old-css'));
  await f.caches.open('unrelated-site-cache');
  await f.event('install');
  assert.equal(f.counts().skipped,0,'installation must not force a worker swap');
- const current=await f.caches.open('xyra-atlas-v45');
+ const current=await f.caches.open(CURRENT);
  assert.ok(current.entries.size>50,'complete shell must be downloaded before activation');
  await f.event('activate');
  assert.equal(f.counts().claimed,1);
- assert.deepEqual(await f.caches.keys(),['unrelated-site-cache','xyra-atlas-v45']);
+ assert.deepEqual(await f.caches.keys(),['unrelated-site-cache',CURRENT]);
  assert.equal(f.counts().skipped,0,'activation alone does not request skipWaiting');
  await f.event('message',{data:{type:'ATLAS_ACTIVATE_UPDATE'}});
  assert.equal(f.counts().skipped,1,'only explicit update request calls skipWaiting');
 });
 test('offline fetches use the active release cache and exclude unrelated requests',async()=>{
- const f=fixture(),current=await f.caches.open('xyra-atlas-v45');
+ const f=fixture(),current=await f.caches.open(CURRENT);
  current.entries.set('/index.html',f.result('current-html'));
  current.entries.set('/styles.css',f.result('current-css'));
- await f.caches.open('xyra-atlas-v44').then(c=>c.entries.set('/styles.css',f.result('stale-css')));
+ await f.caches.open(PREVIOUS).then(c=>c.entries.set('/styles.css',f.result('stale-css')));
  const style=await f.event('fetch',{request:{method:'GET',url:'https://atlas.test/styles.css',mode:'cors'}});
  assert.equal((await style.response).marker,'current-css','old cache must never serve a new release asset');
  assert.equal(f.counts().networkCalls,0,'a cached static module needs no network');
@@ -75,7 +78,7 @@ test('offline fetches use the active release cache and exclude unrelated request
 });
 test('offline repair works with broken or incomplete caches while preserving unrelated stores',async()=>{
  const f=fixture();
- const c=await f.caches.open('xyra-atlas-v45');
+ const c=await f.caches.open(CURRENT);
  c.entries.set('/index.html',f.result('html'));
  let reply,pending;
  async function message(type){
@@ -89,7 +92,7 @@ test('offline repair works with broken or incomplete caches while preserving unr
  const restored=await message('ATLAS_REPAIR_OFFLINE');
  assert.equal(restored.cached,restored.total);
  assert.equal(restored.ready,true);
- assert.equal(restored.version,'xyra-atlas-v45');
+ assert.equal(restored.version,CURRENT);
 });
 test('app offers explicit update consent and controller-based reload, not automatic install reload',()=>{
  const app=fs.readFileSync('app.js','utf8');
