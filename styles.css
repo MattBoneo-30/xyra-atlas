@@ -282,3 +282,12 @@ html[data-theme=light]{color-scheme:light;--bg:#fbf5f6;--bg-raised:#fff9fa;--car
 .personal-cards-invite>div:nth-child(2){flex:1;min-width:180px}.personal-cards-invite h2{font-size:22px;margin:6px 0}.personal-cards-invite p{font-size:13px;color:var(--muted);line-height:1.65;margin:0}
 @media(max-width:600px){.personal-cards-hero{padding:25px 20px}.personal-cards-practice,.personal-cards-editor,.personal-cards-library{padding:19px 16px}.personal-cards-metrics>div{padding:14px 10px}.personal-cards-metrics strong{font-size:26px}.personal-cards-metrics span{font-size:11px}.personal-cards-flash{padding:18px}.personal-cards-list-item{flex-direction:column;padding:15px}.personal-cards-item-actions{width:100%}.personal-cards-item-actions button{flex:1}.personal-cards-invite .small-button{width:100%}.personal-cards-rate-actions button{width:100%;min-width:0}}
 @media(max-width:350px){.personal-cards-metrics{gap:6px}.personal-cards-metrics strong{font-size:23px}.personal-cards-metrics span{font-size:10px}}
+
+
+/* Curriculum levels: keep large subjects navigable without hiding the full library. */
+.course-stage-tabs{display:flex;align-items:center;gap:9px;overflow-x:auto;scrollbar-width:thin;overscroll-behavior-inline:contain;padding:7px 1px 17px;margin:5px 0 3px}
+.course-stage-button{display:flex;align-items:center;justify-content:center;gap:8px;white-space:nowrap;min-height:41px;border:1px solid var(--line-bright);border-radius:999px;padding:10px 15px;background:var(--card);color:var(--muted);font-weight:600;font-size:12px;flex-shrink:0;transition:background .16s,color .16s,border-color .16s}
+.course-stage-button span{font-size:11px;font-variant-numeric:tabular-nums;display:inline-flex;min-width:22px;justify-content:center;padding:2px 5px;border-radius:10px;background:var(--card-soft);color:var(--gold)}
+.course-stage-button:hover{border-color:var(--lavender);color:var(--text)}
+.course-stage-button.selected{border-color:var(--gold);background:var(--card-strong);color:var(--gold-bright);box-shadow:0 0 0 1px rgba(247,206,147,.12)}
+@media(max-width:600px){.course-stage-tabs{margin-right:-19px;padding-right:19px}.course-stage-button{font-size:12px;padding:9px 12px}}
