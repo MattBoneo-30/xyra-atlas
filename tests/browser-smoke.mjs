@@ -499,6 +499,30 @@ try{
   expect((await getState(page)).personalCards[0].front==='Why retrieve before rereading?','confirmed backup restore recovers private flashcards');
  });
 
+
+ await smoke('mastery-course-level-filters',{viewport:{width:390,height:844}},async(page)=>{
+  await page.goto(BASE+'/#/course/laws',{waitUntil:'domcontentloaded'});
+  await page.locator('.course-page').waitFor();
+  const original=await page.locator('.lesson-row').count();
+  expect(original>=7,'Philippine law library includes earlier and mastery lessons');
+  await page.locator('[data-action="course-stage-filter"][data-id="Advanced"]').click();
+  const advanced=await page.locator('.lesson-row').count();
+  expect(advanced>=3&&advanced<original,'Advanced filter narrows the curriculum');
+  expect(await page.locator('.course-stage-button[data-id="Advanced"]').getAttribute('aria-pressed')==='true','level selection announces pressed state');
+  const stages=await page.locator('.lesson-row .lesson-info small').allTextContents();
+  expect(stages.every(t=>t.includes('Advanced')),'advanced filter hides beginner and intermediate lessons');
+  await page.locator('[data-action="open-lesson"][data-lesson="privacy-access-request-ph"]').click();
+  await waitRoute(page,'#/lesson/laws/privacy-access-request-ph');
+  expect(await page.locator('.lesson-content .worked-example').count()===1,'new advanced lesson includes a worked example');
+  expect(await page.locator('.lesson-sources a[href*="privacy.gov.ph"]').count()>=1,'primary-source reference is linked in lesson');
+  await page.locator('.reading-page .subnav [data-action="open-course"]').click();
+  expect(await page.locator('.course-stage-button[data-id="Advanced"]').getAttribute('aria-pressed')==='true','level filter remains selected when returning from a lesson');
+  await page.locator('[data-action="course-stage-filter"][data-id="all"]').click();
+  expect(await page.locator('.lesson-row').count()===original,'All levels restores full course list');
+  const overflow=await mobileOverflow(page);
+  expect(overflow.scroll<=overflow.width+8,'course stage filters do not cause mobile horizontal overflow');
+ });
+
 }finally{
  if(browser)await browser.close();
  server.kill('SIGTERM');
