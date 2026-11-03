@@ -1,5 +1,6 @@
 import { COURSES, LANGUAGES, LEARNING_SPRINT, DAILY_NOTES, findCourse, findLesson, totalLessons } from './data.js';
 import { makeReviewCards, dueReviewCards, recordReview, normalizeReviews } from './review.js';
+import { searchGlossary,GLOSSARY } from './glossary.js';
 import { createDailyQuest,dailyQuestProgress } from './dailyquest.js';
 import { buildKnowledgeMap } from './atlasmap.js';
 import { SCENARIOS,normalizeScenarioAnswers,recordScenarioAnswer,scenarioProgress } from './scenarios.js';
@@ -47,6 +48,7 @@ const getDueReviews = () => dueReviewCards(reviewCards, saved.completed, saved.r
 let route = parseHash();
 let filter = 'all';
 let query = '';
+let glossaryQuery = '';
 let modal = '';
 let gateConfirmed = false;
 let shadowUnlocked = false; // A content acknowledgment, not a secure identity or age verification system.
@@ -148,6 +150,7 @@ function parseHash() {
   if (segments[0] === 'studio') return {view:'studio'};
   if (segments[0] === 'map') return {view:'map'};
   if (segments[0] === 'quest') return {view:'quest'};
+  if (segments[0] === 'glossary') return {view:'glossary'};
   if (segments[0] === 'scenario') return {view:'scenario'};
   if (segments[0] === 'path') return {view:'path'};
   if (['home','explore','journey','saved','you'].includes(segments[0])) return {view:segments[0]};
@@ -155,7 +158,7 @@ function parseHash() {
 }
 function nav(path) { const next = '#/' + path; if (location.hash === next) { route = parseHash(); render(); } else location.hash = next; window.scrollTo({top:0,behavior:'instant'}); }
 function flash(text) { currentToast = text; clearTimeout(toastTimer); render(); toastTimer = setTimeout(() => {currentToast = '';render();},3200); }
-function tabForRoute() { return ['review','studio','path','scenario','quest'].includes(route.view) ? 'journey' : ['course','lesson','language','map'].includes(route.view) ? 'explore' : route.view; }
+function tabForRoute() { return ['review','studio','path','scenario','quest'].includes(route.view) ? 'journey' : ['course','lesson','language','map','glossary'].includes(route.view) ? 'explore' : route.view; }
 function topbar() {
   return `<header class="topbar"><div class="topbar-inner">
     <button type="button" class="wordmark" data-action="goto-home" aria-label="Xyra Atlas home">${mark}<span>Xyra <em>Atlas</em></span></button>
@@ -192,6 +195,7 @@ function home() {
     <section class="scenario-invite"><div class="studio-invite-icon">${icon('compass',27)}</div><div><span class="overline">THINK BEFORE YOU ACT</span><h2>Scenario Lab</h2><p>Six real-life decisions with feedback and explanations.</p></div>${button('Open lab','scenario','small-button')}</section>
     <section class="studio-invite"><div class="studio-invite-icon">${icon('briefcase',27)}</div><div><span class="overline">LEARN BY DOING</span><h2>The Practice Studio</h2><p>Build a savings goal, test a business, or map your week.</p></div>${button('Try a tool','studio','small-button')}</section>
     <section class="daily-quest-invite"><div class="quest-gem">✦</div><div><span class="overline">THREE SMALL STEPS</span><h2>Today's Quest</h2><p>Two lessons and one practical decision. Learn at your pace.</p></div>${button('Start quest','quest','small-button')}</section>
+    <section class="glossary-invite"><div><span class="overline">WORDS THAT OPEN DOORS</span><h2>The Knowledge Glossary</h2><p>Understand useful ideas quickly, with real examples.</p></div>${button('Explore terms','glossary','small-button')}</section>
     <section class="atlas-map-invite"><div><span class="overline">EXPLORE THE CONSTELLATION</span><h2>See the worlds of learning</h2><p>Navigate all fourteen illustrated subjects as a connected knowledge map.</p></div>${button('Open map','map','small-button')}</section>
     <section class="section"><div class="section-heading"><div><span class="overline">DISCOVER NEW WORLDS</span><h2>Explore & learn</h2></div>${button(`See all ${chevron}`,'goto-explore','text-action')}</div><div class="topic-grid">${COURSES.filter(c=>!c.dark).slice(0,6).map(c=>`<button type="button" class="topic-tile" data-action="open-course" data-id="${esc(c.id)}"><img class="topic-image" src="/assets/${esc(c.art)}.svg" alt="" loading="lazy" decoding="async"/><span class="topic-icon">${icon(c.icon,24)}</span><strong>${esc(c.title)}</strong></button>`).join('')}</div></section>
     <section class="section"><div class="section-heading"><div><span class="overline">HANDPICKED FOR YOU</span><h2>Begin your journey</h2></div></div><div class="feature-scroller">${featured.map(c=>card(c)).join('')}</div></section>
@@ -288,6 +292,11 @@ function pathPage() {
 function scenarioPage(){
  const progress=scenarioProgress(saved.scenarios);
  return `<main class="page scenario-page"><div class="subnav">${button('Back to journey','goto-journey','back-link')}</div><header class="scenario-hero"><span class="overline">LEARN THROUGH DECISIONS</span><h1>Scenario <em>Lab.</em></h1><p>Make a choice, examine the reasoning and try again. No connection required.</p><strong>${progress.done}/${progress.total} explored · ${progress.thoughtful} evidence-aligned choices</strong></header><div class="scenario-list">${SCENARIOS.map((s,i)=>{const chosen=saved.scenarios[s.id],answered=Number.isInteger(chosen);return `<section class="scenario-card" id="scenario-${esc(s.id)}"><div class="scenario-meta"><span class="overline">${esc(s.category)}</span><small>${i+1}/${SCENARIOS.length}</small></div><h2>${esc(s.title)}</h2><p>${esc(s.setup)}</p><h3>${esc(s.question)}</h3><div class="scenario-choices">${s.choices.map((c,j)=>button(`${String.fromCharCode(65+j)}. ${esc(c.label)}`,'scenario-answer',`scenario-choice ${chosen===j?'selected':''}`,`data-id="${esc(s.id)}" data-index="${j}" aria-pressed="${chosen===j}"`)).join('')}</div>${answered?`<aside class="scenario-feedback" role="status"><span class="overline">${s.choices[chosen].preferred?'A STRONG FIRST RESPONSE':'CONSIDER THIS'}</span><p>${esc(s.choices[chosen].result)}</p><p><strong>Takeaway:</strong> ${esc(s.takeaway)}</p><a href="${esc(s.source)}" target="_blank" rel="noopener noreferrer">Further reading ↗</a><div>${button('Try another choice','scenario-retry','text-action',`data-id="${esc(s.id)}"`)}</div></aside>`:''}</section>`}).join('')}</div><p class="info-line">Educational scenarios, not individualized professional advice. Opening sources requires internet.</p></main>`;
+}
+
+function glossaryPage(){
+ const entries=searchGlossary(glossaryQuery,shadowUnlocked);
+ return `<main class="page glossary-page"><div class="subnav">${button('Back to learning','goto-explore','back-link')}</div><section class="glossary-hero"><span class="overline">KNOWLEDGE, IN PLAIN LANGUAGE</span><h1>Atlas <em>Glossary.</em></h1><p>Learn the meaning of an important idea, see how it appears in everyday life, and explore its full subject.</p><small>${entries.length} terms available</small></section><label class="glossary-search-label" for="glossary-search">${icon('search',21)}<input id="glossary-search" autocomplete="off" type="search" placeholder="Search terms, examples, and subjects..." value="${esc(glossaryQuery)}" aria-label="Search Atlas glossary"/></label><div class="glossary-grid">${entries.length?entries.map(t=>`<article class="glossary-card"><span class="overline">${esc(t.category)}</span><h2>${esc(t.term)}</h2><p>${esc(t.definition)}</p><div class="glossary-example"><strong>For example</strong><span>${esc(t.example)}</span></div>${button(`Explore ${esc(t.category)} ${icon('arrow',16)}`,'open-course','text-action',`data-id="${esc(t.courseId)}"`)}</article>`).join(''):`<div class="empty-state"><h2>No matching terms</h2><p>Try another word or a broader subject.</p>${button('Show all','glossary-clear','small-button')}</div>`}</div><p class="info-line">Short definitions simplify complex topics. Check professional and jurisdiction-specific sources where decisions carry consequences. Adult Shadow Library terms appear only after its acknowledgment.</p></main>`;
 }
 
 function questPage(){
@@ -403,8 +412,8 @@ function render() {
   document.documentElement.dataset.theme=saved.theme;
   document.body.classList.toggle('dialog-open',Boolean(modal));
   const view = route.view;
-  const content = ({home,explore,journey,review:reviewPage,studio:studioPage,scenario:scenarioPage,map:mapPage,quest:questPage,path:pathPage,saved:savedPage,you,course:coursePage,lesson:lessonPage,language:languagePage}[view] || errorView)();
-  document.getElementById('app').innerHTML = `${topbar()}<div class="shell"><aside class="desktop-rail"><div class="rail-title">YOUR ATLAS <span>✧</span></div>${[['home','Home','home'],['explore','Explore & Learn','compass'],['journey','My Journey','spark'],['saved','Saved Library','bookmark'],['you','Your Space','user']].map(([id,label,ico])=>`<button type="button" data-action="nav" data-id="${id}" class="rail-link ${tabForRoute()===id?'active':''}">${icon(ico,20)} ${label}</button>`).join('')}<div class="rail-divider"></div><button type="button" class="rail-link" data-action="quest">${icon('spark',20)} Daily Quest</button><button type="button" class="rail-link" data-action="map">${icon('compass',20)} Knowledge Map</button><button type="button" class="rail-link" data-action="review">${icon('orbit',20)} Review Deck</button><button type="button" class="rail-link" data-action="path">${icon('compass',20)} Guided Path</button><button type="button" class="rail-link" data-action="studio">${icon('briefcase',20)} Practice Studio</button><button type="button" class="rail-link" data-action="language">${icon('languages',20)} Language Lab</button><button type="button" class="rail-link" data-action="open-course" data-id="shadow">${icon('moon',20)} Shadow Library</button><div class="rail-note">✦<p>The world is a little bigger every time you learn.</p></div></aside><div class="main-column">${content}<footer class="app-footer">Made with curiosity, for a life still unfolding. <span>✧ Xyra Atlas</span></footer></div></div>${navBar()}${modalView()}${currentToast?`<div class="toast" role="status">${icon('spark',19)} ${esc(currentToast)}</div>`:''}`;
+  const content = ({home,explore,journey,review:reviewPage,studio:studioPage,scenario:scenarioPage,map:mapPage,quest:questPage,glossary:glossaryPage,path:pathPage,saved:savedPage,you,course:coursePage,lesson:lessonPage,language:languagePage}[view] || errorView)();
+  document.getElementById('app').innerHTML = `${topbar()}<div class="shell"><aside class="desktop-rail"><div class="rail-title">YOUR ATLAS <span>✧</span></div>${[['home','Home','home'],['explore','Explore & Learn','compass'],['journey','My Journey','spark'],['saved','Saved Library','bookmark'],['you','Your Space','user']].map(([id,label,ico])=>`<button type="button" data-action="nav" data-id="${id}" class="rail-link ${tabForRoute()===id?'active':''}">${icon(ico,20)} ${label}</button>`).join('')}<div class="rail-divider"></div><button type="button" class="rail-link" data-action="glossary">${icon('book',20)} Glossary</button><button type="button" class="rail-link" data-action="quest">${icon('spark',20)} Daily Quest</button><button type="button" class="rail-link" data-action="map">${icon('compass',20)} Knowledge Map</button><button type="button" class="rail-link" data-action="review">${icon('orbit',20)} Review Deck</button><button type="button" class="rail-link" data-action="path">${icon('compass',20)} Guided Path</button><button type="button" class="rail-link" data-action="studio">${icon('briefcase',20)} Practice Studio</button><button type="button" class="rail-link" data-action="language">${icon('languages',20)} Language Lab</button><button type="button" class="rail-link" data-action="open-course" data-id="shadow">${icon('moon',20)} Shadow Library</button><div class="rail-note">✦<p>The world is a little bigger every time you learn.</p></div></aside><div class="main-column">${content}<footer class="app-footer">Made with curiosity, for a life still unfolding. <span>✧ Xyra Atlas</span></footer></div></div>${navBar()}${modalView()}${currentToast?`<div class="toast" role="status">${icon('spark',19)} ${esc(currentToast)}</div>`:''}`;
   document.title = `${view==='course' ? findCourse(route.courseId)?.title+' · ':view==='lesson' ? findLesson(route.courseId,route.lessonId)?.title+' · ' : ''}Xyra Atlas`;
 }
 function toggle(list,value) { saved[list]=saved[list].includes(value)?saved[list].filter(x=>x!==value):[...saved[list],value];persist();render(); }
@@ -470,6 +479,8 @@ async function handleAction(e) {
   else if(action==='scenario') nav('scenario');
   else if(action==='map') nav('map');
   else if(action==='quest') nav('quest');
+  else if(action==='glossary') nav('glossary');
+  else if(action==='glossary-clear') {glossaryQuery='';render();}
   else if(action==='quest-scenario'){nav('scenario');requestAnimationFrame(()=>document.getElementById('scenario-'+id)?.scrollIntoView({behavior:'smooth',block:'start'}));}
   else if(action==='scenario-answer') {saved.scenarios=recordScenarioAnswer(saved.scenarios,id,Number(button.dataset.index));persist();render();}
   else if(action==='scenario-retry') {delete saved.scenarios[id];persist();render();}
@@ -512,6 +523,7 @@ document.addEventListener('input',e=>{
       if(status) status.textContent='Saved on this device · Export a backup to keep it safe';
     }
   }
+  if(e.target.id==='glossary-search') {const pos=e.target.selectionStart;glossaryQuery=e.target.value;render();const field=document.getElementById('glossary-search');if(field){field.focus();try{field.setSelectionRange(pos,pos);}catch{}}}
   if(e.target.id==='course-search') {const pos=e.target.selectionStart;query=e.target.value;render();const input=document.getElementById('course-search');if(input){input.focus();try{input.setSelectionRange(pos,pos);}catch{}}}
 });
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&modal){modal='';if(['course','lesson'].includes(route.view)&&route.courseId==='shadow'&&!shadowUnlocked)nav('explore');else render();} if((e.key==='Enter'||e.key===' ')&&e.target.classList?.contains('shadow-preview')) {e.preventDefault();gateConfirmed=false;modal='shadow';render();}});

@@ -4,7 +4,7 @@
 
 ![Xyra Atlas emblem](assets/atlas-mark.svg)
 
-## Current release: Daily Quest 1.1
+## Current release: Knowledge Glossary 1.2
 
 - A violet-and-gold responsive interface, **14 distinct original vector course worlds**, Xyra's Corner artwork, landscape hero and a home-screen app icon. The same course identity appears on home tiles, category cards, course covers and lessons.
 - 14 learning subjects and **64 interactive lessons**: 52 short starters plus 12 new sourced, three-section field guides with real-world worked examples, exercises and quizzes (counts verified by tests).
@@ -20,6 +20,7 @@
 
 **New in 0.5:** Psychology (evidence journaling, habits, relational inference); Philippine law (Constitution, data privacy, consumer complaints); business (customer discovery, unit economics, Philippine launch steps); money (irregular bills, emergency planning, investment red flags). Sources are linked for optional online verification; lessons work offline. Links and regulations can change.
 
+- **Knowledge Glossary:** More than 30 searchable, plain-language definitions with real-life examples and direct course navigation. Runs offline; mature terminology stays behind the Shadow Library acknowledgment.
 - **Daily Quest:** A stable set of two lesson-and-quiz activities plus one real-life Scenario Lab decision per local day. Visual progress updates from completed lessons and scenarios without requiring a new account, a separate daily database or pressure to maintain streaks. Mature lessons are excluded.
 - **Knowledge Constellation:** An interactive, illustrated map of all 14 subject worlds with suggested thematic connections, course completion markers, accessible course links, and offline support. It adapts from a starfield to a touch-friendly mobile grid.
 - **Scenario Lab:** Six real-life choice exercises with explanatory feedback, local persistence, JSON backup and offline support. Sources are available online.
