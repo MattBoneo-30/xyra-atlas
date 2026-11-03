@@ -1209,7 +1209,7 @@ try{
  await smoke('subject-decision-clinics-offline',{viewport:{width:390,height:844},isMobile:true,hasTouch:true,deviceScaleFactor:2},async(page,context)=>{
   await page.goto(BASE+'/#/course/laws',{waitUntil:'domcontentloaded'});
   await page.locator('.clinic-panel').waitFor();
-  expect(await page.locator('.clinic-question').count()===2,'Philippine legal clinic has two independent decisions');
+  expect(await page.locator('.clinic-question').count()===3,'Philippine legal clinic has three independent decisions');
   const overflow=await mobileOverflow(page);
   expect(overflow.scroll<=overflow.width+8,'evidence clinic fits mobile screen');
   await page.locator('.clinic-question').first().locator('.clinic-choice').nth(2).click();
@@ -1230,7 +1230,7 @@ try{
   expect((await getState(page)).clinicAnswers['laws:decision-1']===undefined,'retry clears only selected clinic answers');
   await page.goto(BASE+'/#/course/psychology',{waitUntil:'domcontentloaded'});
   await page.locator('.clinic-panel').waitFor();
-  expect(await page.locator('.clinic-question').count()===2,'a distinct nonlegal course has original case practice');
+  expect(await page.locator('.clinic-question').count()===3,'a distinct nonlegal course has original case practice');
  });
 
 

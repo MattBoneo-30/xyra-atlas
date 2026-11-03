@@ -1,4 +1,5 @@
-/** Subject-specific applied decision clinics: 28 original questions across 14 learning subjects.
+import {ADVANCED_DECISIONS} from './advanceddecisions.js';
+/** Subject-specific applied decision clinics: 42 original questions across 14 learning subjects.
  * All answers remain on the learner's device; these short checks are neither
  * a credential nor proof of professional judgment. Legal examples use PH jurisdiction.
  */
@@ -485,8 +486,9 @@ const RAW={
   }
 };
 export const CLINICS=Object.freeze(Object.fromEntries(Object.entries(RAW).map(([id,clinic])=>[id,Object.freeze({
- ...clinic,references:Object.freeze(clinic.references.map(r=>Object.freeze({...r}))),
- questions:Object.freeze(clinic.questions.map(q=>Object.freeze({...q,options:Object.freeze([...q.options])})))
+ ...clinic,intro:clinic.intro.replace('Two case decisions','Three case decisions, including one advanced scenario'),
+ references:Object.freeze(clinic.references.map(r=>Object.freeze({...r}))),
+ questions:Object.freeze([...clinic.questions,ADVANCED_DECISIONS[id]].map(q=>Object.freeze({...q,options:Object.freeze([...q.options])})))
 })])));
 const isRecord=v=>v!==null&&typeof v==='object'&&!Array.isArray(v);
 const questionMap=new Map(Object.entries(CLINICS).flatMap(([courseId,clinic])=>clinic.questions.map(q=>[courseId+':'+q.id,q])));

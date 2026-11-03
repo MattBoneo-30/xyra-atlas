@@ -3,14 +3,16 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {COURSES} from '../data.js';
 import {CLINICS,getClinic,normalizeClinicAnswers,answerClinic,clinicStats,resetClinic} from '../clinics.js';
-test('every subject has two distinct contextual challenges with explanations and references',()=>{
+test('every subject has three distinct contextual challenges with explanations and references',()=>{
  assert.equal(COURSES.length,14);
  assert.deepEqual(new Set(Object.keys(CLINICS)),new Set(COURSES.map(c=>c.id)));
  const prompts=new Set();
  for(const course of COURSES){
   const clinic=getClinic(course.id);
   assert.ok(clinic);
-  assert.equal(clinic.questions.length,2);
+  assert.equal(clinic.questions.length,3);
+  assert.equal(clinic.questions[2].stage,'Advanced');
+  assert.equal(clinic.questions[2].id,'decision-3');
   assert.ok(clinic.intro.length>75);
   assert.ok(clinic.references.length>0);
   for(const ref of clinic.references){
@@ -26,7 +28,7 @@ test('every subject has two distinct contextual challenges with explanations and
    assert.ok(!prompts.has(q.prompt));prompts.add(q.prompt);
   }
  }
- assert.equal(prompts.size,28);
+ assert.equal(prompts.size,42);
 });
 test('offline response grading is first-answer locked and does not mutate unrelated study data',()=>{
  let answers={};
@@ -36,13 +38,13 @@ test('offline response grading is first-answer locked and does not mutate unrela
    answers=answerClinic(answers,courseId,q.id,(q.correct+1)%q.options.length);
   }
   const stats=clinicStats(answers,courseId);
-  assert.deepEqual(stats,{answered:2,correct:2,total:2,done:true});
+  assert.deepEqual(stats,{answered:3,correct:3,total:3,done:true});
  }
- assert.equal(Object.keys(answers).length,28);
+ assert.equal(Object.keys(answers).length,42);
  const old={...answers};
  answers=resetClinic(answers,'laws');
  assert.equal(clinicStats(answers,'laws').answered,0);
- assert.equal(clinicStats(answers,'thinking').correct,2);
+ assert.equal(clinicStats(answers,'thinking').correct,3);
  assert.equal(clinicStats(old,'laws').correct,2,'reset never mutates old state');
  assert.equal(getClinic('bogus'),null);
 });
