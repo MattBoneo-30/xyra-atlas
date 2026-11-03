@@ -1081,6 +1081,36 @@ try{
   await context.setOffline(false);
  });
 
+ await smoke('world-language-packs-mobile', {viewport:{width:390,height:844},isMobile:true,hasTouch:true,deviceScaleFactor:2},async(page,context)=>{
+  await page.goto(BASE+'/#/language',{waitUntil:'domcontentloaded'});
+  for(const code of ['ar','pt','hi','th','vi','id','ru','tr','nl','sv','el']){
+   await page.locator('#language-select').selectOption(code);
+   expect(await page.locator('.phrase-card h3').count()===1,code+' starter phrase renders');
+   await page.locator('[data-action="phrase-reveal"]').click();
+   expect((await page.locator('.phrase-answer').textContent()).trim().length>1,code+' has its own translation');
+   expect(await page.locator('.phrase-answer').getAttribute('dir')==='auto',code+' target supports native text direction');
+  }
+  await page.locator('#language-select').selectOption('ar');
+  expect((await page.locator('.language-region-note').textContent()).includes('Modern Standard Arabic'),'regional caution is visible');
+  const width=await mobileOverflow(page);
+  expect(width.scroll<=width.width+8,'right-to-left language page fits mobile: '+JSON.stringify(width));
+  await page.locator('#conversation-quest-select').selectOption('meeting');
+  await page.locator('[data-action="conversation-start"]').click();
+  await page.locator('.conversation-quest-options').waitFor();
+  expect((await getState(page)).conversationQuest.code==='ar','Arabic conversation sequence saves locally');
+  await page.reload({waitUntil:'domcontentloaded'});
+  expect((await getState(page)).conversationQuest.code==='ar','expanded language sequence resumes');
+  await page.evaluate(async()=>{await navigator.serviceWorker.ready;});
+  await page.reload({waitUntil:'domcontentloaded'});
+  await page.waitForFunction(()=>Boolean(navigator.serviceWorker.controller));
+  await context.setOffline(true);
+  await page.reload({waitUntil:'domcontentloaded'});
+  await page.locator('.conversation-quest-options').waitFor();
+  expect((await page.locator('#language-select').inputValue())==='ar','Arabic practice is available offline');
+  await context.setOffline(false);
+ });
+
+
 }finally{
  if(browser)await browser.close();
  server.kill('SIGTERM');

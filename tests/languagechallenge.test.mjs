@@ -6,7 +6,7 @@ import {LANGUAGE_CHALLENGE_MODES,createLanguageChallenge,normalizeLanguageChalle
  currentLanguageQuestion,answerLanguageChallenge,advanceLanguageChallenge,languageChallengeResults,
  normalizeLanguageChallengeHistory,recordLanguageChallengeHistory} from '../languagechallenge.js';
 
-test('nine authored packs generate seeded, varied four-option challenges in either direction',()=>{
+test('all twenty authored packs generate seeded, varied four-option challenges in either direction',()=>{
  assert.deepEqual(LANGUAGE_CHALLENGE_MODES,['recognition','meaning']);
  for(const [code,pack] of Object.entries(PHRASEBOOK)){
   for(const mode of LANGUAGE_CHALLENGE_MODES){
