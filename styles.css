@@ -448,3 +448,58 @@ html[data-theme=light]{color-scheme:light;--bg:#fbf5f6;--bg-raised:#fff9fa;--car
 .chapter-art-caption>span:last-child{font-size:13px;line-height:1.65;color:#f4dfe8;max-width:370px;text-shadow:0 2px 13px rgba(11,8,29,.75)}
 @media(max-width:560px){.reading-illustration.chapter-art-feature{height:270px}.chapter-art-feature>img{object-position:58% center}.chapter-art-caption{bottom:18px;left:18px;right:18px;gap:8px;max-width:300px}.chapter-art-caption strong{font-size:27px}.chapter-art-caption>span:last-child{font-size:12px}.chapter-art-feature::after{background:linear-gradient(90deg,rgba(13,11,36,.86),rgba(22,16,43,.56) 66%,rgba(19,11,38,.17)),linear-gradient(0deg,rgba(12,10,31,.58),transparent 78%)}}
 @media(prefers-reduced-motion:reduce){.chapter-art-feature>img{transition:none!important;animation:none!important}}
+
+
+/* Atlas Conversation Quests */
+.conversation-quest{margin:26px 0;padding:25px;border:1px solid var(--line-bright);border-radius:23px;background:radial-gradient(ellipse at 90% 0,rgba(188,145,230,.15),transparent 55%),var(--card);box-shadow:var(--shadow)}
+.conversation-quest-head{display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:15px;margin-bottom:22px}
+.conversation-quest-head>div{flex:1 1 260px;min-width:0}
+.conversation-quest-head h2{font:normal clamp(26px,3.4vw,34px)/1.2 Georgia,serif;margin:10px 0}
+.conversation-quest-head p{font-size:13px;line-height:1.75;color:var(--muted);margin:0;max-width:545px}
+.conversation-quest-count{font-size:12px;color:var(--gold);padding:9px 11px;border:1px solid var(--line-bright);border-radius:999px}
+.conversation-quest-start{border:1px solid var(--line);padding:21px;border-radius:18px;background:var(--card-soft)}
+.conversation-quest-start .styled-select{width:100%;max-width:450px;margin:8px 0 20px;min-height:44px}
+.conversation-quest-start>.primary-button{min-height:44px}
+.conversation-quest-scenarios{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-bottom:20px}
+.conversation-quest-scenarios article{min-width:0;border:1px solid var(--line);border-radius:13px;padding:15px;background:var(--card)}
+.conversation-quest-scenarios strong{display:block;font:normal 18px/1.35 Georgia,serif;color:var(--text);overflow-wrap:anywhere}
+.conversation-quest-scenarios p{font-size:12px;line-height:1.65;color:var(--muted);margin:8px 0 0}
+.conversation-quest-scenarios small{display:block;margin-top:9px;font-size:11px;line-height:1.5;color:var(--gold)}
+.conversation-quest-paused{border-top:1px solid var(--line-bright);margin-top:15px;padding-top:14px}
+.conversation-quest-paused p{font-size:13px;line-height:1.65;color:var(--muted)}
+.conversation-quest-controls{display:flex;gap:10px;flex-wrap:wrap}.conversation-quest-controls button{min-height:43px}
+.conversation-quest-play{border-radius:18px;border:1px solid var(--line);background:var(--card-soft);padding:23px}
+.conversation-quest-progress{display:flex;justify-content:space-between;gap:15px;align-items:center;font-size:12px;color:var(--muted);margin-bottom:10px}
+.conversation-quest-progress strong{font-size:13px;color:var(--gold);white-space:nowrap}
+.conversation-quest-play h3{font:normal clamp(23px,3.7vw,32px)/1.4 Georgia,serif;margin:13px 0 10px;max-width:670px;overflow-wrap:anywhere}
+.conversation-quest-options{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:19px 0}
+.conversation-quest-option{min-height:70px;display:flex;align-items:center;text-align:left;gap:13px;background:var(--card);border:1px solid var(--line-bright);border-radius:13px;padding:13px;cursor:pointer;color:var(--text);font:inherit;transition:border-color .16s ease,background .16s ease}
+.conversation-quest-option>span{flex:0 0 27px;min-height:27px;display:grid;place-items:center;border:1px solid var(--line);border-radius:8px;color:var(--gold);font-size:11px}
+.conversation-quest-option strong{font-size:14px;line-height:1.5;font-weight:600;min-width:0;overflow-wrap:anywhere}
+.conversation-quest-option:hover:not(:disabled),.conversation-quest-option:focus-visible{border-color:var(--gold)}
+.conversation-quest-option:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
+.conversation-quest-option:disabled{cursor:default}
+.conversation-quest-option.is-correct{border-color:#8ecda5;background:rgba(78,154,109,.14)}
+.conversation-quest-option.is-missed{border-color:#df9c9c;background:rgba(185,83,92,.13)}
+.conversation-quest-feedback{border-radius:13px;border:1px solid var(--line-bright);padding:16px;margin-bottom:13px;background:var(--card)}
+.conversation-quest-feedback strong{display:block;color:var(--gold);margin-bottom:5px}
+.conversation-quest-feedback p{line-height:1.7;margin:0 0 6px;font-size:14px;overflow-wrap:anywhere}
+.conversation-quest-feedback small{display:block;color:var(--muted);font-size:12px}
+.conversation-quest-play>.primary-button{min-height:44px}
+.conversation-quest-play>.secondary-button{display:block;margin-top:17px;min-height:40px}
+.conversation-quest-complete{text-align:center;padding:28px 18px;border:1px solid var(--line);border-radius:18px;background:var(--card-soft)}
+.conversation-quest-complete h3{font:normal 24px Georgia,serif;margin:12px 0}
+.conversation-quest-score{font:normal clamp(40px,7vw,60px) Georgia,serif;color:var(--gold)}
+.conversation-quest-score small{font-size:21px;color:var(--muted)}
+.conversation-quest-complete p{font-size:13px;line-height:1.65;color:var(--muted)}
+.conversation-quest-complete button{min-height:44px}
+.conversation-quest-review{margin:22px 0 0}.conversation-quest-review h3{font-size:19px;margin:0 0 13px}
+.conversation-quest-review article{padding:15px 16px;margin-bottom:10px;border:1px solid var(--line);border-radius:14px;background:var(--card-soft)}
+.conversation-quest-review article>span{font-size:11px;letter-spacing:1px;color:var(--gold)}
+.conversation-quest-review article>strong{display:block;font-size:14px;margin:9px 0;line-height:1.45}
+.conversation-quest-review article>p{font-size:17px;color:var(--gold);margin:8px 0;line-height:1.55;overflow-wrap:anywhere}
+.conversation-quest-review article>small{display:block;color:var(--muted);font-size:12px;line-height:1.6}
+.conversation-quest-review article>.conversation-review-miss{font-size:12px;color:var(--muted)}
+@media(max-width:750px){.conversation-quest-scenarios{grid-template-columns:minmax(0,1fr)}.conversation-quest-options{grid-template-columns:minmax(0,1fr)}}
+@media(max-width:560px){.conversation-quest{padding:18px 14px}.conversation-quest-start,.conversation-quest-play{padding:18px 14px}.conversation-quest-options{gap:9px}.conversation-quest-option{min-height:64px}.conversation-quest-controls button,.conversation-quest-start>.primary-button,.conversation-quest-play>.primary-button{width:100%}}
+@media(prefers-reduced-motion:reduce){.conversation-quest-option{transition:none!important}}
