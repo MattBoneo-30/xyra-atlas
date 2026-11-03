@@ -61,6 +61,13 @@ function waitRoute(page,value){return page.waitForFunction(route=>location.hash.
 
 try{
  await ready();
+ // Validate security headers against the actual local preview, not only a config file.
+ const homeResponse=await fetch(BASE+'/');
+ const policy=homeResponse.headers.get('content-security-policy')||'';
+ expect(policy.includes("script-src 'self'"),'preview enforces self-hosted scripts');
+ expect(homeResponse.headers.get('x-frame-options')==='DENY','preview resists framing');
+ const missingResponse=await fetch(BASE+'/this-asset-is-not-present.js');
+ expect(missingResponse.status===404,'missing assets return 404 rather than fake HTML');
  browser=await chromium.launch({headless:true,args:['--no-sandbox']});
  await smoke('desktop-lessons', {viewport:{width:1365,height:900}},async(page)=>{
   expect(await page.locator('.home-page').count()===1,'home screen renders');

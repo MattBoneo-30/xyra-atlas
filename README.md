@@ -4,7 +4,7 @@
 
 ![Xyra Atlas emblem](assets/atlas-mark.svg)
 
-## Current release: World Phrase Packs 1.41
+## Current release: World Phrase Packs 1.41 (security hardening)
 
 - A violet-and-gold responsive interface, **14 distinct original vector course worlds** plus three cinematic portal scenes and fourteen case-specific illustrated chapters, Xyra's Corner artwork and a home-screen app icon. The same course identity appears on home tiles, category cards, course covers and lessons.
 - 14 learning subjects and **131 interactive lessons**: 117 existing lessons plus **14 new applied capstone labs**, one in every subject. Each capstone contains an original decision case, worked example, hands-on exercise, self-check rubric, knowledge question, and optional source for further reading (counts verified by tests).
@@ -99,6 +99,8 @@ For iOS: open the Vercel URL in **Safari** → Share → **Add to Home Screen** 
 
 ## Privacy and safety
 
+- The Vercel deployment and local preview share a restrictive Content Security Policy with local-only scripts and connections, prohibited object embedding, and frame protection. Security headers, offline assets and extension-sensitive 404 behavior are covered by automated tests. No account or external CDN is needed.
+
 - All data is kept in local browser storage on the device. It does **not** automatically sync between devices.
 - A JSON backup contains your selected name, learning history, bookmarks and quiz answers. Treat it as personal data; store it privately.
 - Clearing site data or uninstalling can erase progress. Export first.
@@ -144,3 +146,4 @@ vercel.json            Vercel build and security headers
 4. A transparent download manager for optional offline packs and optional end-to-end encrypted synchronization.
 
 Made for curiosity, by the Xyra Atlas project.
+
