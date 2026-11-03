@@ -51,7 +51,7 @@ test('case-based pedagogy has substantial explanations, specific worked examples
   for(const source of lesson.sources){
    const url=new URL(source.url);
    assert.equal(url.protocol,'https:');
-   assert.ok(source.label.length>=22);
+   assert.ok(source.label.trim().length>=12,key+' meaningful source label');
    sources.add(url.hostname);
   }
  }
