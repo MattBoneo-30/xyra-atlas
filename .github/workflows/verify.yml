@@ -38,6 +38,7 @@ jobs:
           test -s dist/languagechallenge.js
           test -s dist/examhistory.js
           test -s dist/focusedexam.js
+          test -s dist/capstonelabs.js
           test -s dist/visualmap.js
           test -s dist/narration.js
           test -s dist/storagehealth.js
