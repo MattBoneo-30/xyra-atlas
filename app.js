@@ -75,6 +75,7 @@ let studioTab = 'savings';
 const getDueReviews = () => dueReviewCards(reviewCards, saved.completed, saved.reviews, Date.now(), shadowUnlocked);
 let route = parseHash();
 let filter = 'all';
+let courseStageFilter='all';
 let query = '';
 let glossaryQuery = '';
 let globalQuery = '';
@@ -270,6 +271,9 @@ function coursePage() {
   if(c.dark && !shadowUnlocked) { modal='shadow'; return explore(); }
   const done=courseProgress(c);
   const firstUnfinished=c.lessons.find(l=>!isCompleted(idFor(c.id,l.id))) || c.lessons[0];
+  const stages=['Beginner','Intermediate','Advanced'];
+  const stageCount=stage=>c.lessons.filter(l=>l.stage===stage).length;
+  const visible=c.lessons.map((lesson,index)=>({lesson,index})).filter(item=>courseStageFilter==='all'||item.lesson.stage===courseStageFilter);
   return `<main class="page course-page"><div class="subnav">${button(`${icon('back',18)} Back to learning`,'goto-explore','back-link')}${button(icon('heart',22),'favorite',`icon-button ${saved.favorites.includes(c.id)?'is-favorite':''}`,`data-id="${c.id}" aria-label="${saved.favorites.includes(c.id)?'Remove from':'Add to'} favorites"`)}</div>
     <div class="course-hero-art"><img src="/assets/${esc(c.art)}.svg" alt="Decorative illustration for ${esc(c.title)}"/><span class="hero-art-overlay"></span><span class="art-ornament">✦</span></div>
     <div class="course-meta"><span class="overline">${esc(c.tag)}</span>${c.dark?'<span class="adult-mini">18+</span>':''}</div>
@@ -278,7 +282,8 @@ function coursePage() {
     <div class="course-progress"><div><strong>Your progress</strong><span>${done}/${c.lessons.length} lessons</span></div>${bars(done,c.lessons.length)}</div>
     ${button(`${icon('play',18)} ${done ? 'Continue learning' : 'Start learning'}`,'open-lesson','primary-button course-start',`data-course="${esc(c.id)}" data-lesson="${esc(firstUnfinished.id)}"`)}
     <div class="section-heading lesson-list-title"><div><span class="overline">A PATH WORTH TAKING</span><h2>Your lessons</h2></div></div>
-    <div class="lesson-list">${c.lessons.map((l,i)=>`<button type="button" data-action="open-lesson" data-course="${esc(c.id)}" data-lesson="${esc(l.id)}" class="lesson-row"><span class="lesson-number ${isCompleted(idFor(c.id,l.id))?'done':''}">${isCompleted(idFor(c.id,l.id))?icon('check',19):String(i+1).padStart(2,'0')}</span><span class="lesson-info"><strong>${esc(l.title)}</strong><small>${esc(l.stage)} · ${l.minutes} min</small></span><span>${chevron}</span></button>`).join('')}</div>
+    <div class="course-stage-tabs" role="group" aria-label="Filter lessons by learning level">${[['all','All levels',c.lessons.length],...stages.map(stage=>[stage,stage,stageCount(stage)])].map(([id,label,count])=>button(`${esc(label)} <span>${count}</span>`,'course-stage-filter',`course-stage-button ${courseStageFilter===id?'selected':''}`,`data-id="${esc(id)}" aria-pressed="${courseStageFilter===id}"`)).join('')}</div>
+    <div class="lesson-list">${visible.map(({lesson:l,index:i})=>`<button type="button" data-action="open-lesson" data-course="${esc(c.id)}" data-lesson="${esc(l.id)}" class="lesson-row"><span class="lesson-number ${isCompleted(idFor(c.id,l.id))?'done':''}">${isCompleted(idFor(c.id,l.id))?icon('check',19):String(i+1).padStart(2,'0')}</span><span class="lesson-info"><strong>${esc(l.title)}</strong><small>${esc(l.stage)} · ${l.minutes} min</small></span><span>${chevron}</span></button>`).join('')}</div>
     <p class="info-line">${icon('info',16)} Educational guidance, not a substitute for individualized legal, medical, financial or mental-health advice.</p>
   </main>`;
 }
@@ -838,7 +843,8 @@ async function handleAction(e) {
   else if(action==='theme') {saved.theme=saved.theme==='dark'?'light':'dark';persist();render();}
   else if(action==='filter') {filter=id;render();}
   else if(action==='reset-search') {query='';filter='all';render();}
-  else if(action==='open-course') {const c=findCourse(id);if(!c)return; if(c.dark&&!shadowUnlocked){gateConfirmed=false;modal='shadow';render();return;}nav(`course/${c.id}`);}
+  else if(action==='open-course') {const c=findCourse(id);if(!c)return; if(c.dark&&!shadowUnlocked){gateConfirmed=false;modal='shadow';render();return;}if(route.courseId!==c.id)courseStageFilter='all';nav(`course/${c.id}`);}
+  else if(action==='course-stage-filter') {if(route.view!=='course'||!['all','Beginner','Intermediate','Advanced'].includes(id))return;courseStageFilter=id;render();}
   else if(action==='open-lesson') {const cid=button.dataset.course, lid=button.dataset.lesson;const c=findCourse(cid);if(c?.dark&&!shadowUnlocked){gateConfirmed=false;modal='shadow';render();return;} if(findLesson(cid,lid)){saved.lastOpened={courseId:cid,lessonId:lid};persist();nav(`lesson/${cid}/${lid}`);}}
   else if(action==='favorite') toggle('favorites',id);
   else if(action==='bookmark') toggle('bookmarks',button.dataset.key);
