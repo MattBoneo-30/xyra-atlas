@@ -18,6 +18,9 @@ server.stdout.on('data',chunk=>serverOutput.push(String(chunk)));
 server.stderr.on('data',chunk=>serverOutput.push(String(chunk)));
 let browser;
 let failures=0;
+// A failed readiness check must never consume the full CI job timeout.
+const watchdog=setTimeout(()=>{console.error('Browser smoke test exceeded four minutes; aborting rather than hanging CI.');process.exit(2);},240000);
+watchdog.unref();
 function expect(condition,label){assert.ok(condition,label);console.log('  ✓ '+label);}
 async function ready(){
  for(let attempt=0;attempt<90;attempt++){
@@ -29,6 +32,8 @@ async function ready(){
 }
 async function smoke(name,options,fn){
  const context=await browser.newContext(options),page=await context.newPage();
+ page.setDefaultTimeout(12000);
+ page.setDefaultNavigationTimeout(15000);
  const errors=[];
  page.on('pageerror',e=>errors.push(e.message));
  page.on('console',msg=>{if(msg.type()==='error')console.log('  Browser console: '+msg.text().slice(0,300));});
@@ -125,7 +130,10 @@ try{
   const lessonOverflow=await mobileOverflow(page);
   expect(lessonOverflow.scroll<=lessonOverflow.width+2,'lesson fits mobile width: '+JSON.stringify(lessonOverflow));
   await page.screenshot({path:snapshots+'/mobile-lesson.png',fullPage:true});
-  await page.evaluate(async()=>{await navigator.serviceWorker.ready;});
+  await page.evaluate(async()=>{
+   const timeout=new Promise((_,reject)=>setTimeout(()=>reject(new Error('Service worker did not become ready within 15 seconds')),15000));
+   await Promise.race([navigator.serviceWorker.ready,timeout]);
+  });
   await page.waitForTimeout(900);
   await page.reload({waitUntil:'domcontentloaded'});
   await page.waitForFunction(()=>Boolean(navigator.serviceWorker.controller));
@@ -143,5 +151,6 @@ try{
  if(browser)await browser.close();
  server.kill('SIGTERM');
 }
+clearTimeout(watchdog);
 if(failures)throw Error(failures+' browser smoke scenario(s) failed. Check screenshots and logs.');
 console.log('\nAll real Chromium browser smoke scenarios passed.');
