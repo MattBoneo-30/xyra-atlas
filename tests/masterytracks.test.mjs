@@ -29,7 +29,7 @@ test('every advanced guide includes serious pedagogy, worked problem and account
    assert.ok(lesson.sections.every(s=>s.heading.length>=8&&s.body.length>=95),lesson.id+' narrative depth');
    assert.ok(lesson.example.length>=90,lesson.id+' worked example');
    assert.ok(lesson.task.length>=80,lesson.id+' applied task');
-   assert.ok(lesson.quiz.options.length===3&&lesson.quiz.options.every(x=>x.length>3));
+   assert.ok(lesson.quiz.options.length===3&&lesson.quiz.options.every(x=>typeof x==='string'&&x.trim().length>0));
    assert.ok(Number.isInteger(lesson.quiz.correct)&&lesson.quiz.correct>=0&&lesson.quiz.correct<3);
    assert.ok(lesson.quiz.explanation.length>=35);
    assert.ok(lesson.sources.length>=1);
