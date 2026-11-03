@@ -1053,6 +1053,26 @@ async function handleAction(e) {
    if(modal!=='challenge-discard')return;
    saved.languageChallenge=null;modal='';persist();render();
   }
+  else if(action==='phrase-review-reveal'){
+    if(route.view!=='language'||!duePhraseReviews(saved.phraseReviews,saved.language,PHRASEBOOK).length)return;
+    phraseReviewRevealed=true;render();
+  }
+  else if(action==='phrase-review-rate'){
+    if(route.view!=='language'||!phraseReviewRevealed)return;
+    const active=duePhraseReviews(saved.phraseReviews,saved.language,PHRASEBOOK)[0];
+    if(!active||active.id!==id||!['again','remembered'].includes(button.dataset.outcome))return;
+    saved.phraseReviews=ratePhraseReview(saved.phraseReviews,saved.language,id,button.dataset.outcome,PHRASEBOOK);
+    phraseReviewRevealed=false;persist();render();
+  }
+  else if(action==='phrase-review-reset'){
+    if(route.view!=='language'||!phraseReviewStats(saved.phraseReviews,saved.language,PHRASEBOOK)?.reviewed)return;
+    modal='phrase-review-reset';render();
+  }
+  else if(action==='phrase-review-reset-confirm'){
+    if(modal!=='phrase-review-reset')return;
+    saved.phraseReviews=clearPhraseReviews(saved.phraseReviews,saved.language,PHRASEBOOK);
+    phraseReviewRevealed=false;modal='';persist();render();
+  }
   else if(action==='phrase-reveal'){phraseRevealed=true;render();}
   else if(action==='phrase-next'||action==='phrase-prev'){const p=getPhrasePack(saved.language);if(!p)return;phraseIndex=(phraseIndex+(action==='phrase-next'?1:p.phrases.length-1))%p.phrases.length;phraseRevealed=false;render();}
   else if(action==='phrase-known'){const p=getPhrasePack(saved.language);if(!p)return;const word=p.phrases[phraseIndex%p.phrases.length];const known=new Set(saved.phrases[saved.language]||[]);known.has(word.id)?known.delete(word.id):known.add(word.id);saved.phrases[saved.language]=[...known];persist();render();}
@@ -1071,7 +1091,7 @@ async function handleAction(e) {
   else if(action==='storage-export-recovery')downloadRecoveryCopy();
   else if(action==='storage-retry'){if(storageProblem==='corrupt'||storageProblem==='read-failed'){flash('Existing data is protected. Use a valid backup or reset intentionally.');}else{const ok=persist();flash(ok?'Progress saved successfully in this browser.':'Saving is still blocked; export a backup.');}}
   else if(action==='reset-dialog') {modal='reset';render();}
-  else if(action==='confirm-reset') {personalCardEditingId=null;personalCardRevealed=false;personalCardPendingDelete=null;personalCardQuery='';recoveryRaw=null;storageProblem=null;storageWarningShown=false;saved=createInitialState();shadowUnlocked=false;gateConfirmed=false;reviewRevealed=false;phraseRevealed=false;phraseIndex=0;studioTab='savings';visitToday();persist();modal='';nav('home');flash('Local progress reset.');}
+  else if(action==='confirm-reset') {phraseReviewRevealed=false;personalCardEditingId=null;personalCardRevealed=false;personalCardPendingDelete=null;personalCardQuery='';recoveryRaw=null;storageProblem=null;storageWarningShown=false;saved=createInitialState();shadowUnlocked=false;gateConfirmed=false;reviewRevealed=false;phraseRevealed=false;phraseIndex=0;studioTab='savings';visitToday();persist();modal='';nav('home');flash('Local progress reset.');}
   else if(action==='close-modal') {if(modal==='personal-card-delete')personalCardPendingDelete=null;if(modal==='backup-preview')pendingBackup=null;if(modal==='backup-unlock')encryptedFile=null;modal='';if(['course','lesson'].includes(route.view)&&route.courseId==='shadow'&&!shadowUnlocked)nav('explore');else render();requestAnimationFrame(()=>document.getElementById('atlas-main')?.focus());}
   else if(action==='enter-shadow') {if(!gateConfirmed)return;shadowUnlocked=true;modal='';nav('course/shadow');}
   else if(action==='open-corner') nav('mentor');
