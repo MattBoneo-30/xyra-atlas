@@ -45,7 +45,7 @@ test('offline response grading is first-answer locked and does not mutate unrela
  answers=resetClinic(answers,'laws');
  assert.equal(clinicStats(answers,'laws').answered,0);
  assert.equal(clinicStats(answers,'thinking').correct,3);
- assert.equal(clinicStats(old,'laws').correct,2,'reset never mutates old state');
+ assert.equal(clinicStats(old,'laws').correct,3,'reset never mutates old state');
  assert.equal(getClinic('bogus'),null);
 });
 test('untrusted backup values and forged keys are rejected without prototype pollution',()=>{

@@ -322,7 +322,7 @@ function clinicPanel(course){
     <div class="clinic-choices" role="group" aria-label="Possible actions for decision ${i+1}">
       ${q.options.map((option,n)=>button(`<span class="clinic-choice-label">${String.fromCharCode(65+n)}</span> ${esc(option)}`,'clinic-answer',`clinic-choice ${answered&&picked===n?'selected':''}`,`data-course="${esc(course.id)}" data-id="${esc(q.id)}" data-index="${n}" aria-pressed="${answered&&picked===n}" ${answered?'disabled':''}`)).join('')}
     </div>
-    ${answered?`<div class="clinic-feedback ${picked===q.correct?'is-correct':'is-review'}" role="status"><strong>${picked===q.correct?'Reasoned choice':'Review the reasoning'}</strong><p>${esc(q.explanation)}</p><span>Recommended response: ${esc(q.options[q.correct])}</span></div>`:''}
+    ${answered?`<div class="clinic-feedback ${picked===q.correct?'is-correct':'is-review'}" id="clinic-feedback-${esc(course.id)}-${esc(q.id)}" role="status" tabindex="-1"><strong>${picked===q.correct?'Reasoned choice':'Review the reasoning'}</strong><p>${esc(q.explanation)}</p><span>Recommended response: ${esc(q.options[q.correct])}</span></div>`:''}
    </article>`;
   }).join('')}</div>
   <div class="clinic-foot"><p>Sources to check when connected:
@@ -1187,6 +1187,7 @@ async function handleAction(e) {
     const prev=Object.keys(saved.clinicAnswers).length;
     if(Object.keys(next).length===prev)return;
     saved.clinicAnswers=next;persist();render();
+    document.getElementById('clinic-feedback-'+route.courseId+'-'+id)?.focus({preventScroll:true});
   }
   else if(action==='clinic-retry'){
     if(route.view!=='course'||route.courseId!==id)return;

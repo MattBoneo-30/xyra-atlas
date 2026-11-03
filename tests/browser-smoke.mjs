@@ -1226,8 +1226,13 @@ try{
   await page.locator('.clinic-panel').waitFor();
   expect((await getState(page)).clinicAnswers['laws:decision-1']===2,'offline clinic retains response');
   await context.setOffline(false);
+  await page.locator('.clinic-question').nth(2).locator('.clinic-choice').first().focus();
+  await page.keyboard.press('Enter');
+  expect(Object.hasOwn((await getState(page)).clinicAnswers,'laws:decision-3'),'advanced case is keyboard-answerable offline');
+  expect(await page.locator('#clinic-feedback-laws-decision-3').evaluate(node=>document.activeElement===node),'keyboard answer moves focus to reasoning feedback');
   await page.locator('[data-action="clinic-retry"]').click();
   expect((await getState(page)).clinicAnswers['laws:decision-1']===undefined,'retry clears only selected clinic answers');
+  expect((await getState(page)).clinicAnswers['laws:decision-3']===undefined,'retry also clears advanced case while retaining other subject state');
   await page.goto(BASE+'/#/course/psychology',{waitUntil:'domcontentloaded'});
   await page.locator('.clinic-panel').waitFor();
   expect(await page.locator('.clinic-question').count()===3,'a distinct nonlegal course has original case practice');
