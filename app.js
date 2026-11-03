@@ -109,6 +109,8 @@ let currentToast = '';
 let lessonAudio = null;
 let offlinePack={state:'idle',cached:0,total:0,ready:false,percent:0,version:'unknown'};
 let offlineJob=0;
+let offlineUpdateWaiting=false;
+let offlineUpdateApplying=false;
 const today = () => localDayKey(new Date());
 const idFor = (courseId, lessonId) => `${courseId}:${lessonId}`;
 const isCompleted = key => saved.completed.includes(key);
@@ -711,6 +713,7 @@ function offlinePage(){
  const s=offlinePack,working=['checking','repairing'].includes(s.state);
  return `<main class="page offline-library-page"><div class="subnav">${button(`${icon('back',18)} Your space`,'offline-back','back-link')}</div>
  <section class="offline-hero"><div class="offline-decoration" aria-hidden="true">✦</div><span class="overline">THE LIBRARY GOES WITH YOU</span><h1>Knowledge without <em>a signal.</em></h1><p>See exactly how much of the learning library is saved for offline access on this device.</p></section>
+ ${offlineUpdateWaiting?`<section class="offline-update-ready" role="status" aria-label="New Atlas update ready"><div><span class="overline">NEW OFFLINE EDITION</span><h2>An Atlas update is ready</h2><p>The new lesson files have finished downloading. Apply the update when you're ready; this will reload Atlas, but will not clear your saved progress. Keep a backup before switching devices or clearing browser data.</p></div>${button(offlineUpdateApplying?'Applying update…':'Apply update now','offline-apply-update','primary-button',offlineUpdateApplying?'disabled':'')}</section>`:''}
  <section class="offline-panel"><div class="offline-panel-head"><div><span class="overline">THIS BROWSER</span><h2>Offline readiness</h2></div><span class="offline-pill ${s.ready?'ready':''}" role="status">${s.ready?'Ready':working?'Checking':s.state==='incomplete'?'Incomplete':s.state==='unsupported'?'Unsupported':s.state==='idle'?'Unchecked':'Needs attention'}</span></div>
  <div class="offline-count"><strong>${s.total?s.cached+' / '+s.total:'—'}</strong><span>${s.total?'offline files verified':'learning files'}</span></div><div class="offline-meter" role="progressbar" aria-label="Downloaded learning files" aria-valuemin="0" aria-valuemax="${s.total||1}" aria-valuenow="${s.cached}"><span style="width:${s.percent}%"></span></div>
  <p id="offline-message" class="offline-advice" role="status">${esc(offlineAdvice(s.state))}</p>
@@ -745,10 +748,52 @@ async function inspectOffline(repair=false){
   if(id===offlineJob&&route.view==='offline')render();
  }
 }
+function watchOfflineRegistration(reg){
+ if(!reg)return;
+ const checkWaiting=()=>{
+  const waiting=Boolean(reg.waiting&&navigator.serviceWorker.controller);
+  if(offlineUpdateWaiting!==waiting){
+   offlineUpdateWaiting=waiting;
+   if(route.view==='offline')render();
+  }
+ };
+ checkWaiting();
+ reg.addEventListener('updatefound',()=>{
+  const installing=reg.installing;
+  if(!installing)return;
+  installing.addEventListener('statechange',()=>{
+   if(installing.state==='installed')checkWaiting();
+  });
+ });
+}
 async function updateOffline(){
  if(!navigator.onLine){flash('Connect to check for updates.');return;}
- try{const reg=await navigator.serviceWorker.getRegistration();if(!reg){flash('Open Atlas while connected before updating.');return;}await reg.update();await inspectOffline();flash('Update check finished. Reload if a new version is available.');}
- catch{flash('Unable to check for updates. Try again online.');}
+ if(!('serviceWorker' in navigator)){flash('Offline updates are unavailable on this browser.');return;}
+ try{
+  const reg=await navigator.serviceWorker.getRegistration();
+  if(!reg){flash('Open Atlas while connected before checking for updates.');return;}
+  watchOfflineRegistration(reg);
+  await reg.update();
+  offlineUpdateWaiting=Boolean(reg.waiting&&navigator.serviceWorker.controller);
+  if(route.view==='offline')render();
+  if(offlineUpdateWaiting)flash('Update is ready. Choose Apply update when convenient.');
+  else if(reg.installing)flash('Update download started. It will appear here when ready.');
+  else flash('No newer release is waiting. Your current edition remains available.');
+ }catch{flash('Unable to check for updates. Try again online.');}
+}
+async function applyOfflineUpdate(){
+ if(offlineUpdateApplying||!('serviceWorker' in navigator))return;
+ try{
+  const reg=await navigator.serviceWorker.getRegistration();
+  if(!reg?.waiting){offlineUpdateWaiting=false;flash('No new update is ready to apply.');return;}
+  offlineUpdateApplying=true;
+  reg.waiting.postMessage({type:'ATLAS_ACTIVATE_UPDATE'});
+  // The controllerchange event reloads after the new worker actually takes control.
+  if(route.view==='offline')render();
+ }catch{
+  offlineUpdateApplying=false;
+  flash('The update could not be activated. Your current edition is unchanged.');
+ }
 }
 
 function you() {
@@ -925,6 +970,7 @@ async function handleAction(e) {
   else if(action==='offline-verify')await inspectOffline();
   else if(action==='offline-repair')await inspectOffline(true);
   else if(action==='offline-update')await updateOffline();
+  else if(action==='offline-apply-update')await applyOfflineUpdate();
   else if(action==='search') {nav('search');requestAnimationFrame(()=>document.getElementById('atlas-global-search')?.focus());}
   else if(action==='search-filter') {globalSearchKind=SEARCH_KINDS.some(k=>k.id===id)?id:'all';render();}
   else if(action==='search-clear') {globalQuery='';render();requestAnimationFrame(()=>document.getElementById('atlas-global-search')?.focus());}
@@ -1151,7 +1197,16 @@ window.addEventListener('hashchange',()=>{reviewRevealed=false;stopLessonAudio()
 window.addEventListener('online',render);window.addEventListener('offline',render);
 window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();installEvent=e;});
 if('serviceWorker' in navigator && location.protocol.startsWith('http')){
-  window.addEventListener('load',()=>navigator.serviceWorker.register('/sw.js').catch(()=>{/* App remains usable online */}));
+  navigator.serviceWorker.addEventListener('controllerchange',()=>{
+    if(offlineUpdateApplying){location.reload();return;}
+    if(route.view==='offline')requestAnimationFrame(()=>inspectOffline());
+  });
+  window.addEventListener('load',async()=>{
+    try{
+      const reg=await navigator.serviceWorker.register('/sw.js');
+      watchOfflineRegistration(reg);
+    }catch{/* Atlas remains usable online if service worker registration fails. */}
+  });
 }
 if(route.view==='course'&&route.courseId==='shadow') modal='shadow';
 if(route.view==='lesson'&&route.courseId==='shadow') modal='shadow';
