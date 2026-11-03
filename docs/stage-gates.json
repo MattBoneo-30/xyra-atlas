@@ -19,9 +19,32 @@
         "Primary official links and jurisdiction-correct Philippine legal guidance editorially verified",
         "Latest curriculum CI plus accessibility tests pass"
       ],
-      "evidence": [],
+      "evidence": [
+        {
+          "type": "commit",
+          "value": "1e207975ac7275a55eb06f9b8bbcc30bc67ad983",
+          "note": "Three-stage learning objectives and actual per-subject lesson paths across 14 subjects."
+        },
+        {
+          "type": "commit",
+          "value": "51ee6ff9b522ee45d240845b19a3106fd3b66f29",
+          "note": "Three original PH data privacy, bank and DTI case-study lessons with official source links."
+        },
+        {
+          "type": "commit",
+          "value": "c22550c07253338a763edd918e14f8b4af42758a",
+          "note": "28 original, subject-specific decision-check questions with offline persistence and source references."
+        },
+        {
+          "type": "ci",
+          "value": "https://github.com/MattBoneo-30/xyra-atlas/actions/runs/41676416698",
+          "note": "Automated test/build/browser verification passed for the decision clinic release."
+        }
+      ],
       "blockers": [
-        "Curriculum breadth and source/editorial validation are not yet complete."
+        "Not every one of 134 lessons has received a documented editorial review or a second applied assessment.",
+        "An independent, current link-and-claim audit remains necessary for every legal/financial/health-sensitive course source.",
+        "More worked examples, differentiated practice and subject-specific assessment rubrics remain to be validated."
       ]
     },
     {
