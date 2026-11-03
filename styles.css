@@ -435,3 +435,16 @@ html[data-theme=light]{color-scheme:light;--bg:#fbf5f6;--bg-raised:#fff9fa;--car
 @media(max-width:680px){.atlas-scene-grid{grid-template-columns:minmax(0,1fr);gap:13px}.atlas-scene-card{height:265px}.atlas-scene-section{margin-top:26px}}
 @media(max-width:420px){.home-page .hero-archive{height:336px}.hero-archive>img{object-position:61% center}.hero-archive .landscape-shade{background:linear-gradient(90deg,rgba(14,10,35,.87),rgba(22,14,49,.52) 70%,rgba(20,12,37,.22)),linear-gradient(0deg,rgba(13,11,36,.43),transparent)}.hero-archive .hero-caption{left:18px;right:14px;bottom:21px;gap:10px}.hero-archive .hero-caption strong{font-size:36px}.hero-archive .hero-caption p{max-width:260px;font-size:12px}.atlas-scene-card{height:260px}.atlas-scene-copy{left:18px;bottom:17px}}
 @media(prefers-reduced-motion:reduce){.atlas-scene-card>img,.hero-enter-button{transition:none!important;transform:none!important}}
+
+
+/* Atlas v1.37 — illustrated case-file scenes in the actual lesson reader. */
+.reading-illustration.chapter-art-feature{height:clamp(250px,37vw,372px);margin:24px 0 29px;isolation:isolate;border-color:rgba(244,197,187,.31);background:#25203d;box-shadow:0 15px 39px rgba(22,14,44,.15)}
+.chapter-art-feature>img{display:block;width:100%;height:100%;object-fit:cover;object-position:center;opacity:1}
+.chapter-art-feature::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(16,13,34,.88),rgba(23,16,43,.38) 59%,transparent 92%),linear-gradient(0deg,rgba(12,12,33,.66),transparent 68%);pointer-events:none}
+.chapter-art-feature .reading-illustration-glow{z-index:2;color:#ffe2bb;text-shadow:0 0 20px #ffe2b3;pointer-events:none}
+.chapter-art-caption{position:absolute;bottom:clamp(16px,3vw,28px);left:clamp(18px,3.8vw,34px);right:17px;z-index:1;color:#fff2e5;display:flex;flex-direction:column;align-items:flex-start;gap:8px;max-width:480px;text-align:left}
+.chapter-art-caption .overline{font-size:10px;letter-spacing:2px;color:#ffe5c0}
+.chapter-art-caption strong{display:block;font:normal clamp(25px,4.2vw,38px)/1.15 Georgia,"Times New Roman",serif;letter-spacing:-.4px;color:#fff2e5;text-shadow:0 2px 16px rgba(14,10,32,.8);overflow-wrap:anywhere}
+.chapter-art-caption>span:last-child{font-size:13px;line-height:1.65;color:#f4dfe8;max-width:370px;text-shadow:0 2px 13px rgba(11,8,29,.75)}
+@media(max-width:560px){.reading-illustration.chapter-art-feature{height:270px}.chapter-art-feature>img{object-position:58% center}.chapter-art-caption{bottom:18px;left:18px;right:18px;gap:8px;max-width:300px}.chapter-art-caption strong{font-size:27px}.chapter-art-caption>span:last-child{font-size:12px}.chapter-art-feature::after{background:linear-gradient(90deg,rgba(13,11,36,.86),rgba(22,16,43,.56) 66%,rgba(19,11,38,.17)),linear-gradient(0deg,rgba(12,10,31,.58),transparent 78%)}}
+@media(prefers-reduced-motion:reduce){.chapter-art-feature>img{transition:none!important;animation:none!important}}
