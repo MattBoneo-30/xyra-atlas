@@ -10,7 +10,7 @@ const validDate=v=>typeof v==='string'&&Number.isFinite(Date.parse(v))?new Date(
 const allowedCourse=(id,courses)=>id==='general'||courses.some(c=>c.id===id&&!c.dark);
 function safeReview(review,id){
  if(!isRecord(review))return null;
- return normalizeReviews({'personal:'+id:review})['personal:'+id]||null;
+ return normalizeReviews({['personal:'+id]:review})['personal:'+id]||null;
 }
 export function normalizePersonalCards(input,courses){
  if(!Array.isArray(input))return [];
