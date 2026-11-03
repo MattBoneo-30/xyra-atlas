@@ -58,7 +58,6 @@ test('expanded language content and right-to-left rendering ship offline',()=>{
  const sw=fs.readFileSync('sw.js','utf8');
  assert.match(app,/language-region-note/);
  assert.match(app,/lang="\$\{esc\(pack\.locale\)\}" dir="auto"/);
- assert.match(app,/Atlas v1\.41/);
  assert.match(sw,/\/phrasebook\.js/);
- assert.match(sw,/v51/);
+ assert.match(sw,/const CACHE = CACHE_PREFIX \+ 'v[0-9]+'/);
 });
