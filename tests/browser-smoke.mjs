@@ -195,6 +195,36 @@ try{
   const restored=await getState(page);
   expect(Array.isArray(restored.completed),'normal browser storage is writable after explicit reset');
  });
+ await smoke('offline-pack-manager',{viewport:{width:1280,height:800}},async(page,context)=>{
+  await page.evaluate(async()=>{
+   const wait=new Promise((_,reject)=>setTimeout(()=>reject(new Error('Offline worker did not activate')),15000));
+   await Promise.race([navigator.serviceWorker.ready,wait]);
+  });
+  await page.locator('.desktop-rail [data-action="offline-open"]').click();
+  await page.locator('.offline-library-page').waitFor();
+  await page.waitForFunction(()=>document.querySelector('.offline-pill')?.textContent?.trim()==='Ready',{},{timeout:12000});
+  expect(await page.locator('.offline-count strong').textContent()!=='—','offline manager verifies a complete lesson pack');
+  const deleted=await page.evaluate(async()=>{
+   const names=await caches.keys(),name=names.find(n=>n.startsWith('xyra-atlas-'));
+   if(!name)return false;
+   const cache=await caches.open(name);return cache.delete('/assets/course-business.svg');
+  });
+  expect(deleted,'test can simulate a missing cached course illustration');
+  await page.locator('[data-action="offline-verify"]').click();
+  await page.waitForFunction(()=>document.querySelector('.offline-pill')?.textContent?.trim()==='Incomplete',{},{timeout:12000});
+  expect(await page.locator('.offline-advice').textContent()!=='' ,'missing asset produces a visible warning');
+  await page.locator('[data-action="offline-repair"]').click();
+  await page.waitForFunction(()=>document.querySelector('.offline-pill')?.textContent?.trim()==='Ready',{},{timeout:12000});
+  expect(await page.locator('.offline-meter').getAttribute('aria-valuenow')===await page.locator('.offline-meter').getAttribute('aria-valuemax'),'repair restores every required offline asset');
+  await context.setOffline(true);
+  await page.reload({waitUntil:'domcontentloaded'});
+  await page.locator('.offline-library-page').waitFor();
+  await page.locator('[data-action="offline-verify"]').click();
+  await page.waitForFunction(()=>document.querySelector('.offline-pill')?.textContent?.trim()==='Ready',{},{timeout:12000});
+  expect(await page.locator('.offline-pill').textContent()!=='' ,'offline manager can verify cached files without a network');
+  await context.setOffline(false);
+  await page.screenshot({path:snapshots+'/offline-library-ready.png',fullPage:true});
+ });
 }finally{
  if(browser)await browser.close();
  server.kill('SIGTERM');
