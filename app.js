@@ -24,6 +24,7 @@ import { SCENARIOS,normalizeScenarioAnswers,recordScenarioAnswer,scenarioProgres
 import { CASE_FILES,getCaseFile,evaluateCase,normalizeCasebook,advanceCase,resetCase,casebookStats } from './casebook.js';
 import { STUDIO_DEFAULTS, sanitizeStudio, calculateSavings, calculateBusiness, calculateTime } from './studio.js';
 import { PHRASEBOOK,getPhrasePack, sanitizePhraseProgress } from './phrasebook.js';
+import {normalizePhraseReviews,duePhraseReviews,phraseReviewStats,ratePhraseReview,clearPhraseReviews} from './phrasereview.js';
 import {LANGUAGE_CHALLENGE_MODES,createLanguageChallenge,normalizeLanguageChallenge,currentLanguageQuestion,answerLanguageChallenge,advanceLanguageChallenge,languageChallengeResults,normalizeLanguageChallengeHistory,recordLanguageChallengeHistory} from './languagechallenge.js';
 import { normalizeFieldNotes, setFieldNote, MAX_FIELD_NOTE_LENGTH } from './fieldnotes.js';
 import {normalizeCapstoneChecks,capstoneCheckProgress,setCapstoneCheck,clearCapstoneChecks} from './capstonechecks.js';
@@ -35,7 +36,7 @@ let storageProblem=null;
 let recoveryRaw=null;
 const esc = value => String(value ?? '').replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
 const plain = text => esc(text).replace(/\n/g, '<br>');
-function createInitialState(){return { completed: [], bookmarks: [], favorites: [], answers: {}, reviews: {}, fieldNotes: {}, capstoneChecks: {}, lastOpened: null, dailyVisits: [], theme: 'dark', language: 'ja', languageDays: [], phrases: {}, languageChallenge:null, languageChallengeHistory:{}, studio: sanitizeStudio(null), userName: '', welcomeDismissed: false, learningPath: null, scenarios: {}, casebook: {}, mistakes:{}, exam:null, examHistory:[], personalCards:[], reader:normalizeReaderPreferences(null) };}
+function createInitialState(){return { completed: [], bookmarks: [], favorites: [], answers: {}, reviews: {}, fieldNotes: {}, capstoneChecks: {}, lastOpened: null, dailyVisits: [], theme: 'dark', language: 'ja', languageDays: [], phrases: {}, phraseReviews:{}, languageChallenge:null, languageChallengeHistory:{}, studio: sanitizeStudio(null), userName: '', welcomeDismissed: false, learningPath: null, scenarios: {}, casebook: {}, mistakes:{}, exam:null, examHistory:[], personalCards:[], reader:normalizeReaderPreferences(null) };}
 function readStored() {
   try {
     const raw=localStorage.getItem(STORAGE_KEY);
@@ -51,6 +52,7 @@ function readStored() {
       dailyVisits: Array.isArray(data.dailyVisits) ? data.dailyVisits.filter(validDayKey).slice(-400) : [],
       languageDays: Array.isArray(data.languageDays) ? data.languageDays.filter(x => typeof x === 'string') : [],
       phrases: sanitizePhraseProgress(data.phrases),
+      phraseReviews:normalizePhraseReviews(data.phraseReviews,PHRASEBOOK),
       languageChallenge:normalizeLanguageChallenge(data.languageChallenge,PHRASEBOOK),
       languageChallengeHistory:normalizeLanguageChallengeHistory(data.languageChallengeHistory,PHRASEBOOK),
       answers: data.answers && typeof data.answers === 'object' && !Array.isArray(data.answers) ? data.answers : {},
@@ -79,6 +81,7 @@ let reviewRevealed = false;
 let mistakeFeedback=null;
 let mistakeIndex=0;
 let phraseRevealed = false, phraseIndex = 0;
+let phraseReviewRevealed=false;
 let languageChallengePendingMode='recognition';
 let studioTab = 'savings';
 const getDueReviews = () => dueReviewCards(reviewCards, saved.completed, saved.reviews, Date.now(), shadowUnlocked);
@@ -747,6 +750,7 @@ function modalView() {
   modal==='install' ? `<div class="modal-icon">${icon('download',26)}</div><span class="overline">TAKE YOUR ATLAS WITH YOU</span><h2>Install Xyra Atlas</h2><p>After the first successful online visit, the app shell and included lessons can work offline once fully cached.</p><div class="install-steps"><strong>On iPhone / iPad</strong><p>Open this website in Safari. Tap Share, then “Add to Home Screen” and enable “Open as Web App”.</p><strong>On Android</strong><p>Open in Chrome. Use the browser menu and select “Install app” or “Add to Home screen”, when available.</p></div>${installEvent?button(`Install now ${icon('download',18)}`,'install-prompt','primary-button'):''}<p class="fineprint">Installing does not automatically sync data across phones. Use Export/Import backup to transfer progress.</p>` :
   modal==='personal-card-delete' && personalCardPendingDelete ? `<div class="modal-icon warning-icon">${icon('alert',26)}</div><h2>Delete this card?</h2><p>This removes the question, answer and its review schedule from this device. Other lesson progress stays unchanged.</p>${button('Keep card','close-modal','secondary-button')}${button('Delete card','personal-card-delete-confirm','outline-danger')}` :
   modal==='challenge-replace' ? `<div class="modal-icon warning-icon">${icon('alert',26)}</div><h2>Replace saved language challenge?</h2><p>Your unfinished challenge will be replaced by a new one. Completed scores in your history are not erased.</p>${button('Keep saved challenge','close-modal','secondary-button')}${button('Replace challenge','challenge-replace-confirm','outline-danger')}` :
+  modal==='phrase-review-reset' ? `<div class="modal-icon warning-icon">${icon('alert',26)}</div><h2>Reset this language's recall schedule?</h2><p>The scheduled phrase-review results for your selected language will be cleared. Other languages, your learned-phrase markings, and challenge scores remain unchanged.</p>${button('Keep my reviews','close-modal','secondary-button')}${button('Reset this schedule','phrase-review-reset-confirm','outline-danger')}` :
   modal==='challenge-discard' ? `<div class="modal-icon warning-icon">${icon('alert',26)}</div><h2>Discard this challenge?</h2><p>Current unanswered or incomplete progress will be cleared. Your best scores and lesson progress remain.</p>${button('Keep practicing','close-modal','secondary-button')}${button('Discard challenge','challenge-discard-confirm','outline-danger')}` :
   modal==='exam-history-clear' ? `<div class="modal-icon warning-icon">${icon('alert',26)}</div><h2>Clear practice history?</h2><p>Saved exam scores and missed-question summaries will be erased. Current exams, lessons, and notes remain unchanged.</p>${button('Keep history','close-modal','secondary-button')}${button('Clear saved history','exam-history-clear-confirm','outline-danger')}` :
   modal==='exam-discard' ? `<div class="modal-icon warning-icon">${icon('alert',26)}</div><h2>Discard this exam?</h2><p>Current practice answers will be cleared so you can choose a different subject or question count. Your lessons, notes and other learning progress will stay untouched.</p>${button('Keep practicing','close-modal','secondary-button')}${button('Discard exam','exam-discard-confirm','outline-danger')}` :
@@ -806,6 +810,7 @@ function normalizedBackupState(clean){
    language:LANGUAGES.some(x=>x.code===clean.language)?clean.language:'ja',
    languageDays:Array.isArray(clean.languageDays)?clean.languageDays.filter(x=>typeof x==='string').slice(0,200):[],
    phrases:sanitizePhraseProgress(clean.phrases),
+   phraseReviews:normalizePhraseReviews(clean.phraseReviews,PHRASEBOOK),
    languageChallenge:normalizeLanguageChallenge(clean.languageChallenge,PHRASEBOOK),
    languageChallengeHistory:normalizeLanguageChallengeHistory(clean.languageChallengeHistory,PHRASEBOOK),
    userName:typeof clean.userName==='string'?clean.userName.slice(0,40):''
@@ -1072,7 +1077,7 @@ document.addEventListener('change',e=>{
     if(status&&progress)status.textContent=progress.count+' of '+progress.total+' criteria reviewed · Saved on this device';
     el.closest('li')?.classList.toggle('is-reviewed',el.checked);
   }
-  if(e.target.id==='language-select') {saved.language=e.target.value;phraseIndex=0;phraseRevealed=false;persist();render();}
+  if(e.target.id==='language-select') {saved.language=e.target.value;phraseIndex=0;phraseRevealed=false;phraseReviewRevealed=false;persist();render();}
   if(e.target.id==='age-agree') {gateConfirmed=e.target.checked;const btn=document.querySelector('[data-action="enter-shadow"]');if(btn)btn.disabled=!gateConfirmed;}
   if(e.target.id==='backup-file') answerBackup(e);
 });
