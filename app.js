@@ -1,6 +1,7 @@
 import { COURSES, LANGUAGES, LEARNING_SPRINT, DAILY_NOTES, findCourse, findLesson, totalLessons } from './data.js';
 import { makeReviewCards, dueReviewCards, recordReview, normalizeReviews } from './review.js';
 import { searchGlossary,GLOSSARY } from './glossary.js';
+import { SEARCH_KINDS,buildSearchIndex,searchAtlas } from './search.js';
 import { createDailyQuest,dailyQuestProgress } from './dailyquest.js';
 import { buildKnowledgeMap } from './atlasmap.js';
 import { SCENARIOS,normalizeScenarioAnswers,recordScenarioAnswer,scenarioProgress } from './scenarios.js';
@@ -41,6 +42,7 @@ function readStored() {
 }
 let saved = readStored();
 const reviewCards = makeReviewCards(COURSES);
+const atlasSearchIndex = buildSearchIndex(COURSES,GLOSSARY,SCENARIOS);
 let reviewRevealed = false;
 let phraseRevealed = false, phraseIndex = 0;
 let studioTab = 'savings';
@@ -49,6 +51,8 @@ let route = parseHash();
 let filter = 'all';
 let query = '';
 let glossaryQuery = '';
+let globalQuery = '';
+let globalSearchKind = 'all';
 let modal = '';
 let gateConfirmed = false;
 let shadowUnlocked = false; // A content acknowledgment, not a secure identity or age verification system.
@@ -151,6 +155,7 @@ function parseHash() {
   if (segments[0] === 'map') return {view:'map'};
   if (segments[0] === 'quest') return {view:'quest'};
   if (segments[0] === 'glossary') return {view:'glossary'};
+  if (segments[0] === 'search') return {view:'search'};
   if (segments[0] === 'scenario') return {view:'scenario'};
   if (segments[0] === 'path') return {view:'path'};
   if (['home','explore','journey','saved','you'].includes(segments[0])) return {view:segments[0]};
@@ -158,7 +163,7 @@ function parseHash() {
 }
 function nav(path) { const next = '#/' + path; if (location.hash === next) { route = parseHash(); render(); } else location.hash = next; window.scrollTo({top:0,behavior:'instant'}); }
 function flash(text) { currentToast = text; clearTimeout(toastTimer); render(); toastTimer = setTimeout(() => {currentToast = '';render();},3200); }
-function tabForRoute() { return ['review','studio','path','scenario','quest'].includes(route.view) ? 'journey' : ['course','lesson','language','map','glossary'].includes(route.view) ? 'explore' : route.view; }
+function tabForRoute() { return ['review','studio','path','scenario','quest'].includes(route.view) ? 'journey' : ['course','lesson','language','map','glossary','search'].includes(route.view) ? 'explore' : route.view; }
 function topbar() {
   return `<header class="topbar"><div class="topbar-inner">
     <button type="button" class="wordmark" data-action="goto-home" aria-label="Xyra Atlas home">${mark}<span>Xyra <em>Atlas</em></span></button>
@@ -294,6 +299,20 @@ function scenarioPage(){
  return `<main class="page scenario-page"><div class="subnav">${button('Back to journey','goto-journey','back-link')}</div><header class="scenario-hero"><span class="overline">LEARN THROUGH DECISIONS</span><h1>Scenario <em>Lab.</em></h1><p>Make a choice, examine the reasoning and try again. No connection required.</p><strong>${progress.done}/${progress.total} explored · ${progress.thoughtful} evidence-aligned choices</strong></header><div class="scenario-list">${SCENARIOS.map((s,i)=>{const chosen=saved.scenarios[s.id],answered=Number.isInteger(chosen);return `<section class="scenario-card" id="scenario-${esc(s.id)}"><div class="scenario-meta"><span class="overline">${esc(s.category)}</span><small>${i+1}/${SCENARIOS.length}</small></div><h2>${esc(s.title)}</h2><p>${esc(s.setup)}</p><h3>${esc(s.question)}</h3><div class="scenario-choices">${s.choices.map((c,j)=>button(`${String.fromCharCode(65+j)}. ${esc(c.label)}`,'scenario-answer',`scenario-choice ${chosen===j?'selected':''}`,`data-id="${esc(s.id)}" data-index="${j}" aria-pressed="${chosen===j}"`)).join('')}</div>${answered?`<aside class="scenario-feedback" role="status"><span class="overline">${s.choices[chosen].preferred?'A STRONG FIRST RESPONSE':'CONSIDER THIS'}</span><p>${esc(s.choices[chosen].result)}</p><p><strong>Takeaway:</strong> ${esc(s.takeaway)}</p><a href="${esc(s.source)}" target="_blank" rel="noopener noreferrer">Further reading ↗</a><div>${button('Try another choice','scenario-retry','text-action',`data-id="${esc(s.id)}"`)}</div></aside>`:''}</section>`}).join('')}</div><p class="info-line">Educational scenarios, not individualized professional advice. Opening sources requires internet.</p></main>`;
 }
 
+function globalSearchPage(){
+ const entries=searchAtlas(atlasSearchIndex,globalQuery,{kind:globalSearchKind,allowMature:shadowUnlocked,limit:80});
+ const suggestions=['Consumer rights','Psychology','Savings','Phishing','Business pricing'];
+ return `<main class="page global-search-page"><div class="subnav">${button(`${icon('back',18)} Back to learning`,'goto-explore','back-link')}</div>
+  <div class="global-search-hero"><span class="overline">THE ENTIRE ATLAS, AT YOUR FINGERTIPS</span><h1>What sparks your <em>curiosity?</em></h1><p>Find individual lessons, subjects, definitions, and real-life decisions from one place. Search stays on your device.</p></div>
+  <label class="global-search-field" for="atlas-global-search">${icon('search',23)}<input type="search" id="atlas-global-search" value="${esc(globalQuery)}" placeholder="Search across all knowledge..." autocomplete="off" aria-label="Search the entire Atlas"/>${globalQuery?button(icon('close',19),'search-clear','global-search-clear','aria-label="Clear search"'):''}</label>
+  <div class="global-search-filters" aria-label="Choose result type">${SEARCH_KINDS.map(k=>button(esc(k.label),'search-filter',`filter-pill ${globalSearchKind===k.id?'active':''}`,`data-id="${k.id}" aria-pressed="${globalSearchKind===k.id}"`)).join('')}</div>
+  ${globalQuery.trim()?`<div class="section-heading global-search-heading"><div><span class="overline">YOUR DISCOVERIES</span><h2>${entries.length===80?'80+':entries.length} matching ${entries.length===1?'result':'results'}</h2></div></div>
+  <div class="global-result-list">${entries.length?entries.map(item=>{const action=item.kind==='lesson'?'open-lesson':item.kind==='course'?'open-course':item.kind==='term'?'open-search-term':'open-search-scenario';const attrs=item.kind==='lesson'?`data-course="${esc(item.courseId)}" data-lesson="${esc(item.id)}"`:`data-id="${esc(item.id)}"`;const iconName=item.kind==='lesson'?'book':item.kind==='course'?'compass':item.kind==='term'?'spark':'orbit';return `<button type="button" class="global-search-result" data-action="${action}" ${attrs}><span class="global-result-symbol">${icon(iconName,21)}</span><span class="global-result-body"><small>${esc(item.kind==='term'?'GLOSSARY':item.kind.toUpperCase())} · ${esc(item.category)}</small><strong>${esc(item.title)}</strong><span>${esc(item.description)}</span></span><span class="global-result-chevron">${chevron}</span></button>`;}).join(''):`<div class="empty-state"><h3>No matching knowledge yet.</h3><p>Try a shorter phrase, another category, or a related keyword.</p>${button('Clear filters','search-reset','secondary-button')}</div>`}</div>`:
+  `<section class="global-discovery"><span class="overline">POPULAR STARTING POINTS</span><h2>Follow a question.</h2><p>Try a topic below, or search for something entirely different.</p><div class="global-suggestions">${suggestions.map(term=>button(esc(term),'search-suggest','global-suggestion',`data-id="${esc(term)}"`)).join('')}</div></section>`}
+  <p class="info-line">${icon('info',16)} Everything here is in the downloaded Atlas library. Mature material stays hidden until the Shadow Library acknowledgment. Search and results work offline.</p>
+ </main>`;
+}
+
 function glossaryPage(){
  const entries=searchGlossary(glossaryQuery,shadowUnlocked);
  return `<main class="page glossary-page"><div class="subnav">${button('Back to learning','goto-explore','back-link')}</div><section class="glossary-hero"><span class="overline">KNOWLEDGE, IN PLAIN LANGUAGE</span><h1>Atlas <em>Glossary.</em></h1><p>Learn the meaning of an important idea, see how it appears in everyday life, and explore its full subject.</p><small>${entries.length} terms available</small></section><label class="glossary-search-label" for="glossary-search">${icon('search',21)}<input id="glossary-search" autocomplete="off" type="search" placeholder="Search terms, examples, and subjects..." value="${esc(glossaryQuery)}" aria-label="Search Atlas glossary"/></label><div class="glossary-grid">${entries.length?entries.map(t=>`<article class="glossary-card"><span class="overline">${esc(t.category)}</span><h2>${esc(t.term)}</h2><p>${esc(t.definition)}</p><div class="glossary-example"><strong>For example</strong><span>${esc(t.example)}</span></div>${button(`Explore ${esc(t.category)} ${icon('arrow',16)}`,'open-course','text-action',`data-id="${esc(t.courseId)}"`)}</article>`).join(''):`<div class="empty-state"><h2>No matching terms</h2><p>Try another word or a broader subject.</p>${button('Show all','glossary-clear','small-button')}</div>`}</div><p class="info-line">Short definitions simplify complex topics. Check professional and jurisdiction-specific sources where decisions carry consequences. Adult Shadow Library terms appear only after its acknowledgment.</p></main>`;
@@ -395,7 +414,7 @@ function you() {
     <div class="profile-card"><div class="profile-avatar">✦</div><div><span class="overline">ATLAS EXPLORER</span><h2>${esc(actualName())}</h2><p>Level ${Math.floor(finished()/6)+1} · ${finished()} lessons completed</p></div></div>
     <div class="settings-panel"><h2>Make it yours</h2><label class="field-label" for="profile-name">What should Atlas call you?</label><div class="name-row"><input id="profile-name" value="${esc(saved.userName)}" maxlength="40" placeholder="Curious learner"/>${button('Save','save-name','small-button')}</div><div class="settings-row"><span class="setting-icon">${icon(saved.theme==='dark'?'moon':'sun',21)}</span><div><strong>Appearance</strong><small>Switch between twilight and daylight</small></div>${button(saved.theme==='dark'?'Dark':'Light','theme','small-button')}</div><div class="settings-row"><span class="setting-icon">${icon(navigator.onLine?'wifi':'wifi-off',21)}</span><div><strong>Connection</strong><small>Lessons are included in your offline app</small></div><span class="setting-value">${navigator.onLine?'Online':'Offline'}</span></div><div class="settings-row"><span class="setting-icon">${icon('download',21)}</span><div><strong>Install Xyra Atlas</strong><small>Keep it on your phone's home screen</small></div>${button('How?','install','small-button')}</div></div>
     <div class="settings-panel"><h2>Your data, your choice</h2><p class="settings-description">Progress is stored only in this browser on this device. It is not synced to a server. Export a backup before switching phones or clearing browser data.</p><div class="data-actions">${button(`${icon('download',18)} Export backup`,'export','secondary-button')}${button(`${icon('upload',18)} Import backup`,'import','secondary-button')}${button(`${icon('trash',18)} Reset progress`,'reset-dialog','outline-danger')}</div><input type="file" id="backup-file" accept=".json,application/json" hidden /></div>
-    <div class="settings-panel"><h2>About Xyra Atlas</h2><p class="settings-description">A pocket atlas for the art of living—designed for curiosity, independence and the courage to learn difficult things.</p><p class="fineprint">Foundation 0.4 · Language Lab edition. Some subjects are introductions, not complete professional courses. Laws vary by jurisdiction. Adult content is educational. There are no ads, trackers or accounts in this edition.</p>${button(`A note from Xyra ${chevron}`,'open-corner','text-action')}</div>
+    <div class="settings-panel"><h2>About Xyra Atlas</h2><p class="settings-description">A pocket atlas for the art of living—designed for curiosity, independence and the courage to learn difficult things.</p><p class="fineprint">Atlas 1.3 · Universal Search edition. Some subjects are introductions, not complete professional courses. Laws vary by jurisdiction. Adult content is educational. There are no ads, trackers or accounts in this edition.</p>${button(`A note from Xyra ${chevron}`,'open-corner','text-action')}</div>
   </main>`;
 }
 function errorView() { return `<main class="page"><div class="empty-state">${icon('compass',34)}<h2>This page wandered off the map.</h2><p>Let's find your way back.</p>${button('Go home','goto-home','primary-button')}</div></main>`; }
@@ -412,8 +431,8 @@ function render() {
   document.documentElement.dataset.theme=saved.theme;
   document.body.classList.toggle('dialog-open',Boolean(modal));
   const view = route.view;
-  const content = ({home,explore,journey,review:reviewPage,studio:studioPage,scenario:scenarioPage,map:mapPage,quest:questPage,glossary:glossaryPage,path:pathPage,saved:savedPage,you,course:coursePage,lesson:lessonPage,language:languagePage}[view] || errorView)();
-  document.getElementById('app').innerHTML = `${topbar()}<div class="shell"><aside class="desktop-rail"><div class="rail-title">YOUR ATLAS <span>✧</span></div>${[['home','Home','home'],['explore','Explore & Learn','compass'],['journey','My Journey','spark'],['saved','Saved Library','bookmark'],['you','Your Space','user']].map(([id,label,ico])=>`<button type="button" data-action="nav" data-id="${id}" class="rail-link ${tabForRoute()===id?'active':''}">${icon(ico,20)} ${label}</button>`).join('')}<div class="rail-divider"></div><button type="button" class="rail-link" data-action="glossary">${icon('book',20)} Glossary</button><button type="button" class="rail-link" data-action="quest">${icon('spark',20)} Daily Quest</button><button type="button" class="rail-link" data-action="map">${icon('compass',20)} Knowledge Map</button><button type="button" class="rail-link" data-action="review">${icon('orbit',20)} Review Deck</button><button type="button" class="rail-link" data-action="path">${icon('compass',20)} Guided Path</button><button type="button" class="rail-link" data-action="studio">${icon('briefcase',20)} Practice Studio</button><button type="button" class="rail-link" data-action="language">${icon('languages',20)} Language Lab</button><button type="button" class="rail-link" data-action="open-course" data-id="shadow">${icon('moon',20)} Shadow Library</button><div class="rail-note">✦<p>The world is a little bigger every time you learn.</p></div></aside><div class="main-column">${content}<footer class="app-footer">Made with curiosity, for a life still unfolding. <span>✧ Xyra Atlas</span></footer></div></div>${navBar()}${modalView()}${currentToast?`<div class="toast" role="status">${icon('spark',19)} ${esc(currentToast)}</div>`:''}`;
+  const content = ({home,explore,journey,review:reviewPage,studio:studioPage,scenario:scenarioPage,map:mapPage,quest:questPage,glossary:glossaryPage,search:globalSearchPage,path:pathPage,saved:savedPage,you,course:coursePage,lesson:lessonPage,language:languagePage}[view] || errorView)();
+  document.getElementById('app').innerHTML = `${topbar()}<div class="shell"><aside class="desktop-rail"><div class="rail-title">YOUR ATLAS <span>✧</span></div>${[['home','Home','home'],['explore','Explore & Learn','compass'],['journey','My Journey','spark'],['saved','Saved Library','bookmark'],['you','Your Space','user']].map(([id,label,ico])=>`<button type="button" data-action="nav" data-id="${id}" class="rail-link ${tabForRoute()===id?'active':''}">${icon(ico,20)} ${label}</button>`).join('')}<div class="rail-divider"></div><button type="button" class="rail-link" data-action="search">${icon('search',20)} Search Everything</button><button type="button" class="rail-link" data-action="glossary">${icon('book',20)} Glossary</button><button type="button" class="rail-link" data-action="quest">${icon('spark',20)} Daily Quest</button><button type="button" class="rail-link" data-action="map">${icon('compass',20)} Knowledge Map</button><button type="button" class="rail-link" data-action="review">${icon('orbit',20)} Review Deck</button><button type="button" class="rail-link" data-action="path">${icon('compass',20)} Guided Path</button><button type="button" class="rail-link" data-action="studio">${icon('briefcase',20)} Practice Studio</button><button type="button" class="rail-link" data-action="language">${icon('languages',20)} Language Lab</button><button type="button" class="rail-link" data-action="open-course" data-id="shadow">${icon('moon',20)} Shadow Library</button><div class="rail-note">✦<p>The world is a little bigger every time you learn.</p></div></aside><div class="main-column">${content}<footer class="app-footer">Made with curiosity, for a life still unfolding. <span>✧ Xyra Atlas</span></footer></div></div>${navBar()}${modalView()}${currentToast?`<div class="toast" role="status">${icon('spark',19)} ${esc(currentToast)}</div>`:''}`;
   document.title = `${view==='course' ? findCourse(route.courseId)?.title+' · ':view==='lesson' ? findLesson(route.courseId,route.lessonId)?.title+' · ' : ''}Xyra Atlas`;
 }
 function toggle(list,value) { saved[list]=saved[list].includes(value)?saved[list].filter(x=>x!==value):[...saved[list],value];persist();render(); }
@@ -459,7 +478,14 @@ async function handleAction(e) {
   if(e.target.closest('[data-stop]') && button.dataset.action==='close-modal' && !button.classList.contains('modal-close')) return;
   const action=button.dataset.action, id=button.dataset.id;
   if(action==='goto-home') nav('home');
-  else if(action==='goto-explore'||action==='search') {query='';filter='all';nav('explore'); if(action==='search') requestAnimationFrame(()=>document.getElementById('course-search')?.focus());}
+  else if(action==='goto-explore') {query='';filter='all';nav('explore');}
+  else if(action==='search') {nav('search');requestAnimationFrame(()=>document.getElementById('atlas-global-search')?.focus());}
+  else if(action==='search-filter') {globalSearchKind=SEARCH_KINDS.some(k=>k.id===id)?id:'all';render();}
+  else if(action==='search-clear') {globalQuery='';render();requestAnimationFrame(()=>document.getElementById('atlas-global-search')?.focus());}
+  else if(action==='search-reset') {globalSearchKind='all';globalQuery='';render();requestAnimationFrame(()=>document.getElementById('atlas-global-search')?.focus());}
+  else if(action==='search-suggest') {globalQuery=id.slice(0,100);globalSearchKind='all';render();}
+  else if(action==='open-search-term') {const entry=GLOSSARY.find(t=>t.id===id);if(!entry||entry.adult&&!shadowUnlocked)return;glossaryQuery=entry.term;nav('glossary');}
+  else if(action==='open-search-scenario') {if(!SCENARIOS.some(s=>s.id===id))return;nav('scenario');requestAnimationFrame(()=>document.getElementById('scenario-'+id)?.scrollIntoView({behavior:'smooth',block:'start'}));}
   else if(action==='nav') {if(id==='explore') {query='';filter='all';}nav(id);}
   else if(action==='theme') {saved.theme=saved.theme==='dark'?'light':'dark';persist();render();}
   else if(action==='filter') {filter=id;render();}
@@ -523,10 +549,11 @@ document.addEventListener('input',e=>{
       if(status) status.textContent='Saved on this device · Export a backup to keep it safe';
     }
   }
+  if(e.target.id==='atlas-global-search') {const pos=e.target.selectionStart;globalQuery=e.target.value.slice(0,100);render();const field=document.getElementById('atlas-global-search');if(field){field.focus();try{field.setSelectionRange(pos,pos);}catch{}}}
   if(e.target.id==='glossary-search') {const pos=e.target.selectionStart;glossaryQuery=e.target.value;render();const field=document.getElementById('glossary-search');if(field){field.focus();try{field.setSelectionRange(pos,pos);}catch{}}}
   if(e.target.id==='course-search') {const pos=e.target.selectionStart;query=e.target.value;render();const input=document.getElementById('course-search');if(input){input.focus();try{input.setSelectionRange(pos,pos);}catch{}}}
 });
-document.addEventListener('keydown',e=>{if(e.key==='Escape'&&modal){modal='';if(['course','lesson'].includes(route.view)&&route.courseId==='shadow'&&!shadowUnlocked)nav('explore');else render();} if((e.key==='Enter'||e.key===' ')&&e.target.classList?.contains('shadow-preview')) {e.preventDefault();gateConfirmed=false;modal='shadow';render();}});
+document.addEventListener('keydown',e=>{if(e.key==='/'&&!modal&&!e.altKey&&!e.ctrlKey&&!e.metaKey&&!['INPUT','TEXTAREA','SELECT'].includes(document.activeElement?.tagName)&&!document.activeElement?.isContentEditable){e.preventDefault();nav('search');requestAnimationFrame(()=>document.getElementById('atlas-global-search')?.focus());}if(e.key==='Escape'&&modal){modal='';if(['course','lesson'].includes(route.view)&&route.courseId==='shadow'&&!shadowUnlocked)nav('explore');else render();} if((e.key==='Enter'||e.key===' ')&&e.target.classList?.contains('shadow-preview')) {e.preventDefault();gateConfirmed=false;modal='shadow';render();}});
 window.addEventListener('hashchange',()=>{reviewRevealed=false;route=parseHash();if(route.view==='course'&&route.courseId==='shadow'&&!shadowUnlocked)modal='shadow';if(route.view==='lesson'&&route.courseId==='shadow'&&!shadowUnlocked)modal='shadow';render();});
 window.addEventListener('online',render);window.addEventListener('offline',render);
 window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();installEvent=e;});
