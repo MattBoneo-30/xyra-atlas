@@ -608,6 +608,37 @@ try{
   expect(overflow.scroll<=overflow.width+8,'challenge interface remains within narrow mobile viewport');
  });
 
+
+ await smoke('applied-capstone-labs',{viewport:{width:390,height:844}},async(page)=>{
+  await page.goto(BASE+'/#/course/laws',{waitUntil:'domcontentloaded'});
+  await page.locator('.course-page').waitFor();
+  expect(await page.locator('[data-action="open-lesson"][data-lesson="case-ph-data-access"]').count()===1,'Philippine privacy capstone is listed in the course');
+  expect((await page.locator('[data-action="open-lesson"][data-lesson="case-ph-data-access"] small').textContent()).includes('Applied lab'),'course list identifies capstone status');
+  await page.locator('[data-action="open-lesson"][data-lesson="case-ph-data-access"]').click();
+  await page.locator('.capstone-rubric li').first().waitFor();
+  expect(await page.locator('.reading-head .overline').textContent().then(x=>x.includes('APPLIED CAPSTONE')),'reader clearly labels the applied capstone');
+  expect(await page.locator('.capstone-rubric li').count()===3,'three evidence criteria guide the learner');
+  expect((await page.locator('.capstone-rubric').textContent()).includes('not an automatically graded assessment'),'self-check is not represented as automated grading');
+  expect(await page.locator('.lesson-content .worked-example').count()===1,'case lab has a worked example');
+  expect(await page.locator('.lesson-content .lesson-sources a[href*="privacy.gov.ph"]').count()===1,'case law lesson links to official NPC guidance');
+  await page.locator('#field-note-input').fill('Fictional request: verify the privacy office; ask only about my own stored profile fields.');
+  const correct=COURSES.find(c=>c.id==='laws').lessons.find(l=>l.id==='case-ph-data-access').quiz.correct;
+  await page.locator('.quiz-option[data-index="'+correct+'"]').click();
+  expect(await page.locator('.quiz-feedback.good').count()===1,'applied case quiz evaluates correctly');
+  await page.locator('[data-action="complete"]').click();
+  expect((await getState(page)).completed.length===1,'completed case lab is saved like other lessons');
+  await page.reload({waitUntil:'domcontentloaded'});
+  await page.locator('.capstone-rubric li').first().waitFor();
+  expect(await page.locator('.capstone-rubric li').count()===3,'rubric survives a refresh');
+  expect((await page.locator('#field-note-input').inputValue()).includes('Fictional request'),'capstone exercise notes persist after reload');
+  const overflow=await mobileOverflow(page);
+  expect(overflow.scroll<=overflow.width+8,'capstone rubric fits narrow mobile screens');
+  await page.goto(BASE+'/#/lesson/digital/case-account-takeover-drill',{waitUntil:'domcontentloaded'});
+  await page.locator('.capstone-rubric li').first().waitFor();
+  expect(await page.locator('.lesson-sources a[href*="nist.gov"]').count()===1,'security case points to NIST authentication guidance');
+  expect(await page.locator('.capstone-rubric li').count()===3,'security lab has subject-specific review criteria');
+ });
+
 }finally{
  if(browser)await browser.close();
  server.kill('SIGTERM');
