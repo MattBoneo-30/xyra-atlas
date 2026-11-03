@@ -17,7 +17,7 @@ concurrency:
 jobs:
   test-and-build:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 20
     steps:
       - name: Check out source
         uses: actions/checkout@v7
@@ -41,6 +41,20 @@ jobs:
           test -s dist/icon-192.png
           test -s dist/icon-512.png
           test -s dist/apple-touch-icon.png
+      - name: Install Chromium smoke-test tooling (test-only)
+        run: |
+          npm install --no-save --package-lock=false playwright@1.56.1
+          npx playwright install --with-deps chromium
+      - name: Exercise built PWA in desktop and mobile Chromium
+        run: npm run test:browser
+      - name: Save browser smoke screenshots
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: xyra-atlas-browser-smoke
+          path: artifacts/browser/
+          if-no-files-found: ignore
+          retention-days: 7
       - name: Save deployable website
         uses: actions/upload-artifact@v7
         with:

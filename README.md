@@ -4,7 +4,7 @@
 
 ![Xyra Atlas emblem](assets/atlas-mark.svg)
 
-## Current release: Practical Learning Tracks 1.14
+## Current release: Real Browser Smoke Tests 1.15
 
 - A violet-and-gold responsive interface, **14 distinct original vector course worlds**, Xyra's Corner artwork, landscape hero and a home-screen app icon. The same course identity appears on home tiles, category cards, course covers and lessons.
 - 14 learning subjects and **88 interactive lessons**: 52 short starters plus 36 structured, referenced field guides with real-world worked examples, exercises and quizzes (counts verified by tests).
@@ -20,6 +20,7 @@
 
 **New in 0.5:** Psychology (evidence journaling, habits, relational inference); Philippine law (Constitution, data privacy, consumer complaints); business (customer discovery, unit economics, Philippine launch steps); money (irregular bills, emergency planning, investment red flags). Sources are linked for optional online verification; lessons work offline. Links and regulations can change.
 
+- **Real browser smoke tests:** Automated Chromium runs in GitHub Actions exercise desktop lesson completion and field notes, reader settings, offline search, branching Case Files, mobile viewport width, and actual service-worker-powered offline reloads. Browser tooling is installed only during CI; production remains zero-dependency.
 - **Practical Learning Tracks:** Twelve additional three-section field guides across science, negotiation, relationships and time management. Every lesson includes an original worked example, realistic exercise, quiz and source for further reading, and works offline. Relationship safety and scientific research topics include important limits and responsible-use guidance.
 - **Storage Recovery Guard:** Unreadable browser progress is protected from automatic overwrite. A persistent warning offers a raw recovery download, and users can explicitly restore a valid JSON backup or reset. Failed saves are visibly flagged, and browser storage is never described as cloud-synced.
 - **Listen to Lesson:** Browser speech synthesis reads lessons in short manageable chunks with pause, resume and stop controls, avoids external app APIs, and cancels when navigating away. Available voices and offline audio behavior vary by browser, system and voice implementation.
