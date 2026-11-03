@@ -397,7 +397,7 @@ try{
   await page.locator('[data-action="backup-unlock-confirm"]').click();
   expect((await getState(page)).fieldNotes[key]==='New current notes','wrong passphrase does not alter saved progress');
   await page.locator('#unlock-backup-password').fill(password);
-  const cryptoCheck=await page.evaluate(async args=>{try{const cryptoModule=await import('/backupcrypto.js');const plaintext=await cryptoModule.decryptBackup(args.wrapped,args.pass);return {ok:plaintext.includes('Secret sunrise study notes'),length:plaintext.length};}catch(e){return {error:String(e?.message||e)}};},{wrapped,password});
+  const cryptoCheck=await page.evaluate(async args=>{try{const cryptoModule=await import('/backupcrypto.js');const plaintext=await cryptoModule.decryptBackup(args.wrapped,args.pass);return {ok:plaintext.includes('Secret sunrise study notes'),length:plaintext.length};}catch(e){return {error:String(e?.message||e)}};},{wrapped:JSON.parse(content),pass:password});
   console.log('  Encryption round trip in browser:',JSON.stringify(cryptoCheck));
   await page.locator('[data-action="backup-unlock-confirm"]').click();
   await page.waitForTimeout(350);
