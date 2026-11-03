@@ -855,7 +855,16 @@ try{
    ['laws','case-ph-data-access','chapter-privacy-observatory.svg','The Privacy Observatory'],
    ['digital','case-account-takeover-drill','chapter-security-sanctum.svg','The Security Sanctum'],
    ['business','case-pilot-unit-economics','chapter-business-atelier.svg','The Maker’s Atelier'],
-   ['science','case-study-causality','chapter-science-glasshouse.svg','The Research Glasshouse']
+   ['science','case-study-causality','chapter-science-glasshouse.svg','The Research Glasshouse'],
+   ["psychology","case-ambiguity-audit","chapter-interpretation-crossroads.svg","The Interpretation Crossroads"],
+   ["savings","case-three-month-cash","chapter-cash-weatherhouse.svg","The Cash Weatherhouse"],
+   ["time","case-dependency-release","chapter-clockwork-schedule.svg","The Clockwork Workshop"],
+   ["languages","case-restaurant-dialogue","chapter-language-teahouse.svg","The Lantern Teahouse"],
+   ["communication","case-repair-feedback","chapter-feedback-bridge.svg","The Listening Bridge"],
+   ["thinking","case-viral-number-audit","chapter-evidence-prism.svg","The Evidence Prism"],
+   ["career","case-project-evidence","chapter-portfolio-forge.svg","The Portfolio Forge"],
+   ["relationships","case-boundary-repair","chapter-boundary-garden.svg","The Boundary Garden"],
+   ["negotiation","case-three-offers","chapter-offer-market.svg","The Fair Exchange Market"]
   ];
   for(const [course,lesson,file,title] of cases){
    await page.goto(BASE+'/#/lesson/'+course+'/'+lesson,{waitUntil:'domcontentloaded'});
@@ -868,6 +877,18 @@ try{
    expect((await page.locator('.chapter-art-caption strong').textContent())===title,'chapter illustration includes a grounded caption');
    expect(await page.locator('.lesson-content .worked-example').count()===1,'chapter art does not displace learning material');
   }
+  // Mature content must remain gated even when its decorative illustration is pre-cached.
+  await page.goto(BASE+'/#/lesson/shadow/case-pressure-defenses',{waitUntil:'domcontentloaded'});
+  await page.getByText('Enter the Shadow Library?').waitFor();
+  expect(await page.locator('.chapter-art-feature').count()===0,'mature chapter cannot render before acknowledgment');
+  await page.locator('#age-agree').check();
+  await page.locator('[data-action="enter-shadow"]').click();
+  await waitRoute(page,'#/course/shadow');
+  await page.locator('[data-action="open-lesson"][data-lesson="case-pressure-defenses"]').click();
+  await page.locator('.chapter-art-feature img').waitFor();
+  const gatedArt=page.locator('.chapter-art-feature img');
+  expect(await gatedArt.getAttribute('src')==='/assets/chapter-protective-lantern.svg','acknowledged mature chapter receives protective artwork');
+  expect(await gatedArt.evaluate(async img=>{await img.decode();return img.naturalWidth===1400}),'mature chapter image decodes after gate');
   await page.goto(BASE+'/#/lesson/psychology/thoughts',{waitUntil:'domcontentloaded'});
   await page.locator('.reading-illustration img').waitFor();
   expect(await page.locator('.chapter-art-feature').count()===0,'other lessons retain their existing artwork');
@@ -885,7 +906,16 @@ try{
   await context.setOffline(true);
   for(const [course,lesson] of [
    ['laws','case-ph-data-access'],['digital','case-account-takeover-drill'],
-   ['business','case-pilot-unit-economics'],['science','case-study-causality']
+   ['business','case-pilot-unit-economics'],['science','case-study-causality'],
+   ["psychology","case-ambiguity-audit"],
+   ["savings","case-three-month-cash"],
+   ["time","case-dependency-release"],
+   ["languages","case-restaurant-dialogue"],
+   ["communication","case-repair-feedback"],
+   ["thinking","case-viral-number-audit"],
+   ["career","case-project-evidence"],
+   ["relationships","case-boundary-repair"],
+   ["negotiation","case-three-offers"]
   ]){
    await page.goto(BASE+'/#/lesson/'+course+'/'+lesson,{waitUntil:'domcontentloaded'});
    const img=page.locator('.chapter-art-feature img');
