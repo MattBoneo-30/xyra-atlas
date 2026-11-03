@@ -4,6 +4,7 @@ import { LIFE_PRACTICE } from './lifepractice.js';
 import { MASTERY_TRACKS } from './masterytracks.js';
 import { CAPSTONE_LABS } from './capstonelabs.js';
 import { PH_CASEWORK } from './phcasework.js';
+import { ADVANCED_ENRICHMENTS } from './advancedenrichments.js';
 /** Xyra Atlas starter curriculum. Educational content is general information, not professional advice. */
 const lesson = (id, title, minutes, stage, intro, first, second, task, question, options, correct, explanation) => ({
   id, title, minutes, stage, intro,
@@ -254,6 +255,16 @@ export const COURSES = [
       'List three reasons entertainment should not be treated as sexual health education.','What is a sound source for health decisions?', ['A staged video','Evidence-based healthcare information','An anonymous rumor'],1,'Clinical and public-health sources are more reliable for health information.')
   ],{dark:true,featured:true})
 ];
+for(const entry of COURSES){
+  const extras=ADVANCED_ENRICHMENTS[entry.id]||{};
+  for(const original of entry.lessons){
+    const addition=extras[original.id];
+    if(!addition)continue;
+    original.sections.push({...addition.section});
+    original.example=addition.example;
+    original.sources=addition.sources.map(source=>({...source}));
+  }
+}
 for(const entry of COURSES) if(DEEP_TRACKS[entry.id]) entry.lessons.push(...DEEP_TRACKS[entry.id]);
 for(const entry of COURSES) if(FIELD_GUIDES[entry.id]) entry.lessons.push(...FIELD_GUIDES[entry.id]);
 for(const entry of COURSES) if(LIFE_PRACTICE[entry.id]) entry.lessons.push(...LIFE_PRACTICE[entry.id]);

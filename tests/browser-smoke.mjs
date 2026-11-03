@@ -1234,6 +1234,25 @@ try{
  });
 
 
+ await smoke('advanced-foundation-worked-examples',{viewport:{width:390,height:844},isMobile:true,hasTouch:true,deviceScaleFactor:2},async(page,context)=>{
+  await page.goto(BASE+'/#/lesson/laws/privacy-law',{waitUntil:'domcontentloaded'});
+  await page.locator('.reading-page').waitFor();
+  expect(await page.locator('.lesson-content section[id^="lesson-section-"]').count()===3,'privacy law original advanced lesson has three teaching sections');
+  expect(await page.locator('.worked-example').count()===1,'worked example is displayed');
+  expect(await page.locator('.lesson-sources a').count()>=2,'first-party Philippine privacy links are visible');
+  const width=await mobileOverflow(page);
+  expect(width.scroll<=width.width+8,'advanced reading remains narrow-screen safe');
+  await page.evaluate(async()=>{await navigator.serviceWorker.ready;});
+  await page.reload({waitUntil:'domcontentloaded'});
+  await page.waitForFunction(()=>Boolean(navigator.serviceWorker.controller));
+  await context.setOffline(true);
+  await page.reload({waitUntil:'domcontentloaded'});
+  await page.locator('.worked-example').waitFor();
+  expect((await page.locator('.worked-example').textContent()).includes('Mira'),'advanced original case remains offline');
+  await context.setOffline(false);
+ });
+
+
 }finally{
  if(browser)await browser.close();
  server.kill('SIGTERM');
