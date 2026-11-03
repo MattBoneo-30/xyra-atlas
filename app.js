@@ -111,6 +111,7 @@ let offlinePack={state:'idle',cached:0,total:0,ready:false,percent:0,version:'un
 let offlineJob=0;
 let offlineUpdateWaiting=false;
 let offlineUpdateApplying=false;
+const watchedOfflineRegistrations=new WeakSet();
 const today = () => localDayKey(new Date());
 const idFor = (courseId, lessonId) => `${courseId}:${lessonId}`;
 const isCompleted = key => saved.completed.includes(key);
@@ -221,7 +222,7 @@ function tabForRoute() { return ['notebook','personalcards'].includes(route.view
 function topbar() {
   return `<header class="topbar"><div class="topbar-inner">
     <button type="button" class="wordmark" data-action="goto-home" aria-label="Xyra Atlas home">${mark}<span>Xyra <em>Atlas</em></span></button>
-    <div class="top-actions"><span class="status-dot" title="${navigator.onLine ? 'Online' : 'Offline'}"></span>${button(icon('search',21),'search','icon-button','aria-label="Search courses"')}${button(icon(saved.theme === 'dark' ? 'sun':'moon',21),'theme','icon-button','aria-label="Toggle appearance"')}${button(icon('bell',20),'open-updates','icon-button','aria-label="About the app"')}</div>
+    <div class="top-actions"><span class="status-dot" title="${navigator.onLine ? 'Online' : 'Offline'}"></span>${button(icon('search',21),'search','icon-button','aria-label="Search courses"')}${button(icon(saved.theme === 'dark' ? 'sun':'moon',21),'theme','icon-button','aria-label="Toggle appearance"')}${offlineUpdateWaiting?button(icon('download',19),'offline-open','icon-button update-ready-topbar','aria-label="Atlas update ready to install"'):''}${button(icon('bell',20),'open-updates','icon-button','aria-label="About the app"')}</div>
   </div></header>`;
 }
 function navBar() {
@@ -754,10 +755,12 @@ function watchOfflineRegistration(reg){
   const waiting=Boolean(reg.waiting&&navigator.serviceWorker.controller);
   if(offlineUpdateWaiting!==waiting){
    offlineUpdateWaiting=waiting;
-   if(route.view==='offline')render();
+   render();
   }
  };
  checkWaiting();
+ if(watchedOfflineRegistrations.has(reg))return;
+ watchedOfflineRegistrations.add(reg);
  reg.addEventListener('updatefound',()=>{
   const installing=reg.installing;
   if(!installing)return;
