@@ -13,6 +13,7 @@ import {normalizeOfflineReport,offlineAdvice} from './offline.js';
 import {parseBackupEnvelope,normalizeLessonKeys,normalizeQuizAnswers,normalizeLastOpened,backupCounts} from './backup.js';
 import {encryptBackup,decryptBackup,isEncryptedBackup} from './backupcrypto.js';
 import {EXAM_SIZES,examPool,createExam,normalizeExam,currentExamQuestion,answerExam,advanceExam,examResults} from './exam.js';
+import {normalizeExamHistory,recordExamHistory,examHistoryInsights} from './examhistory.js';
 import {PERSONAL_CARD_LIMIT,CARD_FRONT_LIMIT,CARD_BACK_LIMIT,normalizePersonalCards,createPersonalCard,updatePersonalCard,deletePersonalCard,duePersonalCards,ratePersonalCard,searchPersonalCards} from './personalcards.js';
 import {buildNotebookIndex,searchNotebook} from './notebook.js';
 import {normalizeMistakes,recordQuizAttempt,buildMistakeQueue} from './mistakes.js';
@@ -32,7 +33,7 @@ let storageProblem=null;
 let recoveryRaw=null;
 const esc = value => String(value ?? '').replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
 const plain = text => esc(text).replace(/\n/g, '<br>');
-function createInitialState(){return { completed: [], bookmarks: [], favorites: [], answers: {}, reviews: {}, fieldNotes: {}, lastOpened: null, dailyVisits: [], theme: 'dark', language: 'ja', languageDays: [], phrases: {}, languageChallenge:null, languageChallengeHistory:{}, studio: sanitizeStudio(null), userName: '', welcomeDismissed: false, learningPath: null, scenarios: {}, casebook: {}, mistakes:{}, exam:null, personalCards:[], reader:normalizeReaderPreferences(null) };}
+function createInitialState(){return { completed: [], bookmarks: [], favorites: [], answers: {}, reviews: {}, fieldNotes: {}, lastOpened: null, dailyVisits: [], theme: 'dark', language: 'ja', languageDays: [], phrases: {}, languageChallenge:null, languageChallengeHistory:{}, studio: sanitizeStudio(null), userName: '', welcomeDismissed: false, learningPath: null, scenarios: {}, casebook: {}, mistakes:{}, exam:null, examHistory:[], personalCards:[], reader:normalizeReaderPreferences(null) };}
 function readStored() {
   try {
     const raw=localStorage.getItem(STORAGE_KEY);
@@ -57,6 +58,7 @@ function readStored() {
       casebook: normalizeCasebook(data.casebook),
       mistakes:normalizeMistakes(data.mistakes,COURSES),
       exam:normalizeExam(data.exam,COURSES),
+      examHistory:normalizeExamHistory(data.examHistory,COURSES),
       personalCards:normalizePersonalCards(data.personalCards,COURSES),
       reader: normalizeReaderPreferences(data.reader),
       learningPath: normalizeLearningPath(data.learningPath,COURSES),
@@ -769,6 +771,7 @@ function normalizedBackupState(clean){
    casebook:normalizeCasebook(clean.casebook),
    mistakes:normalizeMistakes(clean.mistakes,COURSES),
     exam:normalizeExam(clean.exam,COURSES),
+    examHistory:normalizeExamHistory(clean.examHistory,COURSES),
     personalCards:normalizePersonalCards(clean.personalCards,COURSES),
    reader:normalizeReaderPreferences(clean.reader),
    learningPath:normalizeLearningPath(clean.learningPath,COURSES),
@@ -903,7 +906,7 @@ async function handleAction(e) {
   else if(action==='exam-open') nav('exam');
   else if(action==='exam-start') {const courseId=document.getElementById('exam-course')?.value||'all';const size=Number(document.getElementById('exam-size')?.value);saved.exam=createExam(COURSES,{courseId,size,seed:Math.floor(Math.random()*4294967296)});if(saved.exam){persist();render();}else flash('No practice questions are available for that subject.');}
   else if(action==='exam-answer') {if(route.view!=='exam')return;const next=answerExam(saved.exam,Number(button.dataset.index),COURSES);if(next){saved.exam=next;persist();render();}}
-  else if(action==='exam-next') {if(route.view!=='exam')return;const next=advanceExam(saved.exam,COURSES);if(next){saved.exam=next;persist();render();}}
+  else if(action==='exam-next') {if(route.view!=='exam')return;const current=normalizeExam(saved.exam,COURSES);const next=advanceExam(current,COURSES);if(next&&current&&next.position>current.position){if(examResults(next,COURSES).done)saved.examHistory=recordExamHistory(saved.examHistory,next,COURSES);saved.exam=next;persist();render();}}
   else if(action==='exam-new') {if(route.view!=='exam')return;saved.exam=null;persist();render();}
   else if(action==='exam-discard') {if(route.view!=='exam'||!normalizeExam(saved.exam,COURSES))return;modal='exam-discard';render();}
   else if(action==='exam-discard-confirm') {if(modal!=='exam-discard')return;saved.exam=null;modal='';persist();render();}
