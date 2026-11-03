@@ -4,7 +4,7 @@
 
 ![Xyra Atlas emblem](assets/atlas-mark.svg)
 
-## Current release: Applied Mastery Tracks 1.28
+## Current release: Two-Way Language Challenges 1.29
 
 - A violet-and-gold responsive interface, **14 distinct original vector course worlds**, Xyra's Corner artwork, landscape hero and a home-screen app icon. The same course identity appears on home tiles, category cards, course covers and lessons.
 - 14 learning subjects and **117 interactive lessons**: 52 short starters, 36 prior field guides and **29 new advanced mastery lessons** with worked examples, exercises, quizzes and optional online references (counts verified by tests).
@@ -20,6 +20,7 @@
 
 **New in 0.5:** Psychology (evidence journaling, habits, relational inference); Philippine law (Constitution, data privacy, consumer complaints); business (customer discovery, unit economics, Philippine launch steps); money (irregular bills, emergency planning, investment red flags). Sources are linked for optional online verification; lessons work offline. Links and regulations can change.
 
+- **Two-Way Language Challenges (1.29):** The nine authored eight-phrase starter packs now support offline, seeded multiple-choice practice in either direction (English meaning → target-language phrase or target phrase → English meaning). Each of the eight questions includes four choices, immediate feedback, and an end-of-challenge answer review. Unfinished sessions resume after reload and are included in plain/encrypted progress backups; saved score history tracks attempts, best and latest result per supported language. Switching languages preserves an unfinished session, while replacement/deletion require confirmation. This exercises recognition—not conversational proficiency, pronunciation accuracy, or listening comprehension—and does not silently mark phrases learned.
 - **Applied Mastery Tracks (1.28):** 29 advanced practical lessons across all 14 subjects, including three Philippine legal and financial consumer-rights workflows. Each has three in-depth teaching sections, an original worked example, a concrete exercise, a quiz with explanation, and further reading from official or reputable sources. New Beginner/Intermediate/Advanced filters make growing course libraries easier to navigate on mobile and desktop. Further-reading links require connectivity, and regulations may change.
 - **Study Card Workshop (1.27):** Create, edit, search and delete up to 120 personal recall cards in your own words, with optional non-mature subject tags. Study due cards with answer reveal and offline spaced repetition, using 10-minute repeats or 1, 3, 7, 14, 30 and 60-day intervals. Editing a prompt resets its review schedule. Private cards transfer with normal and encrypted JSON progress backups, are sanitized during import, and are erased only by deliberate deletion, reset, or browser-data removal. The workshop contains no upload or synchronization and does not alter lesson completion.
 - **Offline Practice Exams:** Choose a 5, 10 or 20-question challenge from one subject or the whole non-mature library. Each answer reveals the explanation; a final review links to the source lessons. Sessions resume after reload and transfer with validated local backups. Practice results do not change completed lessons or Mistake Lab records. The exam engine and mobile browser flow have automated regression coverage.
@@ -107,6 +108,7 @@ fieldnotes.js          Offline per-lesson notebook validation and saving
 studio.js
 paths.js                Seven-session study planner, validation and progress              Validated savings, business, and time scenario calculations
 phrasebook.js          Nine offline starter phrase packs and progress validation
+languagechallenge.js   Offline two-way recognition questions and persisted scores
 assets/                14 distinct course scenes, a corner scene, vector identity
 sw.js                  Offline service worker
 manifest.webmanifest   Installability metadata
@@ -121,7 +123,7 @@ vercel.json            Vercel build and security headers
 
 1. Continue deep subject tracks beyond the 29 new mastery guides, with more Philippine-law coverage and region selection. The foundation for privacy, consumer and banking complaints is implemented.
 2. Additional painterly cinematic chapter artwork and branded character scenes; the first set of 14 lightweight subject-specific illustrations is complete.
-3. Interactive study cards, question bank, spaced repetition and properly sourced language audio.
+3. Expand the working study-card and language-challenge banks with more verified language material and properly sourced audio (the present audio depends on installed device voices).
 4. A transparent download manager for optional offline packs and optional end-to-end encrypted synchronization.
 
 Made for curiosity, by the Xyra Atlas project.
