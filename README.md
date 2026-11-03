@@ -4,10 +4,10 @@
 
 ![Xyra Atlas emblem](assets/atlas-mark.svg)
 
-## Current release: Storage Recovery Guard 1.13
+## Current release: Practical Learning Tracks 1.14
 
 - A violet-and-gold responsive interface, **14 distinct original vector course worlds**, Xyra's Corner artwork, landscape hero and a home-screen app icon. The same course identity appears on home tiles, category cards, course covers and lessons.
-- 14 learning subjects and **76 interactive lessons**: 52 short starters plus 24 structured, referenced field guides with real-world worked examples, exercises and quizzes (counts verified by tests).
+- 14 learning subjects and **88 interactive lessons**: 52 short starters plus 36 structured, referenced field guides with real-world worked examples, exercises and quizzes (counts verified by tests).
 - Psychology, legal literacy, business, money, productivity, communication, critical thinking, language study, digital literacy, career, science, relationships and influence.
 - **The Shadow Library (18+ educational content)** covers manipulation, gaslighting, lies, emotional leverage, deceptive interface design, consent and adult media literacy. The age acknowledgment is a *content gate*, not verified age or identity security.
 - Seven-day language practice framework for 20 languages, with **72 practical offline phrases across nine starter languages**: Japanese, Korean, Spanish, French, Mandarin Chinese, German, Filipino, Italian and English.
@@ -20,6 +20,7 @@
 
 **New in 0.5:** Psychology (evidence journaling, habits, relational inference); Philippine law (Constitution, data privacy, consumer complaints); business (customer discovery, unit economics, Philippine launch steps); money (irregular bills, emergency planning, investment red flags). Sources are linked for optional online verification; lessons work offline. Links and regulations can change.
 
+- **Practical Learning Tracks:** Twelve additional three-section field guides across science, negotiation, relationships and time management. Every lesson includes an original worked example, realistic exercise, quiz and source for further reading, and works offline. Relationship safety and scientific research topics include important limits and responsible-use guidance.
 - **Storage Recovery Guard:** Unreadable browser progress is protected from automatic overwrite. A persistent warning offers a raw recovery download, and users can explicitly restore a valid JSON backup or reset. Failed saves are visibly flagged, and browser storage is never described as cloud-synced.
 - **Listen to Lesson:** Browser speech synthesis reads lessons in short manageable chunks with pause, resume and stop controls, avoids external app APIs, and cancels when navigating away. Available voices and offline audio behavior vary by browser, system and voice implementation.
 - **Visual Chapter Maps:** Every lesson now contains a responsive interactive topic pathway using its authored teaching sections and practice exercise. Accessible buttons jump to the matching content, supporting screen-reader and keyboard navigation without extra image downloads.
