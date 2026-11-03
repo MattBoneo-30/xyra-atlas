@@ -27,6 +27,7 @@ import { STUDIO_DEFAULTS, sanitizeStudio, calculateSavings, calculateBusiness, c
 import { PHRASEBOOK,getPhrasePack, sanitizePhraseProgress } from './phrasebook.js';
 import {normalizePhraseReviews,duePhraseReviews,phraseReviewStats,ratePhraseReview,clearPhraseReviews} from './phrasereview.js';
 import {LANGUAGE_CHALLENGE_MODES,createLanguageChallenge,normalizeLanguageChallenge,currentLanguageQuestion,answerLanguageChallenge,advanceLanguageChallenge,languageChallengeResults,normalizeLanguageChallengeHistory,recordLanguageChallengeHistory} from './languagechallenge.js';
+import {CONVERSATION_QUESTS,createConversationQuest,normalizeConversationQuest,currentConversationQuestion,answerConversationQuestion,advanceConversationQuest,conversationQuestResults,normalizeConversationQuestHistory,recordConversationQuestHistory} from './conversationquest.js';
 import { normalizeFieldNotes, setFieldNote, MAX_FIELD_NOTE_LENGTH } from './fieldnotes.js';
 import {normalizeCapstoneChecks,capstoneCheckProgress,setCapstoneCheck,clearCapstoneChecks} from './capstonechecks.js';
 
@@ -37,7 +38,7 @@ let storageProblem=null;
 let recoveryRaw=null;
 const esc = value => String(value ?? '').replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
 const plain = text => esc(text).replace(/\n/g, '<br>');
-function createInitialState(){return { completed: [], bookmarks: [], favorites: [], answers: {}, reviews: {}, fieldNotes: {}, capstoneChecks: {}, lastOpened: null, dailyVisits: [], theme: 'dark', language: 'ja', languageDays: [], phrases: {}, phraseReviews:{}, languageChallenge:null, languageChallengeHistory:{}, studio: sanitizeStudio(null), userName: '', welcomeDismissed: false, learningPath: null, scenarios: {}, casebook: {}, mistakes:{}, exam:null, examHistory:[], personalCards:[], reader:normalizeReaderPreferences(null) };}
+function createInitialState(){return { completed: [], bookmarks: [], favorites: [], answers: {}, reviews: {}, fieldNotes: {}, capstoneChecks: {}, lastOpened: null, dailyVisits: [], theme: 'dark', language: 'ja', languageDays: [], phrases: {}, phraseReviews:{}, languageChallenge:null, languageChallengeHistory:{}, conversationQuest:null, conversationQuestHistory:{}, studio: sanitizeStudio(null), userName: '', welcomeDismissed: false, learningPath: null, scenarios: {}, casebook: {}, mistakes:{}, exam:null, examHistory:[], personalCards:[], reader:normalizeReaderPreferences(null) };}
 function readStored() {
   try {
     const raw=localStorage.getItem(STORAGE_KEY);
@@ -56,6 +57,8 @@ function readStored() {
       phraseReviews:normalizePhraseReviews(data.phraseReviews,PHRASEBOOK),
       languageChallenge:normalizeLanguageChallenge(data.languageChallenge,PHRASEBOOK),
       languageChallengeHistory:normalizeLanguageChallengeHistory(data.languageChallengeHistory,PHRASEBOOK),
+      conversationQuest:normalizeConversationQuest(data.conversationQuest,PHRASEBOOK),
+      conversationQuestHistory:normalizeConversationQuestHistory(data.conversationQuestHistory,PHRASEBOOK),
       answers: data.answers && typeof data.answers === 'object' && !Array.isArray(data.answers) ? data.answers : {},
       reviews: normalizeReviews(data.reviews),
       studio: sanitizeStudio(data.studio),
@@ -84,6 +87,7 @@ let mistakeIndex=0;
 let phraseRevealed = false, phraseIndex = 0;
 let phraseReviewRevealed=false;
 let languageChallengePendingMode='recognition';
+let conversationQuestPendingId='directions';
 let studioTab = 'savings';
 const getDueReviews = () => dueReviewCards(reviewCards, saved.completed, saved.reviews, Date.now(), shadowUnlocked);
 let route = parseHash();
@@ -712,6 +716,7 @@ function languagePage() {
     ${(() => { const pack=getPhrasePack(saved.language);if(!pack)return `<section class="phrase-lab"><h2>Phrase pack coming soon</h2><p>The seven-day practice plan remains available while this language's lessons are prepared.</p></section>`;const words=pack.phrases,word=words[phraseIndex%words.length],known=saved.phrases[saved.language]||[];return `<section class="phrase-lab"><div class="phrase-head"><span class="overline">OFFLINE PHRASE PRACTICE</span><h2>Practice for real</h2><p>${known.length} of ${words.length} learned</p></div>${bars(known.length,words.length)}<div class="phrase-card"><small>CARD ${phraseIndex%words.length+1} OF ${words.length}</small><h3>${esc(word.english)}</h3>${phraseRevealed?`<div class="phrase-answer" lang="${esc(pack.locale)}"><strong>${esc(word.target)}</strong><small>${esc(word.pronunciation)}</small></div><div class="phrase-buttons">${button(`${icon('play',17)} Listen`,'phrase-speak','secondary-button')}${button(known.includes(word.id)?'Learned ✓':'Mark learned','phrase-known','secondary-button')}</div>`:button('Reveal translation','phrase-reveal','primary-button')}<div class="phrase-controls">${button('Previous','phrase-prev','text-action')}${button(`Next phrase ${icon('arrow',16)}`,'phrase-next','text-action')}</div></div><p class="fineprint">Speak before revealing. Playback requires a compatible installed device voice. Marking learned is a self-assessment.</p></section>`;})()}
     ${phraseReviewPanel()}
     ${languageChallengePanel()}
+    ${conversationQuestPanel()}
     <div class="language-callout">${icon('info',22)}<p><strong>From beginner to native-like?</strong> That's a long-term journey. In one week, target greetings, essential questions and short conversations. Real proficiency grows through months and years of meaningful use.</p></div>
   </main>`;
 }
@@ -832,6 +837,8 @@ function modalView() {
   const inner = modal==='shadow' ? `<div class="modal-icon dark-icon">${icon('moon',28)}</div><span class="overline">A DIFFERENT KIND OF LESSON</span><h2>Enter the Shadow Library?</h2><p>This section explores manipulation, coercive behavior, psychological pressure, deception, adult intimacy, and sexual health. The purpose is understanding and informed choice—not abuse or exploitation.</p><div class="age-warning">${icon('info',19)} Contains mature educational discussions intended for adults 18+.</div><label class="checkbox-label"><input type="checkbox" id="age-agree" ${gateConfirmed?'checked':''}/><span>I am at least 18, and I understand the purpose of this material.</span></label>${button(`Enter the library ${icon('arrow',18)}`,'enter-shadow','primary-button',gateConfirmed?'':'disabled')}` :
   modal==='install' ? `<div class="modal-icon">${icon('download',26)}</div><span class="overline">TAKE YOUR ATLAS WITH YOU</span><h2>Install Xyra Atlas</h2><p>After the first successful online visit, the app shell and included lessons can work offline once fully cached.</p><div class="install-steps"><strong>On iPhone / iPad</strong><p>Open this website in Safari. Tap Share, then “Add to Home Screen” and enable “Open as Web App”.</p><strong>On Android</strong><p>Open in Chrome. Use the browser menu and select “Install app” or “Add to Home screen”, when available.</p></div>${installEvent?button(`Install now ${icon('download',18)}`,'install-prompt','primary-button'):''}<p class="fineprint">Installing does not automatically sync data across phones. Use Export/Import backup to transfer progress.</p>` :
   modal==='personal-card-delete' && personalCardPendingDelete ? `<div class="modal-icon warning-icon">${icon('alert',26)}</div><h2>Delete this card?</h2><p>This removes the question, answer and its review schedule from this device. Other lesson progress stays unchanged.</p>${button('Keep card','close-modal','secondary-button')}${button('Delete card','personal-card-delete-confirm','outline-danger')}` :
+  modal==='conversation-quest-replace' ? `<div class="modal-icon warning-icon">${icon('alert',26)}</div><h2>Replace unfinished conversation quest?</h2><p>Your current practice sequence will be replaced. Scores from completed quests remain saved.</p>${button('Keep my quest','close-modal','secondary-button')}${button('Replace quest','conversation-replace-confirm','outline-danger')}` :
+  modal==='conversation-quest-discard' ? `<div class="modal-icon warning-icon">${icon('alert',26)}</div><h2>Discard your unfinished conversation quest?</h2><p>Only this incomplete sequence is discarded. Your other lessons, phrases, and recorded quest scores are preserved.</p>${button('Keep practicing','close-modal','secondary-button')}${button('Discard quest','conversation-discard-confirm','outline-danger')}` :
   modal==='challenge-replace' ? `<div class="modal-icon warning-icon">${icon('alert',26)}</div><h2>Replace saved language challenge?</h2><p>Your unfinished challenge will be replaced by a new one. Completed scores in your history are not erased.</p>${button('Keep saved challenge','close-modal','secondary-button')}${button('Replace challenge','challenge-replace-confirm','outline-danger')}` :
   modal==='phrase-review-reset' ? `<div class="modal-icon warning-icon">${icon('alert',26)}</div><h2>Reset this language's recall schedule?</h2><p>The scheduled phrase-review results for your selected language will be cleared. Other languages, your learned-phrase markings, and challenge scores remain unchanged.</p>${button('Keep my reviews','close-modal','secondary-button')}${button('Reset this schedule','phrase-review-reset-confirm','outline-danger')}` :
   modal==='challenge-discard' ? `<div class="modal-icon warning-icon">${icon('alert',26)}</div><h2>Discard this challenge?</h2><p>Current unanswered or incomplete progress will be cleared. Your best scores and lesson progress remain.</p>${button('Keep practicing','close-modal','secondary-button')}${button('Discard challenge','challenge-discard-confirm','outline-danger')}` :
@@ -848,6 +855,7 @@ function modalView() {
   <p class="fineprint">Completed practice exam records: ${(pendingBackup.state.examHistory||[]).length} (up to 12 recent summaries).</p>
   <p class="fineprint">Language practice in this backup: ${pendingBackup.state.languageChallenge?'one saved challenge':'no active challenge'} · ${Object.keys(pendingBackup.state.languageChallengeHistory||{}).length} score histories.</p>
   <p class="fineprint">Scheduled phrase recall records: ${Object.keys(pendingBackup.state.phraseReviews||{}).length} across supported languages.</p>
+  <p class="fineprint">Situational conversation practice: ${pendingBackup.state.conversationQuest?'one saved sequence':'no active sequence'} · ${Object.keys(pendingBackup.state.conversationQuestHistory||{}).length} languages with quest results.</p>
   <p class="backup-replace-warning">Current device: ${finished()} completed lessons and ${Object.keys(saved.fieldNotes).length} notes. Export those first if you want to preserve them.</p>
   <div class="backup-preview-actions">${button('Cancel','backup-cancel','secondary-button')}${button('Restore and replace','backup-confirm','outline-danger')}</div>` :
   modal==='corner' ? `<div class="modal-icon">${icon('spark',26)}</div><span class="overline">XYRA'S CORNER</span><h2>A little note, just for you ♡</h2><p>“You are allowed to be new at something. You are allowed to ask strange questions. And you are allowed to change your mind when you learn more.”</p><div class="xyra-signature">With curiosity, Xyra ✦</div><p class="fineprint">One thought I want to leave you with: knowledge is power, but wisdom is knowing when and how to use it.</p>` :
@@ -897,6 +905,8 @@ function normalizedBackupState(clean){
    phraseReviews:normalizePhraseReviews(clean.phraseReviews,PHRASEBOOK),
    languageChallenge:normalizeLanguageChallenge(clean.languageChallenge,PHRASEBOOK),
    languageChallengeHistory:normalizeLanguageChallengeHistory(clean.languageChallengeHistory,PHRASEBOOK),
+   conversationQuest:normalizeConversationQuest(clean.conversationQuest,PHRASEBOOK),
+   conversationQuestHistory:normalizeConversationQuestHistory(clean.conversationQuestHistory,PHRASEBOOK),
    userName:typeof clean.userName==='string'?clean.userName.slice(0,40):''
  };
 }
