@@ -24,8 +24,8 @@ test('daily quests reject dates which do not actually exist',()=>{
 });
 test('service worker only removes older Atlas caches and leaves unrelated caches',async()=>{
  const code=fs.readFileSync('sw.js','utf8'),events={};const deleted=[];
- const suffix=code.match(/const CACHE = CACHE_PREFIX \\+ '([^']+)'/);assert.ok(suffix,'current Atlas cache version');
- const active='xyra-atlas-'+suffix[1];
+ const versionLine=code.split('\n').find(line=>line.startsWith('const CACHE = CACHE_PREFIX '));assert.ok(versionLine,'current Atlas cache version');
+ const active='xyra-atlas-'+versionLine.split("'")[1];
  const cacheNames=['xyra-atlas-v11','xyra-atlas-v13','xyra-atlas-v14',active,'another-pwa-cache','site-content-v3'];
  const caches={keys:async()=>cacheNames,delete:async name=>{deleted.push(name);return true;}};
  const self={addEventListener:(type,cb)=>{events[type]=cb;},clients:{claim:async()=>true},location:{origin:'https://example.test'}};
