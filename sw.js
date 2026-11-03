@@ -1,6 +1,6 @@
 /* Xyra Atlas: privacy-first, same-origin offline app shell. */
 const CACHE_PREFIX = 'xyra-atlas-';
-const CACHE = CACHE_PREFIX + 'v44';
+const CACHE = CACHE_PREFIX + 'v45';
 const APP_SHELL = [
   '/', '/index.html', '/styles.css', '/app.js', '/data.js', '/review.js', '/phrasebook.js', '/phrasereview.js', '/languagechallenge.js', '/deeptracks.js', '/fieldnotes.js', '/studio.js', '/paths.js', '/scenarios.js', '/atlasmap.js', '/dailyquest.js', '/glossary.js', '/search.js', '/calendar.js', '/insights.js',
   '/fieldguides.js', '/lifepractice.js', '/masterytracks.js', '/capstonelabs.js', '/capstonechecks.js', '/mentor.js', '/casebook.js', '/reader.js', '/visualmap.js', '/narration.js', '/storagehealth.js', '/offline.js', '/backup.js', '/backupcrypto.js', '/notebook.js', '/mistakes.js', '/exam.js', '/examhistory.js', '/focusedexam.js', '/personalcards.js', '/manifest.webmanifest', '/assets/atlas-mark.svg',
@@ -22,49 +22,83 @@ const APP_SHELL = [
   '/assets/xyra-corner.svg',
   '/icon-192.png', '/icon-512.png', '/apple-touch-icon.png'
 ];
-self.addEventListener('install', event => {
-  event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(APP_SHELL)).then(() => self.skipWaiting()));
+// A complete, versioned cache is prepared before the new worker activates.
+// Do not skipWaiting during installation: it could replace an in-use app whose
+// JavaScript modules and offline assets still belong to the previous version.
+const SHELL_PATHS=new Set(APP_SHELL);
+self.addEventListener('install',event=>{
+ event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(APP_SHELL)));
 });
-self.addEventListener('activate', event => {
-  event.waitUntil(Promise.all([
-    caches.keys().then(keys => Promise.all(keys.filter(key => key.startsWith(CACHE_PREFIX) && key !== CACHE).map(key => caches.delete(key)))),
-    self.clients.claim()
-  ]));
+self.addEventListener('activate',event=>{
+ event.waitUntil((async()=>{
+  const keys=await caches.keys();
+  await Promise.all(keys.filter(key=>key.startsWith(CACHE_PREFIX)&&key!==CACHE)
+   .map(key=>caches.delete(key)));
+  await self.clients.claim();
+ })());
 });
 async function offlineStatus(){
  const cache=await caches.open(CACHE);
- const stored=await Promise.all(APP_SHELL.map(path=>cache.match(path).then(Boolean)));
- const count=stored.filter(Boolean).length;
- return {cached:count,total:APP_SHELL.length,ready:count===APP_SHELL.length,version:CACHE};
+ const results=await Promise.all(APP_SHELL.map(async path=>{
+  const response=await cache.match(path);
+  return Boolean(response&&response.ok);
+ }));
+ const cached=results.filter(Boolean).length;
+ return {cached,total:APP_SHELL.length,ready:cached===APP_SHELL.length,version:CACHE};
 }
-async function offlineRepair(){
- const cache=await caches.open(CACHE);
- const missing=(await Promise.all(APP_SHELL.map(async path=>(await cache.match(path))?null:path))).filter(Boolean);
- await Promise.allSettled(missing.map(path=>cache.add(path)));
- return offlineStatus();
+let repairJob=null;
+function offlineRepair(){
+ if(!repairJob){
+  repairJob=(async()=>{
+   const cache=await caches.open(CACHE);
+   const missing=(await Promise.all(APP_SHELL.map(async path=>{
+    const r=await cache.match(path);
+    return r&&r.ok?null:path;
+   }))).filter(Boolean);
+   // Failed requests stay missing and are reported; never claim success on errors.
+   await Promise.allSettled(missing.map(path=>cache.add(path)));
+   return offlineStatus();
+  })().finally(()=>{repairJob=null;});
+ }
+ return repairJob;
 }
 self.addEventListener('message',event=>{
- const type=event.data?.type,port=event.ports?.[0];
+ const type=event.data?.type;
+ if(type==='ATLAS_ACTIVATE_UPDATE'){
+  // Only a deliberately prompted user action in the client sends this message.
+  event.waitUntil(self.skipWaiting());
+  return;
+ }
+ const port=event.ports?.[0];
  if(!port||!['ATLAS_OFFLINE_STATUS','ATLAS_REPAIR_OFFLINE'].includes(type))return;
  event.waitUntil((async()=>{
   try{port.postMessage(type==='ATLAS_OFFLINE_STATUS'?await offlineStatus():await offlineRepair());}
   catch{port.postMessage({error:'Unable to inspect offline files'});}
  })());
 });
-
-self.addEventListener('fetch', event => {
-  const req = event.request;
-  if (req.method !== 'GET' || new URL(req.url).origin !== self.location.origin) return;
-  if (req.mode === 'navigate') {
-    event.respondWith(fetch(req).then(res => res.ok ? res : Promise.reject(new Error('offline')))
-      .catch(() => caches.match('/index.html')));
-    return;
+self.addEventListener('fetch',event=>{
+ const req=event.request,url=new URL(req.url);
+ if(req.method!=='GET'||url.origin!==self.location.origin)return;
+ if(req.mode==='navigate'){
+  event.respondWith((async()=>{
+   try{const live=await fetch(req);if(live.ok)return live;}catch{}
+   // Only the active release cache can supply a navigation fallback.
+   const current=await caches.open(CACHE);
+   return await current.match('/index.html')||Response.error();
+  })());
+  return;
+ }
+ // Do not silently cache arbitrary same-origin responses, user data or URLs.
+ if(!SHELL_PATHS.has(url.pathname))return;
+ event.respondWith((async()=>{
+  const current=await caches.open(CACHE);
+  const cached=await current.match(url.pathname);
+  if(cached?.ok)return cached;
+  const live=await fetch(req);
+  if(live.ok&&!url.search){
+   // Avoid transient caching errors escaping as unhandled promises.
+   event.waitUntil(current.put(url.pathname,live.clone()).catch(()=>{}));
   }
-  event.respondWith(caches.match(req).then(cached => cached || fetch(req).then(response => {
-    if (response.ok) {
-      const copy = response.clone();
-      caches.open(CACHE).then(cache => cache.put(req, copy));
-    }
-    return response;
-  })));
+  return live;
+ })());
 });
