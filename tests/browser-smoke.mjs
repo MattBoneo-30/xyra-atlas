@@ -929,6 +929,93 @@ try{
   await context.setOffline(false);
  });
 
+
+ await smoke('offline-situational-conversation-quests',{viewport:{width:390,height:844}},async(page,context)=>{
+  await page.goto(BASE+'/#/language',{waitUntil:'domcontentloaded'});
+  await page.locator('.conversation-quest').waitFor();
+  await page.locator('#language-select').selectOption('es');
+  expect(await page.locator('.conversation-quest-scenarios article').count()===3,'three contextual situations are available in Spanish');
+  await page.locator('#conversation-quest-select').selectOption('directions');
+  await page.locator('[data-action="conversation-start"]').click();
+  await page.locator('.conversation-quest-options').waitFor();
+  let state=await getState(page);
+  expect(state.conversationQuest.code==='es'&&state.conversationQuest.questId==='directions','new scenario saves language and selected context');
+  await page.locator('.conversation-quest-option:not([data-id="3"])').first().click();
+  await page.locator('.conversation-quest-feedback').waitFor();
+  expect((await getState(page)).conversationQuest.answers[0]!=='3','first scene includes a meaningful incorrect option');
+  expect(Object.keys((await getState(page)).phrases||{}).length===0,'context quiz never marks phrases learned');
+  await page.reload({waitUntil:'domcontentloaded'});
+  await page.locator('.conversation-quest-feedback').waitFor();
+  expect((await getState(page)).conversationQuest.position===0,'answered step survives refresh before advancing');
+  await page.locator('[data-action="conversation-next"]').click();
+  await page.locator('#language-select').selectOption('ko');
+  expect(await page.locator('[data-action="conversation-resume"]').count()===1,'switching language safely pauses active conversation quest');
+  await page.locator('[data-action="conversation-resume"]').click();
+  expect((await getState(page)).language==='es','resume returns to original practice language');
+  for(const id of ['5','6','4','2']){
+   await page.locator('.conversation-quest-option[data-id="'+id+'"]').click();
+   await page.locator('.conversation-quest-feedback').waitFor();
+   await page.locator('[data-action="conversation-next"]').click();
+  }
+  await page.locator('.conversation-quest-review').waitFor();
+  state=await getState(page);
+  expect(state.conversationQuest.position===5,'all five situational cues have been answered');
+  expect(state.conversationQuestHistory.es.directions.attempts===1,'completed quest stores one history entry');
+  expect(state.conversationQuestHistory.es.directions.last===4,'history reflects the one deliberately missed step');
+  expect(await page.locator('.conversation-quest-review article').count()===5,'all contextual answers appear for review');
+  await page.reload({waitUntil:'domcontentloaded'});
+  expect((await getState(page)).conversationQuestHistory.es.directions.attempts===1,'reload does not duplicate conversation scores');
+  await page.locator('[data-action="conversation-new"]').click();
+  await page.locator('#conversation-quest-select').selectOption('meeting');
+  await page.locator('[data-action="conversation-start"]').click();
+  await page.locator('.conversation-quest-options').waitFor();
+  await page.locator('.conversation-quest-option[data-id="1"]').click();
+  await page.locator('[data-action="conversation-discard"]').click();
+  await page.getByRole('button',{name:'Keep practicing'}).click();
+  expect((await getState(page)).conversationQuest!==null,'cancelled discard keeps unfinished situation');
+  await page.locator('[data-action="conversation-discard"]').click();
+  await page.locator('[data-action="conversation-discard-confirm"]').click();
+  expect((await getState(page)).conversationQuest===null,'confirmed discard removes only the unfinished sequence');
+  expect((await getState(page)).conversationQuestHistory.es.directions.attempts===1,'discard keeps completed results');
+  await page.locator('#language-select').selectOption('fil');
+  await page.locator('#conversation-quest-select').selectOption('market');
+  await page.locator('[data-action="conversation-start"]').click();
+  await page.locator('.conversation-quest-options').waitFor();
+  const savedFilePromise=page.waitForEvent('download');
+  await page.goto(BASE+'/#/you',{waitUntil:'domcontentloaded'});
+  await page.locator('[data-action="export"]').click();
+  const downloaded=await savedFilePromise,fs=await import('node:fs/promises');
+  const backup=await fs.readFile(await downloaded.path(),'utf8');
+  const snapshot=JSON.parse(backup).state;
+  expect(snapshot.conversationQuest.code==='fil','backup includes an unfinished language context');
+  expect(snapshot.conversationQuestHistory.es.directions.last===4,'backup includes completed history');
+  await page.evaluate(()=>{
+   const key='xyra-atlas-state-v1',state=JSON.parse(localStorage.getItem(key)||'{}');
+   state.conversationQuest=null;state.conversationQuestHistory={};
+   localStorage.setItem(key,JSON.stringify(state));
+  });
+  await page.reload({waitUntil:'domcontentloaded'});
+  await page.locator('#backup-file').setInputFiles({name:'conversation-quest-backup.json',mimeType:'application/json',buffer:Buffer.from(backup)});
+  await page.locator('.backup-preview-grid').waitFor();
+  await page.locator('[data-action="backup-confirm"]').click();
+  await page.waitForFunction(()=>JSON.parse(localStorage.getItem('xyra-atlas-state-v1')||'{}').conversationQuest?.code==='fil');
+  state=await getState(page);
+  expect(state.conversationQuestHistory.es.directions.last===4,'restored backup recovers independent historical scores');
+  await page.goto(BASE+'/#/language',{waitUntil:'domcontentloaded'});
+  const overflow=await mobileOverflow(page);
+  expect(overflow.scroll<=overflow.width+8,'situational challenge fits narrow mobile viewport');
+  await page.evaluate(async()=>{await navigator.serviceWorker.ready;});
+  await page.reload({waitUntil:'domcontentloaded'});
+  await page.waitForFunction(()=>Boolean(navigator.serviceWorker.controller));
+  await context.setOffline(true);
+  await page.reload({waitUntil:'domcontentloaded'});
+  await page.locator('.conversation-quest-options').waitFor();
+  expect((await getState(page)).conversationQuest.code==='fil','unfinished quest resumes without internet');
+  await page.locator('.conversation-quest-option[data-id="1"]').click();
+  await page.locator('.conversation-quest-feedback').waitFor();
+  await context.setOffline(false);
+ });
+
 }finally{
  if(browser)await browser.close();
  server.kill('SIGTERM');
