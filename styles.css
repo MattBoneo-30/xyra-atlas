@@ -357,3 +357,14 @@ html[data-theme=light]{color-scheme:light;--bg:#fbf5f6;--bg-raised:#fff9fa;--car
 .capstone-rubric li{counter-increment:capstone;display:flex;align-items:flex-start;gap:13px;line-height:1.65;padding:13px 15px;border:1px solid var(--line);background:var(--card-strong);border-radius:13px;overflow-wrap:anywhere}
 .capstone-rubric li::before{content:counter(capstone,decimal-leading-zero);flex:0 0 28px;height:28px;display:grid;place-items:center;border-radius:9px;background:var(--card);color:var(--gold);font-size:12px;font-weight:700}
 @media(max-width:560px){.capstone-rubric{padding:18px 15px}.capstone-rubric li{padding:12px;gap:10px}.capstone-rubric li::before{flex-basis:25px;height:25px}}
+
+
+/* Capstone self-review workspace */
+.capstone-rubric-check{display:flex;align-items:flex-start;gap:12px;min-width:0;flex:1;cursor:pointer;font-size:14px;line-height:1.65}
+.capstone-rubric-check input[type="checkbox"]{width:20px;height:20px;flex:0 0 20px;accent-color:var(--gold);margin:2px 0 0;cursor:pointer}
+.capstone-rubric-check input:focus-visible{outline:2px solid var(--gold);outline-offset:4px}
+.capstone-rubric li.is-reviewed{border-color:var(--gold);background:color-mix(in srgb,var(--gold) 8%,var(--card-soft))}
+.capstone-rubric-actions{display:flex;align-items:center;justify-content:flex-end;margin-top:18px}
+.capstone-rubric-actions .secondary-button{min-height:41px}
+#capstone-check-status{font-size:12px;line-height:1.6;color:var(--gold);font-weight:600;margin:12px 0 2px}
+@media(max-width:560px){.capstone-rubric-actions .secondary-button{width:100%}.capstone-rubric-check{gap:10px;font-size:13px}}
