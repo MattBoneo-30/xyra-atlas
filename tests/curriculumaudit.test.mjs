@@ -12,7 +12,9 @@ test('curriculum produces a deterministic comprehensive, cautious editorial back
  assert.equal(report.subjects.length,14);
  assert.equal(report.lessons.length,134);
  assert.equal(report.totals.structuredEvidencePractice,134);
- assert.ok(report.totals.threeSectionDepth>=26);
+ assert.equal(report.totals.threeSectionDepth,134);
+ assert.equal(report.totals.appliedExercises,134);
+ assert.equal(report.totals.lessonsWithEditorialFlags,0);
  assert.ok(report.totals.workedExamples>=26);
  assert.ok(report.totals.uniqueSourceURLs>=25);
  assert.ok(report.totals.lessonsWithEditorialFlags>0,'do not falsely declare advanced curriculum editorial review complete');

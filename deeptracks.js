@@ -251,15 +251,15 @@ export const DEEP_TRACKS = {
       "sections": [
         {
           "heading": "Understand",
-          "body": "Ask about the last time someone experienced the problem, what they tried and what it cost in time or money. Avoid flattering questions such as “Would you love my app?” Hypothetical praise is weaker evidence than behavior."
+          "body": "Ask about the last time someone experienced the problem, what they tried and what it cost in time or money. Avoid flattering questions such as “Would you love my app?” Hypothetical praise is weaker evidence than behavior. To distinguish occasional inconvenience from a problem worth solving, ask the interviewee to describe the latest complete event, including what they did first, how long the workaround took and what outcome they actually obtained. Record the response without supplying a preferred product idea."
         },
         {
           "heading": "Apply the method",
-          "body": "Track repeated problems and the workarounds people already pay for. State a testable assumption and define evidence that would change your plan. Small interview samples generate hypotheses, not reliable market-size forecasts."
+          "body": "Track repeated problems and the workarounds people already pay for. State a testable assumption and define evidence that would change your plan. Small interview samples generate hypotheses, not reliable market-size forecasts. After several interviews, group observations by concrete behavior rather than enthusiasm. A user who recovers files easily but struggles with naming has a different need from someone who cannot find files at all. Write which prototype behavior would disconfirm each possible need."
         },
         {
           "heading": "Watch for the limits",
-          "body": "Interviewees are people, not sales funnels. Explain the purpose, respect their privacy and do not pressure them into saying they would buy."
+          "body": "Interviewees are people, not sales funnels. Explain the purpose, respect their privacy and do not pressure them into saying they would buy. Respect voluntary participation, explain why you are asking and avoid collecting sensitive file names or credentials. A handful of conveniently recruited people cannot establish market size, willingness to pay or a representative percentage of all users."
         }
       ],
       "example": "To test a file manager, ask five people how they last recovered a misplaced file. Listen before showing your prototype. A second interview reveals that the user already searches files successfully but struggles to name downloaded documents. Rather than assuming both problems prove demand for the same app, the founder compares the distinct workarounds and tests one small prototype.",
@@ -329,15 +329,15 @@ export const DEEP_TRACKS = {
       "sections": [
         {
           "heading": "Understand",
-          "body": "A Philippine DTI business-name registration identifies a name within its scope. It is not a substitute for every business permit or other legal requirement. Entity type, location and activity determine what comes next."
+          "body": "A Philippine DTI business-name registration identifies a name within its scope. It is not a substitute for every business permit or other legal requirement. Entity type, location and activity determine what comes next. For every proposed business, write its legal form, planned location and actual activity before consulting government portals. A name registration, local permission to operate, tax registration and sector-specific authorization answer different questions; the exact requirements must be confirmed using current official materials."
         },
         {
           "heading": "Apply the method",
-          "body": "Make a checklist of current rules from the relevant agencies, such as the DTI or SEC, local government, BIR, and sector regulators where applicable. Keep source links and the date each requirement was confirmed."
+          "body": "Make a checklist of current rules from the relevant agencies, such as the DTI or SEC, local government, BIR, and sector regulators where applicable. Keep source links and the date each requirement was confirmed. Make the checklist auditable with columns for responsible agency, requirement, applicable business type, original URL, last-check date, fee information and evidence of completion. Distinguish information you have confirmed from items that are still assumptions or need qualified review."
         },
         {
           "heading": "Watch for the limits",
-          "body": "Do not treat old checklists or this educational guide as a definitive compliance opinion. Fees and filing rules change; confirm requirements before operating."
+          "body": "Do not treat old checklists or this educational guide as a definitive compliance opinion. Fees and filing rules change; confirm requirements before operating. Never treat a generic online checklist as a complete legal opinion. Philippine agency rules, forms and local ordinances can change; certain activities may require additional approvals. This lesson is a method for checking obligations, not permission to begin operating without verification."
         }
       ],
       "example": "A person receives a DTI name certificate for a shop. Before opening, they still check local operating permits and tax registration obligations. A home-based food seller first identifies business form and city, then checks the relevant current DTI or SEC process, local government permit rules, tax registration and any food-related requirements. They record official URLs and dates instead of relying on a viral one-page checklist.",
@@ -370,15 +370,15 @@ export const DEEP_TRACKS = {
       "sections": [
         {
           "heading": "Understand",
-          "body": "Use the same time period for income, essentials, flexible spending, debts and saving. For a predictable nonmonthly bill, create a sinking fund by dividing the expected cost by the months left."
+          "body": "Use the same time period for income, essentials, flexible spending, debts and saving. For a predictable nonmonthly bill, create a sinking fund by dividing the expected cost by the months left. A ₱6,000 annual fee due in twelve months implies an illustrative ₱500 monthly reserve, assuming no existing savings for that fee. Add the future payment to the same-period budget as food, rent and transport so that earmarked money is not mistakenly counted as available cash."
         },
         {
           "heading": "Apply the method",
-          "body": "Check actual transactions and adjust categories. If income varies, work from a conservative estimate. Keep a small buffer if possible instead of assigning the same money to two goals."
+          "body": "Check actual transactions and adjust categories. If income varies, work from a conservative estimate. Keep a small buffer if possible instead of assigning the same money to two goals. Test the plan under a low-income month, an earlier-than-expected bill and one missed contribution. Keep predictable expenses in their own reserve while preserving accessible emergency savings where possible. Record the next review date and adjust amounts when the estimate changes."
         },
         {
           "heading": "Watch for the limits",
-          "body": "Budgeting is planning, not punishment. Your necessary expenses and available resources matter; there is no universal percentage that works for everyone."
+          "body": "Budgeting is planning, not punishment. Your necessary expenses and available resources matter; there is no universal percentage that works for everyone. A mathematical reserve does not guarantee that income can cover every obligation. If essentials already consume available funds, label the gap instead of inventing savings. Avoid using debt or a speculative investment merely to make the worksheet appear balanced."
         }
       ],
       "example": "A ₱6,000 annual fee due in twelve months calls for saving around ₱500 each month. Count that reserve once, not as both savings and a monthly purchase. The saver also expects a ₱2,400 repair bill in six months, adding ₱400 to the monthly set-aside. They place both future bills in the budget before assigning leftover money to flexible spending, preventing a planned expense from being mistaken for an emergency.",
