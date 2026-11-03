@@ -4,7 +4,7 @@
 
 ![Xyra Atlas emblem](assets/atlas-mark.svg)
 
-## Current release: Capstone Self-Review Workspace 1.33
+## Current release: Daily Phrase Recall 1.34
 
 - A violet-and-gold responsive interface, **14 distinct original vector course worlds**, Xyra's Corner artwork, landscape hero and a home-screen app icon. The same course identity appears on home tiles, category cards, course covers and lessons.
 - 14 learning subjects and **131 interactive lessons**: 117 existing lessons plus **14 new applied capstone labs**, one in every subject. Each capstone contains an original decision case, worked example, hands-on exercise, self-check rubric, knowledge question, and optional source for further reading (counts verified by tests).
@@ -20,6 +20,7 @@
 
 **New in 0.5:** Psychology (evidence journaling, habits, relational inference); Philippine law (Constitution, data privacy, consumer complaints); business (customer discovery, unit economics, Philippine launch steps); money (irregular bills, emergency planning, investment red flags). Sources are linked for optional online verification; lessons work offline. Links and regulations can change.
 
+- **Daily Phrase Recall (1.34):** Every one of the nine existing starter-language phrase packs now supports a dedicated offline spaced-recall queue. Hide the target phrase, try to retrieve it, reveal it, then self-report **Practice again** (returns after 10 minutes) or **I remembered** (returns after 1, 3, 7, 14, 30 or 60 days as recall strengthens). The queue and due counts are separate per language and saved locally, included in normal and encrypted progress backups, and validated on import. A safe per-language reset does not remove other language schedules, learned-phrase markings, or challenge scores. Automated Node and mobile Chromium checks cover real timing, recovery, language switching, and backup restoration. This is self-reported text recall, not pronunciation assessment or a test of fluency.
 - **Capstone Self-Review Workspace (1.33):** The 14 applied case labs now have accessible three-point checklists learners can tick as they revise their Field Notebook exercises. Checks persist locally and in ordinary/encrypted backups, survive browser refreshes, and can be cleared per lesson without erasing notes, quiz answers, or completion. Imported checklist data is sanitized against known capstone IDs and exact boolean shapes. The interface explains that checkmarks are self-reported reflections, not automatically assessed work, professional certification, or evidence of proficiency. Desktop/mobile Chromium regression tests cover checks, reset, privacy separation, and backup restore.
 - **Applied Capstone Labs (1.32):** Fourteen original advanced decision cases, one per subject, including a Philippine privacy-access exercise, a practical small-business pilot calculation, a phishing-resistant account recovery drill, and a research-methods appraisal. Each lab includes a three-point, subject-specific self-check rubric in the lesson reader and works offline with the existing Field Notebook, source links, quizzes and completion tracking. Self-check criteria guide revision; they are not automatically assessed or evidence of professional certification. National rules and scientific guidance can change: verify primary references online before real-world decisions.
 - **Focused Revision Exams (1.31):** Turn missed-question insights into a private, offline revision exam with one click. Choose a maximum of 5, 10, or 20 questions; Atlas uses only lessons actually missed in validated exam history, prioritizes repeated misses, never pads with unrelated questions, and excludes all mature Shadow Library topics. Small pools produce appropriately short exams. Sessions use the existing answer feedback, resume-after-reload, score history, ordinary/encrypted backups, and lesson review flows. No learner scores are transmitted, and completing revision does not award lesson completion or prove mastery. New unit and real Chromium mobile tests cover this journey.
@@ -114,6 +115,7 @@ fieldnotes.js          Offline per-lesson notebook validation and saving
 studio.js
 paths.js                Seven-session study planner, validation and progress              Validated savings, business, and time scenario calculations
 phrasebook.js          Nine offline starter phrase packs and progress validation
+phrasereview.js         Private language-by-language spaced recall scheduling
 languagechallenge.js   Offline two-way recognition questions and persisted scores
 examhistory.js         Validated private exam results and subject-review summaries
 focusedexam.js         Prioritized missed-question revision exams
