@@ -1,9 +1,9 @@
 /* Xyra Atlas: privacy-first, same-origin offline app shell. */
 const CACHE_PREFIX = 'xyra-atlas-';
-const CACHE = CACHE_PREFIX + 'v39';
+const CACHE = CACHE_PREFIX + 'v40';
 const APP_SHELL = [
   '/', '/index.html', '/styles.css', '/app.js', '/data.js', '/review.js', '/phrasebook.js', '/languagechallenge.js', '/deeptracks.js', '/fieldnotes.js', '/studio.js', '/paths.js', '/scenarios.js', '/atlasmap.js', '/dailyquest.js', '/glossary.js', '/search.js', '/calendar.js', '/insights.js',
-  '/fieldguides.js', '/lifepractice.js', '/masterytracks.js', '/mentor.js', '/casebook.js', '/reader.js', '/visualmap.js', '/narration.js', '/storagehealth.js', '/offline.js', '/backup.js', '/backupcrypto.js', '/notebook.js', '/mistakes.js', '/exam.js', '/personalcards.js', '/manifest.webmanifest', '/assets/atlas-mark.svg',
+  '/fieldguides.js', '/lifepractice.js', '/masterytracks.js', '/mentor.js', '/casebook.js', '/reader.js', '/visualmap.js', '/narration.js', '/storagehealth.js', '/offline.js', '/backup.js', '/backupcrypto.js', '/notebook.js', '/mistakes.js', '/exam.js', '/examhistory.js', '/personalcards.js', '/manifest.webmanifest', '/assets/atlas-mark.svg',
   '/assets/atlas-horizon.svg', '/assets/xyra-guide.svg', '/assets/course-library.svg',
   '/assets/course-business.svg',
   '/assets/course-career.svg',
