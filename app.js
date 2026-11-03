@@ -759,7 +759,7 @@ function exportBackup() {
 }
 async function handleAction(e) {
   const button=e.target.closest('[data-action]'); if(!button) return;
-  if(e.target.closest('[data-stop]') && button.dataset.action==='close-modal' && !button.classList.contains('modal-close')) return;
+  if(button.classList.contains('modal-backdrop') && e.target.closest('[data-stop]')) return;
   const action=button.dataset.action, id=button.dataset.id;
   if(action==='skip-content'){const main=document.getElementById('atlas-main');main?.focus({preventScroll:true});main?.scrollIntoView({block:'start'});}
   else if(action==='goto-home') nav('home');
