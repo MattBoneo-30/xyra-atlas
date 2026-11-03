@@ -15,11 +15,13 @@ async function keyFor(pass,salt,crypto){
 }
 export async function encryptBackup(plain,pass,crypto=globalThis.crypto){
  if(typeof pass!=='string'||pass.length<12||pass.length>256)throw Error('Passphrase must be 12 to 256 characters.');
- if(typeof plain!=='string'||plain.length>1048576)throw Error('Backup is too large.');
+ if(typeof plain!=='string')throw Error('Backup must be text.');
+ const bytes=new TextEncoder().encode(plain);
+ if(bytes.byteLength>1048576)throw Error('Backup is too large.');
  if(!crypto?.subtle||!crypto?.getRandomValues)throw Error('Secure browser encryption is unavailable.');
  const salt=crypto.getRandomValues(new Uint8Array(16)),iv=crypto.getRandomValues(new Uint8Array(12));
  const key=await keyFor(pass,salt,crypto);
- const ciphertext=new Uint8Array(await crypto.subtle.encrypt({name:'AES-GCM',iv},key,new TextEncoder().encode(plain)));
+ const ciphertext=new Uint8Array(await crypto.subtle.encrypt({name:'AES-GCM',iv},key,bytes));
  return JSON.stringify({format:ENCRYPTED_FORMAT,version:1,kdf:'PBKDF2-SHA256',iterations:rounds,cipher:'AES-256-GCM',salt:b64(salt),iv:b64(iv),ciphertext:b64(ciphertext)},null,2);
 }
 export async function decryptBackup(data,pass,crypto=globalThis.crypto){
