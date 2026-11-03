@@ -11,7 +11,7 @@ const QUESTS=[
   ['2','Thank them for helping you.']
  ]},
  {id:'market',title:'At a market stall',summary:'Open politely, ask about a price, and confirm what you heard.',steps:[
-  ['1','Greet the seller.'],
+  ['1','Greet the seller before beginning the purchase.'],
   ['3','Politely ask for their attention.'],
   ['7','Ask how much the item costs.'],
   ['4','Request a repeat when you miss the reply.'],
