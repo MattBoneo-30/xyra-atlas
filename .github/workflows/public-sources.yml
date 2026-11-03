@@ -1,0 +1,33 @@
+name: Check Atlas Public Course Sources
+
+on:
+  workflow_dispatch:
+  schedule:
+    # Weekly public-source reachability audit; never includes learner data.
+    - cron: '20 4 * * 0'
+
+permissions:
+  contents: read
+
+jobs:
+  public-links:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v7
+      - name: Set up Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: '22'
+          package-manager-cache: false
+      - name: Check public course URLs without reading learner data
+        run: npm run check:sources
+      - name: Archive findings for editorial review
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: xyra-atlas-public-source-health
+          path: artifacts/public-source-health.json
+          if-no-files-found: ignore
+          retention-days: 14
