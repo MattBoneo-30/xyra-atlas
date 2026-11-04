@@ -187,10 +187,35 @@
           "type": "ci",
           "value": "https://github.com/MattBoneo-30/xyra-atlas/actions/runs/41699259088",
           "note": "227 passing Node tests, 95 static files matching 95 precache entries, 36 SVGs, raw bundle 1,224,715 bytes and independent gzip sum 421,891 bytes; zero asset violations; Chromium and Linux WebKit suites passed."
+        },
+        {
+          "type": "commit",
+          "value": "ff69b1be98d06648cda7d18a0ef7f67fbf7ae2a8",
+          "note": "Original 42 build-generated original vector scenes, 14 subjects × Beginner/Intermediate/Advanced, integrated into every ordinary lesson, with 138-item fully cached shell."
+        },
+        {
+          "type": "commit",
+          "value": "1973acb441575f959dd91c722a3845b27c1ba28f",
+          "note": "Story-first reading experience showing subject-level artwork before controls, with screenreader alternative text and adaptive captions."
+        },
+        {
+          "type": "commit",
+          "value": "308171137c94a46a39975c58f467404a8b896f2a",
+          "note": "Original Xyra guide cameo introduced to the Lantern Library, validated separately from the scenic artwork in mobile and desktop browser checks."
+        },
+        {
+          "type": "commit",
+          "value": "48748ac811e2d7a444c17f2bad9f592012702690",
+          "note": "Mobile home learning invitations changed to preserve readable headings and proper separate call-to-action placement."
+        },
+        {
+          "type": "ci",
+          "value": "https://github.com/MattBoneo-30/xyra-atlas/actions/runs/41776515377",
+          "note": "268 Node tests, full Chromium mobile/desktop/offline smoke, Linux WebKit, static budgets: 138 files, 78 SVGs, ~1.70 MB raw, ~551 KB individual gzip totals. This is code QA, not final art approval or device verification."
         }
       ],
       "blockers": [
-        "Final painterly/cinematic world, chapter and character illustrations require integration and aesthetic/manual signoff; the current 36 accessible vector compositions are explicitly interim assets.",
+        "Final owner-approved painterly/cinematic world and character artwork and independent aesthetic signoff remain outstanding. 42 original lightweight subject-and-stage scenes are integrated alongside 36 existing illustrations; these 78 vector compositions are not a substitute for final human-approved painterly artwork.",
         "Real iPhone Safari, Android Chrome, reduced-motion, contrast, device-performance and installed-PWA visual QA remain incomplete. Linux Chromium/WebKit coverage and passing static checks do not replace actual devices."
       ]
     },
