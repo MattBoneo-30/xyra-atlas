@@ -798,7 +798,7 @@ try{
  await smoke('cinematic-worlds-desktop',{viewport:{width:1365,height:900}},async(page)=>{
   await page.locator('.home-page .hero-archive>img').waitFor();
   expect(await page.locator('.hero-archive [data-action="goto-explore"]').count()===1,'Archive Gate offers a real learning navigation action');
-  for(const selector of ['.hero-archive>img','.atlas-scene-card img:nth-child(1)']){
+  for(const selector of ['.hero-archive>img','.atlas-scene-card>img']){
    const imgs=page.locator(selector),n=await imgs.count();
    for(let i=0;i<n;i++){
     const img=imgs.nth(i);
@@ -808,6 +808,10 @@ try{
    }
   }
   expect(await page.locator('.atlas-scene-card').count()===2,'both supporting illustrated worlds render');
+  const portrait=page.locator('.atlas-guide-medallion img');
+  expect(await portrait.count()===1,'Xyra companion cameo is present in the Lantern Library scene');
+  expect(await portrait.evaluate(async img=>{await img.decode();return img.naturalWidth>0&&img.naturalHeight>0;}),
+   'companion portrait decodes without any remote image request');
   await page.screenshot({path:snapshots+'/atlas-cinematic-desktop.png',fullPage:true});
   await page.locator('.atlas-scene-card [data-action="open-corner"]').click();
   await waitRoute(page,'#/mentor');
@@ -830,7 +834,7 @@ try{
   await page.evaluate(async()=>{await navigator.serviceWorker.ready;});
   await page.reload({waitUntil:'domcontentloaded'});
   await page.waitForFunction(()=>Boolean(navigator.serviceWorker.controller));
-  for(const selector of ['.hero-archive>img','.atlas-scene-card img']){
+  for(const selector of ['.hero-archive>img','.atlas-scene-card>img']){
    const imgs=page.locator(selector);
    for(let i=0;i<await imgs.count();i++){
     await imgs.nth(i).scrollIntoViewIfNeeded();
@@ -838,13 +842,15 @@ try{
     expect(loaded,'illustrated world loads on a mobile-sized viewport');
    }
   }
+  expect(await page.locator('.atlas-guide-medallion img').evaluate(async img=>{await img.decode();return img.naturalWidth>0;}),
+   'the Xyra character portrait is also visible on a narrow screen');
   let overflow=await mobileOverflow(page);
   expect(overflow.scroll<=overflow.width+8,'cinematic home and scene cards do not overflow mobile viewport');
   await page.screenshot({path:snapshots+'/atlas-cinematic-mobile.png',fullPage:true});
   await context.setOffline(true);
   await page.reload({waitUntil:'domcontentloaded'});
   await page.locator('.hero-archive').waitFor();
-  for(const selector of ['.hero-archive>img','.atlas-scene-card img']){
+  for(const selector of ['.hero-archive>img','.atlas-scene-card>img']){
    const imgs=page.locator(selector);
    for(let i=0;i<await imgs.count();i++){
     await imgs.nth(i).scrollIntoViewIfNeeded();
