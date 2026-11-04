@@ -39,6 +39,7 @@ test('three distinct five-turn context sequences work for every authored starter
     session=advanceConversationQuest(answerConversationQuestion(session,question.phraseId,PHRASEBOOK),PHRASEBOOK);
    }
    assert.equal(conversationQuestResults(session,PHRASEBOOK).correct,5);
+   assert.deepEqual(conversationQuestResults(session,PHRASEBOOK).entries.map(e=>e.phraseId),quest.steps.map(s=>s.phraseId));
    assert.equal(conversationQuestResults(session,PHRASEBOOK).done,true);
   }
  }

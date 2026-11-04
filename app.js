@@ -807,6 +807,7 @@ function languageChallengePanel(){
  const paused=session&&session.code!==saved.language&&session.position<session.ids.length;
  const history=saved.languageChallengeHistory[saved.language];
  const result=active?languageChallengeResults(active,PHRASEBOOK):null;
+ const missed=result?.done?result.entries.filter(entry=>!entry.isCorrect):[];
  const q=active?currentLanguageQuestion(active,PHRASEBOOK):null;
  const answered=Boolean(q&&Object.hasOwn(active.answers,q.id));
  const selected=answered?active.answers[q.id]:null;
@@ -820,8 +821,8 @@ function languageChallengePanel(){
   button('Start challenge','challenge-start','primary-button')}
   <p class="fineprint">Four choices per prompt. Scores measure phrase recognition only—not listening, speaking or fluency. Answers do not change your learned-phrase markings.</p></div>`;
  }else if(result?.done){
-  body=`<div class="language-challenge-results"><span class="overline">CHALLENGE COMPLETE</span><div class="language-challenge-score">${result.correct}<small> / ${result.total}</small></div><p>${result.percent}% correct in ${active.mode==='recognition'?'English-to-phrase':'phrase-to-English'} recognition.</p>${button('Try another challenge','challenge-new','primary-button')}</div>
-  <div class="language-challenge-review"><h3>Review your answers</h3>${result.entries.map((item,i)=>`<article><small>QUESTION ${i+1} · ${item.isCorrect?'CORRECT':'REVISIT'}</small><strong>${esc(item.translation)}</strong><p lang="${esc(item.locale)}" dir="auto">${esc(item.phrase)}</p>${item.pronunciation?`<p class="language-challenge-pronunciation">${esc(item.pronunciation)}</p>`:''}<p>Your answer: ${esc(item.selectedText)}${item.isCorrect?'':' · Correct: '+esc(item.correctText)}</p></article>`).join('')}</div>`;
+  body=`<div class="language-challenge-results"><span class="overline">CHALLENGE COMPLETE</span><div class="language-challenge-score">${result.correct}<small> / ${result.total}</small></div><p>${result.percent}% correct in ${active.mode==='recognition'?'English-to-phrase':'phrase-to-English'} recognition.</p>${button('Try another challenge','challenge-new','primary-button')}${missed.length?button(`Practice missed phrases (${missed.length})`,'language-review-missed','secondary-button language-review-missed-cta',`data-review-source="challenge" data-id="${esc(missed[0].id)}"`):''}</div>
+  <div class="language-challenge-review"><h3>Review your answers</h3>${result.entries.map((item,i)=>`<article><small>QUESTION ${i+1} · ${item.isCorrect?'CORRECT':'REVISIT'}</small><strong>${esc(item.translation)}</strong><p lang="${esc(item.locale)}" dir="auto">${esc(item.phrase)}</p>${item.pronunciation?`<p class="language-challenge-pronunciation">${esc(item.pronunciation)}</p>`:''}<p>Your answer: ${esc(item.selectedText)}${item.isCorrect?'':' · Correct: '+esc(item.correctText)}</p>${!item.isCorrect?button('Practice this phrase','language-review-missed','secondary-button language-review-missed-link',`data-review-source="challenge" data-id="${esc(item.id)}"`):''}</article>`).join('')}</div>`;
  }else if(q){
   body=`<div class="language-challenge-question"><div class="language-challenge-progress"><span>${active.mode==='recognition'?'Find the matching phrase':'Find the matching meaning'}</span><strong>${active.position+1} / ${active.ids.length}</strong></div>${bars(active.position,active.ids.length)}
   <h3 ${active.mode==='meaning'?`lang="${esc(q.locale)}" dir="auto"`:''}>${esc(q.prompt)}</h3>
@@ -842,6 +843,7 @@ function conversationQuestPanel(){
  const paused=Boolean(session&&!active&&!prior?.done);
  const quest=active?CONVERSATION_QUESTS.find(q=>q.id===active.questId):null;
  const result=active?conversationQuestResults(active,PHRASEBOOK):null;
+ const missed=result?.done?result.entries.filter(entry=>!entry.correct):[];
  const current=active?currentConversationQuestion(active,PHRASEBOOK):null;
  const answered=Boolean(current&&Object.hasOwn(active.answers,current.id));
  const selected=answered?active.answers[current.id]:null;
@@ -856,8 +858,8 @@ function conversationQuestPanel(){
     <p class="fineprint">Each activity practices five connected intentions using already-authored phrases. It is a one-person speaking rehearsal, not a simulated conversation with evaluated listening or pronunciation.</p>
   </div>`;
  }else if(result?.done){
-  content=`<div class="conversation-quest-complete"><span class="overline">SITUATION PRACTICE COMPLETE</span><h3>${esc(quest.title)}</h3><div class="conversation-quest-score">${result.correct}<small> / ${result.total}</small></div><p>${result.percent}% correct for written phrase selection. This is not a conversational proficiency rating.</p>${button('Choose another situation','conversation-new','primary-button')}</div>
-  <div class="conversation-quest-review"><h3>Review the sequence</h3>${result.entries.map((entry,i)=>`<article><span>STEP ${i+1} · ${entry.correct?'MATCHED':'REVISIT'}</span><strong>${esc(entry.cue)}</strong><p lang="${esc(entry.locale)}">${esc(entry.phrase)}</p><small>${esc(entry.english)}${entry.pronunciation?' · '+esc(entry.pronunciation):''}</small>${!entry.correct?`<p class="conversation-review-miss">Your choice: <span lang="${esc(entry.locale)}">${esc(entry.selectedText)}</span></p>`:''}</article>`).join('')}</div>`;
+  content=`<div class="conversation-quest-complete"><span class="overline">SITUATION PRACTICE COMPLETE</span><h3>${esc(quest.title)}</h3><div class="conversation-quest-score">${result.correct}<small> / ${result.total}</small></div><p>${result.percent}% correct for written phrase selection. This is not a conversational proficiency rating.</p>${button('Choose another situation','conversation-new','primary-button')}${missed.length?button(`Practice missed phrases (${missed.length})`,'language-review-missed','secondary-button language-review-missed-cta',`data-review-source="conversation" data-id="${esc(missed[0].phraseId)}"`):''}</div>
+  <div class="conversation-quest-review"><h3>Review the sequence</h3>${result.entries.map((entry,i)=>`<article><span>STEP ${i+1} · ${entry.correct?'MATCHED':'REVISIT'}</span><strong>${esc(entry.cue)}</strong><p lang="${esc(entry.locale)}">${esc(entry.phrase)}</p><small>${esc(entry.english)}${entry.pronunciation?' · '+esc(entry.pronunciation):''}</small>${!entry.correct?`<p class="conversation-review-miss">Your choice: <span lang="${esc(entry.locale)}">${esc(entry.selectedText)}</span></p>${button('Practice this phrase','language-review-missed','secondary-button language-review-missed-link',`data-review-source="conversation" data-id="${esc(entry.phraseId)}"`)}`:''}</article>`).join('')}</div>`;
  }else if(current){
   content=`<div class="conversation-quest-play"><div class="conversation-quest-progress"><span>${esc(quest.title)} · Step ${active.position+1} of ${quest.steps.length}</span><strong>${active.position+1}/${quest.steps.length}</strong></div>${bars(active.position,quest.steps.length)}
   <span class="overline">WHAT WOULD YOU SAY?</span><h3>${esc(current.cue)}</h3><p class="fineprint">Try saying the target-language phrase aloud, then select its written form. Speaking is not recorded or graded.</p>
@@ -1381,6 +1383,32 @@ async function handleAction(e) {
     saved.languageChallengeHistory=recordLanguageChallengeHistory(saved.languageChallengeHistory,next,PHRASEBOOK);
    }
    saved.languageChallenge=next;persist();render();
+  }
+  else if(action==='language-review-missed'){
+   if(route.view!=='language')return;
+   const pack=getPhrasePack(saved.language),source=button.dataset.reviewSource;
+   if(!pack||!['challenge','conversation'].includes(source))return;
+   let missed=[];
+   if(source==='challenge'){
+    const session=normalizeLanguageChallenge(saved.languageChallenge,PHRASEBOOK);
+    if(!session||session.code!==saved.language)return;
+    const result=languageChallengeResults(session,PHRASEBOOK);
+    if(!result?.done)return;
+    missed=result.entries.filter(entry=>!entry.isCorrect).map(entry=>entry.id);
+   }else{
+    const session=normalizeConversationQuest(saved.conversationQuest,PHRASEBOOK);
+    if(!session||session.code!==saved.language)return;
+    const result=conversationQuestResults(session,PHRASEBOOK);
+    if(!result?.done)return;
+    missed=result.entries.filter(entry=>!entry.correct).map(entry=>entry.phraseId);
+   }
+   if(!missed.includes(id))return;
+   const index=pack.phrases.findIndex(p=>p.id===id);
+   if(index<0)return;
+   stopLanguageAudio();phraseIndex=index;phraseRevealed=false;phraseDraft='';
+   render();
+   document.querySelector('.phrase-card')?.scrollIntoView({behavior:'auto',block:'start'});
+   document.getElementById('phrase-draft')?.focus({preventScroll:true});
   }
   else if(action==='challenge-new'){
    if(route.view!=='language')return;

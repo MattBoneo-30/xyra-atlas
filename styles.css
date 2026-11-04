@@ -746,3 +746,13 @@ html[data-theme=light]{color-scheme:light;--bg:#fbf5f6;--bg-raised:#fff9fa;--car
  unicode-bidi:plaintext;overflow-wrap:anywhere;white-space:pre-wrap}
 .phrase-recall-comparison small{font-size:11px;line-height:1.6;color:var(--muted)}
 @media(max-width:420px){.phrase-recall-entry textarea{min-height:83px}}
+
+/* Turn genuinely missed language prompts into actionable private written practice. */
+.language-review-missed-cta{margin:10px 0 0;max-width:100%}
+.language-review-missed-link{margin-top:12px;min-height:40px;font-size:11px}
+.language-challenge-review article .language-review-missed-link,
+.conversation-quest-review article .language-review-missed-link{display:inline-flex;width:auto;white-space:normal}
+@media(max-width:520px){
+ .language-review-missed-cta{width:100%}
+ .language-review-missed-link{width:100%!important}
+}

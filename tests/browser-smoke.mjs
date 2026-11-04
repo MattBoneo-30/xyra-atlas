@@ -632,6 +632,16 @@ try{
   expect(state.languageChallenge.position===8,'challenge session reaches final question');
   expect(state.languageChallengeHistory.ja.attempts===1,'completion records one practice attempt');
   expect(state.completed.length===0,'challenge leaves course completion unchanged');
+  const missedButtons=page.locator('[data-action="language-review-missed"][data-review-source="challenge"]');
+  const missedIds=state.languageChallenge.ids.filter(qid=>state.languageChallenge.answers[qid]!==qid);
+  expect(await missedButtons.count()===missedIds.length+(missedIds.length?1:0),'only missed answers offer individual retry actions');
+  if(missedIds.length){
+   const beforeHistory=JSON.stringify(state.languageChallengeHistory);
+   await missedButtons.first().click();
+   expect(await page.locator('#phrase-draft').count()===1,'review opens the private written-recall editor');
+   expect(await page.locator('#phrase-draft').evaluate(el=>document.activeElement===el),'retry focuses the answer field');
+   expect(JSON.stringify((await getState(page)).languageChallengeHistory)===beforeHistory,'retry preserves challenge history');
+  }
   await page.reload({waitUntil:'domcontentloaded'});
   expect((await getState(page)).languageChallengeHistory.ja.attempts===1,'score history survives reload');
   await page.locator('[data-action="challenge-new"]').click();
@@ -1114,6 +1124,13 @@ try{
   expect(state.conversationQuestHistory.es.directions.attempts===1,'completed quest stores one history entry');
   expect(state.conversationQuestHistory.es.directions.last===4,'history reflects the one deliberately missed step');
   expect(await page.locator('.conversation-quest-review article').count()===5,'all contextual answers appear for review');
+  const conversationBefore=JSON.stringify((await getState(page)).conversationQuestHistory);
+  const conversationRetry=page.locator('[data-action="language-review-missed"][data-review-source="conversation"]');
+  expect(await conversationRetry.count()===2,'a completed conversation offers its genuinely missed phrase for practice');
+  await conversationRetry.first().click();
+  expect((await page.locator('.phrase-card h3').textContent()).trim()==='Excuse me','missed conversational phrase opens its authentic private study card');
+  expect(await page.locator('#phrase-draft').evaluate(el=>document.activeElement===el),'retry moves focus to accessible written recall');
+  expect(JSON.stringify((await getState(page)).conversationQuestHistory)===conversationBefore,'revisiting mistakes never changes the scored result');
   await page.reload({waitUntil:'domcontentloaded'});
   expect((await getState(page)).conversationQuestHistory.es.directions.attempts===1,'reload does not duplicate conversation scores');
   await page.locator('[data-action="conversation-new"]').click();

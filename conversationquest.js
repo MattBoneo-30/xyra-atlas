@@ -98,7 +98,7 @@ export function conversationQuestResults(raw,packs){
  const entries=quest.steps.map((step,i)=>{
   const phrase=pack.phrases.find(p=>p.id===step.phraseId),choice=s.answers[String(i)];
   const selected=pack.phrases.find(p=>p.id===choice);
-  return {cue:step.cue,english:phrase.english,phrase:phrase.target,pronunciation:phrase.pronunciation,
+  return {cue:step.cue,phraseId:phrase.id,english:phrase.english,phrase:phrase.target,pronunciation:phrase.pronunciation,
    locale:pack.locale,selected:choice,selectedText:selected?.target||'',correct:choice===phrase.id};
  });
  const answered=entries.filter(e=>e.selected!==undefined).length;
