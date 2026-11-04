@@ -77,9 +77,17 @@ try{
     const image=page.locator('.curriculum-world-preview[data-id="'+stage+'"] img');
     const src=await image.getAttribute('src');
     assert.equal(src,'/assets/world-psychology-'+stage.toLowerCase()+'.svg');
-    const decoded=await image.evaluate(async el=>{await el.decode();return {
-    width:el.naturalWidth,height:el.naturalHeight,complete:el.complete
-   };});
+    // Images use loading=lazy: scroll them into view before awaiting a loaded state.
+    // WebKit can leave offscreen decode() promises pending indefinitely.
+    await image.scrollIntoViewIfNeeded();
+    const selector='.curriculum-world-preview[data-id="'+stage+'"] img';
+    await page.waitForFunction(css=>{
+     const img=document.querySelector(css);
+     return Boolean(img&&img.complete&&img.naturalWidth>0&&img.naturalHeight>0);
+    },selector,{timeout:8500});
+    const decoded=await image.evaluate(el=>({
+     width:el.naturalWidth,height:el.naturalHeight,complete:el.complete
+    }));
    // Mobile WebKit can report a subsampled intrinsic SVG size; verify successful 2:1 decoding
    // rather than assuming naturalWidth matches the SVG's nominal 1400 CSS pixels.
    assert.ok(decoded.complete&&decoded.width>=200&&decoded.height>=90&&
