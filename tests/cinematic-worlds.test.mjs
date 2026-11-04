@@ -36,6 +36,11 @@ test('cinematic scenes are integrated with working navigational actions and acce
  assert.match(app,/Visit Xyra’s Corner','open-corner'/);
  assert.match(app,/See the knowledge map','map'/);
  assert.match(app,/class="atlas-scene-grid"/);
+ assert.match(app,/class="atlas-guide-medallion" aria-hidden="true"/);
+ assert.match(app,/src="\/assets\/xyra-guide.svg" alt="" loading="lazy"/);
+ assert.match(css,/\.atlas-scene-card \.atlas-guide-medallion/);
+ assert.ok(fs.readFileSync('sw.js','utf8').includes('/assets/xyra-guide.svg'),
+  'character cameo is included in the offline bundle');
  for(const name of names){
   assert.ok(app.includes('/assets/'+name+'.svg'),'original art is loaded by app: '+name);
  }
