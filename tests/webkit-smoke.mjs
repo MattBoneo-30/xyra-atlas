@@ -79,7 +79,8 @@ try{
     assert.equal(src,'/assets/world-psychology-'+stage.toLowerCase()+'.svg');
     // Images use loading=lazy: scroll them into view before awaiting a loaded state.
     // WebKit can leave offscreen decode() promises pending indefinitely.
-    await image.scrollIntoViewIfNeeded();
+    console.log('WebKit roadmap: loading '+stage+' world');
+    await image.scrollIntoViewIfNeeded({timeout:9000});
     const selector='.curriculum-world-preview[data-id="'+stage+'"] img';
     await page.waitForFunction(css=>{
      const img=document.querySelector(css);
@@ -94,11 +95,15 @@ try{
      Math.abs(decoded.width/decoded.height-2)<.075,
      'stage artwork must decode at a valid two-to-one aspect ratio');
    }
-   await page.locator('.curriculum-world-preview[data-id="Advanced"]').click();
+   console.log('WebKit roadmap: all three stage images decoded; selecting Advanced');
+   await page.locator('.curriculum-world-preview[data-id="Advanced"]').click({timeout:9000});
    assert.equal(await page.locator('.course-stage-button[data-id="Advanced"]').getAttribute('aria-pressed'),'true');
    assert.equal(await page.locator('#course-lessons-heading').evaluate(el=>document.activeElement===el),true);
    await noHorizontalOverflow(page);
-   await page.screenshot({path:output+'/webkit-mobile-stage-roadmap.png',fullPage:true});
+   // Capturing a very tall full-page image can hang Linux WebKit when large lazy SVGs are present.
+   // The visible viewport still provides a useful layout proof and returns within a bounded timeout.
+   console.log('WebKit roadmap: viewport screenshot');
+   await page.screenshot({path:output+'/webkit-mobile-stage-roadmap.png',fullPage:false,timeout:10000});
   });
  await checkScenario('desktop-navigation-and-advanced-exam',
   {viewport:{width:1366,height:900}},
