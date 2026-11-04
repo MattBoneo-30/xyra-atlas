@@ -139,6 +139,16 @@
           "type": "ci",
           "value": "https://github.com/MattBoneo-30/xyra-atlas/actions/runs/41696480488",
           "note": "221 tests passed, browser smoke passed; editorial audit correctly returned 0/134 lesson and 0/42 decision approvals."
+        },
+        {
+          "type": "commit",
+          "value": "fb5ba6271d836629c9853d413892be7393f057ca",
+          "note": "Expert-review HTML copy now accompanies source-hashed JSON packet for 134 lessons and 42 decisions; printable and sanitizes external links. Pinned GitHub runner to Playwright-compatible Ubuntu."
+        },
+        {
+          "type": "ci",
+          "value": "https://github.com/MattBoneo-30/xyra-atlas/actions/runs/41762776612",
+          "note": "Full Chromium/WebKit CI passed following independent author-content HTML review copy; no reviewer attestations fabricated."
         }
       ],
       "blockers": [
@@ -194,9 +204,22 @@
         "Reliable provenance and honest limitations for audio/pronunciation",
         "Multidevice offline language practice tested"
       ],
-      "evidence": [],
+      "evidence": [
+        {
+          "type": "commit",
+          "value": "fb5e2d66bc38357479866f6ada4834bf900e6ef2",
+          "note": "Native/regional editorial handoff now includes all 20 languages and 160 phrase-level exact-source hashes and six human review criteria, with all items explicitly unreviewed."
+        },
+        {
+          "type": "ci",
+          "value": "https://github.com/MattBoneo-30/xyra-atlas/actions/runs/41763169389",
+          "note": "235 passing Node tests plus Chromium and Linux WebKit; separate JSON and Markdown workbook generation verified for 160 phrases, no qualified language approvals."
+        }
+      ],
       "blockers": [
-        "No independent native-speaker/editor verification yet; synthesized device speech is not reference audio."
+        "All 160 authored starter phrases in 20 languages remain unreviewed by independently qualified native/regional editors; the source-hashed workbook is available but is not an approval.",
+        "Pronunciation/romanization accuracy, politeness, dialect usage and naturalness remain externally unverified. Browser speech synthesis is synthetic and does not supply validated native reference audio.",
+        "Real iOS/Android offline language practice, installed PWA behavior and accessibility require device QA; Linux engine testing is only partial evidence."
       ]
     },
     {
@@ -220,6 +243,11 @@
           "type": "ci",
           "value": "https://github.com/MattBoneo-30/xyra-atlas/actions/runs/41699259088",
           "note": "227 passing Node tests, 95 static files matching 95 precache entries, 36 SVGs, raw bundle 1,224,715 bytes and independent gzip sum 421,891 bytes; zero asset violations; Chromium and Linux WebKit suites passed."
+        },
+        {
+          "type": "ci",
+          "value": "https://github.com/MattBoneo-30/xyra-atlas/actions/runs/41763169389",
+          "note": "After Playwright runner pin, 235 tests and browser engines pass; this is pre-deployment QA, not real-device or Vercel verification."
         }
       ],
       "blockers": [

@@ -1394,6 +1394,22 @@ try{
    }),'subject and level filters compose safely');
  });
 
+ await smoke('portable-editorial-review-mobile',{viewport:{width:390,height:844},isMobile:true,hasTouch:true,deviceScaleFactor:2},async(page)=>{
+   const html=await readFile('artifacts/editorial-review-packet.html','utf8');
+   await page.setContent(html,{waitUntil:'domcontentloaded'});
+   expect(await page.locator('.review-item').count()===176,'external review HTML includes all 134 lessons and 42 decisions');
+   expect(await page.locator('nav[aria-label="Review subjects"] a').count()===14,'all subjects appear in the accessible review index');
+   const item=page.locator('#lesson-psychology-thoughts');
+   await item.locator('summary').focus();
+   await page.keyboard.press('Enter');
+   expect(await item.getAttribute('open')!==null,'keyboard can reveal a complete authored lesson and answer key');
+   expect((await item.textContent()).includes('SHA-256'),'review copy exposes precise content provenance for verification');
+   const bounds=await mobileOverflow(page);
+   expect(bounds.scroll<=bounds.width+8,'editorial review copy remains readable on narrow viewports');
+   await page.screenshot({path:snapshots+'/editorial-review-mobile.png',fullPage:true});
+ });
+
+
 }finally{
  if(browser)await browser.close();
  server.kill('SIGTERM');
