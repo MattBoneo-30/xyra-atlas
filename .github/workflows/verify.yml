@@ -68,6 +68,16 @@ jobs:
             artifacts/source-evidence-matrix.json
             artifacts/source-evidence-workbook.md
           retention-days: 14
+      - name: Audit verified source-use claim reviews
+        run: npm run audit:claims
+      - name: Archive independent source-use claim approval status
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: xyra-atlas-source-claim-attestation-audit
+          path: artifacts/source-claim-attestation-audit.json
+          if-no-files-found: ignore
+          retention-days: 14
       - name: Audit supplied independent editorial attestations
         run: npm run audit:editorial
       - name: Archive editorial approval provenance status

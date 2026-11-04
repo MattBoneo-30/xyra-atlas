@@ -21,7 +21,9 @@
     "audit:devices": "node scripts/audit-device-evidence.mjs",
     "audit:language": "node scripts/audit-language-attestations.mjs",
     "sign:language": "node scripts/sign-language-review.mjs",
-    "export:source-evidence": "node scripts/export-source-evidence.mjs"
+    "export:source-evidence": "node scripts/export-source-evidence.mjs",
+    "audit:claims": "node scripts/audit-source-claims.mjs",
+    "sign:claims": "node scripts/sign-source-claim-review.mjs"
   },
   "engines": {
     "node": ">=20"
