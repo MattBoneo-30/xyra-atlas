@@ -341,9 +341,11 @@ try{
   await page.locator('.desktop-rail [data-action="nav"][data-id="explore"]').click();
   await page.locator('[data-action="open-course"][data-id="psychology"]').first().click();
   await page.locator('[data-action="open-lesson"]').first().click();
-  // Option rendering is now intentionally shuffled; exercise the canonical wrong answer, not visual position.
+  // Option rendering is shuffled; wait for the lesson before inspecting its canonical answer indices.
+  await page.locator('.quiz-options .quiz-option').first().waitFor();
   const visualOrder=await page.locator('.quiz-options .quiz-option').evaluateAll(items=>items.map(el=>Number(el.dataset.index)));
-  expect(visualOrder.length===3&&new Set(visualOrder).size===3,'shuffled options keep all original answer identities');
+  expect(visualOrder.length>=3&&visualOrder.every(Number.isInteger)&&
+    new Set(visualOrder).size===visualOrder.length,'shuffled options preserve unique authored answer identities');
   await page.locator('.quiz-options .quiz-option[data-index="0"]').click();
   expect((await getState(page)).mistakes?.['psychology:thoughts']?.wrong===1,'incorrect quiz records a missed question');
   await page.reload({waitUntil:'domcontentloaded'});
