@@ -30,6 +30,9 @@
   "jurisdiction": "Philippines, where applicable",
   "allMaterialClaimsReviewed": true,
   "allAnswerKeysReviewed": true,
+  "optionFindings": [
+    {"index":0,"text":"EXACT_AUTHOR_CHOICE_TEXT","authorMarkedCorrect":false,"finding":"ambiguous","editorNotes":"Real reviewer explanation of this choice and whether the answer key is justified."}
+  ],
   "claims": [{
     "claimText": "REPLACE_WITH_EXACT_EXCERPT_OF_AUTHORED_TEACHING_CLAIM",
     "sourcePassage": "REPLACE_WITH_BRIEF_SOURCE_EXCERPT_ACTUALLY_FOUND",
@@ -44,3 +47,5 @@
 The audit mechanically requires a traceable authored excerpt, full signed review scope, reasonably fresh source access (within 30 days before signing), substantive evidence, subject-appropriate qualified reviewer and Ed25519 integrity. An `approved` record cannot contain findings other than `supported`. A `changes-requested` record is never counted as approval.
 
 **Important limitations:** Software cannot establish whether a quoted source passage actually exists or whether a reviewer found *every* material claim. The owner must separately verify real reviewer qualifications, the evidence and complete factual/cultural/pedagogical correctness. Original lesson/editorial attestations remain separate and mandatory. No release stage is automatically marked complete.
+
+The `optionFindings` array must contain **every** option exactly as authored, indexed from zero, with a truthful `authorMarkedCorrect` flag and at least 24 characters of substantive reviewer notes for each. The example above is only a partial shape: an actual signed submission must cover all options. An ambiguous, incorrect, or unsupported distractor prevents an `approved` source-use review. This catches omitted and incorrectly attributed alternatives but does not automatically establish pedagogical correctness.

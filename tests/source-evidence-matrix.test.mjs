@@ -25,6 +25,9 @@ test('all 42 authored reference URLs map every source-use context without expert
   assert.equal(u.independentClaimValidation,false);
   assert.ok(u.authoredContext.authoredAnswer);
   if(u.kind==='lesson')assert.ok(u.authoredContext.stageLearningObjective?.evidence);
+  assert.deepEqual(u.authoredContext.answerOptions,target.content.quiz?.options||target.content.options);
+  assert.equal(u.authoredContext.authoredCorrectIndex,target.content.quiz?.correct??target.content.correct);
+  assert.equal(u.authoredContext.authoredAnswer,u.authoredContext.answerOptions[u.authoredContext.authoredCorrectIndex]);
  }
 });
 test('readable workbook contains 42 source sections with review checklists, never approval',()=>{
@@ -33,6 +36,8 @@ test('readable workbook contains 42 source sections with review checklists, neve
  assert.equal((md.match(/URL SHA-256:/g)||[]).length,42);
  assert.ok(md.includes('No approvals are generated'));
  assert.ok(md.includes('not fact checked'));
+ assert.ok(md.includes('All answer options (NOT fact checked):'));
+ assert.ok(md.includes('[Author keyed]'));
  assert.deepEqual(x,buildSourceEvidenceMatrix(packet));
 });
 test('unreferenced, malformed and unsafe URLs fail closed',()=>{

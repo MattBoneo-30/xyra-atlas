@@ -27,6 +27,10 @@ const review={schemaVersion:1,kind:usage.kind,itemId:usage.itemId,
  reviewDate:today,sourceAccessedOn:today,verdict:'approved',
  scope:[...SOURCE_CLAIM_SCOPE],jurisdiction:'Global educational context',
  allMaterialClaimsReviewed:true,allAnswerKeysReviewed:true,
+ optionFindings:context.answerOptions.map((option,index)=>({
+  index,text:option,authorMarkedCorrect:index===context.authoredCorrectIndex,
+  finding:'valid',editorNotes:'Mock audit of this exact authored answer option. This is not a genuine qualified expert review.'
+ })),
  claims:[{claimText:excerpt,sourcePassage:'Mock factual passage from a test-only publication; not an actual sourced quotation.',
  sourceLocation:'Publisher article section on relevant research',finding:'supported',
  contextualNotes:'Test fixture: evaluated a purported source with actual evidence strictly outside this artificial test.'}],
@@ -80,6 +84,24 @@ test('unsupported findings cannot be approved, corrections are not signoff',()=>
  assert.equal(result.totals.rejectedAttestations,0);
 });
 
+test('the signed review covers every authored distractor, not just the keyed answer',()=>{
+ const removed={...review,optionFindings:review.optionFindings.slice(0,-1)};
+ assert.deepEqual(audit([signed(removed)]).rejections.map(x=>x.reason),
+  ['incomplete-or-mismatched-answer-option-review']);
+ const tampered={...review,optionFindings:review.optionFindings.map(x=>({...x}))};
+ tampered.optionFindings[0].text+=' edited';
+ assert.deepEqual(audit([signed(tampered)]).rejections.map(x=>x.reason),
+  ['incomplete-or-mismatched-answer-option-review']);
+ const unkeyed={...review,optionFindings:review.optionFindings.map(x=>({...x}))};
+ unkeyed.optionFindings[0].authorMarkedCorrect=!unkeyed.optionFindings[0].authorMarkedCorrect;
+ assert.deepEqual(audit([signed(unkeyed)]).rejections.map(x=>x.reason),
+  ['incomplete-or-mismatched-answer-option-review']);
+ const ambiguous={...review,optionFindings:review.optionFindings.map(x=>({...x}))};
+ ambiguous.optionFindings[0].finding='ambiguous';
+ assert.deepEqual(audit([signed(ambiguous)]).rejections.map(x=>x.reason),
+  ['ambiguous-or-invalid-answer-option-cannot-be-approved']);
+ assert.equal(audit([signed({...ambiguous,verdict:'changes-requested'})]).totals.approvedSourceUseSites,0);
+});
 test('duplicate, absent exact author excerpt and outdated source access fail closed',()=>{
  const duplicate=audit([signed(review),signed(review)]);
  assert.deepEqual(duplicate.rejections.map(x=>x.reason),['duplicate-review-of-source-usage']);

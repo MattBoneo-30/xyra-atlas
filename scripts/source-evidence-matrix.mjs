@@ -42,6 +42,7 @@ export function buildSourceEvidenceMatrix(packet){
    stageLearningObjective:c.stageLearningObjective,introduction:c.intro,
    sections:c.sections.map(s=>({heading:s.heading,body:s.body})),
    example:c.workedExample,exercise:c.task,question:c.quiz.question,
+   answerOptions:[...c.quiz.options],authoredCorrectIndex:c.quiz.correct,
    authoredAnswer:c.quiz.options[c.quiz.correct],answerExplanation:c.quiz.explanation
   });
  }
@@ -50,6 +51,7 @@ export function buildSourceEvidenceMatrix(packet){
   const c=q.content;
   add(q,'decision',c.sources,{
    title:q.id,stage:c.stage,course:c.courseId,scenario:c.question,
+   answerOptions:[...c.options],authoredCorrectIndex:c.correct,
    authoredAnswer:c.options[c.correct],answerExplanation:c.explanation
   });
  }
@@ -89,6 +91,8 @@ export function renderSourceEvidenceWorkbook(matrix){
     'Teaching title: '+clean(c.title),'',
     'Authored question/scenario: '+clean(c.question||c.scenario),'',
     'Authored answer (not fact checked): '+clean(c.authoredAnswer),'',
+    'All answer options (NOT fact checked): '+clean(c.answerOptions.map((x,i)=>
+     (i===c.authoredCorrectIndex?'[Author keyed] ':'')+'Option '+(i+1)+': '+x).join(' | ')),'',
     'Authored explanation: '+clean(c.answerExplanation),'',
     '- [ ] Extract ALL material claims from the full author content in companion JSON',
     '- [ ] Verify exact source passages and dates, jurisdiction, caveats and contradictory sources',

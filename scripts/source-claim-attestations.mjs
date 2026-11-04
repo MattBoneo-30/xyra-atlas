@@ -8,7 +8,7 @@ const nonempty=(x,min=1)=>typeof x==='string'&&x.trim()===x&&x.length>=min;
 const hash=x=>typeof x==='string'&&/^[a-f0-9]{64}$/.test(x);
 const signedFields=['schemaVersion','kind','itemId','contentHash','sourceId',
  'reviewerId','reviewDate','sourceAccessedOn','verdict','scope',
- 'jurisdiction','allMaterialClaimsReviewed','allAnswerKeysReviewed','claims','notes'];
+ 'jurisdiction','allMaterialClaimsReviewed','allAnswerKeysReviewed','claims','optionFindings','notes'];
 export const SOURCE_CLAIM_SCOPE=Object.freeze([
  'claim-to-passage-attribution','publisher-and-evidence-quality',
  'date-and-jurisdiction-applicability','quiz-and-scenario-answer-consistency'
@@ -52,6 +52,23 @@ function checkClaims(p,content){
     !['supported','partially-supported','unsupported','outdated','unverifiable'].includes(claim.finding))
     return false;
   seen.add(claim.claimText);
+ }
+ return true;
+}
+function verifyAnswerOptions(findings,authored){
+ if(!Array.isArray(authored.answerOptions)||authored.answerOptions.length<2||
+  !Number.isInteger(authored.authoredCorrectIndex)||
+  authored.authoredCorrectIndex<0||authored.authoredCorrectIndex>=authored.answerOptions.length||
+  !Array.isArray(findings)||findings.length!==authored.answerOptions.length)return false;
+ const indices=new Set();
+ for(const record of findings){
+  if(!object(record)||!Number.isInteger(record.index)||indices.has(record.index)||
+   record.index<0||record.index>=authored.answerOptions.length||
+   record.text!==authored.answerOptions[record.index]||
+   record.authorMarkedCorrect!==(record.index===authored.authoredCorrectIndex)||
+   !['valid','ambiguous','incorrect','unsupported'].includes(record.finding)||
+   !nonempty(record.editorNotes,24)||record.editorNotes.length>3000)return false;
+  indices.add(record.index);
  }
  return true;
 }
@@ -130,6 +147,9 @@ export function auditSourceClaimAttestations(matrix,roster,ledger,now=new Date()
   if(!checkClaims(p,target.usage.authoredContext)){
    reject('incomplete-or-untraceable-claim-findings');continue;
   }
+  if(!verifyAnswerOptions(p.optionFindings,target.usage.authoredContext)){
+   reject('incomplete-or-mismatched-answer-option-review');continue;
+  }
   if(!checkSignature(p,entry.signature,reviewer.publicKeyPem)){
    reject('invalid-cryptographic-signature');continue;
   }
@@ -138,6 +158,9 @@ export function auditSourceClaimAttestations(matrix,roster,ledger,now=new Date()
   if(p.verdict==='approved'){
    if(p.claims.some(c=>c.finding!=='supported')){
     reject('unsupported-finding-cannot-be-approved');continue;
+   }
+   if(p.optionFindings.some(f=>f.finding!=='valid')){
+    reject('ambiguous-or-invalid-answer-option-cannot-be-approved');continue;
    }
    approved.add(key);
   }
