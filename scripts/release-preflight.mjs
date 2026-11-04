@@ -11,7 +11,7 @@ const stage=read('docs/stage-gates.json');
 const editorial=read('artifacts/editorial-attestation-audit.json');
 const claims=read('artifacts/source-claim-attestation-audit.json');
 const language=read('artifacts/language-attestation-audit.json');
-const devices=auditDeviceEvidence(read('docs/device-evidence.json'));
+const devices=auditDeviceEvidence(read('docs/device-evidence.json'),{expectedCommit:process.env.GITHUB_SHA||null});
 const root=path.resolve('dist');
 if(!fs.statSync(root).isDirectory())throw Error('Build required first: npm run build');
 const relative=[];
