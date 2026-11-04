@@ -54,7 +54,7 @@ test('build, service worker, lesson UI, and Chapter 14 case illustrations integr
  assert.match(app,/getStageArt\(c\.id,l\.stage\)/);
  assert.match(app,/chapterArt\?null:getStageArt/);
  assert.match(app,/chapterArt\?esc\(chapterArt\.src\):stageArt\?esc\(stageArt\.src\)/);
- assert.match(app,/THE \$\{esc\(l\.stage\.toUpperCase\(\)\)\} WORLD/);
+ assert.match(app,/YOUR \$\{esc\(l\.stage\.toUpperCase\(\)\)\} WORLD/);
  assert.match(css,/\.stage-art-feature/);
  assert.match(chapter,/getChapterArt/);
  const expected=new Set(Object.keys(STAGE_ART).map(k=>STAGE_ART[k].src));
