@@ -744,9 +744,11 @@ try{
   await page.locator('.offline-library-page').waitFor();
   await page.waitForFunction(()=>Boolean(navigator.serviceWorker.controller));
   const swFile='dist/sw.js',oldSource=await readFile(swFile,'utf8');
-  const match=oldSource.match(/CACHE_PREFIX \+ 'v(\d+)'/);
-  expect(Boolean(match),'test can identify active offline cache version');
-  const original='xyra-atlas-v'+match[1],replacement='xyra-atlas-v'+(Number(match[1])+1);
+  const match=oldSource.match(/CACHE_PREFIX \+ '(v(\d+)(?:-[a-f0-9]{12})?)'/);
+  expect(Boolean(match),'test can identify the content-fingerprinted offline cache version');
+  const original='xyra-atlas-'+match[1];
+  const updatedVersion='v'+(Number(match[2])+1)+(match[1].includes('-')?'-'+match[1].split('-')[1]:'');
+  const replacement='xyra-atlas-'+updatedVersion;
   const status=async()=>{
    return page.evaluate(async()=>{
     const registration=await navigator.serviceWorker.getRegistration(),worker=registration?.active;
@@ -760,7 +762,7 @@ try{
    });
   };
   try{
-   const nextSource=oldSource.replace("CACHE_PREFIX + 'v"+match[1]+"'", "CACHE_PREFIX + 'v"+(Number(match[1])+1)+"'");
+   const nextSource=oldSource.replace("CACHE_PREFIX + '"+match[1]+"'", "CACHE_PREFIX + '"+updatedVersion+"'");
    expect(nextSource!==oldSource,'test generates a new service-worker script');
    await writeFile(swFile,nextSource);
    await page.evaluate(async()=>{
@@ -1135,7 +1137,7 @@ try{
   await page.goto(BASE+'/#/language',{waitUntil:'domcontentloaded'});
   await page.reload({waitUntil:'domcontentloaded'});
   await page.locator('#language-audio-controls').waitFor();
-  expect((await page.locator('.language-audio-indicator').textContent()).includes('Local voice detected'),'Japanese local voice is detected');
+  expect((await page.locator('.language-audio-indicator').textContent()).includes('Local voice ready'),'Japanese exact-locale local voice is ready');
   expect(await page.locator('#language-voice-picker option').count()===1,'only matching Japanese voice is offered');
   await page.locator('#language-audio-rate').selectOption('0.75');
   expect((await getState(page)).languageSpeechRate===.75,'playback rate persists as bounded profile setting');
@@ -1146,12 +1148,21 @@ try{
   await page.locator('[data-action="language-audio-stop"]').click();
   expect((await page.locator('#language-voice-status').textContent()).includes('stopped'),'stop control gives confirmation');
   await page.locator('#language-select').selectOption('es');
-  expect((await page.locator('.language-audio-indicator').textContent()).includes('Local voice detected'),'compatible regional local voice is offered');
-  expect(await page.locator('#language-voice-picker option').count()===1,'network-backed Spanish voice is not offered');
-  expect((await page.locator('.language-audio-panel').textContent()).includes('regional variant'),'regional accent difference is disclosed');
-  await page.locator('[data-action="language-speak"][data-id="1"]').first().click();
+  expect((await page.locator('.language-audio-indicator').textContent()).includes('Choose regional voice'),'regional voice requires deliberate consent');
+  expect(await page.locator('#language-voice-picker option').count()===2,'regional voice and placeholder available, cloud voice excluded');
+  expect(await page.locator('#language-audio-controls [data-action="language-speak"]').isDisabled(),
+   'regional playback cannot start before opt-in');
   calls=await page.evaluate(()=>window.__atlasSpeech.calls);
-  expect(calls.length===2&&calls[1].text==='Hola'&&calls[1].uri==='local-es-mx','Spanish uses local regional engine, never cloud');
+  expect(calls.length===1,'changing language never automatically selects a different regional accent');
+  await page.locator('#language-voice-picker').selectOption('local-es-mx');
+  expect((await page.locator('.language-audio-indicator').textContent()).includes('Local voice ready'),
+   'explicit user choice enables regional voice playback');
+  expect((await page.locator('.language-audio-panel').textContent()).includes('regional variant'),
+   'regional accent differences are explained after selection');
+  await page.locator('#language-audio-controls [data-action="language-speak"]').click();
+  calls=await page.evaluate(()=>window.__atlasSpeech.calls);
+  expect(calls.length===2&&calls[1].text==='Hola'&&calls[1].uri==='local-es-mx',
+   'Spanish uses the explicitly selected local regional voice, never the cloud');
   await page.locator('#language-select').selectOption('ko');
   expect((await page.locator('.language-audio-indicator').textContent()).includes('unavailable'),'unsupported Korean voice is disclosed');
   expect(await page.locator('#language-voice-picker').isDisabled(),'no unverified Korean voices can be selected');
