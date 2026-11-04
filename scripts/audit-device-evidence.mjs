@@ -14,13 +14,26 @@ export function auditDeviceEvidence(report){
   if(!statuses.has(item.status)){errors.push('Invalid status '+item.id);continue;}
   counts[item.status]++;
   if(item.status==='PASS'){
+   // A recorded pass must identify a plausible source revision and an actual
+   // public HTTPS deployment, not a local/dev host or placeholder address.
+   if(!/^[0-9a-f]{40}$/.test(item.commit||''))errors.push('PASS has invalid source commit: '+item.id);
+   try{
+    const u=new URL(item.deploymentUrl);
+    if(u.protocol!=='https:'||u.username||u.password||u.port||
+       !u.hostname.includes('.')||u.hostname==='localhost'||
+       /(?:^|\.)(?:localhost|local|test|invalid|example)$/.test(u.hostname)||
+       /^(?:127\.|10\.|192\.168\.|172\.(?:1[6-9]|2\d|3[01])\.)/.test(u.hostname))
+      errors.push('PASS deployment URL is not a public HTTPS host: '+item.id);
+   }catch{errors.push('PASS deployment URL is malformed: '+item.id);}
    if(!valid(item.commit)||!valid(item.deploymentUrl)||!/^https:\/\//.test(item.deploymentUrl)||
       !valid(item.device)||!valid(item.os)||!valid(item.browser)||!valid(item.testedAt)||
       !valid(item.tester)||!valid(item.procedure)||!Array.isArray(item.evidence)||
       item.evidence.length===0||!item.evidence.every(valid))
     errors.push('PASS lacks required actual evidence: '+item.id);
-   if(!/^\d{4}-\d{2}-\d{2}T/.test(item.testedAt||'')||!Number.isFinite(Date.parse(item.testedAt)))
-    errors.push('PASS has invalid timestamp: '+item.id);
+   const timestamp=Date.parse(item.testedAt);
+   if(!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d{2}:\d{2})$/.test(item.testedAt||'')||
+      !Number.isFinite(timestamp)||timestamp>Date.now()+300000)
+    errors.push('PASS has invalid or future timestamp: '+item.id);
   }
  }
  for(const id of ids)if(!seen.has(id))errors.push('Missing '+id);
