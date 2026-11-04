@@ -4,7 +4,7 @@
 
 ![Xyra Atlas emblem](assets/atlas-mark.svg)
 
-## Current release: Offline Asset Quality Gate 1.59
+## Current build: offline-first release candidate (not production approved)
 
 - A violet-and-gold responsive interface, **14 distinct original vector course worlds** plus three cinematic portal scenes and fourteen case-specific illustrated chapters, Xyra's Corner artwork and a home-screen app icon. The same course identity appears on home tiles, category cards, course covers and lessons.
 - 14 learning subjects and **134 interactive lessons**: 117 original and mastery lessons, **14 applied capstone labs** and **3 Philippine casework lessons**, one in every subject. Each capstone contains an original decision case, worked example, hands-on exercise, self-check rubric, knowledge question, and optional source for further reading (counts verified by tests).
@@ -20,13 +20,13 @@
 
 ## Release notes
 
-This project is developed iteratively. The detailed, chronological feature and verification history has been moved to [CHANGELOG.md](CHANGELOG.md), so this README remains useful for installation and evaluation. Latest verified CI: [227 Node tests, static bundle audit and Chromium/WebKit browser checks](https://github.com/MattBoneo-30/xyra-atlas/actions/runs/41699259088).
+This project is developed iteratively. The detailed, chronological feature and verification history has been moved to [CHANGELOG.md](CHANGELOG.md), so this README remains useful for installation and evaluation. A recent verified CI run is [the full Node, Chromium and WebKit pipeline](https://github.com/MattBoneo-30/xyra-atlas/actions/runs/41799867985). Check the [latest Actions results](https://github.com/MattBoneo-30/xyra-atlas/actions) for the current main commit before release.
 
 ## Scope and verification
 
 The current build contains 134 structured lessons, 42 contextual decision questions, working offline study tools and an accessible original vector-art library. A full independent editorial-review packet and cryptographic reviewer-signoff workflow are available, but **0 lessons and 0 decisions currently have qualified external approval**. General educational content is not professional certification or individualized legal, financial or medical advice.
 
-The 36 SVG illustrations are original accessible vector compositions; they are **not** the final painterly cinematic illustrations envisioned for the project. Linux Chromium and WebKit checks do **not** establish real iOS/Android PWA installation, mobile-device performance or complete accessibility conformance. Review the evidence and open blockers in [stage gates](docs/stage-gates.json) before claiming production-final release.
+The integrated original SVG illustrations include 42 subject-and-stage scenes in addition to earlier course and chapter compositions; these lightweight vector illustrations are **not** owner-approved final painterly cinematic artwork. Linux Chromium and WebKit checks do **not** establish real iOS/Android PWA installation, mobile-device performance or complete accessibility conformance. Review the evidence and open blockers in [stage gates](docs/stage-gates.json) and the [single external acceptance handoff](docs/release-acceptance-handoff.md) before claiming production-final release.
 
 ## Run locally
 
