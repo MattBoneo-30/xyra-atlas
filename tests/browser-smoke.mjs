@@ -927,8 +927,9 @@ try{
   expect(await gatedArt.evaluate(async img=>{await img.decode();return img.naturalWidth===1400}),'mature chapter image decodes after gate');
   await page.goto(BASE+'/#/lesson/psychology/thoughts',{waitUntil:'domcontentloaded'});
   await page.locator('.reading-illustration img').waitFor();
-  expect(await page.locator('.chapter-art-feature').count()===0,'other lessons retain their existing artwork');
-  expect(await page.locator('.reading-illustration img').getAttribute('src')==='/assets/course-psychology.svg','normal reader art fallback is unchanged');
+  expect(await page.locator('.stage-art-feature').count()===1,'ordinary lesson receives its own stage-world illustration');
+  expect(await page.locator('.reading-illustration img').getAttribute('src')==='/assets/world-psychology-beginner.svg',
+   'normal lessons now load the correct new subject-and-level world');
   await page.goto(BASE+'/#/lesson/laws/case-ph-data-access',{waitUntil:'domcontentloaded'});
   await page.locator('.chapter-art-feature').waitFor();
   await page.screenshot({path:snapshots+'/chapter-art-desktop.png',fullPage:true});
