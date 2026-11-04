@@ -17,7 +17,8 @@
     "audit:editorial": "node scripts/audit-editorial-attestations.mjs",
     "sign:editorial": "node scripts/sign-editorial-review.mjs",
     "check:sources": "node scripts/check-course-sources.mjs",
-    "check": "node --check app.js && node --check paths.js && npm test && npm run build"
+    "check": "node --check app.js && node --check paths.js && npm test && npm run build",
+    "audit:devices": "node scripts/audit-device-evidence.mjs"
   },
   "engines": {
     "node": ">=20"
