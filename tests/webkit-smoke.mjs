@@ -67,6 +67,24 @@ try{
    await page.locator('.reading-page').waitFor();
    assert.equal(await page.locator('.practice-guide-steps li').count(),2);
   });
+ await checkScenario('mobile-illustrated-stage-roadmap',
+  {viewport:{width:390,height:844},isMobile:true,hasTouch:true,deviceScaleFactor:2},
+  async page=>{
+   await page.goto(BASE+'/#/course/psychology',{waitUntil:'domcontentloaded'});
+   await page.locator('.curriculum-world-preview').first().waitFor();
+   assert.equal(await page.locator('.curriculum-world-preview').count(),3);
+   for(const stage of ['Beginner','Intermediate','Advanced']){
+    const image=page.locator('.curriculum-world-preview[data-id="'+stage+'"] img');
+    const src=await image.getAttribute('src');
+    assert.equal(src,'/assets/world-psychology-'+stage.toLowerCase()+'.svg');
+    assert.equal(await image.evaluate(async el=>{await el.decode();return el.naturalWidth}),1400);
+   }
+   await page.locator('.curriculum-world-preview[data-id="Advanced"]').click();
+   assert.equal(await page.locator('.course-stage-button[data-id="Advanced"]').getAttribute('aria-pressed'),'true');
+   assert.equal(await page.locator('#course-lessons-heading').evaluate(el=>document.activeElement===el),true);
+   await noHorizontalOverflow(page);
+   await page.screenshot({path:output+'/webkit-mobile-stage-roadmap.png',fullPage:true});
+  });
  await checkScenario('desktop-navigation-and-advanced-exam',
   {viewport:{width:1366,height:900}},
   async page=>{

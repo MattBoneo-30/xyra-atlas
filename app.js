@@ -353,14 +353,18 @@ function coursePage() {
     ${button(`${icon('play',18)} ${done ? 'Continue learning' : 'Start learning'}`,'open-lesson','primary-button course-start',`data-course="${esc(c.id)}" data-lesson="${esc(firstUnfinished.id)}"`)}
     <section class="curriculum-ladder" aria-label="Learning ladder for ${esc(c.title)}">
      <div class="curriculum-ladder-heading"><span class="overline">FROM FOUNDATION TO APPLIED WORK</span><h2>Three levels of practice</h2><p>Every stage has a learning objective and an observable exercise. Your recorded lesson progress is a study guide, not a measure of professional competence.</p></div>
-     <div class="curriculum-ladder-levels">${ladder.levels.map(level=>`<article class="curriculum-level"><div class="curriculum-level-top"><div><span class="curriculum-level-tag">${esc(level.stage)}</span><h3>${esc(level.goal)}</h3></div><span class="curriculum-level-count">${level.done}/${level.total}</span></div>
+     <div class="curriculum-ladder-levels">${ladder.levels.map(level=>`<article class="curriculum-level curriculum-level-illustrated" data-stage="${esc(level.stage)}"><button type="button" class="curriculum-world-preview" data-action="course-stage-filter" data-id="${esc(level.stage)}" aria-label="Explore ${esc(level.stage)} lessons in ${esc(c.title)}" aria-pressed="${courseStageFilter===level.stage}">
+       <img src="${esc(getStageArt(c.id,level.stage)?.src||'/assets/'+c.art+'.svg')}" alt="" loading="lazy" decoding="async"/>
+       <span class="curriculum-world-name"><span class="overline">ENTER THE ${esc(level.stage.toUpperCase())} WORLD</span><strong>${esc(getStageArt(c.id,level.stage)?.place||c.title)}</strong></span>
+       <span class="curriculum-world-cta" aria-hidden="true">${icon('arrow',16)}</span>
+      </button><div class="curriculum-level-top"><div><span class="curriculum-level-tag">${esc(level.stage)}</span><h3>${esc(level.goal)}</h3></div><span class="curriculum-level-count">${level.done}/${level.total}</span></div>
        <div class="curriculum-level-meter" role="progressbar" aria-label="${esc(level.stage)} lesson progress" aria-valuemin="0" aria-valuemax="${level.total}" aria-valuenow="${level.done}"><span style="width:${level.percent}%"></span></div>
        <p><strong>Practice evidence:</strong> ${esc(level.evidence)}</p>
        ${level.nextLesson?button(`Study next: ${esc(level.nextLesson.title)} ${icon('arrow',15)}`,'open-lesson','curriculum-next-action',`data-course="${esc(c.id)}" data-lesson="${esc(level.nextLesson.id)}"`):`<span class="curriculum-level-complete">${icon('check',16)} ${level.total?'All lessons complete':'Lessons are being prepared'}</span>`}
      </article>`).join('')}</div><p class="fineprint">Advanced lessons remain open for independent exploration. Completion is not a credential, assessment of professional judgment or guarantee of expertise.</p>
     </section>
     ${clinicPanel(c)}
-    <div class="section-heading lesson-list-title"><div><span class="overline">A PATH WORTH TAKING</span><h2>Your lessons</h2></div></div>
+    <div class="section-heading lesson-list-title"><div><span class="overline">A PATH WORTH TAKING</span><h2 id="course-lessons-heading" tabindex="-1">Your lessons</h2></div></div>
     <div class="course-stage-tabs" role="group" aria-label="Filter lessons by learning level">${[['all','All levels',c.lessons.length],...stages.map(stage=>[stage,stage,stageCount(stage)])].map(([id,label,count])=>button(`${esc(label)} <span>${count}</span>`,'course-stage-filter',`course-stage-button ${courseStageFilter===id?'selected':''}`,`data-id="${esc(id)}" aria-pressed="${courseStageFilter===id}"`)).join('')}</div>
     <div class="lesson-list">${visible.map(({lesson:l,index:i})=>`<button type="button" data-action="open-lesson" data-course="${esc(c.id)}" data-lesson="${esc(l.id)}" class="lesson-row"><span class="lesson-number ${isCompleted(idFor(c.id,l.id))?'done':''}">${isCompleted(idFor(c.id,l.id))?icon('check',19):String(i+1).padStart(2,'0')}</span><span class="lesson-info"><strong>${esc(l.title)}</strong><small>${esc(l.stage)} · ${l.minutes} min${l.isCapstone?" · Applied lab":""}</small></span><span>${chevron}</span></button>`).join('')}</div>
     <p class="info-line">${icon('info',16)} Educational guidance, not a substitute for individualized legal, medical, financial or mental-health advice.</p>
@@ -1196,7 +1200,14 @@ async function handleAction(e) {
     if(route.view!=='course'||route.courseId!==id)return;
     saved.clinicAnswers=resetClinic(saved.clinicAnswers,id);persist();render();
   }
-  else if(action==='course-stage-filter') {if(route.view!=='course'||!['all','Beginner','Intermediate','Advanced'].includes(id))return;courseStageFilter=id;render();}
+  else if(action==='course-stage-filter') {
+    if(route.view!=='course'||!['all','Beginner','Intermediate','Advanced'].includes(id))return;
+    courseStageFilter=id;
+    render();
+    const heading=document.getElementById('course-lessons-heading');
+    heading?.scrollIntoView({behavior:'auto',block:'start'});
+    heading?.focus({preventScroll:true});
+  }
   else if(action==='open-lesson') {const cid=button.dataset.course, lid=button.dataset.lesson;const c=findCourse(cid);if(c?.dark&&!shadowUnlocked){gateConfirmed=false;modal='shadow';render();return;} if(findLesson(cid,lid)){saved.lastOpened={courseId:cid,lessonId:lid};persist();nav(`lesson/${cid}/${lid}`);}}
   else if(action==='favorite') toggle('favorites',id);
   else if(action==='bookmark') toggle('bookmarks',button.dataset.key);

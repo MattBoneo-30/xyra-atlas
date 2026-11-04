@@ -877,6 +877,42 @@ try{
  });
 
 
+ await smoke('illustrated-stage-roadmap-mobile',{viewport:{width:390,height:844}},async page=>{
+  await page.goto(BASE+'/#/course/psychology',{waitUntil:'domcontentloaded'});
+  await page.locator('.curriculum-world-preview').first().waitFor();
+  expect(await page.locator('.curriculum-level-illustrated').count()===3,
+    'each subject course has three illustrated and navigable levels');
+  for(const stage of ['Beginner','Intermediate','Advanced']){
+    const choice=page.locator('.curriculum-world-preview[data-id="'+stage+'"]');
+    expect(await choice.count()===1,'illustration for '+stage+' stage exists');
+    const image=choice.locator('img');
+    const picture=await image.evaluate(async img=>{await img.decode();return {
+      url:img.getAttribute('src'),width:img.naturalWidth,height:img.naturalHeight,
+      alt:img.alt
+    };});
+    expect(picture.width===1400&&picture.height===700&&picture.alt==='',
+      'interactive stage scene is available and decoratively accessible');
+    expect(picture.url==='/assets/world-psychology-'+stage.toLowerCase()+'.svg',
+      'level image matches subject and stage');
+  }
+  const before=(await getState(page)).completed||[];
+  await page.locator('.curriculum-world-preview[data-id="Intermediate"]').click();
+  const heading=page.locator('#course-lessons-heading');
+  expect(await heading.evaluate(el=>document.activeElement===el),
+    'level navigation moves keyboard focus to the filtered lesson list');
+  expect(await page.locator('.course-stage-button[data-id="Intermediate"]').getAttribute('aria-pressed')==='true',
+    'selected learning stage is visibly active');
+  const rows=page.locator('.lesson-list .lesson-row');
+  const expected=COURSES.find(c=>c.id==='psychology').lessons.filter(l=>l.stage==='Intermediate').length;
+  expect(await rows.count()===expected,'level button filters to the authored lessons');
+  expect((await rows.locator('.lesson-info small').allTextContents()).every(s=>s.includes('Intermediate')),
+    'no unrelated stage lessons are shown');
+  expect(JSON.stringify((await getState(page)).completed||[])===JSON.stringify(before),
+    'exploring the visual stages does not alter saved progress');
+  const overflow=await mobileOverflow(page);
+  expect(overflow.scroll<=overflow.width+8,'stage roadmap remains within mobile viewport');
+  await page.screenshot({path:snapshots+'/atlas-stage-roadmap-mobile.png',fullPage:true});
+ });
  await smoke('cinematic-stage-worlds-mobile',{viewport:{width:390,height:844}},async page=>{
   for(const [courseId,lessonId,expectedStage] of [
    ['psychology','thoughts','BEGINNER'],

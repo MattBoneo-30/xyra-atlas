@@ -45,6 +45,14 @@ test('learning ladder ships in offline build and real course pages',()=>{
  const [app,sw,build]=['app.js','sw.js','scripts/build.mjs'].map(p=>fs.readFileSync(p,'utf8'));
  assert.match(app,/learningLadder\(c,saved\.completed\)/);
  assert.match(app,/curriculum-ladder-levels/);
+ assert.match(app,/curriculum-world-preview/);
+ assert.match(app,/getStageArt\(c\.id,level\.stage\)/);
+ assert.match(app,/aria-pressed="\$\{courseStageFilter===level\.stage\}"/);
+ assert.match(app,/id="course-lessons-heading" tabindex="-1"/);
+ assert.match(app,/heading\?\.focus\(\{preventScroll:true\}\)/);
+ const css=fs.readFileSync('styles.css','utf8');
+ assert.match(css,/\.curriculum-world-preview/);
+ assert.match(css,/prefers-reduced-motion:reduce/);
  assert.match(sw,/\/curriculumpath\.js/);
  assert.match(build,/'curriculumpath\.js'/);
 });

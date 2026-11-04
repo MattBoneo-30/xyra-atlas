@@ -661,3 +661,31 @@ html[data-theme=light]{color-scheme:light;--bg:#fbf5f6;--bg-raised:#fff9fa;--car
   line-height:1.65;overflow-wrap:break-word
  }
 }
+
+/* The levels are actual illustrated destinations, not just a generic progress card. */
+.curriculum-level-illustrated{padding:12px;overflow:hidden}
+.curriculum-world-preview{position:relative;isolation:isolate;display:block;width:100%;height:140px;
+  padding:0;border:1px solid rgba(240,210,235,.23);background:#272244;border-radius:13px;
+  overflow:hidden;text-align:left;cursor:pointer;color:#fff6e7;flex-shrink:0}
+.curriculum-world-preview img{display:block;width:100%;height:100%;object-fit:cover;object-position:68% center;
+  transition:transform .25s ease,filter .25s ease}
+.curriculum-world-preview::after{content:"";position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(90deg,rgba(15,12,39,.84),rgba(16,11,37,.27) 87%),
+   linear-gradient(0deg,rgba(17,13,38,.8),transparent 78%);z-index:1}
+.curriculum-world-name{position:absolute;z-index:2;left:14px;bottom:14px;max-width:76%;display:grid;gap:5px}
+.curriculum-world-name .overline{font-size:9px;letter-spacing:1.5px;color:#ffdcad}
+.curriculum-world-name strong{font:normal clamp(17px,2vw,21px)/1.17 Georgia,"Times New Roman",serif;
+  overflow-wrap:anywhere;text-shadow:0 2px 8px rgba(0,0,0,.45)}
+.curriculum-world-cta{position:absolute;z-index:2;right:11px;bottom:13px;
+ display:grid;place-items:center;width:28px;height:28px;border-radius:50%;
+ border:1px solid rgba(254,235,213,.55);color:#ffdfad;background:rgba(26,16,46,.5)}
+.curriculum-world-preview:is(:hover,:focus-visible) img{transform:scale(1.045);filter:brightness(1.08)}
+.curriculum-world-preview:focus-visible{outline:3px solid #ffe2a9;outline-offset:3px}
+.curriculum-world-preview[aria-pressed="true"]{border:2px solid #ffdcad}
+.curriculum-level-illustrated .curriculum-level-top{padding-top:16px}
+.curriculum-level-illustrated p{padding:0 4px}
+.curriculum-level-illustrated .curriculum-next-action{margin-top:auto}
+#course-lessons-heading:focus{outline:none}
+@media(max-width:850px){.curriculum-world-preview{height:175px}.curriculum-world-name strong{font-size:24px}}
+@media(max-width:420px){.curriculum-world-preview{height:150px}.curriculum-world-name strong{font-size:20px}}
+@media(prefers-reduced-motion:reduce){.curriculum-world-preview img{transition:none!important;transform:none!important}}
