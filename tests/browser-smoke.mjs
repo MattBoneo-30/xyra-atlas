@@ -570,6 +570,42 @@ try{
  });
 
 
+ await smoke('language-written-recall-mobile-offline',{viewport:{width:390,height:844}},async (page,context)=>{
+  await page.goto(BASE+'/#/language',{waitUntil:'domcontentloaded'});
+  await page.locator('.phrase-card').waitFor();
+  await page.locator('#language-select').selectOption('ja');
+  const draft=page.locator('#phrase-draft');
+  await draft.fill('こんにちは、テスト');
+  expect(await draft.inputValue()==='こんにちは、テスト','Japanese script can be entered for private written recall');
+  const storageBefore=await page.evaluate(()=>localStorage.getItem('xyra-atlas-state'));
+  await page.locator('[data-action="phrase-reveal"]').click();
+  expect(await page.locator('.phrase-recall-comparison p').textContent()==='こんにちは、テスト',
+   'authored answer appears alongside the original written attempt');
+  expect(await page.locator('.phrase-card .phrase-answer').count()===1,'translation remains available');
+  expect(await page.evaluate(()=>localStorage.getItem('xyra-atlas-state'))===storageBefore,
+    'written recall drafts never enter local learner progress');
+  await page.locator('[data-action="phrase-next"]').click();
+  expect(await page.locator('#phrase-draft').inputValue()==='','next phrase clears the previous writing');
+  await page.locator('#phrase-draft').fill('<img src=x onerror=alert(1)>');
+  await page.locator('[data-action="phrase-reveal"]').click();
+  expect(await page.locator('.phrase-recall-comparison img').count()===0,
+   'written recall is escaped text, not executable HTML');
+  await page.locator('#language-select').selectOption('ko');
+  expect(await page.locator('#phrase-draft').inputValue()==='','switching language clears the draft');
+  const overflow=await mobileOverflow(page);
+  expect(overflow.scroll<=overflow.width+8,'written recall fits small screens');
+  await page.evaluate(async()=>navigator.serviceWorker.ready);
+  await page.reload({waitUntil:'domcontentloaded'});
+  await page.waitForFunction(()=>Boolean(navigator.serviceWorker.controller));
+  await context.setOffline(true);
+  try{
+    await page.reload({waitUntil:'domcontentloaded'});
+    await page.locator('#phrase-draft').fill('안녕하세요');
+    await page.locator('[data-action="phrase-reveal"]').click();
+    expect(await page.locator('.phrase-recall-comparison p').textContent()==='안녕하세요',
+      'private writing and comparison work without internet');
+  }finally{await context.setOffline(false);}
+ });
  await smoke('offline-language-challenge',{viewport:{width:390,height:844}},async(page)=>{
   await page.goto(BASE+'/#/language',{waitUntil:'domcontentloaded'});
   await page.locator('.language-challenge').waitFor();

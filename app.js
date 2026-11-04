@@ -93,6 +93,8 @@ let reviewRevealed = false;
 let mistakeFeedback=null;
 let mistakeIndex=0;
 let phraseRevealed = false, phraseIndex = 0;
+// Written recall is deliberately short-lived and never persisted or graded.
+let phraseDraft = '';
 let phraseReviewRevealed=false;
 let languageVoiceURI='';
 let languageAudioToken=0;
@@ -874,7 +876,7 @@ function languagePage() {
     <div class="section"><div class="section-heading"><div><span class="overline">CHOOSE YOUR STARTING POINT</span><h2>Pick a language</h2></div></div><label class="field-label" for="language-select">Your learning language</label><select id="language-select" aria-label="Choose a language" class="styled-select">${LANGUAGES.map(x=>`<option value="${x.code}" ${saved.language===x.code?'selected':''}>${x.flag} ${esc(x.name)}</option>`).join('')}</select><p class="fineprint">All 20 languages include eight useful starter phrases and offline practice. Phrasing varies by country and context; these starter translations are not yet native-speaker reviewed, and device speech is not pronunciation assessment.</p></div>
     <div class="sprint-head"><div><span class="overline">YOUR SEVEN-DAY LAUNCH</span><h2>${language.flag} ${esc(language.name)} sprint</h2><p>Practice 20–30 minutes daily. Build a practical foundation.</p></div><strong>${completedDays}/7</strong></div>${bars(completedDays,7)}
     <div class="sprint-list">${LEARNING_SPRINT.map(([title,description],i)=>`<button type="button" class="sprint-day ${saved.languageDays.includes(`${saved.language}:${i}`)?'complete':''}" data-action="toggle-day" data-id="${i}"><span class="day-check">${saved.languageDays.includes(`${saved.language}:${i}`)?icon('check',17):`0${i+1}`}</span><span><small>DAY ${i+1}</small><strong>${esc(title)}</strong><em>${esc(description)}</em></span></button>`).join('')}</div>
-    ${(() => { const pack=getPhrasePack(saved.language);if(!pack)return `<section class="phrase-lab"><h2>Phrase pack coming soon</h2><p>The seven-day practice plan remains available while this language's lessons are prepared.</p></section>`;const words=pack.phrases,word=words[phraseIndex%words.length],known=saved.phrases[saved.language]||[];return `<section class="phrase-lab"><div class="phrase-head"><span class="overline">OFFLINE PHRASE PRACTICE</span><h2>Practice for real</h2><p>${known.length} of ${words.length} learned</p></div>${bars(known.length,words.length)}${pack.note?`<p class="fineprint language-region-note" role="note">${esc(pack.note)}</p>`:''}<div class="phrase-card"><small>CARD ${phraseIndex%words.length+1} OF ${words.length}</small><h3>${esc(word.english)}</h3>${phraseRevealed?`<div class="phrase-answer" lang="${esc(pack.locale)}" dir="auto"><strong>${esc(word.target)}</strong><small>${esc(word.pronunciation)}</small></div><div class="phrase-buttons">${button(`${icon('play',17)} Hear local voice`,'language-speak','secondary-button',`data-id="${esc(word.id)}"`)}${button(known.includes(word.id)?'Learned ✓':'Mark learned','phrase-known','secondary-button')}</div>`:button('Reveal translation','phrase-reveal','primary-button')}<div class="phrase-controls">${button('Previous','phrase-prev','text-action')}${button(`Next phrase ${icon('arrow',16)}`,'phrase-next','text-action')}</div></div><p class="fineprint">Speak before revealing. Playback requires a compatible installed device voice. Marking learned is a self-assessment.</p></section>`;})()}
+    ${(() => { const pack=getPhrasePack(saved.language);if(!pack)return `<section class="phrase-lab"><h2>Phrase pack coming soon</h2><p>The seven-day practice plan remains available while this language's lessons are prepared.</p></section>`;const words=pack.phrases,word=words[phraseIndex%words.length],known=saved.phrases[saved.language]||[];return `<section class="phrase-lab"><div class="phrase-head"><span class="overline">OFFLINE PHRASE PRACTICE</span><h2>Practice for real</h2><p>${known.length} of ${words.length} learned</p></div>${bars(known.length,words.length)}${pack.note?`<p class="fineprint language-region-note" role="note">${esc(pack.note)}</p>`:''}<div class="phrase-card"><small>CARD ${phraseIndex%words.length+1} OF ${words.length}</small><h3>${esc(word.english)}</h3>${phraseRevealed?`<div class="phrase-answer" lang="${esc(pack.locale)}" dir="auto"><strong>${esc(word.target)}</strong><small>${esc(word.pronunciation)}</small></div><div class="phrase-recall-comparison" role="status"><span class="overline">YOUR WRITTEN RECALL</span><p lang="${esc(pack.locale)}" dir="auto">${phraseDraft?esc(phraseDraft):'You skipped the written attempt. That is okay.'}</p><small>Compare your phrasing with this authored example. Other expressions may also be correct; no automatic grading is applied.</small></div><div class="phrase-buttons">${button(`${icon('play',17)} Hear local voice`,'language-speak','secondary-button',`data-id="${esc(word.id)}"`)}${button(known.includes(word.id)?'Learned ✓':'Mark learned','phrase-known','secondary-button')}</div>`:`<div class="phrase-recall-entry"><label for="phrase-draft">Try writing the translation (optional)</label><textarea id="phrase-draft" rows="2" maxlength="280" lang="${esc(pack.locale)}" dir="auto" autocomplete="off" spellcheck="false" placeholder="Your recall in ${esc(language.name)}…">${esc(phraseDraft)}</textarea><small>Try it from memory before revealing. Your draft is not saved or sent anywhere.</small></div>${button('Compare with the phrase','phrase-reveal','primary-button')}`}<div class="phrase-controls">${button('Previous','phrase-prev','text-action')}${button(`Next phrase ${icon('arrow',16)}`,'phrase-next','text-action')}</div></div><p class="fineprint">Speak before revealing. Playback requires a compatible installed device voice. Marking learned is a self-assessment.</p></section>`;})()}
     ${languageAudioPanel()}
     ${phraseReviewPanel()}
     ${languageChallengePanel()}
@@ -1298,7 +1300,7 @@ async function handleAction(e) {
    if(route.view!=='language')return;
    const existing=normalizeConversationQuest(saved.conversationQuest,PHRASEBOOK);
    if(!existing||conversationQuestResults(existing,PHRASEBOOK).done)return;
-   saved.language=existing.code;phraseIndex=0;phraseRevealed=false;phraseReviewRevealed=false;persist();render();
+   saved.language=existing.code;phraseIndex=0;phraseRevealed=false;phraseDraft='';phraseReviewRevealed=false;persist();render();
   }
   else if(action==='conversation-answer'){
    if(route.view!=='language')return;
@@ -1356,7 +1358,7 @@ async function handleAction(e) {
    if(route.view!=='language')return;
    const session=normalizeLanguageChallenge(saved.languageChallenge,PHRASEBOOK);
    if(!session||!LANGUAGES.some(l=>l.code===session.code))return;
-   saved.language=session.code;phraseIndex=0;phraseRevealed=false;persist();render();
+   saved.language=session.code;phraseIndex=0;phraseRevealed=false;phraseDraft='';persist();render();
   }
   else if(action==='challenge-answer'){
    if(route.view!=='language')return;
@@ -1415,8 +1417,8 @@ async function handleAction(e) {
     saved.phraseReviews=clearPhraseReviews(saved.phraseReviews,saved.language,PHRASEBOOK);
     phraseReviewRevealed=false;modal='';persist();render();
   }
-  else if(action==='phrase-reveal'){phraseRevealed=true;render();}
-  else if(action==='phrase-next'||action==='phrase-prev'){stopLanguageAudio();const p=getPhrasePack(saved.language);if(!p)return;phraseIndex=(phraseIndex+(action==='phrase-next'?1:p.phrases.length-1))%p.phrases.length;phraseRevealed=false;render();}
+  else if(action==='phrase-reveal'){if(route.view!=='language')return;phraseDraft=(document.getElementById('phrase-draft')?.value||'').slice(0,280);phraseRevealed=true;render();}
+  else if(action==='phrase-next'||action==='phrase-prev'){stopLanguageAudio();const p=getPhrasePack(saved.language);if(!p)return;phraseIndex=(phraseIndex+(action==='phrase-next'?1:p.phrases.length-1))%p.phrases.length;phraseRevealed=false;phraseDraft='';render();
   else if(action==='phrase-known'){const p=getPhrasePack(saved.language);if(!p)return;const word=p.phrases[phraseIndex%p.phrases.length];const known=new Set(saved.phrases[saved.language]||[]);known.has(word.id)?known.delete(word.id):known.add(word.id);saved.phrases[saved.language]=[...known];persist();render();}
   else if(action==='language-speak'){playLanguagePhrase(id);}
   else if(action==='language-audio-stop'){stopLanguageAudio();updateLanguageVoiceMessage('Playback stopped.');}
@@ -1456,7 +1458,7 @@ document.addEventListener('change',e=>{
     if(status&&progress)status.textContent=progress.count+' of '+progress.total+' criteria reviewed · Saved on this device';
     el.closest('li')?.classList.toggle('is-reviewed',el.checked);
   }
-  if(e.target.id==='language-select') {stopLanguageAudio();languageVoiceURI='';saved.language=e.target.value;phraseIndex=0;phraseRevealed=false;phraseReviewRevealed=false;persist();render();}
+  if(e.target.id==='language-select') {stopLanguageAudio();languageVoiceURI='';saved.language=e.target.value;phraseIndex=0;phraseRevealed=false;phraseDraft='';phraseReviewRevealed=false;persist();render();}
   if(e.target.id==='language-voice-picker'){
     languageVoiceURI=e.target.value;
     stopLanguageAudio();
@@ -1468,6 +1470,7 @@ document.addEventListener('change',e=>{
   if(e.target.id==='backup-file') answerBackup(e);
 });
 document.addEventListener('input',e=>{
+  if(e.target.id==='phrase-draft'&&route.view==='language'&&!phraseRevealed){phraseDraft=e.target.value.slice(0,280);}
   if (e.target.matches?.('textarea[data-field-note]')) {
     const key=e.target.dataset.fieldNote;
     const [cid,lid] = (key || '').split(':');
