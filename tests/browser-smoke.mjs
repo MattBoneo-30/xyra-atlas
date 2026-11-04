@@ -550,7 +550,7 @@ try{
   await page.locator('.course-page').waitFor();
   const original=await page.locator('.lesson-row').count();
   expect(original>=7,'Philippine law library includes earlier and mastery lessons');
-  await page.locator('[data-action="course-stage-filter"][data-id="Advanced"]').click();
+  await page.locator('.course-stage-button[data-id="Advanced"]').click();
   const advanced=await page.locator('.lesson-row').count();
   expect(advanced>=3&&advanced<original,'Advanced filter narrows the curriculum');
   expect(await page.locator('.course-stage-button[data-id="Advanced"]').getAttribute('aria-pressed')==='true','level selection announces pressed state');
@@ -1271,7 +1271,7 @@ try{
  await smoke('ph-casework-offline',{viewport:{width:390,height:844},isMobile:true,hasTouch:true,deviceScaleFactor:2},async(page,context)=>{
   await page.goto(BASE+'/#/course/laws',{waitUntil:'domcontentloaded'});
   await page.locator('.curriculum-ladder').waitFor();
-  await page.locator('[data-action="course-stage-filter"][data-id="Advanced"]').click();
+  await page.locator('.course-stage-button[data-id="Advanced"]').click();
   await page.locator('.lesson-list [data-action="open-lesson"][data-lesson="ph-data-access-case"]').click();
   await page.locator('.reading-page').waitFor();
   expect((await page.locator('.reading-page').textContent()).includes('Philippine'),'jurisdiction clearly stated');
