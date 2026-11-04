@@ -53,3 +53,13 @@ test('future-dated and timezone-free test timestamps cannot count as real QA',()
  assert.match(result.errors.join(' '),/future timestamp: IOS-01/);
  assert.match(result.errors.join(' '),/future timestamp: IOS-02/);
 });
+
+test('real-device approvals are bound to the exact source revision under release',()=>{
+ const report=passing();
+ const matching=auditDeviceEvidence(report,{expectedCommit:'a'.repeat(40)});
+ assert.equal(matching.passes,true);
+ const changed=auditDeviceEvidence(report,{expectedCommit:'b'.repeat(40)});
+ assert.equal(changed.passes,false);
+ assert.equal(changed.errors.filter(x=>x.includes('different source commit')).length,18);
+ assert.equal(changed.summary.PASS,18,'reported passes are preserved but cannot certify another revision');
+});
