@@ -108,3 +108,44 @@ test('app offers explicit update consent and controller-based reload, not automa
  assert.doesNotMatch(script,/cache\.addAll\(APP_SHELL\)\)\.then\(\(\)\s*=>\s*self\.skipWaiting/);
  assert.match(script,/SHELL_PATHS\.has\(url\.pathname\)/);
 });
+
+test('broken asset cache reads recover through the live network and repair',async()=>{
+ const f=fixture(),cache=await f.caches.open(CURRENT);
+ cache.entries.set('/styles.css',f.result('previous-stylesheet'));
+ const actualMatch=cache.match.bind(cache);
+ let readsFailed=true;
+ cache.match=async path=>{
+  if(path==='/styles.css'&&readsFailed)throw new Error('transient CacheStorage read failure');
+  return actualMatch(path);
+ };
+ const online=await f.event('fetch',{request:{method:'GET',url:'https://atlas.test/styles.css',mode:'cors'}});
+ assert.equal((await online.response).marker,'network:https://atlas.test/styles.css',
+  'a broken cache read should use a healthy same-origin network response');
+ assert.equal(f.counts().networkCalls,1);
+ readsFailed=false;
+ const cached=await f.event('fetch',{request:{method:'GET',url:'https://atlas.test/styles.css',mode:'cors'}});
+ assert.equal((await cached.response).marker,'network:https://atlas.test/styles.css',
+  'successful network fallback repairs the current cache');
+ assert.equal(f.counts().networkCalls,1,'a subsequent load avoids network access');
+});
+test('broken offline cache reads and cache-store failures return safe network errors',async()=>{
+ const f=fixture(),cache=await f.caches.open(CURRENT);
+ cache.match=async()=>{throw new Error('unreadable cached data')};
+ f.setOffline(true);
+ const asset=await f.event('fetch',{request:{method:'GET',url:'https://atlas.test/app.js',mode:'cors'}});
+ assert.equal((await asset.response).ok,false,'offline failures resolve to explicit error responses');
+ const navigation=await f.event('fetch',{request:{method:'GET',url:'https://atlas.test/offline/route',mode:'navigate'}});
+ assert.equal((await navigation.response).ok,false,'broken offline navigation avoids unhandled rejection');
+ let message;
+ await f.event('message',{data:{type:'ATLAS_OFFLINE_STATUS'},ports:[{postMessage:value=>{message=value;}}]});
+ assert.equal(message.ready,false,'unreadable required files never count as complete cache');
+ assert.equal(message.cached,0);
+});
+test('unavailable CacheStorage still allows same-origin online assets to load',async()=>{
+ const f=fixture();
+ f.caches.open=async()=>{throw new Error('quota or storage system outage')};
+ const css=await f.event('fetch',{request:{method:'GET',url:'https://atlas.test/styles.css',mode:'cors'}});
+ assert.equal((await css.response).marker,'network:https://atlas.test/styles.css');
+ const navigation=await f.event('fetch',{request:{method:'GET',url:'https://atlas.test/',mode:'navigate'}});
+ assert.equal((await navigation.response).marker,'network:https://atlas.test/');
+});

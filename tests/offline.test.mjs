@@ -46,3 +46,11 @@ test('missing-file inventory is visible in the offline UI without exposing learn
  assert.match(sw,/const missing=results\.filter/);
  assert.match(sw,/ready:missing\.length===0/);
 });
+
+test('offline status and fetch handlers tolerate a transient CacheStorage exception',()=>{
+ const source=fs.readFileSync('sw.js','utf8');
+ assert.match(source,/async function readCached\(cache,path\)/);
+ assert.match(source,/async function openCurrentCache\(\)/);
+ assert.match(source,/const current=await openCurrentCache\(\)/);
+ assert.match(source,/return Response\.error\(\)/);
+});

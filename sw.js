@@ -27,6 +27,16 @@ const APP_SHELL = [
 // Do not skipWaiting during installation: it could replace an in-use app whose
 // JavaScript modules and offline assets still belong to the previous version.
 const SHELL_PATHS=new Set(APP_SHELL);
+// Transient CacheStorage failures must not prevent a healthy network fallback.
+async function readCached(cache,path){
+ if(!cache)return null;
+ try{return await cache.match(path);}
+ catch{return null;}
+}
+async function openCurrentCache(){
+ try{return await caches.open(CACHE);}
+ catch{return null;}
+}
 self.addEventListener('install',event=>{
  event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(APP_SHELL)));
 });
@@ -39,15 +49,11 @@ self.addEventListener('activate',event=>{
  })());
 });
 async function offlineStatus(){
- const cache=await caches.open(CACHE);
+ const cache=await openCurrentCache();
+ // An unreadable cache must report incomplete status, not a misleading success.
  const results=await Promise.all(APP_SHELL.map(async path=>{
-  try{
-   const response=await cache.match(path);
-   return {path,ok:Boolean(response&&response.ok)};
-  }catch{
-   // A transient read error is not evidence that this file is safely available offline.
-   return {path,ok:false};
-  }
+  const response=await readCached(cache,path);
+  return {path,ok:Boolean(response&&response.ok)};
  }));
  const missing=results.filter(x=>!x.ok).map(x=>x.path);
  const cached=APP_SHELL.length-missing.length;
@@ -59,13 +65,8 @@ function offlineRepair(){
   repairJob=(async()=>{
    const cache=await caches.open(CACHE);
    const missing=(await Promise.all(APP_SHELL.map(async path=>{
-    try{
-     const r=await cache.match(path);
-     return r&&r.ok?null:path;
-    }catch{
-     // A failed cache read should not abort repairs for other offline files.
-     return path;
-    }
+    const r=await readCached(cache,path);
+    return r&&r.ok?null:path;
    }))).filter(Boolean);
    // Failed requests stay missing and are reported; never claim success on errors.
    await Promise.allSettled(missing.map(path=>cache.add(path)));
@@ -95,23 +96,28 @@ self.addEventListener('fetch',event=>{
   event.respondWith((async()=>{
    try{const live=await fetch(req);if(live.ok)return live;}catch{}
    // Only the active release cache can supply a navigation fallback.
-   const current=await caches.open(CACHE);
-   return await current.match('/index.html')||Response.error();
+   const current=await openCurrentCache();
+   return (await readCached(current,'/index.html'))||Response.error();
   })());
   return;
  }
  // Do not silently cache arbitrary same-origin responses, user data or URLs.
  if(!SHELL_PATHS.has(url.pathname))return;
  event.respondWith((async()=>{
-  const current=await caches.open(CACHE);
-  const cached=await current.match(url.pathname);
+  const current=await openCurrentCache();
+  const cached=await readCached(current,url.pathname);
   if(cached?.ok)return cached;
-  const live=await fetch(req);
-  if(live.ok&&!url.search){
-   // Put a verified same-origin asset in this release cache before resolving.
-   // Cache-write errors do not block an otherwise valid online response.
-   try{await current.put(url.pathname,live.clone());}catch{}
+  try{
+   const live=await fetch(req);
+   if(current&&live.ok&&!url.search){
+    // A failed cache write must never block a valid online response.
+    try{await current.put(url.pathname,live.clone());}catch{}
+   }
+   return live;
+  }catch{
+   // A broken cache combined with no network is a genuine offline miss,
+   // not an unhandled rejection that can break the application's load.
+   return Response.error();
   }
-  return live;
  })());
 });

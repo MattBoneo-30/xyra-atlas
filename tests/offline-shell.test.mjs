@@ -18,7 +18,7 @@ test('service-worker precaches only available source files or known build-genera
  }
 });
 test('offline navigation fallback uses the cached HTML and preserves foreign caches',()=>{
- assert.match(source,/current\.match\('\/index\.html'\)/);
+ assert.match(source,/readCached\(current,'\/index\.html'\)/);
  assert.match(source,/key\.startsWith\(CACHE_PREFIX\)/);
  assert.match(source,/cache\.addAll\(APP_SHELL\)/);
 });
