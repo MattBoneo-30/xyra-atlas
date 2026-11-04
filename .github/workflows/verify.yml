@@ -78,6 +78,16 @@ jobs:
             artifacts/language-review-packet.json
             artifacts/language-review-workbook.md
           retention-days: 14
+      - name: Audit qualified language reviewer signatures
+        run: npm run audit:language
+      - name: Archive exact-phrase language approval evidence
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: xyra-atlas-language-attestation-audit
+          path: artifacts/language-attestation-audit.json
+          if-no-files-found: ignore
+          retention-days: 14
       - name: Verify offline artifacts
         run: |
           test -s dist/index.html
