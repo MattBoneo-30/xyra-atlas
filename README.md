@@ -108,10 +108,6 @@ vercel.json            Vercel build and security headers
 Made for curiosity, by the Xyra Atlas project.
 
 
-## Independent language review intake
+## Independent review workflows
 
-The exact-source workbook for 160 starter phrases now has a separate signed human review intake. Use `npm run audit:language` to inspect per-locale editorial coverage and `npm run sign:language` for a genuine independently completed review. Both operate outside the deployable learner bundle; CI archives the audit result. Reviewer roster and ledger default to empty, **0 of 160 phrases are independently approved**, and no stage gate advances automatically. See [qualified language-review handoff](docs/independent-language-attestations.md). Source changes invalidate older signatures, and device speech remains unverified synthetic pronunciation.
-
-## Independent source-to-teaching traceability
-
-Run `npm run export:source-evidence` to build a source-by-source JSON matrix and readable workbook mapping all 42 distinct authored source URLs to the exact lesson and decision content using them. Every context carries a stable source SHA-256 fingerprint and an explicit pending independent review status. These editor-only CI artifacts contain no learner data and do not certify legal, financial, scientific or other factual correctness. See [source evidence review guidance](docs/source-evidence-review.md) for limitations and external validation criteria.
+The 134 lessons, 42 decisions and 42 source URLs require independent factual/editorial signoff; all 160 starter language phrases require qualified regional review. Use `npm run export:source-evidence` for exact-source traceability and `npm run audit:language` for genuine signed reviewer coverage. None is automatically approved. See [source review](docs/source-evidence-review.md) and [language attestation](docs/independent-language-attestations.md) instructions.
