@@ -704,3 +704,29 @@ html[data-theme=light]{color-scheme:light;--bg:#fbf5f6;--bg-raised:#fff9fa;--car
 @media(max-width:560px){.course-world-hero{height:232px}.course-world-hero img{object-position:61% 50%}
  .course-hero-story{max-width:76%}.course-hero-story strong{font-size:clamp(25px,7vw,32px)}
  .course-world-hero .hero-art-overlay{background:linear-gradient(90deg,rgba(12,11,38,.86),rgba(17,12,40,.52) 64%,rgba(16,12,36,.1)),linear-gradient(0deg,rgba(14,11,34,.43),transparent)}}
+
+/* Three actionable curriculum bridges make the Atlas constellation a real learning journey. */
+.atlas-learning-trails{margin:22px 0 35px}
+.atlas-trails-heading{display:flex;align-items:end;justify-content:space-between;gap:16px;margin-bottom:19px}
+.atlas-trails-heading h2{font:normal clamp(27px,4vw,34px)/1.15 Georgia,"Times New Roman",serif;margin:8px 0}
+.atlas-trails-heading p{font-size:13px;line-height:1.7;color:var(--muted);max-width:650px;margin:0}
+.atlas-trails-count{flex-shrink:0;padding:8px 11px;border:1px solid var(--line-bright);border-radius:30px;font-size:11px;color:var(--gold)}
+.atlas-trails-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px}
+.atlas-trail-card{display:flex;flex-direction:column;min-width:0;border:1px solid var(--line-bright);border-radius:19px;background:var(--card);overflow:hidden}
+.atlas-trail-scene{position:relative;height:145px;background:#26213d}
+.atlas-trail-scene img{width:100%;height:100%;object-fit:cover}
+.atlas-trail-scene::after{content:"";position:absolute;inset:0;background:linear-gradient(0deg,rgba(17,11,41,.45),transparent)}
+.atlas-trail-compass{position:absolute;right:13px;top:13px;z-index:1;width:33px;height:33px;display:grid;place-items:center;border-radius:50%;background:rgba(22,15,44,.78);color:#f8d79b;border:1px solid rgba(250,226,188,.5)}
+.atlas-trail-body{padding:18px;display:flex;flex-direction:column;gap:9px;flex:1}
+.atlas-trail-body .overline{font-size:10px;letter-spacing:1.35px;color:var(--gold);line-height:1.5}
+.atlas-trail-body h3{margin:0;font:normal 24px/1.18 Georgia,"Times New Roman",serif;overflow-wrap:anywhere}
+.atlas-trail-body p{margin:0;color:var(--muted);font-size:12px;line-height:1.72;flex:1}
+.atlas-trail-next{font-size:11px;line-height:1.55;color:var(--text);padding-top:10px;border-top:1px solid var(--line)}
+.atlas-trail-button{display:flex;justify-content:space-between;align-items:center;gap:9px;text-align:left;min-height:45px;border:1px solid var(--line-bright);border-radius:12px;background:var(--card-strong);color:var(--gold);font-weight:700;font-size:12px;padding:11px 13px;cursor:pointer}
+.atlas-trail-button:hover{background:var(--card-soft);border-color:var(--gold)}
+.atlas-trail-button:focus-visible{outline:3px solid var(--gold);outline-offset:3px}
+.atlas-trail-empty{padding:20px;color:var(--muted);border:1px solid var(--line);border-radius:15px;grid-column:1/-1}
+@media(max-width:960px){.atlas-trails-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:590px){.atlas-trails-heading{align-items:start;flex-direction:column}.atlas-trails-grid{grid-template-columns:1fr}.atlas-trail-card{display:grid;grid-template-columns:112px minmax(0,1fr)}.atlas-trail-scene{height:100%;min-height:210px}.atlas-trail-scene img{object-position:63% center}.atlas-trail-body{padding:15px}.atlas-trail-body h3{font-size:22px}}
+@media(max-width:380px){.atlas-trail-card{grid-template-columns:92px minmax(0,1fr)}.atlas-trail-body{padding:12px}.atlas-trail-scene{min-height:238px}.atlas-trail-body h3{font-size:20px}}
+@media(prefers-reduced-motion:reduce){.atlas-trail-button{transition:none}}

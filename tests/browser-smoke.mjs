@@ -830,6 +830,26 @@ try{
   await page.locator('#course-search').waitFor();
   expect(await page.locator('#course-search').count()===1,'Archive Gate CTA opens the subject library');
  });
+ await smoke('connected-knowledge-trails-mobile',{viewport:{width:390,height:844}},async page=>{
+  await page.goto(BASE+'/#/map',{waitUntil:'domcontentloaded'});
+  await page.locator('.atlas-learning-trails').waitFor();
+  expect(await page.locator('.atlas-trail-card').count()===3,'knowledge map offers three real subject connections');
+  expect(await page.locator('.atlas-trail-card .atlas-trail-button').count()===3,'each trail opens a genuine learning experience');
+  const first=page.locator('.atlas-trail-card').first();
+  const ids=await first.locator('.atlas-trail-button').evaluate(el=>({course:el.dataset.course,lesson:el.dataset.lesson}));
+  expect(Boolean(COURSES.find(c=>c.id===ids.course)?.lessons.find(l=>l.id===ids.lesson)),
+    'trail points to an actual authored lesson rather than placeholder navigation');
+  const before=JSON.stringify((await getState(page)).completed||[]);
+  await first.locator('.atlas-trail-button').click();
+  await waitRoute(page,'#/lesson/'+ids.course+'/'+ids.lesson);
+  await page.locator('.reading-page').waitFor();
+  expect(JSON.stringify((await getState(page)).completed||[])===before,
+    'exploring a suggested connection never fabricates lesson completion');
+  await page.goto(BASE+'/#/map',{waitUntil:'domcontentloaded'});
+  const overflow=await mobileOverflow(page);
+  expect(overflow.scroll<=overflow.width+8,'suggested curriculum trails have no mobile horizontal overflow');
+  await page.screenshot({path:snapshots+'/knowledge-trails-mobile.png',fullPage:true});
+ });
  await smoke('cinematic-worlds-mobile-offline',{viewport:{width:390,height:844}},async(page,context)=>{
   await page.goto(BASE+'/#/home',{waitUntil:'domcontentloaded'});
   await page.locator('.hero-archive img').waitFor();

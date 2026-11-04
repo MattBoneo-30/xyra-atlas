@@ -21,7 +21,7 @@ import {PERSONAL_CARD_LIMIT,CARD_FRONT_LIMIT,CARD_BACK_LIMIT,normalizePersonalCa
 import {buildNotebookIndex,searchNotebook} from './notebook.js';
 import {normalizeMistakes,recordQuizAttempt,buildMistakeQueue} from './mistakes.js';
 import { createDailyQuest,dailyQuestProgress } from './dailyquest.js';
-import { buildKnowledgeMap } from './atlasmap.js';
+import { buildKnowledgeMap,suggestKnowledgeTrails } from './atlasmap.js';
 import { SCENARIOS,normalizeScenarioAnswers,recordScenarioAnswer,scenarioProgress } from './scenarios.js';
 import { CASE_FILES,getCaseFile,evaluateCase,normalizeCasebook,advanceCase,resetCase,casebookStats } from './casebook.js';
 import { STUDIO_DEFAULTS, sanitizeStudio, calculateSavings, calculateBusiness, calculateTime } from './studio.js';
@@ -584,6 +584,7 @@ function questPage(){
 
 function mapPage(){
  const atlas=buildKnowledgeMap(COURSES,saved.completed);
+ const trails=suggestKnowledgeTrails(atlas,3);
  const spots=atlas.nodes.map(n=>`<button type="button" class="atlas-star-node ${n.done?'has-progress':''} ${n.percent===100?'is-mastered':''} ${n.dark?'is-shadow':''}" style="--node-x:${n.x}%;--node-y:${n.y}%" data-action="open-course" data-id="${esc(n.id)}" aria-label="Open ${esc(n.title)}. ${n.done} of ${n.total} lessons complete">
    <span class="atlas-node-art"><img src="/assets/${esc(n.art)}.svg" alt="" loading="lazy" decoding="async"/></span>
    <span class="atlas-node-label"><strong>${esc(n.title)}</strong><small>${n.dark?'18+ · content acknowledgment required':`${n.done}/${n.total} lessons`}</small><span class="atlas-node-track"><span style="width:${n.percent}%"></span></span></span>
@@ -595,6 +596,15 @@ function mapPage(){
    <div class="atlas-map-orbit">${spots}</div>
   </section>
   <section class="atlas-map-summary"><span>${icon('spark',20)} ${atlas.nodes.length} learning worlds</span><span>${icon('book',20)} ${atlas.completed} of ${atlas.total} lessons finished</span><span>${icon('compass',20)} Follow your own path</span></section>
+  <section class="atlas-learning-trails" aria-label="Suggested connections between learning subjects">
+   <div class="atlas-trails-heading"><div><span class="overline">FOLLOW THE THREADS</span><h2>Where curiosity leads next</h2><p>These optional connections use your completed lessons. They are invitations to explore, never required prerequisites or measures of expertise.</p></div><span class="atlas-trails-count">${trails.length} paths</span></div>
+   <div class="atlas-trails-grid">${trails.map(trail=>`<article class="atlas-trail-card">
+    <div class="atlas-trail-scene"><img src="/assets/${esc(trail.to.art)}.svg" alt="" loading="lazy" decoding="async"/><span class="atlas-trail-compass" aria-hidden="true">${icon('compass',20)}</span></div>
+    <div class="atlas-trail-body"><span class="overline">FROM ${esc(trail.from.title)} TO</span><h3>${esc(trail.to.title)}</h3><p>${esc(trail.reason)}</p>
+    <span class="atlas-trail-next">Start with: ${esc(trail.to.nextLesson.title)}</span>
+    ${button(`Explore this connection ${icon('arrow',17)}`,'open-lesson','atlas-trail-button',`data-course="${esc(trail.to.id)}" data-lesson="${esc(trail.to.nextLesson.id)}"`)}
+    </div></article>`).join('')||'<p class="atlas-trail-empty">You have explored every connected subject. Revisit any star to practice what you learned.</p>'}</div>
+  </section>
   <p class="info-line">${icon('info',16)} Lines show suggested topic connections—not required prerequisites. Mature subjects still require acknowledgment.</p>
  </main>`;
 }
