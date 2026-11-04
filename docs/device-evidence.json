@@ -1,0 +1,77 @@
+{
+  "schemaVersion": 1,
+  "cases": [
+    {
+      "id": "IOS-01",
+      "status": "NOT RUN"
+    },
+    {
+      "id": "IOS-02",
+      "status": "NOT RUN"
+    },
+    {
+      "id": "IOS-03",
+      "status": "NOT RUN"
+    },
+    {
+      "id": "IOS-04",
+      "status": "NOT RUN"
+    },
+    {
+      "id": "IOS-05",
+      "status": "NOT RUN"
+    },
+    {
+      "id": "IOS-06",
+      "status": "NOT RUN"
+    },
+    {
+      "id": "IOS-07",
+      "status": "NOT RUN"
+    },
+    {
+      "id": "AND-01",
+      "status": "NOT RUN"
+    },
+    {
+      "id": "AND-02",
+      "status": "NOT RUN"
+    },
+    {
+      "id": "AND-03",
+      "status": "NOT RUN"
+    },
+    {
+      "id": "AND-04",
+      "status": "NOT RUN"
+    },
+    {
+      "id": "AND-05",
+      "status": "NOT RUN"
+    },
+    {
+      "id": "AND-06",
+      "status": "NOT RUN"
+    },
+    {
+      "id": "BOTH-01",
+      "status": "NOT RUN"
+    },
+    {
+      "id": "BOTH-02",
+      "status": "NOT RUN"
+    },
+    {
+      "id": "BOTH-03",
+      "status": "NOT RUN"
+    },
+    {
+      "id": "BOTH-04",
+      "status": "NOT RUN"
+    },
+    {
+      "id": "BOTH-05",
+      "status": "NOT RUN"
+    }
+  ]
+}
