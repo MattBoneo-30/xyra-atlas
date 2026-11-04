@@ -27,7 +27,7 @@ import { CASE_FILES,getCaseFile,evaluateCase,normalizeCasebook,advanceCase,reset
 import { STUDIO_DEFAULTS, sanitizeStudio, calculateSavings, calculateBusiness, calculateTime } from './studio.js';
 import { PHRASEBOOK,getPhrasePack, sanitizePhraseProgress } from './phrasebook.js';
 import {normalizeLanguageSpeechRate,matchingLanguageVoices,languageVoiceAvailability,chooseOfflineLanguageVoice,languageVoiceMessage} from './voicecoach.js';
-import {normalizePhraseReviews,duePhraseReviews,phraseReviewStats,ratePhraseReview,clearPhraseReviews,createFocusedPhraseReview,advanceFocusedPhraseReview} from './phrasereview.js';
+import {normalizePhraseReviews,duePhraseReviews,phraseReviewStats,ratePhraseReview,clearPhraseReviews,createFocusedPhraseReview,advanceFocusedPhraseReview,selfCheckFocusedPhraseReview,summarizeFocusedPhraseReview} from './phrasereview.js';
 import {LANGUAGE_CHALLENGE_MODES,createLanguageChallenge,normalizeLanguageChallenge,currentLanguageQuestion,answerLanguageChallenge,advanceLanguageChallenge,languageChallengeResults,normalizeLanguageChallengeHistory,recordLanguageChallengeHistory} from './languagechallenge.js';
 import {CONVERSATION_QUESTS,createConversationQuest,normalizeConversationQuest,currentConversationQuestion,answerConversationQuestion,advanceConversationQuest,conversationQuestResults,normalizeConversationQuestHistory,recordConversationQuestHistory} from './conversationquest.js';
 import { normalizeFieldNotes, setFieldNote, MAX_FIELD_NOTE_LENGTH } from './fieldnotes.js';
@@ -96,6 +96,7 @@ let phraseRevealed = false, phraseIndex = 0;
 // Written recall is deliberately short-lived and never persisted or graded.
 let phraseDraft = '';
 let focusedPhraseReview = null; // Session-only; never included in learner backups or storage.
+let focusedReviewSummary = null;
 let phraseReviewRevealed=false;
 let languageVoiceURI='';
 let languageAudioToken=0;
@@ -892,7 +893,9 @@ function languagePage() {
     <div class="sprint-list">${LEARNING_SPRINT.map(([title,description],i)=>`<button type="button" class="sprint-day ${saved.languageDays.includes(`${saved.language}:${i}`)?'complete':''}" data-action="toggle-day" data-id="${i}"><span class="day-check">${saved.languageDays.includes(`${saved.language}:${i}`)?icon('check',17):`0${i+1}`}</span><span><small>DAY ${i+1}</small><strong>${esc(title)}</strong><em>${esc(description)}</em></span></button>`).join('')}</div>
     ${(() => { const pack=getPhrasePack(saved.language);if(!pack)return `<section class="phrase-lab"><h2>Phrase pack coming soon</h2><p>The seven-day practice plan remains available while this language's lessons are prepared.</p></section>`;const words=pack.phrases,word=words[phraseIndex%words.length],known=saved.phrases[saved.language]||[];
  const focused=focusedPhraseReview?.code===saved.language?focusedPhraseReview:null;
- return `<section class="phrase-lab"><div class="phrase-head"><span class="overline">OFFLINE PHRASE PRACTICE</span><h2>Practice for real</h2><p>${known.length} of ${words.length} learned</p></div>${bars(known.length,words.length)}${pack.note?`<p class="fineprint language-region-note" role="note">${esc(pack.note)}</p>`:''}<div class="phrase-card">${focused?`<div class="phrase-focus-session" role="status"><span class="overline">REVISIT WHAT WAS MISSED</span><strong>${focused.position+1} of ${focused.ids.length} phrases</strong><p>Work through your missed answers from ${focused.source==='challenge'?'Phrase Challenge':'Conversation Quest'}. These comparisons are private, optional and not graded.</p></div>`:''}<small>CARD ${phraseIndex%words.length+1} OF ${words.length}</small><h3>${esc(word.english)}</h3>${phraseRevealed?`<div class="phrase-answer" lang="${esc(pack.locale)}" dir="auto"><strong>${esc(word.target)}</strong><small>${esc(word.pronunciation)}</small></div><div class="phrase-recall-comparison" role="status"><span class="overline">YOUR WRITTEN RECALL</span><p lang="${esc(pack.locale)}" dir="auto">${phraseDraft?esc(phraseDraft):'You skipped the written attempt. That is okay.'}</p><small>Compare your phrasing with this authored example. Other expressions may also be correct; no automatic grading is applied.</small></div><div class="phrase-buttons">${button(`${icon('play',17)} Hear local voice`,'language-speak','secondary-button',`data-id="${esc(word.id)}"`)}${button(known.includes(word.id)?'Learned ✓':'Mark learned','phrase-known','secondary-button')}</div>`:`<div class="phrase-recall-entry"><label for="phrase-draft">Try writing the translation (optional)</label><textarea id="phrase-draft" rows="2" maxlength="280" lang="${esc(pack.locale)}" dir="auto" autocomplete="off" spellcheck="false" placeholder="Your recall in ${esc(language.name)}…">${esc(phraseDraft)}</textarea><small>Try it from memory before revealing. Your draft is not saved or sent anywhere.</small></div>${button('Compare with the phrase','phrase-reveal','primary-button')}`}<div class="phrase-controls">${focused?`${focused.position>0?button('Previous missed','focused-phrase-prev','text-action'):''}${button(focused.position===focused.ids.length-1?'Finish focused practice':`Next missed ${icon('arrow',16)}`,'focused-phrase-next','text-action')}${button('Exit review','focused-phrase-exit','text-action')}`:`${button('Previous','phrase-prev','text-action')}${button(`Next phrase ${icon('arrow',16)}`,'phrase-next','text-action')}`}</div></div><p class="fineprint">Speak before revealing. Playback requires a compatible installed device voice. Marking learned is a self-assessment.</p></section>`;})()}
+ const focusedStats=focused?summarizeFocusedPhraseReview(focused,PHRASEBOOK):null;
+ const summary=focusedReviewSummary?.code===saved.language?focusedReviewSummary:null;
+ return `<section class="phrase-lab"><div class="phrase-head"><span class="overline">OFFLINE PHRASE PRACTICE</span><h2>Practice for real</h2><p>${known.length} of ${words.length} learned</p></div>${bars(known.length,words.length)}${pack.note?`<p class="fineprint language-region-note" role="note">${esc(pack.note)}</p>`:''}<div class="phrase-card">${focused?`<div class="phrase-focus-session" role="status"><span class="overline">REVISIT WHAT WAS MISSED</span><strong>${focused.position+1} of ${focused.ids.length} phrases</strong><p>${focusedStats.recalled} recalled · ${focusedStats.retry} need practice · ${focusedStats.unrated} unrated. Self-assessment only; your quiz scores are unchanged.</p></div>`:summary?`<div class="phrase-focus-summary" role="status"><span class="overline">PRIVATE REVIEW SUMMARY</span><strong>${summary.recalled} recalled · ${summary.retry} to revisit · ${summary.unrated} not rated</strong><p>Your own reflection, not an automatically graded translation or fluency result.</p>${summary.retryIds.length?button('Practice the phrases to revisit','focused-phrase-retry','secondary-button'):''}${button('Dismiss summary','focused-phrase-dismiss','text-action')}</div>`:''}<small>CARD ${phraseIndex%words.length+1} OF ${words.length}</small><h3>${esc(word.english)}</h3>${phraseRevealed?`<div class="phrase-answer" lang="${esc(pack.locale)}" dir="auto"><strong>${esc(word.target)}</strong><small>${esc(word.pronunciation)}</small></div><div class="phrase-recall-comparison" role="status"><span class="overline">YOUR WRITTEN RECALL</span><p lang="${esc(pack.locale)}" dir="auto">${phraseDraft?esc(phraseDraft):'You skipped the written attempt. That is okay.'}</p><small>Compare your phrasing with this authored example. Other expressions may also be correct; no automatic grading is applied.</small></div>${focused?`<div class="phrase-self-check" aria-label="Self-assess phrase recall"><p>Did you remember the phrase before revealing it?</p>${button(focused.selfChecks[focused.ids[focused.position]]==='recalled'?'Recalled ✓':'I recalled it','focused-phrase-rate','secondary-button',`data-outcome="recalled" aria-pressed="${focused.selfChecks[focused.ids[focused.position]]==='recalled'}"`)}${button(focused.selfChecks[focused.ids[focused.position]]==='retry'?'Needs practice ✓':'Need another try','focused-phrase-rate','secondary-button',`data-outcome="retry" aria-pressed="${focused.selfChecks[focused.ids[focused.position]]==='retry'}"`)}</div>`:''}<div class="phrase-buttons">${button(`${icon('play',17)} Hear local voice`,'language-speak','secondary-button',`data-id="${esc(word.id)}"`)}${button(known.includes(word.id)?'Learned ✓':'Mark learned','phrase-known','secondary-button')}</div>`:`<div class="phrase-recall-entry"><label for="phrase-draft">Try writing the translation (optional)</label><textarea id="phrase-draft" rows="2" maxlength="280" lang="${esc(pack.locale)}" dir="auto" autocomplete="off" spellcheck="false" placeholder="Your recall in ${esc(language.name)}…">${esc(phraseDraft)}</textarea><small>Try it from memory before revealing. Your draft is not saved or sent anywhere.</small></div>${button('Compare with the phrase','phrase-reveal','primary-button')}`}<div class="phrase-controls">${focused?`${focused.position>0?button('Previous missed','focused-phrase-prev','text-action'):''}${button(focused.position===focused.ids.length-1?'Finish focused practice':`Next missed ${icon('arrow',16)}`,'focused-phrase-next','text-action')}${button('Exit review','focused-phrase-exit','text-action')}`:`${button('Previous','phrase-prev','text-action')}${button(`Next phrase ${icon('arrow',16)}`,'phrase-next','text-action')}`}</div></div><p class="fineprint">Speak before revealing. Playback requires a compatible installed device voice. Marking learned is a self-assessment.</p></section>`;})()}
     ${languageAudioPanel()}
     ${phraseReviewPanel()}
     ${languageChallengePanel()}
@@ -1165,7 +1168,7 @@ function confirmBackupImport(){
  try{localStorage.setItem(STORAGE_KEY,JSON.stringify(candidate));}
  catch{flash('Restore could not be saved. Your current learning data remains unchanged.');return;}
  saved=candidate;
- focusedPhraseReview=null;phraseDraft='';phraseRevealed=false;
+ focusedPhraseReview=null;focusedReviewSummary=null;phraseDraft='';phraseRevealed=false;
  recoveryRaw=null;storageProblem=null;storageWarningShown=false;
  shadowUnlocked=false;gateConfirmed=false;
  personalCardEditingId=null;personalCardRevealed=false;personalCardPendingDelete=null;personalCardQuery='';
@@ -1419,7 +1422,7 @@ async function handleAction(e) {
    }
    const next=createFocusedPhraseReview(PHRASEBOOK,saved.language,source,missed,id);
    if(!next)return;
-   focusedPhraseReview=next;
+   focusedReviewSummary=null;focusedPhraseReview=next;
    showFocusedPhrase(id);
   }
   else if(action==='focused-phrase-next'||action==='focused-phrase-prev'){
@@ -1429,6 +1432,7 @@ async function handleAction(e) {
    const next=advanceFocusedPhraseReview(current,PHRASEBOOK,direction);
    if(!next){
     if(direction!=='next'||current.position!==current.ids.length-1)return;
+    focusedReviewSummary=summarizeFocusedPhraseReview(current,PHRASEBOOK);
     focusedPhraseReview=null;phraseDraft='';phraseRevealed=false;render();
     const review=document.querySelector(current.source==='challenge'?'.language-challenge-results':'.conversation-quest-complete');
     if(review){review.setAttribute('tabindex','-1');review.scrollIntoView({behavior:'auto',block:'start'});review.focus({preventScroll:true});}
@@ -1437,9 +1441,31 @@ async function handleAction(e) {
    focusedPhraseReview=next;
    showFocusedPhrase(next.ids[next.position]);
   }
+  else if(action==='focused-phrase-rate'){
+   if(route.view!=='language'||!phraseRevealed||!focusedPhraseReview||
+      focusedPhraseReview.code!==saved.language)return;
+   const next=selfCheckFocusedPhraseReview(focusedPhraseReview,PHRASEBOOK,button.dataset.outcome);
+   if(!next)return;
+   focusedPhraseReview=next;render();
+   document.querySelector('.phrase-self-check [aria-pressed="true"]')?.focus({preventScroll:true});
+   document.querySelector('.phrase-self-check')?.scrollIntoView({behavior:'auto',block:'nearest'});
+  }
+  else if(action==='focused-phrase-retry'){
+   const summary=focusedReviewSummary;
+   if(route.view!=='language'||focusedPhraseReview||!summary||summary.code!==saved.language||
+      !Array.isArray(summary.retryIds)||!summary.retryIds.length)return;
+   const next=createFocusedPhraseReview(PHRASEBOOK,summary.code,summary.source,summary.retryIds,summary.retryIds[0]);
+   if(!next)return;
+   focusedReviewSummary=null;focusedPhraseReview=next;showFocusedPhrase(next.ids[0]);
+  }
+  else if(action==='focused-phrase-dismiss'){
+   if(route.view!=='language')return;
+   focusedReviewSummary=null;render();
+   document.querySelector('.phrase-card')?.scrollIntoView({behavior:'auto',block:'start'});
+  }
   else if(action==='focused-phrase-exit'){
    if(route.view!=='language'||!focusedPhraseReview)return;
-   focusedPhraseReview=null;phraseDraft='';phraseRevealed=false;render();
+   focusedPhraseReview=null;focusedReviewSummary=null;phraseDraft='';phraseRevealed=false;render();
    document.querySelector('.phrase-card')?.scrollIntoView({behavior:'auto',block:'start'});
   }
   else if(action==='challenge-new'){
@@ -1478,7 +1504,7 @@ async function handleAction(e) {
     phraseReviewRevealed=false;modal='';persist();render();
   }
   else if(action==='phrase-reveal'){if(route.view!=='language')return;phraseDraft=(document.getElementById('phrase-draft')?.value||'').slice(0,280);phraseRevealed=true;render();}
-  else if(action==='phrase-next'||action==='phrase-prev'){focusedPhraseReview=null;stopLanguageAudio();const p=getPhrasePack(saved.language);if(!p)return;phraseIndex=(phraseIndex+(action==='phrase-next'?1:p.phrases.length-1))%p.phrases.length;phraseRevealed=false;phraseDraft='';render();}
+  else if(action==='phrase-next'||action==='phrase-prev'){focusedPhraseReview=null;focusedReviewSummary=null;stopLanguageAudio();const p=getPhrasePack(saved.language);if(!p)return;phraseIndex=(phraseIndex+(action==='phrase-next'?1:p.phrases.length-1))%p.phrases.length;phraseRevealed=false;phraseDraft='';render();}
   else if(action==='phrase-known'){const p=getPhrasePack(saved.language);if(!p)return;const word=p.phrases[phraseIndex%p.phrases.length];const known=new Set(saved.phrases[saved.language]||[]);known.has(word.id)?known.delete(word.id):known.add(word.id);saved.phrases[saved.language]=[...known];persist();render();}
   else if(action==='language-speak'){playLanguagePhrase(id);}
   else if(action==='language-audio-stop'){stopLanguageAudio();updateLanguageVoiceMessage('Playback stopped.');}
@@ -1496,7 +1522,7 @@ async function handleAction(e) {
   else if(action==='storage-export-recovery')downloadRecoveryCopy();
   else if(action==='storage-retry'){if(storageProblem==='corrupt'||storageProblem==='read-failed'){flash('Existing data is protected. Use a valid backup or reset intentionally.');}else{const ok=persist();flash(ok?'Progress saved successfully in this browser.':'Saving is still blocked; export a backup.');}}
   else if(action==='reset-dialog') {modal='reset';render();}
-  else if(action==='confirm-reset') {focusedPhraseReview=null;phraseDraft='';phraseReviewRevealed=false;personalCardEditingId=null;personalCardRevealed=false;personalCardPendingDelete=null;personalCardQuery='';recoveryRaw=null;storageProblem=null;storageWarningShown=false;saved=createInitialState();shadowUnlocked=false;gateConfirmed=false;reviewRevealed=false;phraseRevealed=false;phraseIndex=0;studioTab='savings';visitToday();persist();modal='';nav('home');flash('Local progress reset.');}
+  else if(action==='confirm-reset') {focusedPhraseReview=null;focusedReviewSummary=null;phraseDraft='';phraseReviewRevealed=false;personalCardEditingId=null;personalCardRevealed=false;personalCardPendingDelete=null;personalCardQuery='';recoveryRaw=null;storageProblem=null;storageWarningShown=false;saved=createInitialState();shadowUnlocked=false;gateConfirmed=false;reviewRevealed=false;phraseRevealed=false;phraseIndex=0;studioTab='savings';visitToday();persist();modal='';nav('home');flash('Local progress reset.');}
   else if(action==='close-modal') {if(modal==='privacy-clear')dataGroupPendingId=null;if(modal==='personal-card-delete')personalCardPendingDelete=null;if(modal==='backup-preview')pendingBackup=null;if(modal==='backup-unlock')encryptedFile=null;modal='';if(['course','lesson'].includes(route.view)&&route.courseId==='shadow'&&!shadowUnlocked)nav('explore');else render();requestAnimationFrame(()=>document.getElementById('atlas-main')?.focus());}
   else if(action==='enter-shadow') {if(!gateConfirmed)return;shadowUnlocked=true;modal='';nav('course/shadow');}
   else if(action==='open-corner') nav('mentor');
@@ -1518,7 +1544,7 @@ document.addEventListener('change',e=>{
     if(status&&progress)status.textContent=progress.count+' of '+progress.total+' criteria reviewed · Saved on this device';
     el.closest('li')?.classList.toggle('is-reviewed',el.checked);
   }
-  if(e.target.id==='language-select') {focusedPhraseReview=null;stopLanguageAudio();languageVoiceURI='';saved.language=e.target.value;phraseIndex=0;phraseRevealed=false;phraseDraft='';phraseReviewRevealed=false;persist();render();}
+  if(e.target.id==='language-select') {focusedPhraseReview=null;focusedReviewSummary=null;stopLanguageAudio();languageVoiceURI='';saved.language=e.target.value;phraseIndex=0;phraseRevealed=false;phraseDraft='';phraseReviewRevealed=false;persist();render();}
   if(e.target.id==='language-voice-picker'){
     languageVoiceURI=e.target.value;
     stopLanguageAudio();
@@ -1559,7 +1585,7 @@ document.addEventListener('keydown',e=>{
  else if(e.shiftKey&&active===first){e.preventDefault();last.focus();}
  else if(!e.shiftKey&&active===last){e.preventDefault();first.focus();}
 });
-window.addEventListener('hashchange',()=>{reviewRevealed=false;stopLanguageAudio();stopLessonAudio();route=parseHash();if(route.view!=='language'){focusedPhraseReview=null;phraseDraft='';phraseRevealed=false;}if(route.view==='offline'&&offlinePack.state==='idle')queueMicrotask(()=>inspectOffline());if(route.view==='course'&&route.courseId==='shadow'&&!shadowUnlocked)modal='shadow';if(route.view==='lesson'&&route.courseId==='shadow'&&!shadowUnlocked)modal='shadow';render();});
+window.addEventListener('hashchange',()=>{reviewRevealed=false;stopLanguageAudio();stopLessonAudio();route=parseHash();if(route.view!=='language'){focusedPhraseReview=null;focusedReviewSummary=null;phraseDraft='';phraseRevealed=false;}if(route.view==='offline'&&offlinePack.state==='idle')queueMicrotask(()=>inspectOffline());if(route.view==='course'&&route.courseId==='shadow'&&!shadowUnlocked)modal='shadow';if(route.view==='lesson'&&route.courseId==='shadow'&&!shadowUnlocked)modal='shadow';render();});
 window.addEventListener('online',render);window.addEventListener('offline',render);
 if('speechSynthesis' in window&&typeof window.speechSynthesis.addEventListener==='function'){
   window.speechSynthesis.addEventListener('voiceschanged',()=>{

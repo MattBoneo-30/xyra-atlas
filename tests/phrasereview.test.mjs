@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {PHRASEBOOK} from '../phrasebook.js';
-import {normalizePhraseReviews,duePhraseReviews,phraseReviewStats,ratePhraseReview,clearPhraseReviews,createFocusedPhraseReview,advanceFocusedPhraseReview} from '../phrasereview.js';
+import {normalizePhraseReviews,duePhraseReviews,phraseReviewStats,ratePhraseReview,clearPhraseReviews,createFocusedPhraseReview,advanceFocusedPhraseReview,selfCheckFocusedPhraseReview,summarizeFocusedPhraseReview} from '../phrasereview.js';
 
 const when=1730000000000;
 test('new phrases are due and a recalled phrase schedules review one day later',()=>{
@@ -65,7 +65,7 @@ test('review engine is included in local backup normalization and PWA build',()=
 
 test('focused recall queues only authored, uniquely missed phrases in result order',()=>{
  const initial=createFocusedPhraseReview(PHRASEBOOK,'ja','challenge',['3','2','3','8'],'2');
- assert.deepEqual(initial,{code:'ja',source:'challenge',ids:['3','2','8'],position:1});
+ assert.deepEqual(initial,{code:'ja',source:'challenge',ids:['3','2','8'],position:1,selfChecks:{}});
  assert.deepEqual(advanceFocusedPhraseReview(initial,PHRASEBOOK,'previous').position,0);
  assert.deepEqual(advanceFocusedPhraseReview(initial,PHRASEBOOK,'next').position,2);
  assert.equal(advanceFocusedPhraseReview({...initial,position:2},PHRASEBOOK,'next'),null);
@@ -81,4 +81,26 @@ test('focused practice rejects forged source, foreign phrases and invalid naviga
  assert.equal(advanceFocusedPhraseReview({...sample,position:3},PHRASEBOOK,'next'),null);
  assert.equal(advanceFocusedPhraseReview(sample,PHRASEBOOK,'skip'),null);
  assert.equal(advanceFocusedPhraseReview({...sample,ids:['3','not-real']},PHRASEBOOK,'next'),null);
+});
+
+test('focused review ratings are user-reported and survive navigating back and forth',()=>{
+ const original=createFocusedPhraseReview(PHRASEBOOK,'ja','challenge',['2','3','4'],'2');
+ assert.deepEqual(summarizeFocusedPhraseReview(original,PHRASEBOOK),
+  {code:'ja',source:'challenge',total:3,recalled:0,retry:0,unrated:3,retryIds:[]});
+ let s=selfCheckFocusedPhraseReview(original,PHRASEBOOK,'retry');
+ s=advanceFocusedPhraseReview(s,PHRASEBOOK,'next');
+ s=selfCheckFocusedPhraseReview(s,PHRASEBOOK,'recalled');
+ s=advanceFocusedPhraseReview(s,PHRASEBOOK,'previous');
+ assert.deepEqual(summarizeFocusedPhraseReview(s,PHRASEBOOK),
+  {code:'ja',source:'challenge',total:3,recalled:1,retry:1,unrated:1,retryIds:['2']});
+ s=selfCheckFocusedPhraseReview(s,PHRASEBOOK,'recalled');
+ assert.deepEqual(summarizeFocusedPhraseReview(s,PHRASEBOOK).retryIds,[]);
+ assert.deepEqual(original.selfChecks,{},'the starting session cannot be mutated by a later self-check');
+});
+test('forged and non-boolean focused recall ratings are rejected',()=>{
+ const s=createFocusedPhraseReview(PHRASEBOOK,'es','conversation',['1','3'],'1');
+ assert.equal(selfCheckFocusedPhraseReview(s,PHRASEBOOK,'proficient'),null);
+ assert.equal(summarizeFocusedPhraseReview({...s,selfChecks:{bogus:'recalled'}},PHRASEBOOK),null);
+ assert.equal(advanceFocusedPhraseReview({...s,selfChecks:{'1':'expert'}},PHRASEBOOK,'next'),null);
+ assert.equal(summarizeFocusedPhraseReview({...s,selfChecks:['recalled']},PHRASEBOOK),null);
 });

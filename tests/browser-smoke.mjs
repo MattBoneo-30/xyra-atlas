@@ -643,6 +643,12 @@ try{
    expect(JSON.stringify((await getState(page)).languageChallengeHistory)===beforeHistory,'retry preserves challenge history');
    expect((await page.locator('.phrase-focus-session').textContent()).includes('1 of '+missedIds.length+' phrases'),
     'a challenge creates a guided queue of genuinely missed phrases');
+   await page.locator('[data-action="phrase-reveal"]').click();
+   await page.locator('.phrase-self-check [data-outcome="retry"]').click();
+   expect((await page.locator('.phrase-focus-session').textContent()).includes('1 need practice'),
+    'learner can self-report needing more practice');
+   expect(JSON.stringify((await getState(page)).languageChallengeHistory)===beforeHistory,
+    'self-check does not alter the challenge score');
    if(missedIds.length>1){
     await page.locator('[data-action="focused-phrase-next"]').click();
     expect((await page.locator('.phrase-focus-session').textContent()).includes('2 of '+missedIds.length+' phrases'),
@@ -655,6 +661,13 @@ try{
    }
    await page.locator('[data-action="focused-phrase-next"]').click();
    expect(await page.locator('.phrase-focus-session').count()===0,'finishing focused recall restores ordinary phrase practice');
+   expect((await page.locator('.phrase-focus-summary').textContent()).includes('1 to revisit'),
+    'a final self-check summary is visible without claiming automated fluency assessment');
+   await page.locator('[data-action="focused-phrase-retry"]').click();
+   expect((await page.locator('.phrase-focus-session').textContent()).includes('1 of 1 phrases'),
+    'learner can retry only self-reported difficult phrases');
+   await page.locator('[data-action="focused-phrase-exit"]').click();
+   expect(await page.locator('.phrase-focus-session').count()===0,'exit returns to ordinary phrase practice');
    expect(JSON.stringify((await getState(page)).languageChallengeHistory)===beforeHistory,'focused review never rewrites scores');
   }
   await page.reload({waitUntil:'domcontentloaded'});

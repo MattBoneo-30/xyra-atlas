@@ -65,15 +65,42 @@ export function createFocusedPhraseReview(packs,code,source,missedIds,selectedId
  const allowed=new Set(packs[code].phrases.map(p=>p.id));
  const ids=[...new Set(missedIds)];
  if(ids.some(id=>typeof id!=='string'||!allowed.has(id))||!ids.includes(selectedId))return null;
- return {code,source,ids,position:ids.indexOf(selectedId)};
+ return {code,source,ids,position:ids.indexOf(selectedId),selfChecks:{}};
+}
+
+/** Verify transient, user-rated recall without allowing fabricated phrase IDs. */
+function normalizeFocused(current,packs){
+ if(!current||!Array.isArray(current.ids)||!Number.isInteger(current.position)||
+    current.position<0||current.position>=current.ids.length||
+    !current.selfChecks||typeof current.selfChecks!=='object'||Array.isArray(current.selfChecks))return null;
+ const clean=createFocusedPhraseReview(packs,current.code,current.source,current.ids,current.ids[current.position]);
+ if(!clean||clean.ids.length!==current.ids.length)return null;
+ for(const [id,assessment] of Object.entries(current.selfChecks)){
+  if(!clean.ids.includes(id)||!['recalled','retry'].includes(assessment))return null;
+  Object.defineProperty(clean.selfChecks,id,{value:assessment,writable:true,configurable:true,enumerable:true});
+ }
+ return clean;
+}
+export function selfCheckFocusedPhraseReview(current,packs,outcome){
+ const clean=normalizeFocused(current,packs);
+ if(!clean||!['recalled','retry'].includes(outcome))return null;
+ const id=clean.ids[clean.position];
+ Object.defineProperty(clean.selfChecks,id,{value:outcome,writable:true,configurable:true,enumerable:true});
+ return clean;
+}
+export function summarizeFocusedPhraseReview(current,packs){
+ const clean=normalizeFocused(current,packs);
+ if(!clean)return null;
+ const recalled=clean.ids.filter(id=>clean.selfChecks[id]==='recalled');
+ const retry=clean.ids.filter(id=>clean.selfChecks[id]==='retry');
+ return {code:clean.code,source:clean.source,total:clean.ids.length,
+  recalled:recalled.length,retry:retry.length,unrated:clean.ids.length-recalled.length-retry.length,
+  retryIds:retry};
 }
 export function advanceFocusedPhraseReview(current,packs,direction){
- if(!current||!Number.isInteger(current.position)||
-  !Array.isArray(current.ids)||current.position<0||current.position>=current.ids.length||
-  !['next','previous'].includes(direction))return null;
- const clean=createFocusedPhraseReview(packs,current.code,current.source,
-  current.ids,current.ids[current.position]);
- if(!clean||clean.ids.length!==current.ids.length)return null;
+ if(!['next','previous'].includes(direction))return null;
+ const clean=normalizeFocused(current,packs);
+ if(!clean)return null;
  const position=direction==='next'?clean.position+1:Math.max(0,clean.position-1);
  return position>=clean.ids.length?null:{...clean,position};
 }
