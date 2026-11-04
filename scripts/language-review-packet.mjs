@@ -1,0 +1,74 @@
+/** Reviewer handoff for the exact 160 authored starter phrases.
+ * This exports public course material, never user progress, recording or voice data.
+ * No automated translation verification, synthesized "native" score, or credentials.
+ */
+import {createHash} from 'node:crypto';
+const reviewCriteria=Object.freeze([
+ 'Translation expresses the intended meaning accurately in this locale.',
+ 'Register and politeness are appropriate for the stated everyday scenario.',
+ 'Gender, number, age, address forms and regional variants are documented.',
+ 'Script, diacritics, transliteration and approximate pronunciation are correct.',
+ 'If a real pronunciation reference is supplied, its origin and reuse rights are verified.',
+ 'Ambiguous, unnatural or potentially unsafe wording is identified for correction.'
+]);
+const good=x=>typeof x==='string'&&x.trim().length>0;
+export function languagePhraseHash(value){
+ return createHash('sha256').update(JSON.stringify(value)).digest('hex');
+}
+export function buildLanguageReviewPacket(packs,languages){
+ if(!packs||typeof packs!=='object'||Array.isArray(packs)||!Array.isArray(languages))
+  throw Error('Invalid language course inventory');
+ const names=new Map(languages.map(item=>[item.code,item.name]));
+ const records=[],summary=[];
+ for(const [code,pack] of Object.entries(packs)){
+  if(!names.has(code)||!good(pack?.locale)||!Array.isArray(pack.phrases))
+   throw Error('Invalid locale data for '+code);
+  const ids=new Set();
+  for(const phrase of pack.phrases){
+   if(!good(phrase.id)||ids.has(phrase.id)||!good(phrase.english)||!good(phrase.target))
+    throw Error('Incomplete or duplicate phrase in '+code);
+   ids.add(phrase.id);
+   const content={code,language:names.get(code),locale:pack.locale,
+    phraseId:phrase.id,intendedMeaning:phrase.english,translation:phrase.target,
+    approximateRomanization:phrase.pronunciation||'',
+    editorialRegionalNote:pack.note||''};
+   records.push({id:code+':'+phrase.id,contentHash:languagePhraseHash(content),
+    content,reviewStatus:'awaiting-qualified-language-review',reviewerAttestation:null,
+    reviewCriteria});
+  }
+  summary.push({code,language:names.get(code),locale:pack.locale,
+   phraseCount:pack.phrases.length,verifiedPhrases:0,regionalNote:pack.note||''});
+ }
+ return {schemaVersion:1,status:'native-or-qualified-editor-review-required',
+  summary:{languages:summary.length,phrases:records.length,qualifiedApprovedPhrases:0},
+  languages:summary,records,notes:[
+  'A phrase may be grammatical but inappropriate or unnatural in a specific region or situation.',
+  'Any romanization is an approximation and device TTS is not independently certified pronunciation.',
+  'A SHA-256 digest detects later changes; it does not establish reviewer competence or linguistic accuracy.',
+  'No language stage gate may be completed solely from generated source inventory.'
+  ]};
+}
+const mdEscape=x=>String(x??'').replaceAll('|','\\|').replace(/[\r\n]+/g,' ').replace(/</g,'&lt;');
+export function renderLanguageReviewMarkdown(packet){
+ if(!packet||packet.status!=='native-or-qualified-editor-review-required')throw Error('Invalid language reviewer packet');
+ const chunks=['# Xyra Atlas — Independent Language Review Workbook','',
+ '**Status: No independent language signoffs have been provided.** This document contains authored source text only, not proof of fluency or pronunciation accuracy.','',
+ 'Validate context, register, regional usage, script, transliteration and a documented audio source if relevant. The English gloss is only a prompt; it is not the sole acceptable target expression.','',
+ 'Reviewer fields (to be completed externally after real review): reviewer name and verified qualifications; locale and dialect; review date; evidence used; suggested corrections; approval decision; source hash. Do not invent or auto-populate these fields.',''];
+ for(const lang of packet.languages){
+  const items=packet.records.filter(row=>row.content.code===lang.code);
+  chunks.push('## '+mdEscape(lang.language)+' — '+mdEscape(lang.locale),'',
+   'Regional caveat: '+mdEscape(lang.regionalNote||'No additional regional note is currently provided; native editor should identify necessary qualifications.'),'',
+   '| ID | Intended meaning | Authored phrase | Approx. romanization | Hash | Reviewer result |',
+   '|---|---|---|---|---|---|');
+  for(const row of items){
+   const c=row.content;
+   chunks.push('| '+mdEscape(c.phraseId)+' | '+mdEscape(c.intendedMeaning)+' | '+mdEscape(c.translation)+
+    ' | '+mdEscape(c.approximateRomanization||'Not provided')+
+    ' | '+mdEscape(row.contentHash)+' | **Unreviewed** |');
+  }
+  chunks.push('', 'Editorial questions:',...reviewCriteria.map(x=>'- [ ] '+x),'',
+   'Evidence of independent human approval: **not supplied**.','');
+ }
+ return chunks.join('\n')+'\n';
+}

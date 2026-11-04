@@ -13,6 +13,7 @@
     "audit:curriculum": "node scripts/audit-curriculum.mjs",
     "audit:assets": "node scripts/audit-static-assets.mjs",
     "export:editorial": "node scripts/export-editorial-review.mjs",
+    "export:language-review": "node scripts/export-language-review.mjs",
     "audit:editorial": "node scripts/audit-editorial-attestations.mjs",
     "sign:editorial": "node scripts/sign-editorial-review.mjs",
     "check:sources": "node scripts/check-course-sources.mjs",

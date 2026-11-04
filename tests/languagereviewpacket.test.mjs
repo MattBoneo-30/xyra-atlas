@@ -1,0 +1,44 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import {PHRASEBOOK} from '../phrasebook.js';
+import {LANGUAGES} from '../data.js';
+import {buildLanguageReviewPacket,languagePhraseHash,renderLanguageReviewMarkdown} from '../scripts/language-review-packet.mjs';
+test('all 160 starter phrases have deterministic exact-source hashes and pending reviewer criteria',()=>{
+ const pack=buildLanguageReviewPacket(PHRASEBOOK,LANGUAGES);
+ assert.deepEqual(pack.summary,{languages:20,phrases:160,qualifiedApprovedPhrases:0});
+ assert.equal(new Set(pack.records.map(x=>x.id)).size,160);
+ assert.ok(pack.records.every(x=>x.contentHash===languagePhraseHash(x.content)));
+ assert.ok(pack.records.every(x=>x.reviewerAttestation===null&&x.reviewStatus==='awaiting-qualified-language-review'));
+ assert.ok(pack.languages.every(x=>x.phraseCount===8&&x.verifiedPhrases===0));
+ assert.ok(pack.records.every(x=>x.reviewCriteria.length===6));
+ assert.deepEqual(pack,buildLanguageReviewPacket(PHRASEBOOK,LANGUAGES));
+ const changed={...pack.records[0].content,translation:'editor corrected phrase'};
+ assert.notEqual(languagePhraseHash(changed),pack.records[0].contentHash);
+});
+test('human language workbook contains all languages, original scripts, caveats and no invented approval',()=>{
+ const p=buildLanguageReviewPacket(PHRASEBOOK,LANGUAGES);
+ const md=renderLanguageReviewMarkdown(p);
+ assert.equal((md.match(/\*\*Unreviewed\*\*/g)||[]).length,160);
+ assert.ok(md.includes('Thai'));
+ assert.ok(md.includes('こんにちは'));
+ assert.ok(md.includes('Modern Standard Arabic'));
+ assert.ok(md.includes('No independent language signoffs'));
+ assert.ok(md.includes('not supplied'));
+ assert.ok(!md.includes('native-like mastery achieved'));
+ const fake={...PHRASEBOOK,xx:{locale:'xx-XX',phrases:[{id:'1',english:'a',target:'=1+1'}]}};
+ assert.throws(()=>buildLanguageReviewPacket(fake,LANGUAGES),/Invalid locale/);
+ assert.throws(()=>renderLanguageReviewMarkdown({}),/Invalid/);
+});
+test('language handoff stays outside deployable bundle and CI archives separate editor files',()=>{
+ const flow=fs.readFileSync('.github/workflows/verify.yml','utf8');
+ const build=fs.readFileSync('scripts/build.mjs','utf8');
+ const pkg=JSON.parse(fs.readFileSync('package.json','utf8'));
+ assert.match(pkg.scripts['export:language-review'],/export-language-review/);
+ assert.match(flow,/Export qualified language reviewer workbook/);
+ assert.match(flow,/language-review-workbook\.md/);
+ assert.match(flow,/xyra-atlas-language-review/);
+ assert.ok(!build.includes('language-review-workbook'));
+ const gate=JSON.parse(fs.readFileSync('docs/stage-gates.json','utf8')).gates.find(x=>x.id==='language-quality');
+ assert.equal(gate.complete,false);
+});

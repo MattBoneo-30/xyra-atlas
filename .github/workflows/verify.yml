@@ -68,6 +68,16 @@ jobs:
           path: artifacts/editorial-attestation-audit.json
           if-no-files-found: ignore
           retention-days: 14
+      - name: Export qualified language reviewer workbook
+        run: npm run export:language-review
+      - name: Archive language reviewer workbook
+        uses: actions/upload-artifact@v7
+        with:
+          name: xyra-atlas-language-review
+          path: |
+            artifacts/language-review-packet.json
+            artifacts/language-review-workbook.md
+          retention-days: 14
       - name: Verify offline artifacts
         run: |
           test -s dist/index.html
