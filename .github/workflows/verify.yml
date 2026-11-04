@@ -58,6 +58,16 @@ jobs:
             artifacts/editorial-review-packet.json
             artifacts/editorial-review-packet.html
           retention-days: 14
+      - name: Export source-to-teaching review matrix
+        run: npm run export:source-evidence
+      - name: Archive source claim-traceability review files
+        uses: actions/upload-artifact@v7
+        with:
+          name: xyra-atlas-source-evidence-review
+          path: |
+            artifacts/source-evidence-matrix.json
+            artifacts/source-evidence-workbook.md
+          retention-days: 14
       - name: Audit supplied independent editorial attestations
         run: npm run audit:editorial
       - name: Archive editorial approval provenance status
