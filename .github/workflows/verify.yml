@@ -175,6 +175,19 @@ jobs:
           path: artifacts/browser-webkit/
           if-no-files-found: ignore
           retention-days: 7
+      - name: Package reviewable release candidate
+        run: |
+          npm run release:preflight
+          python3 -m zipfile -c artifacts/xyra-atlas-release-candidate.zip dist
+      - name: Archive final code-side release candidate and outstanding gates
+        uses: actions/upload-artifact@v7
+        with:
+          name: xyra-atlas-reviewable-release-candidate
+          path: |
+            artifacts/xyra-atlas-release-candidate.zip
+            artifacts/release-candidate-manifest.json
+            artifacts/release-candidate-summary.md
+          retention-days: 30
       - name: Save deployable website
         uses: actions/upload-artifact@v7
         with:

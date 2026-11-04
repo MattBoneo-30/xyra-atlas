@@ -23,7 +23,8 @@
     "sign:language": "node scripts/sign-language-review.mjs",
     "export:source-evidence": "node scripts/export-source-evidence.mjs",
     "audit:claims": "node scripts/audit-source-claims.mjs",
-    "sign:claims": "node scripts/sign-source-claim-review.mjs"
+    "sign:claims": "node scripts/sign-source-claim-review.mjs",
+    "release:preflight": "node scripts/release-preflight.mjs"
   },
   "engines": {
     "node": ">=20"
