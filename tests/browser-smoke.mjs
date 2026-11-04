@@ -844,6 +844,15 @@ try{
   }
   expect(await page.locator('.atlas-guide-medallion img').evaluate(async img=>{await img.decode();return img.naturalWidth>0;}),
    'the Xyra character portrait is also visible on a narrow screen');
+  const inviteLayout=await page.locator('.home-page .path-invite').evaluate(el=>{
+   const copy=el.querySelector('div:nth-child(2)'),cta=el.querySelector('.small-button');
+   return {columns:getComputedStyle(el).gridTemplateColumns,
+    copyWidth:copy.getBoundingClientRect().width,
+    ctaBelow:cta.getBoundingClientRect().top>=copy.getBoundingClientRect().bottom-1,
+    buttonMargin:getComputedStyle(cta).marginLeft};
+  });
+  expect(inviteLayout.copyWidth>=220&&inviteLayout.ctaBelow&&inviteLayout.buttonMargin==='0px',
+   'mobile learning invitation keeps readable title and actionable button on its own row');
   let overflow=await mobileOverflow(page);
   expect(overflow.scroll<=overflow.width+8,'cinematic home and scene cards do not overflow mobile viewport');
   await page.screenshot({path:snapshots+'/atlas-cinematic-mobile.png',fullPage:true});

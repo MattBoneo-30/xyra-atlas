@@ -643,3 +643,21 @@ html[data-theme=light]{color-scheme:light;--bg:#fbf5f6;--bg-raised:#fff9fa;--car
 .atlas-scene-card:has(.atlas-guide-medallion) .atlas-scene-copy{z-index:2}
 @media(max-width:430px){.atlas-scene-card .atlas-guide-medallion{width:94px;height:94px;right:16px;top:17px}}
 @media(prefers-reduced-motion:reduce){.atlas-guide-medallion img{transition:none!important;animation:none!important}}
+
+/* Mobile utility invites: respect content width and keep CTAs below copy instead of squeezing it. */
+@media(max-width:650px){
+ .home-page :is(.review-invite,.path-invite,.casebook-invite,.scenario-invite,.studio-invite,.daily-quest-invite){
+  display:grid;grid-template-columns:46px minmax(0,1fr);align-items:start;gap:12px 14px;padding:17px;min-width:0
+ }
+ .home-page :is(.review-invite,.path-invite,.casebook-invite,.scenario-invite,.studio-invite,.daily-quest-invite)>:first-child{grid-column:1;grid-row:1;align-self:start}
+ .home-page :is(.review-invite,.path-invite,.casebook-invite,.scenario-invite,.studio-invite,.daily-quest-invite)>div:nth-child(2){grid-column:2;grid-row:1;min-width:0}
+ .home-page :is(.review-invite,.path-invite,.casebook-invite,.scenario-invite,.studio-invite,.daily-quest-invite)>.small-button{
+  grid-column:2;grid-row:2;justify-self:start;align-self:start;margin:0;max-width:100%;white-space:normal
+ }
+ .home-page :is(.review-invite,.path-invite,.casebook-invite,.scenario-invite,.studio-invite,.daily-quest-invite) h2{
+  max-width:100%;font-size:clamp(21px,5.6vw,25px);line-height:1.22;overflow-wrap:break-word
+ }
+ .home-page :is(.review-invite,.path-invite,.casebook-invite,.scenario-invite,.studio-invite,.daily-quest-invite) p{
+  line-height:1.65;overflow-wrap:break-word
+ }
+}

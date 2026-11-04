@@ -46,6 +46,9 @@ test('cinematic scenes are integrated with working navigational actions and acce
  }
  assert.match(css,/\.hero-archive \.landscape-shade/);
  assert.match(css,/\.atlas-scene-grid/);
+ assert.match(css,/Mobile utility invites/);
+ assert.match(css,/grid-template-columns:46px minmax\(0,1fr\)/);
+ assert.match(css,/\.home-page :is\(\.review-invite,\.path-invite/);
  assert.match(css,/prefers-reduced-motion:reduce/);
  assert.match(build,/fs\.cpSync\(path\.join\(root,'assets'\)/,'production builder copies the original scenes');
 });
