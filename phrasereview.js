@@ -53,3 +53,27 @@ export function clearPhraseReviews(raw,code,packs){
  for(const phrase of packs[code].phrases)delete clean[keyFor(code,phrase.id)];
  return clean;
 }
+
+/** A deliberately ephemeral queue of only missed, already-authored phrase IDs.
+ * Never scores responses or changes the persisted review schedule.
+ */
+export function createFocusedPhraseReview(packs,code,source,missedIds,selectedId){
+ if(!packs||typeof packs!=='object'||typeof code!=='string'||
+  !Object.hasOwn(packs,code)||!Array.isArray(packs[code]?.phrases)||
+  !['challenge','conversation'].includes(source)||!Array.isArray(missedIds)||
+  missedIds.length<1||missedIds.length>24||typeof selectedId!=='string')return null;
+ const allowed=new Set(packs[code].phrases.map(p=>p.id));
+ const ids=[...new Set(missedIds)];
+ if(ids.some(id=>typeof id!=='string'||!allowed.has(id))||!ids.includes(selectedId))return null;
+ return {code,source,ids,position:ids.indexOf(selectedId)};
+}
+export function advanceFocusedPhraseReview(current,packs,direction){
+ if(!current||!Number.isInteger(current.position)||
+  !Array.isArray(current.ids)||current.position<0||current.position>=current.ids.length||
+  !['next','previous'].includes(direction))return null;
+ const clean=createFocusedPhraseReview(packs,current.code,current.source,
+  current.ids,current.ids[current.position]);
+ if(!clean||clean.ids.length!==current.ids.length)return null;
+ const position=direction==='next'?clean.position+1:Math.max(0,clean.position-1);
+ return position>=clean.ids.length?null:{...clean,position};
+}

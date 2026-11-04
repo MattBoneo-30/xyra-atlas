@@ -641,6 +641,21 @@ try{
    expect(await page.locator('#phrase-draft').count()===1,'review opens the private written-recall editor');
    expect(await page.locator('#phrase-draft').evaluate(el=>document.activeElement===el),'retry focuses the answer field');
    expect(JSON.stringify((await getState(page)).languageChallengeHistory)===beforeHistory,'retry preserves challenge history');
+   expect((await page.locator('.phrase-focus-session').textContent()).includes('1 of '+missedIds.length+' phrases'),
+    'a challenge creates a guided queue of genuinely missed phrases');
+   if(missedIds.length>1){
+    await page.locator('[data-action="focused-phrase-next"]').click();
+    expect((await page.locator('.phrase-focus-session').textContent()).includes('2 of '+missedIds.length+' phrases'),
+     'next missed advances through the focused queue');
+    await page.locator('[data-action="focused-phrase-prev"]').click();
+    expect((await page.locator('.phrase-focus-session').textContent()).includes('1 of '+missedIds.length+' phrases'),
+     'previous missed returns to the earlier question');
+    await page.locator('[data-action="focused-phrase-next"]').click();
+    for(let i=2;i<missedIds.length;i++)await page.locator('[data-action="focused-phrase-next"]').click();
+   }
+   await page.locator('[data-action="focused-phrase-next"]').click();
+   expect(await page.locator('.phrase-focus-session').count()===0,'finishing focused recall restores ordinary phrase practice');
+   expect(JSON.stringify((await getState(page)).languageChallengeHistory)===beforeHistory,'focused review never rewrites scores');
   }
   await page.reload({waitUntil:'domcontentloaded'});
   expect((await getState(page)).languageChallengeHistory.ja.attempts===1,'score history survives reload');
@@ -1131,6 +1146,10 @@ try{
   expect((await page.locator('.phrase-card h3').textContent()).trim()==='Excuse me','missed conversational phrase opens its authentic private study card');
   expect(await page.locator('#phrase-draft').evaluate(el=>document.activeElement===el),'retry moves focus to accessible written recall');
   expect(JSON.stringify((await getState(page)).conversationQuestHistory)===conversationBefore,'revisiting mistakes never changes the scored result');
+  expect((await page.locator('.phrase-focus-session').textContent()).includes('1 of 1 phrases'),'a single missed conversational phrase creates a one-card guided review');
+  await page.locator('[data-action="focused-phrase-next"]').click();
+  expect(await page.locator('.phrase-focus-session').count()===0,'finish exits focused review and restores normal cards');
+  expect(await page.locator('.conversation-quest-complete').count()===1,'finishing review returns focus to the completed situation');
   await page.reload({waitUntil:'domcontentloaded'});
   expect((await getState(page)).conversationQuestHistory.es.directions.attempts===1,'reload does not duplicate conversation scores');
   await page.locator('[data-action="conversation-new"]').click();

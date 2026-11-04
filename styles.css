@@ -756,3 +756,14 @@ html[data-theme=light]{color-scheme:light;--bg:#fbf5f6;--bg-raised:#fff9fa;--car
  .language-review-missed-cta{width:100%}
  .language-review-missed-link{width:100%!important}
 }
+
+/* Focused, session-only retrieval: missed questions become an accessible guided practice queue. */
+.phrase-focus-session{display:grid;gap:7px;margin-bottom:17px;padding:14px 16px;
+ border:1px solid var(--line-bright);border-radius:13px;background:var(--card-soft)}
+.phrase-focus-session .overline{font-size:10px;color:var(--gold);letter-spacing:1.25px}
+.phrase-focus-session strong{font:normal 21px/1.35 Georgia,serif;color:var(--text)}
+.phrase-focus-session p{margin:0;font-size:11px;line-height:1.65;color:var(--muted)}
+.phrase-focus-session + small{display:block;margin-top:6px}
+.phrase-controls:has([data-action^="focused-phrase"]){flex-wrap:wrap;align-items:center;gap:6px}
+.phrase-controls [data-action^="focused-phrase"]{min-height:44px}
+@media(max-width:390px){.phrase-controls:has([data-action^="focused-phrase"]) button{width:100%;justify-content:center}}
