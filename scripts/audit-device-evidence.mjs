@@ -3,7 +3,7 @@ import fs from 'node:fs';
 const ids=['IOS-01','IOS-02','IOS-03','IOS-04','IOS-05','IOS-06','IOS-07','AND-01','AND-02','AND-03','AND-04','AND-05','AND-06','BOTH-01','BOTH-02','BOTH-03','BOTH-04','BOTH-05'];
 const statuses=new Set(['PASS','FAIL','BLOCKED','NOT RUN']);
 const valid=s=>typeof s==='string'&&s.trim().length>0;
-export function auditDeviceEvidence(report){
+export function auditDeviceEvidence(report,{expectedCommit=null}={}){
  const errors=[];
  if(!report||report.schemaVersion!==1||!Array.isArray(report.cases))return {passes:false,errors:['Invalid device evidence schema'],summary:null};
  const seen=new Set(),counts={PASS:0,FAIL:0,BLOCKED:0,'NOT RUN':0};
@@ -17,6 +17,7 @@ export function auditDeviceEvidence(report){
    // A recorded pass must identify a plausible source revision and an actual
    // public HTTPS deployment, not a local/dev host or placeholder address.
    if(!/^[0-9a-f]{40}$/.test(item.commit||''))errors.push('PASS has invalid source commit: '+item.id);
+   else if(expectedCommit&&item.commit!==expectedCommit)errors.push('PASS belongs to a different source commit: '+item.id);
    try{
     const u=new URL(item.deploymentUrl);
     if(u.protocol!=='https:'||u.username||u.password||u.port||
