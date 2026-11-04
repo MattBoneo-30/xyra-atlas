@@ -59,8 +59,13 @@ function offlineRepair(){
   repairJob=(async()=>{
    const cache=await caches.open(CACHE);
    const missing=(await Promise.all(APP_SHELL.map(async path=>{
-    const r=await cache.match(path);
-    return r&&r.ok?null:path;
+    try{
+     const r=await cache.match(path);
+     return r&&r.ok?null:path;
+    }catch{
+     // A failed cache read should not abort repairs for other offline files.
+     return path;
+    }
    }))).filter(Boolean);
    // Failed requests stay missing and are reported; never claim success on errors.
    await Promise.allSettled(missing.map(path=>cache.add(path)));
