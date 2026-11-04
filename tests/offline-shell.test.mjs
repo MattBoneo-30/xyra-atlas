@@ -1,4 +1,5 @@
 import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';import path from 'node:path';
+import {STAGE_ART} from '../stageart.js';
 const source=fs.readFileSync('sw.js','utf8');
 const shellSource=source.match(/const APP_SHELL = \[([\s\S]*?)\];/)?.[1];
 const assets=[...(shellSource||'').matchAll(/'([^']+)'/g)].map(x=>x[1]);
@@ -9,7 +10,7 @@ test('service-worker precache list has no duplicate URLs (required by cache.addA
  for(const asset of assets){assert.ok(!seen.has(asset),'duplicate precache entry: '+asset);seen.add(asset);}
 });
 test('service-worker precaches only available source files or known build-generated images',()=>{
- const generated=new Set(['/icon-192.png','/icon-512.png','/apple-touch-icon.png']);
+ const generated=new Set(['/icon-192.png','/icon-512.png','/apple-touch-icon.png',...Object.values(STAGE_ART).map(x=>x.src)]);
  for(const asset of assets){
   assert.ok(asset.startsWith('/'),'relative origin pathname: '+asset);
   if(asset==='/')continue;

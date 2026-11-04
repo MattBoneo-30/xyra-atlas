@@ -2,15 +2,20 @@ import fs from 'node:fs';
 import path from 'node:path';
 import zlib from 'node:zlib';
 import { fileURLToPath } from 'node:url';
+import {stageArtworkFiles} from './render-stage-art.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const out = path.join(root, 'dist');
 fs.rmSync(out, { recursive:true, force:true });
 fs.mkdirSync(out, {recursive:true});
-for (const name of ['index.html','styles.css','app.js','data.js','review.js','phrasebook.js','voicecoach.js','phrasereview.js','languagechallenge.js','conversationquest.js','deeptracks.js','fieldguides.js','lifepractice.js','masterytracks.js','capstonelabs.js','phcasework.js','advancedenrichments.js','foundationcases.js','foundationcases2.js','criticalfoundation.js','generalfoundation.js','appliedfoundation.js','practiceguides.js','capstonechecks.js','fieldnotes.js','studio.js','paths.js','scenarios.js','atlasmap.js','dailyquest.js','glossary.js','search.js','calendar.js','insights.js','mentor.js','casebook.js','reader.js','visualmap.js','chapterart.js','narration.js','storagehealth.js','offline.js','backup.js','backupcrypto.js','datacontrols.js','curriculumpath.js','clinics.js','advanceddecisions.js','notebook.js','mistakes.js','exam.js','examhistory.js','focusedexam.js','personalcards.js','sw.js','manifest.webmanifest']) {
+for (const name of ['index.html','styles.css','app.js','data.js','review.js','phrasebook.js','voicecoach.js','phrasereview.js','languagechallenge.js','conversationquest.js','deeptracks.js','fieldguides.js','lifepractice.js','masterytracks.js','capstonelabs.js','phcasework.js','advancedenrichments.js','foundationcases.js','foundationcases2.js','criticalfoundation.js','generalfoundation.js','appliedfoundation.js','practiceguides.js','capstonechecks.js','fieldnotes.js','studio.js','paths.js','scenarios.js','atlasmap.js','dailyquest.js','glossary.js','search.js','calendar.js','insights.js','mentor.js','casebook.js','reader.js','visualmap.js','chapterart.js','stageart.js','narration.js','storagehealth.js','offline.js','backup.js','backupcrypto.js','datacontrols.js','curriculumpath.js','clinics.js','advanceddecisions.js','notebook.js','mistakes.js','exam.js','examhistory.js','focusedexam.js','personalcards.js','sw.js','manifest.webmanifest']) {
   fs.copyFileSync(path.join(root, name), path.join(out, name));
 }
 fs.cpSync(path.join(root,'assets'),path.join(out,'assets'),{recursive:true});
+// Render 42 original, lightweight stage-specific subject worlds into the final offline bundle.
+for(const {filename,svg} of stageArtworkFiles()){
+ fs.writeFileSync(path.join(out,'assets',filename),svg);
+}
 
 // Generate PNG icons with Node built-ins, so the entire repository builds without npm dependencies.
 const clamp = n => Math.max(0,Math.min(1,n));

@@ -862,6 +862,30 @@ try{
  });
 
 
+ await smoke('cinematic-stage-worlds-mobile',{viewport:{width:390,height:844}},async page=>{
+  for(const [courseId,lessonId,expectedStage] of [
+   ['psychology','thoughts','BEGINNER'],
+   ['psychology','emotions','INTERMEDIATE'],
+   ['science','systems','ADVANCED']
+  ]){
+   await page.goto(BASE+'/#/lesson/'+courseId+'/'+lessonId,{waitUntil:'domcontentloaded'});
+   await page.locator('.reading-illustration.stage-art-feature').waitFor();
+   await page.locator('.reading-illustration.stage-art-feature img').evaluate(el=>el.decode());
+   const info=await page.locator('.reading-illustration.stage-art-feature img').evaluate(el=>({
+    loaded:el.complete&&el.naturalWidth===1400&&el.naturalHeight===700,
+    alt:el.alt,src:el.getAttribute('src')
+   }));
+   expect(info.loaded,'stage scene fully decodes at native artwork resolution');
+   expect(info.alt.length>75,'stage art preserves meaningful accessible alternative text');
+   expect(info.src.includes('/assets/world-'+courseId+'-'+expectedStage.toLowerCase()+'.svg'),
+    'chapter selects the intended subject and stage, not a generic course thumbnail');
+   expect((await page.locator('.chapter-art-caption').textContent()).includes(expectedStage),
+    'level and illustrated world appear in the reader');
+   const overflow=await mobileOverflow(page);
+   expect(overflow.scroll<=overflow.width+8,'immersive illustration does not break mobile width');
+  }
+  await page.screenshot({path:snapshots+'/cinematic-stage-worlds-mobile.png',fullPage:true});
+ });
  await smoke('illustrated-case-chapters',{viewport:{width:1365,height:900}},async(page)=>{
   const cases=[
    ['laws','case-ph-data-access','chapter-privacy-observatory.svg','The Privacy Observatory'],
