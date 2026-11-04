@@ -50,7 +50,7 @@ test('map cards expose a real accessible path into connected lessons',()=>{
  const app=fs.readFileSync('app.js','utf8'),css=fs.readFileSync('styles.css','utf8');
  assert.match(app,/suggestKnowledgeTrails\(atlas,3\)/);
  assert.match(app,/class="atlas-learning-trails"/);
- assert.match(app,/class="atlas-trail-button"/);
+ assert.match(app,/'atlas-trail-button'/);
  assert.match(app,/trail\.to\.nextLesson\.id/);
  assert.match(css,/\.atlas-trails-grid/);
  assert.match(css,/\.atlas-trail-button:focus-visible/);
