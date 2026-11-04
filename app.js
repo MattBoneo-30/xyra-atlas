@@ -1418,7 +1418,7 @@ async function handleAction(e) {
     phraseReviewRevealed=false;modal='';persist();render();
   }
   else if(action==='phrase-reveal'){if(route.view!=='language')return;phraseDraft=(document.getElementById('phrase-draft')?.value||'').slice(0,280);phraseRevealed=true;render();}
-  else if(action==='phrase-next'||action==='phrase-prev'){stopLanguageAudio();const p=getPhrasePack(saved.language);if(!p)return;phraseIndex=(phraseIndex+(action==='phrase-next'?1:p.phrases.length-1))%p.phrases.length;phraseRevealed=false;phraseDraft='';render();
+  else if(action==='phrase-next'||action==='phrase-prev'){stopLanguageAudio();const p=getPhrasePack(saved.language);if(!p)return;phraseIndex=(phraseIndex+(action==='phrase-next'?1:p.phrases.length-1))%p.phrases.length;phraseRevealed=false;phraseDraft='';render();}
   else if(action==='phrase-known'){const p=getPhrasePack(saved.language);if(!p)return;const word=p.phrases[phraseIndex%p.phrases.length];const known=new Set(saved.phrases[saved.language]||[]);known.has(word.id)?known.delete(word.id):known.add(word.id);saved.phrases[saved.language]=[...known];persist();render();}
   else if(action==='language-speak'){playLanguagePhrase(id);}
   else if(action==='language-audio-stop'){stopLanguageAudio();updateLanguageVoiceMessage('Playback stopped.');}
