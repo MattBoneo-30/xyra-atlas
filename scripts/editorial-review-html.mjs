@@ -1,4 +1,5 @@
 /** Offline print-friendly review copy of authored curriculum; no learner notes or telemetry. */
+import {isSafeReferenceURL} from '../sourcehealth.js';
 const esc=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const slug=x=>String(x).replace(/[^a-z0-9-]/gi,'-');
 const p=x=>'<p>'+esc(x)+'</p>';
@@ -8,7 +9,7 @@ function list(items,ordered=false){
 }
 function sources(items){
  return '<h4>References — validate each material claim</h4><ul>'+
- (items||[]).map(x=>'<li><a href="'+esc(x.url)+'" target="_blank" rel="noreferrer noopener">'+esc(x.label)+'</a></li>').join('')+'</ul>';
+ (items||[]).map(x=>isSafeReferenceURL(x.url)?'<li><a href="'+esc(x.url)+'" target="_blank" rel="noreferrer noopener">'+esc(x.label)+'</a></li>':'<li class="disclaimer">'+esc(x.label)+' (unsafe URL omitted)</li>').join('')+'</ul>';
 }
 function answers(options,correct){
  return '<ol class="choices">'+options.map((x,i)=>'<li'+(i===correct?' class="answer"':'')+'>'+
@@ -54,7 +55,7 @@ const style=[
  'a{color:#49318c}a:focus-visible,summary:focus-visible{outline:3px solid #7350aa;outline-offset:3px}',
  '.flag{background:#fff0c9;color:#6b3b10;border-radius:5px;padding:3px;font-size:.74rem}',
  '@media(max-width:600px){nav ul{columns:1}main{padding:12px}summary{flex-direction:column}}',
- '@media print{body{background:white}header{color:#20192e;background:white}nav{display:none}.group{break-before:page}summary{display:block}}'
+ '@media print{body{background:white}header{color:#20192e;background:white}nav{display:none}.group{break-before:page}summary{display:block}details:not([open])>.detail{display:block!important}details{break-inside:auto}}'
 ].join('');
 export function renderEditorialReviewHTML(packet){
  if(!packet||packet.status!=='review-packet-not-independent-signoff'||

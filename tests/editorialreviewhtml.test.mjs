@@ -13,6 +13,7 @@ test('HTML reviewer copy includes all full authored records and immutable source
  assert.ok(html.startsWith('<!doctype html>'));
  assert.ok(html.includes('All items pending independent review.'));
  assert.ok(html.includes('noindex,nofollow'));
+ assert.ok(html.includes('details:not([open])>.detail{display:block!important}'),'print must expand closed review sections');
  assert.ok(html.includes('Expert safety review prioritized'));
  assert.ok(!html.includes('<script'));
  assert.ok(!html.includes('localStorage'));
@@ -27,6 +28,10 @@ test('HTML review rendering escapes text and URL attributes, blocks inadvertent 
  assert.ok(html.includes('&lt;img src=x onerror=alert(&quot;x&quot;)&gt; &amp;'));
  assert.ok(html.includes('A &lt;script&gt; &amp; &quot;citation&quot;'));
  assert.ok(html.includes('https://example.org/?a=1&amp;b=2'));
+ const unsafe={...spoof,lessons:[{...item,content:{...item.content,references:[{label:'Spoofed official site',url:'javascript:alert(1)'}]}}]};
+ const blocked=renderEditorialReviewHTML(unsafe);
+ assert.ok(blocked.includes('unsafe URL omitted'));
+ assert.ok(!blocked.includes('href="javascript:'));
  assert.throws(()=>renderEditorialReviewHTML({}),/Invalid/);
 });
 test('printable editor artifact is archived alongside source hashes without changing acceptance gates',()=>{
