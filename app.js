@@ -730,18 +730,18 @@ function languageAudioPanel(){
  const {supported,voices}=languageSpeechSnapshot();
  const local=matchingLanguageVoices(voices,pack.locale);
  const selected=chooseOfflineLanguageVoice(voices,pack.locale,languageVoiceURI);
- const status=languageVoiceMessage(voices,pack.locale,supported);
+ const status=languageVoiceMessage(voices,pack.locale,supported,languageVoiceURI);
  const regionMismatch=selected&&selected.lang.toLowerCase().replaceAll('_','-')!==pack.locale.toLowerCase();
  return `<section class="language-audio-panel" id="language-audio-controls" aria-label="Offline language speech player">
-  <div class="language-audio-head"><div><span class="overline">LISTEN AND REPEAT</span><h2>Local Voice Studio</h2><p>Hear a phrase with a compatible voice installed on your device, then try it aloud yourself.</p></div><span class="language-audio-indicator ${selected?'is-ready':'is-unavailable'}">${selected?'Local voice detected':'Local voice unavailable'}</span></div>
+  <div class="language-audio-head"><div><span class="overline">LISTEN AND REPEAT</span><h2>Local Voice Studio</h2><p>Hear a phrase with a compatible voice installed on your device, then try it aloud yourself.</p></div><span class="language-audio-indicator ${selected?'is-ready':'is-unavailable'}">${selected?'Local voice ready':local.length?'Choose regional voice':'Local voice unavailable'}</span></div>
   <p id="language-voice-status" role="status" aria-live="polite">${esc(status)}</p>
   <div class="language-audio-fields">
-   <div><label for="language-voice-picker" class="field-label">Available local voice</label><select id="language-voice-picker" class="styled-select" ${!local.length?'disabled':''}>${local.length?local.map(v=>`<option value="${esc(v.voiceURI)}" ${selected?.voiceURI===v.voiceURI?'selected':''}>${esc(v.name)} · ${esc(v.lang)}</option>`).join(''):'<option>No local voice detected</option>'}</select></div>
+   <div><label for="language-voice-picker" class="field-label">Available local voice</label><select id="language-voice-picker" class="styled-select" ${!local.length?'disabled':''}>${local.length?(selected?'':`<option value="" selected disabled>Choose a regional voice to enable playback</option>`)+local.map(v=>`<option value="${esc(v.voiceURI)}" ${selected?.voiceURI===v.voiceURI?'selected':''}>${esc(v.name)} · ${esc(v.lang)}</option>`).join(''):'<option>No local voice detected</option>'}</select></div>
    <div><label for="language-audio-rate" class="field-label">Playback speed</label><select id="language-audio-rate" class="styled-select"><option value="0.75" ${saved.languageSpeechRate===.75?'selected':''}>Slow · 0.75×</option><option value="0.9" ${saved.languageSpeechRate===.9?'selected':''}>Careful · 0.9×</option><option value="1" ${saved.languageSpeechRate===1?'selected':''}>Normal · 1×</option></select></div>
   </div>
   ${regionMismatch?`<p class="fineprint">The installed voice is ${esc(selected.lang)}, a regional variant of ${esc(pack.locale)}. Accents and wording may differ.</p>`:''}
   <div class="language-audio-actions">${button('Test the voice','language-speak','primary-button',`data-id="${esc(pack.phrases[0].id)}" ${selected?'':'disabled'}`)}${button('Stop playback','language-audio-stop','secondary-button')}</div>
-  <p class="fineprint">Local voices only: Atlas does not silently use a cloud-backed voice or switch to another language. Speech is synthetic and may vary by device; this is not teacher-verified audio or automatic pronunciation grading. You may need to install a language voice in your phone or computer settings.</p>
+  <p class="fineprint">Local voices only: Atlas never automatically substitutes a regional accent or uses cloud-backed speech. You may explicitly select another local regional variant. Speech is synthetic and may vary by device; this is not teacher-verified audio or automatic pronunciation grading. You may need to install a language voice in your phone or computer settings.</p>
  </section>`;
 }
 function updateLanguageVoiceMessage(message){
@@ -758,7 +758,7 @@ function playLanguagePhrase(id){
  if(!phrase)return;
  const snapshot=languageSpeechSnapshot();
  const voice=chooseOfflineLanguageVoice(snapshot.voices,pack.locale,languageVoiceURI);
- if(!snapshot.supported||!voice){updateLanguageVoiceMessage('No confirmed local voice is available for this language. Install one in device settings.');return;}
+ if(!snapshot.supported||!voice){updateLanguageVoiceMessage('No matching local voice is selected. Install an exact locale voice or explicitly choose a regional voice.');return;}
  stopLanguageAudio();
  const token=languageAudioToken;
  try{
@@ -1447,7 +1447,12 @@ document.addEventListener('change',e=>{
     el.closest('li')?.classList.toggle('is-reviewed',el.checked);
   }
   if(e.target.id==='language-select') {stopLanguageAudio();languageVoiceURI='';saved.language=e.target.value;phraseIndex=0;phraseRevealed=false;phraseReviewRevealed=false;persist();render();}
-  if(e.target.id==='language-voice-picker'){languageVoiceURI=e.target.value;stopLanguageAudio();updateLanguageVoiceMessage('Voice selected. Use Test the voice to hear it.');}
+  if(e.target.id==='language-voice-picker'){
+    languageVoiceURI=e.target.value;
+    stopLanguageAudio();
+    render();
+    requestAnimationFrame(()=>document.getElementById('language-voice-picker')?.focus({preventScroll:true}));
+  }
   if(e.target.id==='language-audio-rate'){saved.languageSpeechRate=normalizeLanguageSpeechRate(e.target.value);stopLanguageAudio();persist();updateLanguageVoiceMessage('Playback speed saved on this device.');}
   if(e.target.id==='age-agree') {gateConfirmed=e.target.checked;const btn=document.querySelector('[data-action="enter-shadow"]');if(btn)btn.disabled=!gateConfirmed;}
   if(e.target.id==='backup-file') answerBackup(e);

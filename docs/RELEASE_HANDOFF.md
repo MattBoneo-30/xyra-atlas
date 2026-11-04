@@ -41,3 +41,7 @@ Connect the GitHub repository to **your own** Vercel project, with Build Command
 5. Confirm the live Vercel deployment, resolve remaining security/performance/accessibility issues from the real devices, select and approve appropriate code/art licensing, and only then authorize public production release.
 
 Do not edit `docs/stage-gates.json` to fake green status. Each milestone must have real source-of-truth evidence before being reported as complete. The hourly project automation can continue independent code-side work while these owner/expert dependencies are outstanding.
+
+### Offline updates across releases
+
+The deployable service worker is **content-fingerprinted** on every build. Changing any bundled lesson, JavaScript, stylesheet, or illustration produces a new release cache version automatically, even when the source service worker is unchanged. The browser downloads the complete replacement offline cache first and shows an explicit update action rather than interrupting an open lesson. The source `sw.js` keeps its numeric base for readable version history; `dist/sw.js` is the fingerprinted worker published with the build. Inspect the GitHub release artifact before deployment.

@@ -3,6 +3,7 @@ import path from 'node:path';
 import zlib from 'node:zlib';
 import { fileURLToPath } from 'node:url';
 import {stageArtworkFiles} from './render-stage-art.mjs';
+import {stampServiceWorker} from './release-fingerprint.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const out = path.join(root, 'dist');
@@ -72,4 +73,8 @@ function png(size){
 for(const [size,name] of [[192,'icon-192.png'],[512,'icon-512.png'],[180,'apple-touch-icon.png']]){
   fs.writeFileSync(path.join(out,name),png(size));
 }
+// Vary deployable service worker bytes whenever ANY learning asset changes,
+// so users cannot get stuck with an old offline edition after source-only edits.
+const release=stampServiceWorker(out);
 console.log('Built offline-first Xyra Atlas in dist/ (zero external dependencies).');
+console.log('Content-fingerprinted release cache:',release.version,'from',release.fileCount,'assets.');

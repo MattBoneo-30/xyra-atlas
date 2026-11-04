@@ -9,7 +9,7 @@ export function normalizeOfflineReport(value){
  ))].slice(0,1000):null;
  const ready=Boolean(total&&cached===total&&r.ready===true&&(!missing||missing.length===0));
  return {total,cached,ready,percent:total?Math.round(cached/total*100):0,
-  version:typeof r.version==='string'&&/^xyra-atlas-v\d+$/.test(r.version)?r.version:'unknown',
+  version:typeof r.version==='string'&&/^xyra-atlas-v\d+(?:-[a-f0-9]{12})?$/.test(r.version)?r.version:'unknown',
   ...(missing?{missing}: {})};
 }
 export function offlineAdvice(state){

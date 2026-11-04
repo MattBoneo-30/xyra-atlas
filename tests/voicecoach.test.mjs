@@ -28,6 +28,32 @@ test('matching offline voices must declare localService=true and correct primary
  assert.equal(chooseOfflineLanguageVoice(voices,'es-ES','missing').name,'Spanish offline');
  assert.equal(chooseOfflineLanguageVoice(voices,'en-US').name,'Wrong language');
 });
+
+test('regional-only voices require deliberate opt-in before speech can start',()=>{
+ const mexican=[voice('es-MX','Regional offline')];
+ const status=languageVoiceAvailability(mexican,'es-ES');
+ assert.equal(status.status,'regional-only');
+ assert.equal(status.exact.length,0);
+ assert.equal(status.regional.length,1);
+ assert.equal(chooseOfflineLanguageVoice(mexican,'es-ES'),null);
+ assert.match(languageVoiceMessage(mexican,'es-ES'),/Choose one yourself/);
+ assert.equal(chooseOfflineLanguageVoice(mexican,'es-ES','Regional offline'),mexican[0]);
+ assert.match(languageVoiceMessage(mexican,'es-ES',true,'Regional offline'),/You chose/);
+ assert.equal(chooseOfflineLanguageVoice(mexican,'es-ES','missing'),null);
+ const exact=[voice('es-ES','Spain offline'),...mexican];
+ assert.equal(chooseOfflineLanguageVoice(exact,'es-ES').name,'Spain offline');
+ assert.equal(chooseOfflineLanguageVoice(exact,'es-ES','Regional offline').name,'Regional offline');
+ assert.equal(languageVoiceAvailability(exact,'es-ES').status,'local');
+});
+test('Filipino can explicitly choose an installed local Tagalog voice but never selects it silently',()=>{
+ const tagalog=[voice('tl-PH','Tagalog on-device')];
+ assert.equal(languageVoiceAvailability(tagalog,'fil-PH').status,'regional-only');
+ assert.equal(chooseOfflineLanguageVoice(tagalog,'fil-PH'),null);
+ assert.equal(chooseOfflineLanguageVoice(tagalog,'fil-PH','Tagalog on-device'),tagalog[0]);
+ assert.equal(matchingLanguageVoices(tagalog,'en-US').length,0);
+ assert.equal(matchingLanguageVoices([voice('tl-PH','Cloud',false)],'fil-PH').length,0);
+});
+
 test('remote-only and unsupported voices never become offline audio',()=>{
  const remote=[voice('ja-JP','Remote Japanese',false)];
  assert.equal(languageVoiceAvailability(remote,'ja-JP').status,'remote-only');
