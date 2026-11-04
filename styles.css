@@ -689,3 +689,18 @@ html[data-theme=light]{color-scheme:light;--bg:#fbf5f6;--bg-raised:#fff9fa;--car
 @media(max-width:850px){.curriculum-world-preview{height:175px}.curriculum-world-name strong{font-size:24px}}
 @media(max-width:420px){.curriculum-world-preview{height:150px}.curriculum-world-name strong{font-size:20px}}
 @media(prefers-reduced-motion:reduce){.curriculum-world-preview img{transition:none!important;transform:none!important}}
+
+/* Continue the illustrated journey before reaching individual lessons. */
+.course-world-hero{height:clamp(225px,26vw,305px);background:#171634}
+.course-world-hero img{width:100%;height:100%;object-fit:cover;object-position:66% 50%}
+.course-world-hero .hero-art-overlay{inset:0;position:absolute;
+  background:linear-gradient(90deg,rgba(13,10,37,.9),rgba(19,14,43,.52) 50%,rgba(16,12,42,.06) 93%),
+  linear-gradient(0deg,rgba(18,12,43,.49),transparent 76%)}
+.course-hero-story{position:absolute;z-index:1;left:clamp(17px,3.4vw,29px);bottom:clamp(19px,3.3vw,29px);max-width:70%;display:grid;gap:9px}
+.course-hero-story .overline{color:#ffddaa;font-size:10px;letter-spacing:1.6px;line-height:1.5}
+.course-hero-story strong{color:#fff2e7;font:normal clamp(25px,3.8vw,39px)/1.12 Georgia,"Times New Roman",serif;
+ text-shadow:0 4px 16px rgba(0,0,0,.52);overflow-wrap:anywhere}
+.course-world-hero .art-ornament{color:#ffe7b7;z-index:1}
+@media(max-width:560px){.course-world-hero{height:232px}.course-world-hero img{object-position:61% 50%}
+ .course-hero-story{max-width:76%}.course-hero-story strong{font-size:clamp(25px,7vw,32px)}
+ .course-world-hero .hero-art-overlay{background:linear-gradient(90deg,rgba(12,11,38,.86),rgba(17,12,40,.52) 64%,rgba(16,12,36,.1)),linear-gradient(0deg,rgba(14,11,34,.43),transparent)}}

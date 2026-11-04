@@ -880,6 +880,11 @@ try{
  await smoke('illustrated-stage-roadmap-mobile',{viewport:{width:390,height:844}},async page=>{
   await page.goto(BASE+'/#/course/psychology',{waitUntil:'domcontentloaded'});
   await page.locator('.curriculum-world-preview').first().waitFor();
+  const hero=page.locator('.course-world-hero');
+  expect(await hero.locator('img').getAttribute('src')==='/assets/world-psychology-beginner.svg',
+    'course opening artwork follows the next unfinished stage');
+  expect((await hero.locator('.course-hero-story').textContent()).includes('YOUR NEXT WORLD'),
+    'course hero narrates the next learning destination');
   expect(await page.locator('.curriculum-level-illustrated').count()===3,
     'each subject course has three illustrated and navigable levels');
   for(const stage of ['Beginner','Intermediate','Advanced']){

@@ -341,11 +341,14 @@ function coursePage() {
   const done=courseProgress(c);
   const ladder=learningLadder(c,saved.completed);
   const firstUnfinished=(ladder?.next&&c.lessons.find(l=>l.id===ladder.next.id))||c.lessons[0];
+  // The opening scene follows the learner's next stage, without changing saved progress.
+  const nextWorldStage=ladder?.complete?'Advanced':firstUnfinished.stage;
+  const nextWorld=getStageArt(c.id,nextWorldStage);
   const stages=['Beginner','Intermediate','Advanced'];
   const stageCount=stage=>c.lessons.filter(l=>l.stage===stage).length;
   const visible=c.lessons.map((lesson,index)=>({lesson,index})).filter(item=>courseStageFilter==='all'||item.lesson.stage===courseStageFilter);
   return `<main class="page course-page"><div class="subnav">${button(`${icon('back',18)} Back to learning`,'goto-explore','back-link')}${button(icon('heart',22),'favorite',`icon-button ${saved.favorites.includes(c.id)?'is-favorite':''}`,`data-id="${c.id}" aria-label="${saved.favorites.includes(c.id)?'Remove from':'Add to'} favorites"`)}</div>
-    <div class="course-hero-art"><img src="/assets/${esc(c.art)}.svg" alt="Decorative illustration for ${esc(c.title)}"/><span class="hero-art-overlay"></span><span class="art-ornament">✦</span></div>
+    <div class="course-hero-art course-world-hero"><img src="${esc(nextWorld?.src||'/assets/'+c.art+'.svg')}" alt="" decoding="async"/><span class="hero-art-overlay"></span><div class="course-hero-story"><span class="overline">${ladder?.complete?'WORLD EXPLORED':'YOUR NEXT WORLD · '+esc(nextWorldStage.toUpperCase())}</span><strong>${esc(nextWorld?.place||c.title)}</strong></div><span class="art-ornament" aria-hidden="true">✦</span></div>
     <div class="course-meta"><span class="overline">${esc(c.tag)}</span>${c.dark?'<span class="adult-mini">18+</span>':''}</div>
     <h1 class="course-heading">${esc(c.title)}</h1><p class="course-lead">${esc(c.subtitle)}</p>
     <div class="course-facts"><span>${icon('book',17)} ${plural(c.lessons.length,'lesson')}</span><span>${icon('clock',17)} ${c.lessons.reduce((n,l)=>n+l.minutes,0)} min</span><span>${icon('chart',17)} Beginner → Advanced</span></div>
