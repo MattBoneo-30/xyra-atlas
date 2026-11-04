@@ -629,3 +629,9 @@ html[data-theme=light]{color-scheme:light;--bg:#fbf5f6;--bg-raised:#fff9fa;--car
 .stage-art-feature .chapter-art-caption>span:last-child{max-width:345px}
 @media(max-width:560px){.reading-illustration.stage-art-feature{height:260px}.stage-art-feature>img{object-position:61% center}.stage-art-feature::after{background:linear-gradient(90deg,rgba(11,12,31,.87) 0%,rgba(17,14,43,.63) 62%,rgba(16,13,37,.2)),linear-gradient(0deg,rgba(11,10,30,.62),transparent 88%)}.stage-art-feature .chapter-art-caption strong{font-size:27px}}
 @media(prefers-reduced-motion:reduce){.stage-art-feature>img{animation:none!important;transition:none!important}}
+
+/* Teach through scenery first: reader controls remain reachable but do not precede the story. */
+.reading-illustration.stage-art-feature{margin-top:17px;margin-bottom:15px}
+.reading-page .reader-toolbar{margin-top:14px;margin-bottom:10px}
+.reading-page .lesson-audio-panel{margin-top:10px;margin-bottom:24px}
+@media(max-width:560px){.reading-page .reading-head{padding-bottom:3px}.reading-illustration.stage-art-feature{margin-top:13px}.reading-page .reader-toolbar{gap:8px}}

@@ -28,7 +28,7 @@ for(const [id,[place,tagline,description,motif]] of Object.entries(SCENES))
   const file='world-'+id+'-'+stage.toLowerCase()+'.svg';
   entries[id+':'+stage]=Object.freeze({
    courseId:id,stage,place,motif,tone:level.tone,file,
-   src:'/assets/'+file,title:level.title+' · '+place,
+   src:'/assets/'+file,title:stage==='Advanced'?place:level.title+' · '+place,
    caption:tagline+'. '+level.caption,
    alt:description+'. '+stage+' learning scene with atmospheric purple-and-gold illustration.'
   });

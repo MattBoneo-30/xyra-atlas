@@ -52,6 +52,8 @@ test('build, service worker, lesson UI, and Chapter 14 case illustrations integr
  assert.match(script,/stageArtworkFiles\(\)/);
  assert.match(script,/'stageart\.js'/);
  assert.match(app,/getStageArt\(c\.id,l\.stage\)/);
+ assert.ok(app.indexOf('<figure class="reading-illustration')<app.indexOf('<div class="reader-toolbar"'),
+  'narrative illustration appears before reading and voice controls');
  assert.match(app,/chapterArt\?null:getStageArt/);
  assert.match(app,/chapterArt\?esc\(chapterArt\.src\):stageArt\?esc\(stageArt\.src\)/);
  assert.match(app,/YOUR \$\{esc\(l\.stage\.toUpperCase\(\)\)\} WORLD/);
