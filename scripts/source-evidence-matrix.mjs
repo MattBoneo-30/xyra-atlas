@@ -38,7 +38,8 @@ export function buildSourceEvidenceMatrix(packet){
    throw Error('Incomplete lesson');
   const c=l.content;
   add(l,'lesson',c.references,{
-   title:c.title,stage:c.stage,course:l.course,introduction:c.intro,
+   title:c.title,stage:c.stage,course:l.course,
+   stageLearningObjective:c.stageLearningObjective,introduction:c.intro,
    sections:c.sections.map(s=>({heading:s.heading,body:s.body})),
    example:c.workedExample,exercise:c.task,question:c.quiz.question,
    authoredAnswer:c.quiz.options[c.quiz.correct],answerExplanation:c.quiz.explanation

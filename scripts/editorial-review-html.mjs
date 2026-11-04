@@ -20,6 +20,10 @@ function lesson(item){
  return '<details id="lesson-'+slug(item.id)+'" class="review-item"><summary><strong>'+esc(c.title)+
  '</strong><span>'+esc(c.stage)+' · Pending review</span></summary><div class="detail">'+
  '<p class="hash">SHA-256 source hash: <code>'+esc(item.contentHash)+'</code></p>'+
+ '<h4>Stage learning objective — independently evaluate alignment</h4>'+
+ (c.stageLearningObjective?'<p><strong>Goal:</strong> '+esc(c.stageLearningObjective.goal)+'</p>'+
+ '<p><strong>Evidence of understanding:</strong> '+esc(c.stageLearningObjective.evidence)+'</p>':
+ '<p class="disclaimer">Stage objective not documented: reviewer must request curriculum correction.</p>')+
  '<h4>Introduction</h4>'+p(c.intro)+
  (c.sections||[]).map((s,i)=>'<h4>Teaching section '+(i+1)+': '+esc(s.heading)+'</h4>'+p(s.body)).join('')+
  '<h4>Worked example</h4>'+p(c.workedExample)+

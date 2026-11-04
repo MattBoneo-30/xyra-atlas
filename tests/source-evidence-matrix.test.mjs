@@ -24,6 +24,7 @@ test('all 42 authored reference URLs map every source-use context without expert
   assert.equal(u.humanClaimExtractionRequired,true);
   assert.equal(u.independentClaimValidation,false);
   assert.ok(u.authoredContext.authoredAnswer);
+  if(u.kind==='lesson')assert.ok(u.authoredContext.stageLearningObjective?.evidence);
  }
 });
 test('readable workbook contains 42 source sections with review checklists, never approval',()=>{

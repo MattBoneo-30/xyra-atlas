@@ -12,6 +12,8 @@ test('HTML reviewer copy includes all full authored records and immutable source
  for(const item of [...packet.lessons,...packet.decisions])assert.ok(html.includes(item.contentHash),item.id);
  assert.ok(html.startsWith('<!doctype html>'));
  assert.ok(html.includes('All items pending independent review.'));
+ assert.equal((html.match(/Stage learning objective — independently evaluate alignment/g)||[]).length,134);
+ assert.ok(html.includes('Evidence of understanding:'));
  assert.ok(html.includes('noindex,nofollow'));
  assert.ok(html.includes('details:not([open])>.detail{display:block!important}'),'print must expand closed review sections');
  assert.ok(html.includes('Expert safety review prioritized'));

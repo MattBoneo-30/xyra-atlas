@@ -5,6 +5,7 @@
 import {createHash} from 'node:crypto';
 import {practiceGuide} from '../practiceguides.js';
 import {authoredCourseLinks} from '../sourcehealth.js';
+import {CURRICULUM_OBJECTIVES} from '../curriculumpath.js';
 const toRecord=value=>value!==null&&typeof value==='object'&&!Array.isArray(value);
 const highStakes=new Set(['laws','savings','science','relationships','digital','shadow']);
 export function reviewHash(content){
@@ -19,7 +20,12 @@ export function buildEditorialReviewPacket(courses,clinics){
    const id=course.id+':'+lesson.id;
    if(seen.has(id))throw new Error('Duplicate lesson: '+id);
    seen.add(id);
-   const content={title:lesson.title,stage:lesson.stage,intro:lesson.intro,
+   // Reviewers must see what this stage intends the learner to demonstrate.
+   // Include objective changes in the signed content hash, just like lesson wording.
+   const objective=CURRICULUM_OBJECTIVES[course.id]?.[lesson.stage];
+   const content={title:lesson.title,stage:lesson.stage,
+    stageLearningObjective:objective?{goal:objective.goal,evidence:objective.evidence}:null,
+    intro:lesson.intro,
     sections:lesson.sections.map(s=>({heading:s.heading,body:s.body})),
     workedExample:lesson.example,task:lesson.task,
     stagePractice:[...(practiceGuide(course.id,lesson.stage)||[])],

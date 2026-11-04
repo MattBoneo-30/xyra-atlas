@@ -4,6 +4,7 @@ import fs from 'node:fs';
 import {COURSES} from '../data.js';
 import {CLINICS} from '../clinics.js';
 import {reviewHash,buildEditorialReviewPacket} from '../scripts/editorial-review-packet.mjs';
+import {CURRICULUM_OBJECTIVES} from '../curriculumpath.js';
 test('independent editorial handoff includes stable source hashes for all authored teaching and questions',()=>{
  const pack=buildEditorialReviewPacket(COURSES,CLINICS);
  assert.deepEqual(pack.totals,{subjects:14,lessons:134,decisions:42,uniqueSourceURLs:42,
@@ -18,6 +19,11 @@ test('independent editorial handoff includes stable source hashes for all author
  assert.ok(pack.decisions.every(x=>x.reviewStatus==='pending-independent-review'&&x.reviewerAttestation===null));
  assert.ok(pack.lessons.filter(x=>x.highStakes).length>0);
  assert.ok(pack.lessons.every(x=>x.content.stagePractice.length===2&&x.content.quiz.options.length>=3));
+ assert.ok(pack.lessons.every(x=>{
+  const goal=CURRICULUM_OBJECTIVES[x.course]?.[x.stage];
+  return goal&&x.content.stageLearningObjective?.goal===goal.goal&&
+   x.content.stageLearningObjective?.evidence===goal.evidence;
+ }),'every lesson includes source-linked stage objectives and expected demonstration');
  assert.ok(pack.references.every(x=>x.url.startsWith('https://')));
  assert.equal(pack.reviewPolicy.independentIdentityAndQualificationsMustBeVerified,true);
 });
@@ -26,6 +32,9 @@ test('changing a teaching claim or answer necessarily changes its verification d
  const a=pack.lessons[0].content;
  const changed={...a,workedExample:a.workedExample+' editorial correction'};
  assert.notEqual(reviewHash(changed),pack.lessons[0].contentHash);
+ assert.notEqual(reviewHash({...a,stageLearningObjective:{...a.stageLearningObjective,
+  evidence:a.stageLearningObjective.evidence+' editorial review correction'}}),pack.lessons[0].contentHash,
+  'changing the claimed learning outcome must invalidate existing signed reviews');
  const exam=pack.decisions[0].content;
  assert.notEqual(reviewHash({...exam,correct:(exam.correct+1)%exam.options.length}),pack.decisions[0].contentHash);
  const second=buildEditorialReviewPacket(COURSES,CLINICS);
