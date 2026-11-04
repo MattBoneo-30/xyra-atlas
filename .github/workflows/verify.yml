@@ -54,7 +54,9 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: xyra-atlas-editorial-review-packet
-          path: artifacts/editorial-review-packet.json
+          path: |
+            artifacts/editorial-review-packet.json
+            artifacts/editorial-review-packet.html
           retention-days: 14
       - name: Audit supplied independent editorial attestations
         run: npm run audit:editorial
