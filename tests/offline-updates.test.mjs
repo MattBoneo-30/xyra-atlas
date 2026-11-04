@@ -89,9 +89,12 @@ test('offline repair works with broken or incomplete caches while preserving unr
  const first=await message('ATLAS_OFFLINE_STATUS');
  assert.equal(first.ready,false);
  assert.equal(first.cached,1);
+ assert.equal(first.missing.length,first.total-1);
+ assert.ok(first.missing.includes('/app.js'));
  const restored=await message('ATLAS_REPAIR_OFFLINE');
  assert.equal(restored.cached,restored.total);
  assert.equal(restored.ready,true);
+ assert.deepEqual(Array.from(restored.missing),[]);
  assert.equal(restored.version,CURRENT);
 });
 test('app offers explicit update consent and controller-based reload, not automatic install reload',()=>{

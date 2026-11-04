@@ -28,3 +28,21 @@ test('offline management is bundled and connected to user settings',()=>{
  assert.match(app,/offline-verify/);assert.match(app,/offline-repair/);assert.match(app,/offline-update/);
  assert.match(sw,/\/offline\.js/);assert.match(b,/'offline\.js'/);
 });
+
+test('offline diagnostics list only safe static paths and refuse false readiness',()=>{
+ const good=normalizeOfflineReport({total:5,cached:3,ready:false,version:'xyra-atlas-v70',
+  missing:['/assets/course-library.svg','/data.js','/data.js','https://bad.site/collect','/api/private','/../secret']});
+ assert.deepEqual(good.missing,['/assets/course-library.svg','/data.js']);
+ assert.equal(good.ready,false);
+ assert.equal(normalizeOfflineReport({total:5,cached:5,ready:true,missing:['/app.js']}).ready,false);
+ assert.deepEqual(normalizeOfflineReport({total:5,cached:5,ready:true,missing:[]}).missing,[]);
+});
+test('missing-file inventory is visible in the offline UI without exposing learner state',()=>{
+ const app=fs.readFileSync('app.js','utf8');
+ const sw=fs.readFileSync('sw.js','utf8');
+ assert.match(app,/offline-missing/);
+ assert.match(app,/missing required file/);
+ assert.match(app,/repair\?60000:8000/);
+ assert.match(sw,/const missing=results\.filter/);
+ assert.match(sw,/ready:missing\.length===0/);
+});

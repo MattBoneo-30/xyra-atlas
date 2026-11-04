@@ -883,6 +883,7 @@ function offlinePage(){
  <section class="offline-panel"><div class="offline-panel-head"><div><span class="overline">THIS BROWSER</span><h2>Offline readiness</h2></div><span class="offline-pill ${s.ready?'ready':''}" role="status">${s.ready?'Ready':working?'Checking':s.state==='incomplete'?'Incomplete':s.state==='unsupported'?'Unsupported':s.state==='idle'?'Unchecked':'Needs attention'}</span></div>
  <div class="offline-count"><strong>${s.total?s.cached+' / '+s.total:'—'}</strong><span>${s.total?'offline files verified':'learning files'}</span></div><div class="offline-meter" role="progressbar" aria-label="Downloaded learning files" aria-valuemin="0" aria-valuemax="${s.total||1}" aria-valuenow="${s.cached}"><span style="width:${s.percent}%"></span></div>
  <p id="offline-message" class="offline-advice" role="status">${esc(offlineAdvice(s.state))}</p>
+ ${s.missing?.length?'<details class="offline-missing"><summary>'+s.missing.length+' missing required file'+(s.missing.length===1?'':'s')+' — view details</summary><p class="fineprint">These are app files or learning illustrations, not your personal notes.</p><ul>'+s.missing.slice(0,15).map(path=>'<li><code>'+esc(path)+'</code></li>').join('')+'</ul>'+(s.missing.length>15?'<p class="fineprint">Plus '+(s.missing.length-15)+' more missing files.</p>':'')+'</details>':''}
  <div class="offline-buttons">${button(`${icon('check',17)} Verify library`,'offline-verify','primary-button',working?'disabled':'')}${button(`${icon('download',17)} Repair missing files`,'offline-repair','secondary-button',working||!navigator.onLine?'disabled':'')}${button(`${icon('refresh',17)} Check updates`,'offline-update','secondary-button',working||!navigator.onLine?'disabled':'')}</div>
  <p class="fineprint">Verification checks the browser cache, not your learning history. Repair requires a connection. Browser storage may later be evicted, so check before relying on it. Narration voices and linked sources can depend on the device or internet.</p></section>
  <section class="offline-steps"><article><b>01</b><div><h3>Open Atlas online</h3><p>The included lessons and illustrations are downloaded after the service worker installs.</p></div></article><article><b>02</b><div><h3>Verify before a trip</h3><p>Look for “Ready” and a full progress bar before turning off the connection.</p></div></article><article><b>03</b><div><h3>Back up personal progress</h3><p>Cached lessons and private notes are different. Export a backup before clearing browser data or switching phones.</p>${button('Export progress backup','export','text-action')}</div></article></section>
@@ -899,7 +900,7 @@ async function inspectOffline(repair=false){
   if(!reg?.active){offlinePack={...offlinePack,state:'installing'};return;}
   const raw=await new Promise((resolve,reject)=>{
    const c=new MessageChannel();
-   timer=setTimeout(()=>{c.port1.close();reject(Error('timeout'));},8000);
+   timer=setTimeout(()=>{c.port1.close();reject(Error('timeout'));},repair?60000:8000);
    c.port1.onmessage=e=>{clearTimeout(timer);c.port1.close();resolve(e.data);};
    reg.active.postMessage({type:repair?'ATLAS_REPAIR_OFFLINE':'ATLAS_OFFLINE_STATUS'},[c.port2]);
   });
