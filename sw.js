@@ -1,6 +1,6 @@
 /* Xyra Atlas: privacy-first, same-origin offline app shell. */
 const CACHE_PREFIX = 'xyra-atlas-';
-const CACHE = CACHE_PREFIX + 'v70';
+const CACHE = CACHE_PREFIX + 'v71';
 const APP_SHELL = [
   '/', '/index.html', '/styles.css', '/app.js', '/data.js', '/review.js', '/phrasebook.js', '/voicecoach.js', '/phrasereview.js', '/languagechallenge.js', '/conversationquest.js', '/deeptracks.js', '/fieldnotes.js', '/studio.js', '/paths.js', '/scenarios.js', '/atlasmap.js', '/dailyquest.js', '/glossary.js', '/search.js', '/calendar.js', '/insights.js',
   '/fieldguides.js', '/lifepractice.js', '/masterytracks.js', '/capstonelabs.js', '/phcasework.js', '/advancedenrichments.js', '/foundationcases.js', '/foundationcases2.js', '/criticalfoundation.js', '/generalfoundation.js', '/appliedfoundation.js', '/practiceguides.js', '/capstonechecks.js', '/mentor.js', '/casebook.js', '/reader.js', '/visualmap.js', '/chapterart.js', '/narration.js', '/storagehealth.js', '/offline.js', '/backup.js', '/backupcrypto.js', '/datacontrols.js', '/curriculumpath.js', '/clinics.js', '/advanceddecisions.js', '/notebook.js', '/mistakes.js', '/exam.js', '/examhistory.js', '/focusedexam.js', '/personalcards.js', '/manifest.webmanifest', '/assets/atlas-mark.svg',
