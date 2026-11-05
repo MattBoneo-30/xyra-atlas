@@ -31,7 +31,8 @@ export function buildEditorialReviewPacket(courses,clinics){
     ...(lesson.deepSections?.length?{conceptFirstStudy:{
       studyMinutes:lesson.deepMinutes,
       sections:lesson.deepSections.map(s=>({heading:s.heading,body:s.body})),
-      workedCase:lesson.deepExample,independentExercise:lesson.deepTask
+      workedCase:lesson.deepExample,independentExercise:lesson.deepTask,
+      ...(lesson.deepRubric?.length?{selfReviewRubric:[...lesson.deepRubric]}:{})
     }}:{}),
     // Flowchart text is a teaching claim too. Include it in editorial review hashes.
     ...(lesson.flow?{learningFlow:{title:lesson.flow.title,steps:lesson.flow.steps.map(step=>({label:step.label,detail:step.detail})),caption:lesson.flow.caption}}:{}),

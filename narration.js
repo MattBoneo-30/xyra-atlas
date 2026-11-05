@@ -24,6 +24,7 @@ export function buildLessonNarration(course,lesson,{maxLength=175}={}){
  for(const section of lesson.sections) if(section) paragraphs.push(section.heading,section.body);
  if(lesson.example)paragraphs.push('Worked example.',lesson.example);
  if(lesson.deepExample)paragraphs.push('Detailed case analysis.',lesson.deepExample);
+ if(lesson.deepRubric?.length)paragraphs.push('Self-review criteria.',...lesson.deepRubric);
  if(lesson.task)paragraphs.push('Practice exercise.',lesson.task);
  if(lesson.deepTask)paragraphs.push('Independent application.',lesson.deepTask);
  return paragraphs.flatMap(text=>chunks(text,max)).filter(Boolean).slice(0,200);

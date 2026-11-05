@@ -900,3 +900,9 @@ html[data-theme=light]{color-scheme:light;--bg:#fbf5f6;--bg-raised:#fff9fa;--car
 .deep-study-assignment h4{font-size:17px;line-height:1.4;color:var(--text);margin:8px 0}
 .deep-study-assignment p{font-size:13px;line-height:1.85;color:var(--muted);margin:0}
 @media(max-width:520px){.deep-study-head{padding:19px 16px}.lesson-content>.deep-study-section{padding:15px 12px}.deep-study-recap{padding:17px 14px}.deep-study-assignment{padding:15px}}
+
+/* Intermediate applied self-review, not a professional certification. */
+.deep-rubric{margin:20px 0;padding:20px;border:1px solid var(--line-bright);background:var(--card-soft);border-radius:16px}
+.deep-rubric h3{color:var(--text);font:normal 22px/1.3 Georgia,serif;margin:8px 0 12px}
+.deep-rubric ol{margin:0;padding-left:22px}.deep-rubric li{font-size:13px;color:var(--text);line-height:1.8;padding:3px 0}
+.deep-rubric .fineprint{font-size:11px;color:var(--muted);line-height:1.7;margin-top:10px}

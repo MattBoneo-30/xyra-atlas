@@ -131,6 +131,17 @@ try{
    expect(overflow.scroll<=overflow.width+2,course+' remains readable on a narrow screen');
   }
  });
+ await smoke('intermediate-casework-mobile',{viewport:{width:390,height:844},isMobile:true,hasTouch:true},async page=>{
+  for(const [course,id,term] of [['psychology','emotions','reappraisal'],['laws','consumer','RA 7394'],['science','probability','495']]){
+   await page.goto(BASE+'/#/lesson/'+course+'/'+id,{waitUntil:'domcontentloaded'});
+   await page.locator('.reading-page').waitFor();
+   expect(await page.locator('.deep-study-section').count()===3,course+' teaches concepts before recap');
+   expect(await page.locator('.deep-rubric li').count()===4,course+' has self-review criteria');
+   expect((await page.locator('.lesson-content').textContent()).toLowerCase().includes(term.toLowerCase()),course+' presents domain knowledge');
+   const overflow=await mobileOverflow(page);
+   expect(overflow.scroll<=overflow.width+2,course+' intermediate lesson fits mobile viewport');
+  }
+ });
  await smoke('astronomy-and-republic-act-depth',{viewport:{width:390,height:844},isMobile:true,hasTouch:true},async page=>{
   await page.goto(BASE+'/#/lesson/science/astronomy-moon-eclipses',{waitUntil:'domcontentloaded'});
   await page.locator('.reading-page').waitFor();
