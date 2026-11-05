@@ -786,3 +786,57 @@ html[data-theme=light]{color-scheme:light;--bg:#fbf5f6;--bg-raised:#fff9fa;--car
 .app-update-details span:last-child{font-size:11px;color:var(--gold)}
 .app-update-topbar.update-ready-topbar{position:relative;color:var(--gold)}
 .app-update-topbar.update-ready-topbar:after{content:"";position:absolute;right:4px;top:4px;width:6px;height:6px;border-radius:50%;background:var(--good);box-shadow:0 0 0 2px var(--bg)}
+
+
+/* Japanese zero-to-kana course: actual instruction comes before phrase challenges. */
+.japanese-foundation{margin:27px 0 35px;border:1px solid var(--line-bright);border-radius:22px;background:var(--card);overflow:hidden;scroll-margin-top:calc(86px + var(--app-safe-top))}
+.japanese-foundation-head{padding:28px 27px 22px;background:linear-gradient(120deg,rgba(106,62,132,.28),rgba(226,177,145,.075));border-bottom:1px solid var(--line)}
+.japanese-foundation-head h2{font:normal clamp(25px,5vw,37px)/1.14 Georgia,serif;letter-spacing:-.5px;margin:9px 0 12px;color:var(--text)}
+.japanese-foundation-head p{max-width:680px;font-size:13px;line-height:1.8;color:var(--muted)}
+.japanese-count{display:inline-flex;padding:7px 11px;background:var(--card-strong);border:1px solid var(--line-bright);border-radius:50px;color:var(--gold);font-size:11px;font-weight:750}
+.japanese-foundation-layout{display:grid;grid-template-columns:230px minmax(0,1fr);min-width:0}
+.japanese-unit-menu{display:flex;flex-direction:column;gap:7px;align-self:start;min-width:0;padding:17px 12px;border-right:1px solid var(--line);background:var(--bg-raised)}
+.japanese-unit-select{width:100%;display:flex;gap:10px;align-items:center;text-align:left;background:transparent;color:var(--muted);border:1px solid transparent;border-radius:11px;padding:12px 9px;font-size:11px;font-weight:680;line-height:1.5;min-height:58px}
+.japanese-unit-select>span:nth-child(2){flex:1;min-width:0}.japanese-unit-select>span:last-child{color:var(--gold)}
+.japanese-unit-select:hover:not(:disabled),.japanese-unit-select.selected{background:var(--card-strong);color:var(--text);border-color:var(--line-bright)}
+.japanese-unit-select.completed{color:var(--good)}.japanese-unit-select:disabled{cursor:not-allowed;opacity:.45}
+.japanese-unit-number{display:grid;place-items:center;flex:none;width:28px;height:28px;border:1px solid var(--line-bright);border-radius:9px;font-size:10px;font-weight:800;color:var(--gold)}
+.japanese-lesson{padding:29px 25px 34px;min-width:0}.japanese-lesson h3{font:normal clamp(28px,5vw,37px)/1.15 Georgia,serif;margin:9px 0 12px}
+.japanese-lesson>p{font-size:13px;line-height:1.83;color:var(--muted)}
+.japanese-lesson .japanese-goal{border-left:3px solid var(--gold);background:var(--card-soft);border-radius:0 9px 9px 0;padding:10px 13px;color:var(--text);font-size:12px}
+.japanese-teaching{display:flex;align-items:flex-start;gap:12px;border-bottom:1px solid var(--line);padding:18px 0}
+.japanese-teaching .japanese-step{display:grid;place-items:center;flex:none;width:30px;height:30px;border-radius:10px;background:var(--card-strong);color:var(--gold);font-size:11px;font-weight:700}
+.japanese-teaching h4{margin:3px 0 8px;font-size:14px;font-weight:750;color:var(--text)}
+.japanese-teaching p,.japanese-word p{font-size:12px;line-height:1.8;color:var(--muted);margin:0}
+.japanese-kana-row{margin-top:24px}.japanese-kana-row h4,.japanese-word-list h4{font-size:14px;color:var(--text);margin:0 0 11px}
+.japanese-kana-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:7px}
+.japanese-kana-tile{display:flex;flex-direction:column;align-items:center;gap:5px;border:1px solid var(--line-bright);background:var(--bg-raised);border-radius:11px;padding:12px 4px 8px;min-width:0}
+.japanese-kana-tile>span{font-size:clamp(25px,4vw,37px);line-height:1.24;color:var(--text)}
+.japanese-kana-tile strong{font-size:11px;color:var(--gold);font-weight:800;overflow-wrap:anywhere}
+.japanese-hear{display:inline-flex;align-items:center;justify-content:center;min-height:34px;min-width:45px;border:1px solid var(--line-bright);background:var(--card-soft);color:var(--text);border-radius:9px;font-size:10px;margin-top:3px;padding:6px}
+.japanese-hear:hover{background:var(--card-strong);border-color:var(--gold)}
+.japanese-memory-notes{margin-top:9px;padding:11px 13px;border-radius:12px;background:var(--card-soft)}
+.japanese-memory-notes p{font-size:11px;color:var(--muted);line-height:1.65;margin:6px 0}
+.japanese-memory-notes strong{font-size:14px;color:var(--gold);margin-right:4px}
+.japanese-word-list{margin:28px 0}.japanese-word{padding:14px 0;border-bottom:1px solid var(--line)}
+.japanese-word>div{display:flex;align-items:center;flex-wrap:wrap;gap:8px 13px;margin-bottom:8px}
+.japanese-word>div strong{font-size:23px;font-weight:600;color:var(--text)}
+.japanese-word>div span{font-size:12px;color:var(--gold)}
+.japanese-word .japanese-hear{margin-top:11px;padding:7px 11px}
+.japanese-audio-note{font-size:11px;line-height:1.75;color:var(--faint);padding:12px 14px;background:var(--card-soft);border-radius:11px}
+.japanese-practice{background:var(--bg-raised);border:1px solid var(--line-bright);border-radius:17px;padding:20px 17px;margin-top:24px}
+.japanese-practice h4{font-size:18px;margin:7px 0 11px;color:var(--text)}
+.japanese-practice p,.japanese-practice-done p{font-size:12px;line-height:1.7;color:var(--muted)}
+.japanese-practice input{width:100%;min-height:48px;border:1px solid var(--line-bright);border-radius:10px;background:var(--card);padding:11px 13px;color:var(--text);margin:8px 0 13px;font:inherit;font-size:14px}
+.japanese-practice input:focus-visible{outline:2px solid var(--gold)}
+.japanese-practice .primary-button{margin:6px 0 10px}
+.japanese-feedback{color:var(--gold)!important;font-weight:650}
+.japanese-practice-done{border:1px solid rgba(165,218,174,.35);background:rgba(106,176,139,.08);border-radius:15px;margin-top:24px;padding:18px}
+.japanese-practice-done strong{color:var(--good);font-size:13px}
+.japanese-practice-done .primary-button{margin-top:9px}
+.japanese-foundation>.fineprint{padding:0 24px 22px;margin:0}
+.japanese-practice-divider{margin:31px 0 20px;padding-top:24px;border-top:1px solid var(--line-bright)}
+.japanese-practice-divider h2{font:normal 27px Georgia,serif;margin:8px 0}
+.japanese-practice-divider p{font-size:12px;line-height:1.75;color:var(--muted)}
+@media(max-width:780px){.japanese-foundation-layout{grid-template-columns:minmax(0,1fr)}.japanese-unit-menu{flex-direction:row;overflow-x:auto;gap:9px;border-right:0;border-bottom:1px solid var(--line);scroll-snap-type:x proximity;scrollbar-width:thin;padding:12px}.japanese-unit-select{width:175px;flex:0 0 175px;min-height:62px;scroll-snap-align:start}.japanese-lesson{padding:23px 17px 27px}.japanese-foundation-head{padding:22px 18px}}
+@media(max-width:390px){.japanese-kana-grid{gap:5px}.japanese-kana-tile{padding:10px 1px 7px}.japanese-kana-tile>span{font-size:27px}.japanese-hear{min-width:38px;padding:5px 2px}.japanese-word>div strong{font-size:21px}}
