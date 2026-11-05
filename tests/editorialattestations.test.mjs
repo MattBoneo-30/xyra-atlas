@@ -12,7 +12,7 @@ test('no independent editor is silently invented or auto-approved',()=>{
  const a=auditEditorialAttestations(packet,blankRoster,blankLedger);
  assert.equal(a.totals.approvedLessons,0);
  assert.equal(a.totals.approvedDecisions,0);
- assert.equal(a.totals.pendingLessons,134);
+ assert.equal(a.totals.pendingLessons,139);
  assert.equal(a.totals.pendingDecisions,42);
  assert.equal(a.totals.rejectedAttestations,0);
  assert.equal(a.reviewEvidenceComplete,false);
@@ -34,7 +34,7 @@ test('valid signed source hash is accepted only for a separately vetted reviewer
  const entry={payload,signature:sig(payload)};
  const original=auditEditorialAttestations(packet,roster,{schemaVersion:1,attestations:[entry]});
  assert.equal(original.totals.approvedLessons,1);
- assert.equal(original.totals.pendingLessons,133);
+ assert.equal(original.totals.pendingLessons,138);
  assert.equal(original.reviewEvidenceComplete,false);
  const modified={...payload,contentHash:'f'.repeat(64)};
  assert.deepEqual(auditEditorialAttestations(packet,roster,{schemaVersion:1,attestations:[{payload:modified,signature:sig(modified)}]}).rejections.map(x=>x.reason),['stale-content-hash']);
