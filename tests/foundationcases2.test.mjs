@@ -6,7 +6,7 @@ import {FOUNDATION_CASES} from '../foundationcases.js';
 import {FOUNDATION_CASES_TWO,FOUNDATION_CASES_TWO_COUNT} from '../foundationcases2.js';
 test('all 52 original Atlas lessons now include a grounded third section and worked example',()=>{
  assert.equal(FOUNDATION_CASES_TWO_COUNT,26);
- assert.equal(totalLessons,134);
+ assert.equal(totalLessons,139);
  assert.equal(Object.keys(FOUNDATION_CASES_TWO).length,14);
  const known=new Set();
  let basic=0;
