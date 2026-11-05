@@ -229,13 +229,16 @@ export function japaneseFoundationPanel({done=[],activeId='vowels',practiceIndex
  const guidance=unit.teaching.map(([heading,body],i)=>
   '<article class="japanese-teaching"><span class="japanese-step">'+String(i+1).padStart(2,'0')+'</span><div><h4>'+escapeHTML(heading)+'</h4><p>'+escapeHTML(body)+'</p></div></article>'
  ).join('');
- const chart=unit.rows.map(r=>
-  '<div class="japanese-kana-row"><h4>'+escapeHTML(r.label)+'</h4><div class="japanese-kana-grid">'+r.items.map(item=>
+ const chart=unit.rows.map(r=>{
+  const hints=r.items.filter(item=>MEMORY_HOOKS[item.kana]);
+  return '<div class="japanese-kana-row"><h4>'+escapeHTML(r.label)+'</h4><div class="japanese-kana-grid">'+r.items.map(item=>
    '<div class="japanese-kana-tile"><span lang="ja">'+escapeHTML(item.kana)+'</span><strong>'+escapeHTML(item.roman)+'</strong>'+
-    (MEMORY_HOOKS[item.kana]?'<small>'+escapeHTML(MEMORY_HOOKS[item.kana])+'</small>':'')+
     action('Hear','japanese-speak','data-kana="'+escapeHTML(item.kana)+'" aria-label="Hear '+escapeHTML(item.roman)+'"','japanese-hear')+
-   '</div>').join('')+'</div></div>'
- ).join('');
+   '</div>').join('')+'</div>'+
+   (hints.length?'<div class="japanese-memory-notes">'+hints.map(item=>
+     '<p><strong lang="ja">'+escapeHTML(item.kana)+'</strong> '+escapeHTML(MEMORY_HOOKS[item.kana])+'</p>'
+   ).join('')+'</div>':'')+'</div>';
+ }).join('');
  const examples=unit.examples.map(e=>
   '<article class="japanese-word"><div><strong lang="ja">'+escapeHTML(e.text)+'</strong><span>'+escapeHTML(e.roman)+' · '+escapeHTML(e.meaning)+'</span></div><p>'+escapeHTML(e.breakdown)+'</p>'+
   action('Hear example','japanese-speak','data-kana="'+escapeHTML(e.text)+'"','japanese-hear')+'</article>'
