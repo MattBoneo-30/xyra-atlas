@@ -39,7 +39,7 @@ if(stage.schemaVersion!==1||!Array.isArray(stage.gates)||
  stage.gates.length!==4||stage.gates.some((g,i)=>g.id!==order[i]))
  throw Error('Release stage definitions are not the expected four stages');
 const e=editorial.totals,c=claims.totals,l=language.totals;
-if(e.lessons!==134||e.decisions!==42||c.distinctSourceURLs!==42||
+if(e.lessons!==139||e.decisions!==42||c.distinctSourceURLs!==51||
  l.phrases!==160||devices.summary?.total!==18)
  throw Error('Review scope changed; rebuild review evidence before packaging');
 const approvals={
