@@ -180,7 +180,7 @@ const INTRO_JAPANESE_UNITS=[
    ['Read, then understand','ねこ (neko) is a cat, いぬ (inu) a dog, みず (mizu) water, and ほん (hon) a book. Practice decoding first; then recall what the word means without a translation prompt.'],
    ['は marks a topic in these sentences','In わたしは がくせいです (watashi wa gakusei desu), は is written ha but pronounced wa as a topic particle. The sentence means “I am a student” in a neutral, polite style.'],
    ['Build a demonstrative sentence','これは ほんです (kore wa hon desu) means “This is a book.” これ = this, は = topic marker, ほん = book, です = polite copula. Japanese commonly omits spaces in normal writing; spaces here are teaching aids.'],
-   ['What comes next','These first nine steps introduce kana reading, not fluency. Continue into the next units for vocabulary, sentence particles, location expressions and common verbs. Spoken interaction, listening to native materials and writing still need much more practice.']
+   ['What comes next','These step-by-step kana lessons introduce reading, not fluency. Continue into the next units for vocabulary, sentence particles, location expressions and common verbs. Spoken interaction, listening to native materials and writing still need much more practice.']
   ],
   rows:[],
   examples:[ex('ねこ','neko','cat','ね + こ = neko.'),ex('いぬ','inu','dog','い + ぬ = inu.'),ex('わたしは がくせいです','watashi wa gakusei desu','I am a student.','は is pronounced wa here; がくせい = student; です expresses politeness.'),ex('これは ほんです','kore wa hon desu','This is a book.','これ = this; は = topic marker; ほん = book; です = polite ending.')],
@@ -189,7 +189,7 @@ const INTRO_JAPANESE_UNITS=[
 ];
 
 const ROW_LESSONS=createJapaneseRowLessons(H,K);
-export const JAPANESE_UNITS=[
+const ORDERED_JAPANESE_UNITS=[
  INTRO_JAPANESE_UNITS[0],
  ...ROW_LESSONS.hiragana,
  INTRO_JAPANESE_UNITS.find(x=>x.id==='sound-changes'),
@@ -197,6 +197,10 @@ export const JAPANESE_UNITS=[
  INTRO_JAPANESE_UNITS.find(x=>x.id==='first-sentences'),
  ...JAPANESE_NEXT_UNITS
 ];
+export const JAPANESE_UNITS=ORDERED_JAPANESE_UNITS.map((unit,i)=>({
+ ...unit,
+ stage:String(i+1).padStart(2,'0')+' · '+(unit.stage.split(' · ').slice(1).join(' · ')||'Learning step')
+}));
 
 export const JAPANESE_BASIC_HIRAGANA=[H.vowels,H.k,H.s,H.t,H.n,H.h,H.m,H.y,H.r,H.w]
  .flatMap(r=>r.items.map(x=>x.kana));
