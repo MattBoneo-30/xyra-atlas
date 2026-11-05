@@ -99,6 +99,35 @@ try{
   const modal=await page.locator('.modal-card').boundingBox();
   expect(Boolean(modal)&&modal.y>=59,'dialog clears the simulated status bar');
  });
+ await smoke('all-subject-foundational-depth-mobile',{viewport:{width:390,height:844},isMobile:true,hasTouch:true},async page=>{
+  const subjects=[
+   ['psychology','thoughts','Psychology 101','manipulation'],
+   ['laws','legal-basics','Philippine Law 101','Republic Act'],
+   ['business','customer','Validate a customer','workaround'],
+   ['savings','cashflow','Cash flow','₱28,000'],
+   ['time','priorities','Priorities','bottleneck'],
+   ['languages','realistic-week','languages','hiragana'],
+   ['communication','listen','Listening','pressure'],
+   ['thinking','evidence','Critical thinking','denominator'],
+   ['digital','passwords','Digital security','authentication'],
+   ['career','skills','Career skills','portfolio'],
+   ['science','method','Science 101','hypothesis'],
+   ['relationships','trust','Trust','coercive'],
+   ['negotiation','persuasion','Influence','negotiation'],
+   ['shadow','manipulation','Recognizing manipulation','hidden pressure']
+  ];
+  for(const [course,id,title,concept] of subjects){
+   if(course==='shadow')continue; // Adult-gated route has separate access checks.
+   await page.goto(BASE+'/#/lesson/'+course+'/'+id,{waitUntil:'domcontentloaded'});
+   await page.locator('.reading-page').waitFor();
+   expect((await page.locator('.reading-head h1').textContent()).includes(title),course+' shows an honest introductory chapter');
+   expect(await page.locator('.lesson-content>section[id^="lesson-section-"]').count()>=5,course+' teaches multiple full explanations');
+   expect(await page.locator('.learning-flow-track li').count()===4,course+' includes an actual concept reasoning map');
+   expect((await page.locator('.lesson-content').textContent()).toLowerCase().includes(concept.toLowerCase()),course+' explains a meaningful concept');
+   const overflow=await mobileOverflow(page);
+   expect(overflow.scroll<=overflow.width+2,course+' remains readable on a narrow screen');
+  }
+ });
  await smoke('astronomy-and-republic-act-depth',{viewport:{width:390,height:844},isMobile:true,hasTouch:true},async page=>{
   await page.goto(BASE+'/#/lesson/science/astronomy-moon-eclipses',{waitUntil:'domcontentloaded'});
   await page.locator('.reading-page').waitFor();
