@@ -5,7 +5,7 @@ import {COURSES,totalLessons} from '../data.js';
 import {PRACTICE_GUIDES,practiceGuide,practiceGuideCoverage} from '../practiceguides.js';
 test('42 distinct evidence-led practice guides support every existing Atlas lesson',()=>{
  assert.equal(COURSES.length,14);
- assert.equal(totalLessons,134);
+ assert.equal(totalLessons,139);
  assert.deepEqual(new Set(Object.keys(PRACTICE_GUIDES)),new Set(COURSES.map(c=>c.id)));
  const seen=new Set();
  for(const course of COURSES){
@@ -24,7 +24,7 @@ test('42 distinct evidence-led practice guides support every existing Atlas less
   }
  }
  assert.equal(seen.size,84);
- assert.deepEqual(practiceGuideCoverage(COURSES),{lessons:134,guided:134});
+ assert.deepEqual(practiceGuideCoverage(COURSES),{lessons:139,guided:139});
  assert.equal(practiceGuide('unknown','Beginner'),null);
  assert.equal(practiceGuide('laws','unknown'),null);
 });
