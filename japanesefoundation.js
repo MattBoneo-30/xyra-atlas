@@ -5,6 +5,7 @@
  * Sound associations are approximations, not transcriptions or native audio.
  */
 import {JAPANESE_NEXT_UNITS} from './japanesepath2.js';
+import {createJapaneseRowLessons} from './japaneserows.js';
 
 const row=(label,spec)=>({
  label,items:spec.split(' ').map(token=>{
@@ -187,7 +188,15 @@ const INTRO_JAPANESE_UNITS=[
  }
 ];
 
-export const JAPANESE_UNITS=[...INTRO_JAPANESE_UNITS,...JAPANESE_NEXT_UNITS];
+const ROW_LESSONS=createJapaneseRowLessons(H,K);
+export const JAPANESE_UNITS=[
+ INTRO_JAPANESE_UNITS[0],
+ ...ROW_LESSONS.hiragana,
+ INTRO_JAPANESE_UNITS.find(x=>x.id==='sound-changes'),
+ ...ROW_LESSONS.katakana,
+ INTRO_JAPANESE_UNITS.find(x=>x.id==='first-sentences'),
+ ...JAPANESE_NEXT_UNITS
+];
 
 export const JAPANESE_BASIC_HIRAGANA=[H.vowels,H.k,H.s,H.t,H.n,H.h,H.m,H.y,H.r,H.w]
  .flatMap(r=>r.items.map(x=>x.kana));
@@ -197,11 +206,22 @@ export const JAPANESE_SPEAKABLE=new Set(JAPANESE_UNITS.flatMap(unit=>[
  ...unit.rows.flatMap(r=>r.items.map(x=>x.kana)),
  ...unit.examples.map(e=>e.text)
 ]).filter(x=>!x.includes('small-tsu')));
+const LEGACY_JAPANESE_COMPLETIONS={
+ 'hiragana-k':'hiragana-ks','hiragana-s':'hiragana-ks',
+ 'hiragana-t':'hiragana-tn','hiragana-n':'hiragana-tn',
+ 'hiragana-h':'hiragana-hm','hiragana-m':'hiragana-hm',
+ 'hiragana-y':'hiragana-rest','hiragana-r':'hiragana-rest','hiragana-w':'hiragana-rest',
+ 'katakana-vowels':'katakana-first','katakana-k':'katakana-first',
+ 'katakana-s':'katakana-first','katakana-t':'katakana-first','katakana-n':'katakana-first',
+ 'katakana-h':'katakana-rest','katakana-m':'katakana-rest',
+ 'katakana-y':'katakana-rest','katakana-r':'katakana-rest','katakana-w':'katakana-rest'
+};
 export function normalizeJapaneseFoundationDone(value){
  if(!Array.isArray(value))return [];
+ const completed=new Set(value.filter(x=>typeof x==='string'));
  const clean=[];
  for(const unit of JAPANESE_UNITS){
-  if(!value.includes(unit.id))break;
+  if(!completed.has(unit.id)&&!completed.has(LEGACY_JAPANESE_COMPLETIONS[unit.id]))break;
   clean.push(unit.id);
  }
  return clean;
@@ -260,7 +280,7 @@ export function japaneseFoundationPanel({done=[],activeId='vowels',practiceIndex
    action('Start guided recall','japanese-start','','primary-button')+'</div>';
  return '<section class="japanese-foundation" aria-label="Step-by-step Japanese beginner learning pathway" id="japanese-foundation">'+
   '<div class="japanese-foundation-head"><span class="overline">JAPANESE · START WITH UNDERSTANDING</span><h2>Learn sounds before guessing words.</h2>'+
-  '<p>Familiar vowel sounds → hiragana → katakana → useful vocabulary → particles and verbs. Learn the explanation before attempting guided recall.</p>'+
+  '<p>Start with the five vowels, then learn the K, S, T, N, H, M, Y, R and W rows one at a time. After hiragana come sound changes, katakana, everyday words and basic grammar. No phrase guessing before you can read.</p>'+
   '<span class="japanese-count">'+completed.length+' / '+JAPANESE_UNITS.length+' foundation checkpoints</span></div>'+
   '<div class="japanese-foundation-layout"><nav class="japanese-unit-menu" aria-label="Japanese foundations">'+menu+'</nav>'+
   '<div class="japanese-lesson"><span class="overline">'+escapeHTML(unit.stage)+'</span><h3>'+escapeHTML(unit.title)+'</h3><p class="japanese-goal">'+escapeHTML(unit.goal)+'</p>'+
