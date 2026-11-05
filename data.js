@@ -1,4 +1,5 @@
 import { DEEP_TRACKS } from './deeptracks.js';
+import {DEEPER_FOUNDATIONS} from './depthcurriculum.js';
 import { FIELD_GUIDES } from './fieldguides.js';
 import { LIFE_PRACTICE } from './lifepractice.js';
 import { MASTERY_TRACKS } from './masterytracks.js';
@@ -299,6 +300,8 @@ for(const entry of COURSES) if(LIFE_PRACTICE[entry.id]) entry.lessons.push(...LI
 for(const entry of COURSES) if(MASTERY_TRACKS[entry.id]) entry.lessons.push(...MASTERY_TRACKS[entry.id]);
 for(const entry of COURSES) if(CAPSTONE_LABS[entry.id]) entry.lessons.push(...CAPSTONE_LABS[entry.id]);
 for(const entry of COURSES) if(PH_CASEWORK[entry.id]) entry.lessons.push(...PH_CASEWORK[entry.id]);
+// Source-linked teaching chapters augment the existing library without changing stable lesson IDs.
+for(const entry of COURSES) if(DEEPER_FOUNDATIONS[entry.id]) entry.lessons.push(...DEEPER_FOUNDATIONS[entry.id]);
 export const LANGUAGES = [
   {name:'English',flag:'🇬🇧',code:'en'}, {name:'Japanese',flag:'🇯🇵',code:'ja'},
   {name:'Korean',flag:'🇰🇷',code:'ko'}, {name:'Spanish',flag:'🇪🇸',code:'es'},
