@@ -121,7 +121,10 @@ try{
    await page.goto(BASE+'/#/lesson/'+course+'/'+id,{waitUntil:'domcontentloaded'});
    await page.locator('.reading-page').waitFor();
    expect((await page.locator('.reading-head h1').textContent()).includes(title),course+' shows an honest introductory chapter');
-   expect(await page.locator('.lesson-content>section[id^="lesson-section-"]').count()>=5,course+' teaches multiple full explanations');
+   expect(await page.locator('.lesson-content>.deep-study-section').count()===5,course+' teaches five full conceptual sections');
+   expect(await page.locator('.lesson-content>section[id^="lesson-section-"]').count()===3,course+' preserves the original three lesson sections');
+   expect(await page.locator('.deep-worked-case').count()===1,course+' includes a detailed worked case');
+   expect(await page.locator('.deep-study-assignment').count()===1,course+' includes a substantial independent exercise');
    expect(await page.locator('.learning-flow-track li').count()===4,course+' includes an actual concept reasoning map');
    expect((await page.locator('.lesson-content').textContent()).toLowerCase().includes(concept.toLowerCase()),course+' explains a meaningful concept');
    const overflow=await mobileOverflow(page);
