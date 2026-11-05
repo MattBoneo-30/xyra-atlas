@@ -1252,6 +1252,7 @@ function confirmBackupImport(){
  try{localStorage.setItem(STORAGE_KEY,JSON.stringify(candidate));}
  catch{flash('Restore could not be saved. Your current learning data remains unchanged.');return;}
  saved=candidate;
+ kanaRecallFeedback=null;
  focusedPhraseReview=null;focusedReviewSummary=null;phraseDraft='';phraseRevealed=false;
  recoveryRaw=null;storageProblem=null;storageWarningShown=false;
  shadowUnlocked=false;gateConfirmed=false;
@@ -1705,7 +1706,7 @@ document.addEventListener('change',e=>{
     if(status&&progress)status.textContent=progress.count+' of '+progress.total+' criteria reviewed · Saved on this device';
     el.closest('li')?.classList.toggle('is-reviewed',el.checked);
   }
-  if(e.target.id==='language-select') {japaneseUnitId=null;japanesePracticeIndex=-1;japanesePracticeFeedback='';focusedPhraseReview=null;focusedReviewSummary=null;stopLanguageAudio();languageVoiceURI='';saved.language=e.target.value;phraseIndex=0;phraseRevealed=false;phraseDraft='';phraseReviewRevealed=false;persist();render();}
+  if(e.target.id==='language-select') {japaneseUnitId=null;japanesePracticeIndex=-1;japanesePracticeFeedback='';kanaRecallFeedback=null;focusedPhraseReview=null;focusedReviewSummary=null;stopLanguageAudio();languageVoiceURI='';saved.language=e.target.value;phraseIndex=0;phraseRevealed=false;phraseDraft='';phraseReviewRevealed=false;persist();render();}
   if(e.target.id==='language-voice-picker'){
     languageVoiceURI=e.target.value;
     stopLanguageAudio();
