@@ -1425,6 +1425,21 @@ async function handleAction(e) {
    render();
    document.getElementById('japanese-answer')?.focus({preventScroll:true});
   }
+  else if(action==='kana-review-check'||action==='kana-review-reveal'){
+   if(route.view!=='language'||saved.language!=='ja')return;
+   const status=kanaReviewStatus(saved.japaneseFoundationDone,saved.japaneseKanaReviews);
+   const item=status.due[0];if(!item)return;
+   const answer=action==='kana-review-reveal'?'':document.getElementById('kana-review-answer')?.value||'';
+   const result=action==='kana-review-reveal'?{valid:true,correct:false,expected:item.roman}:evaluateKanaReview(item,answer);
+   if(!result.valid){flash('Enter a reading, or choose Show answer to study it.');return;}
+   saved.japaneseKanaReviews={...normalizeKanaReviews(saved.japaneseKanaReviews),
+    [item.kana]:scheduleKanaReview(saved.japaneseKanaReviews?.[item.kana],result.correct)};
+   kanaRecallFeedback={kana:item.kana,expected:result.expected,correct:result.correct,
+    memory:kanaContrastNote(item.kana,status.available)};
+   persist();render();
+   document.getElementById('kana-review-panel')?.scrollIntoView({block:'start',behavior:'auto'});
+   document.getElementById('kana-review-answer')?.focus({preventScroll:true});
+  }
   else if(action==='japanese-speak'){
    if(route.view!=='language'||saved.language!=='ja')return;
    const spoken=button.dataset.kana||'';
