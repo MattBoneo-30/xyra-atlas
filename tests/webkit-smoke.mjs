@@ -56,9 +56,13 @@ try{
    await page.evaluate(()=>document.documentElement.style.setProperty('--app-safe-top','47px'));
    const geometry=await page.evaluate(()=>{
     const bar=document.querySelector('.topbar');
-    return {height:bar.getBoundingClientRect().height,padding:parseFloat(getComputedStyle(bar).paddingTop),innerTop:bar.querySelector('.topbar-inner').getBoundingClientRect().top};
+    return {height:bar.getBoundingClientRect().height,padding:parseFloat(getComputedStyle(bar).paddingTop),innerTop:bar.querySelector('.topbar-inner').getBoundingClientRect().top,skipBottom:document.querySelector('.skip-link').getBoundingClientRect().bottom};
    });
    assert.ok(Math.abs(geometry.height-117)<1 && geometry.padding===47 && geometry.innerTop>=47,'standalone header reserves top inset');
+   assert.ok(geometry.skipBottom<=0,'unfocused skip link stays above the visible status bar');
+   await page.keyboard.press('Tab');
+   const focusedSkip=await page.locator('#skip-content').boundingBox();
+   assert.ok(focusedSkip && focusedSkip.y>=57,'keyboard skip shortcut appears beneath the status bar');
    await page.locator('.topbar [data-action="open-updates"]').click();
    const modal=await page.locator('.modal-card').boundingBox();
    assert.ok(modal && modal.y>=59,'dialog clears simulated top safe area');
