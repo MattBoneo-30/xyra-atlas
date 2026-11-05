@@ -682,8 +682,9 @@ try{
   expect(stages.every(t=>t.includes('Advanced')),'advanced filter hides beginner and intermediate lessons');
   await page.locator('[data-action="open-lesson"][data-lesson="privacy-access-request-ph"]').click();
   await waitRoute(page,'#/lesson/laws/privacy-access-request-ph');
-  await page.locator('.reading-page .lesson-content .worked-example').waitFor();
-  expect(await page.locator('.reading-page .lesson-content .worked-example').count()===1,'new advanced lesson includes a worked example');
+  await page.locator('.reading-page .lesson-content .worked-example:not(.deep-worked-case)').waitFor();
+  expect(await page.locator('.reading-page .lesson-content .worked-example:not(.deep-worked-case)').count()===1,'original advanced worked example is preserved');
+  expect(await page.locator('.reading-page .lesson-content .deep-worked-case').count()===1,'advanced lesson adds its own detailed case');
   expect(await page.locator('.lesson-sources a[href*="privacy.gov.ph"]').count()>=1,'primary-source reference is linked in lesson');
   await page.locator('.reading-page .subnav [data-action="open-course"]').click();
   expect(await page.locator('.course-stage-button[data-id="Advanced"]').getAttribute('aria-pressed')==='true','level filter remains selected when returning from a lesson');
