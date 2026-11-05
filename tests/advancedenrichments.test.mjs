@@ -5,7 +5,7 @@ import {COURSES,findLesson,totalLessons} from '../data.js';
 import {ADVANCED_ENRICHMENTS,ADVANCED_ENRICHMENT_COUNT} from '../advancedenrichments.js';
 test('twelve original advanced lessons gain distinct applied sections and worked examples',()=>{
  assert.equal(ADVANCED_ENRICHMENT_COUNT,12);
- assert.equal(totalLessons,134);
+ assert.equal(totalLessons,139);
  const cases=new Set();
  for(const [courseId,records] of Object.entries(ADVANCED_ENRICHMENTS)){
   for(const [lessonId,addition] of Object.entries(records)){
