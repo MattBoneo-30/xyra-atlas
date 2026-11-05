@@ -74,11 +74,14 @@ try{
   await page.evaluate(()=>document.documentElement.style.setProperty('--app-safe-top','47px'));
   const geometry=await page.evaluate(()=>{
    const bar=document.querySelector('.topbar');
-   return {height:bar.getBoundingClientRect().height,padding:parseFloat(getComputedStyle(bar).paddingTop),innerTop:bar.querySelector('.topbar-inner').getBoundingClientRect().top,skipTop:parseFloat(getComputedStyle(document.querySelector('.skip-link')).top),overflow:document.documentElement.scrollWidth-window.innerWidth};
+   return {height:bar.getBoundingClientRect().height,padding:parseFloat(getComputedStyle(bar).paddingTop),innerTop:bar.querySelector('.topbar-inner').getBoundingClientRect().top,skipBottom:document.querySelector('.skip-link').getBoundingClientRect().bottom,overflow:document.documentElement.scrollWidth-window.innerWidth};
   });
   expect(Math.abs(geometry.height-117)<1 && geometry.padding===47,'standalone header reserves the simulated status-bar inset');
-  expect(geometry.innerTop>=47 && geometry.skipTop>=57,'header controls and skip link clear the status bar');
+  expect(geometry.innerTop>=47 && geometry.skipBottom<=0,'header clears the status bar and unfocused skip link stays fully hidden');
   expect(geometry.overflow<=2,'safe-area header fits mobile viewport');
+  await page.keyboard.press('Tab');
+  const focusedSkip=await page.locator('#skip-content').boundingBox();
+  expect(Boolean(focusedSkip)&&focusedSkip.y>=57,'keyboard-focused skip link appears below the status bar');
   await page.locator('.topbar [data-action="open-updates"]').click();
   const modal=await page.locator('.modal-card').boundingBox();
   expect(Boolean(modal)&&modal.y>=59,'dialog clears the simulated status bar');
