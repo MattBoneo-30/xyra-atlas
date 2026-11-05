@@ -7,7 +7,7 @@ import {
 } from '../japanesefoundation.js';
 
 test('Japanese teaches five vowels and all 46 basic characters in each kana system',()=>{
- assert.equal(JAPANESE_UNITS.length,9);
+ assert.equal(JAPANESE_UNITS.length,13);
  assert.deepEqual(JAPANESE_BASIC_HIRAGANA.slice(0,5),['あ','い','う','え','お']);
  assert.deepEqual(JAPANESE_BASIC_KATAKANA.slice(0,5),['ア','イ','ウ','エ','オ']);
  for(const alphabet of [JAPANESE_BASIC_HIRAGANA,JAPANESE_BASIC_KATAKANA]){
@@ -21,6 +21,8 @@ test('Japanese teaches five vowels and all 46 basic characters in each kana syst
  assert.equal(JAPANESE_BASIC_KATAKANA.includes('ン'),true);
  assert.ok(JAPANESE_SPEAKABLE.has('あ'));
  assert.ok(JAPANESE_SPEAKABLE.has('カメラ'));
+ assert.ok(JAPANESE_SPEAKABLE.has('わたしは がくせいです'));
+ assert.equal(JAPANESE_UNITS.at(-1).id,'actions-and-time');
 });
 test('each foundation unit provides explanation, practical decoding and assessable recall',()=>{
  const ids=new Set();
@@ -82,4 +84,6 @@ test('the app, backups, privacy reset and offline bundle include kana instructio
  assert.match(privacy,/japaneseFoundationDone/);
  assert.match(build,/'japanesefoundation\.js'/);
  assert.match(worker,/\/japanesefoundation\.js/);
+ assert.match(worker,/\/japanesepath2\.js/);
+ assert.match(build,/'japanesepath2\.js'/);
 });
