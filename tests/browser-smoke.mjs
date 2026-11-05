@@ -922,6 +922,45 @@ try{
   expect(await page.locator('.japanese-unit-select').nth(1).isEnabled(),'next unit remains unlocked');
  });
 
+ await smoke('kana-recall-retention-mobile-offline',{viewport:{width:390,height:844},isMobile:true,hasTouch:true},async(page,context)=>{
+  await page.goto(BASE+'/#/language',{waitUntil:'domcontentloaded'});
+  await page.locator('.kana-review-panel').waitFor();
+  expect(await page.locator('#kana-review-answer').count()===0,'review deck does not quiz untaught kana');
+  await page.locator('.japanese-practice [data-action="japanese-start"]').click();
+  for(const answer of ['a','i','u','e','o','ai','ie']){
+   await page.locator('#japanese-answer').fill(answer);
+   await page.locator('[data-action="japanese-check"]').click();
+  }
+  expect(await page.locator('#kana-review-answer').count()===1,'five taught vowels unlock a separate recall deck');
+  expect((await page.locator('.kana-review-stats').textContent()).includes('5'),'five learned vowels appear due for review');
+  expect((await page.locator('.kana-review-glyph').textContent()).includes('あ'),'recall begins with a taught kana');
+  expect(await page.locator('.phrase-lab').count()===0,'the review deck never unlocks untaught phrase games');
+  await page.locator('#kana-review-answer').fill('wrong');
+  await page.locator('[data-action="kana-review-check"]').click();
+  expect((await page.locator('.kana-review-feedback').textContent()).includes('あ = a'),'mistake reveals correct reading instead of an unexplained wrong marker');
+  let state=await getState(page);
+  expect(state.japaneseKanaReviews['あ'].step===0&&state.japaneseKanaReviews['あ'].misses===1,'missed sound is scheduled for a retry');
+  expect(await page.locator('.kana-review-glyph').textContent()==='い','review advances without skipping new foundation lessons');
+  await page.locator('#kana-review-answer').fill('i');
+  await page.locator('[data-action="kana-review-check"]').click();
+  state=await getState(page);
+  expect(state.japaneseKanaReviews['い'].step===1,'remembered sound receives first spaced review');
+  expect(await page.locator('.kana-review-glyph').textContent()==='う','next due card remains from taught vowel row');
+  const overflow=await mobileOverflow(page);
+  expect(overflow.scroll<=overflow.width+2,'kana review fits narrow mobile viewport');
+  await page.reload({waitUntil:'domcontentloaded'});
+  expect((await getState(page)).japaneseKanaReviews['い'].step===1,'kana review survives reload');
+  await page.evaluate(async()=>navigator.serviceWorker.ready);
+  await page.waitForFunction(()=>Boolean(navigator.serviceWorker.controller));
+  await context.setOffline(true);
+  try{
+   await page.reload({waitUntil:'domcontentloaded'});
+   await page.locator('#kana-review-answer').fill('u');
+   await page.locator('[data-action="kana-review-check"]').click();
+   expect((await getState(page)).japaneseKanaReviews['う'].step===1,'new spaced recall schedules offline');
+  }finally{await context.setOffline(false);}
+ });
+
  await smoke('manual-offline-update-lifecycle',{viewport:{width:390,height:844}},async(page,context)=>{
   await page.goto(BASE+'/#/offline',{waitUntil:'domcontentloaded'});
   await page.evaluate(async()=>{await navigator.serviceWorker.ready;});
