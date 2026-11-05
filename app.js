@@ -131,6 +131,8 @@ let offlinePack={state:'idle',cached:0,total:0,ready:false,percent:0,version:'un
 let offlineJob=0;
 let offlineUpdateWaiting=false;
 let offlineUpdateApplying=false;
+let appUpdateStatus='idle';
+let lastAutoUpdateCheck=0;
 const watchedOfflineRegistrations=new WeakSet();
 const today = () => localDayKey(new Date());
 const idFor = (courseId, lessonId) => `${courseId}:${lessonId}`;
@@ -243,7 +245,7 @@ function tabForRoute() { return ['notebook','personalcards'].includes(route.view
 function topbar() {
   return `<header class="topbar"><div class="topbar-inner">
     <button type="button" class="wordmark" data-action="goto-home" aria-label="Xyra Atlas home">${mark}<span>Xyra <em>Atlas</em></span></button>
-    <div class="top-actions"><span class="status-dot" title="${navigator.onLine ? 'Online' : 'Offline'}"></span>${button(icon('search',21),'search','icon-button','aria-label="Search courses"')}${button(icon(saved.theme === 'dark' ? 'sun':'moon',21),'theme','icon-button','aria-label="Toggle appearance"')}${offlineUpdateWaiting?button(icon('download',19),'offline-open','icon-button update-ready-topbar','aria-label="Atlas update ready to install"'):''}${button(icon('bell',20),'open-updates','icon-button','aria-label="About the app"')}</div>
+    <div class="top-actions"><span class="status-dot" title="${navigator.onLine ? 'Online' : 'Offline'}"></span>${button(icon('search',21),'search','icon-button','aria-label="Search courses"')}${button(icon(saved.theme === 'dark' ? 'sun':'moon',21),'theme','icon-button','aria-label="Toggle appearance"')}${button(icon(offlineUpdateWaiting?'download':'refresh',20),'app-update-open','icon-button app-update-topbar '+(offlineUpdateWaiting?'update-ready-topbar':''),'aria-label="'+(offlineUpdateWaiting?'Update ready. Install new version':'Check for app updates and refresh')+'"')}</div>
   </div></header>`;
 }
 function navBar() {
@@ -961,58 +963,95 @@ function watchOfflineRegistration(reg){
   const waiting=Boolean(reg.waiting&&navigator.serviceWorker.controller);
   if(offlineUpdateWaiting!==waiting){
    offlineUpdateWaiting=waiting;
-   // Do not replace the lesson DOM while someone is reading or typing notes.
-   // The topbar indicator will appear on their next natural navigation.
-   if(route.view==='offline')render();
+   if(waiting)appUpdateStatus='ready';
+   else if(!offlineUpdateApplying&&appUpdateStatus==='ready')appUpdateStatus='idle';
+   // Don't replace a lesson or unsaved text while someone is reading.
+   if(route.view==='offline'||modal==='app-update')render();
   }
  };
  checkWaiting();
  if(watchedOfflineRegistrations.has(reg))return;
  watchedOfflineRegistrations.add(reg);
- reg.addEventListener('updatefound',()=>{
-  const installing=reg.installing;
-  if(!installing)return;
-  installing.addEventListener('statechange',()=>{
-   if(installing.state==='installed')checkWaiting();
+ const trackInstalling=worker=>{
+  if(!worker)return;
+  worker.addEventListener('statechange',()=>{
+   if(worker.state==='installed')queueMicrotask(checkWaiting);
+   else if(worker.state==='redundant'&&!offlineUpdateWaiting){
+    appUpdateStatus='error';
+    if(modal==='app-update')render();
+   }
   });
+ };
+ reg.addEventListener('updatefound',()=>{
+  if(!offlineUpdateWaiting&&!offlineUpdateApplying)appUpdateStatus='downloading';
+  if(modal==='app-update')render();
+  trackInstalling(reg.installing);
  });
+ trackInstalling(reg.installing);
 }
-async function updateOffline(){
- if(!navigator.onLine){flash('Connect to check for updates.');return;}
- if(!('serviceWorker' in navigator)){flash('Offline updates are unavailable on this browser.');return;}
+async function updateOffline({silent=false}={}){
+ if(appUpdateStatus==='checking'||appUpdateStatus==='downloading')return;
+ const showStatus=message=>{
+  if(modal==='app-update'||route.view==='offline')render();
+  if(!silent&&modal!=='app-update')flash(message);
+ };
+ if(!navigator.onLine){appUpdateStatus='offline';showStatus('Connect to check for updates.');return;}
+ if(!('serviceWorker' in navigator)){appUpdateStatus='unsupported';showStatus('Offline updates are unavailable on this browser.');return;}
+ appUpdateStatus='checking';
+ if(modal==='app-update')render();
  try{
-  const reg=await navigator.serviceWorker.getRegistration();
-  if(!reg){flash('Open Atlas while connected before checking for updates.');return;}
+  const reg=await navigator.serviceWorker.getRegistration() ||
+    await navigator.serviceWorker.register('/sw.js',{updateViaCache:'none'});
   watchOfflineRegistration(reg);
-  await reg.update();
-  offlineUpdateWaiting=Boolean(reg.waiting&&navigator.serviceWorker.controller);
-  if(route.view==='offline')render();
-  if(offlineUpdateWaiting)flash('Update is ready. Choose Apply update when convenient.');
-  else if(reg.installing)flash('Update download started. It will appear here when ready.');
-  else flash('No newer release is waiting. Your current edition remains available.');
- }catch{flash('Unable to check for updates. Try again online.');}
+  if(!reg.waiting)await reg.update();
+  const waiting=Boolean(reg.waiting&&navigator.serviceWorker.controller);
+  offlineUpdateWaiting=waiting;
+  appUpdateStatus=waiting?'ready':reg.installing?'downloading':'up-to-date';
+  showStatus(waiting?'Update is ready. Apply it when convenient.':
+    reg.installing?'Update is downloading. You can keep reading.':
+    'Atlas is up to date.');
+ }catch{
+  appUpdateStatus='error';
+  showStatus('Unable to check for updates. Try again while online.');
+ }
 }
 async function applyOfflineUpdate(){
  if(offlineUpdateApplying||!('serviceWorker' in navigator))return;
  try{
   const reg=await navigator.serviceWorker.getRegistration();
-  if(!reg?.waiting){offlineUpdateWaiting=false;flash('No new update is ready to apply.');return;}
+  if(!reg?.waiting){
+   offlineUpdateWaiting=false;
+   appUpdateStatus='idle';
+   if(modal==='app-update')render();
+   else flash('No new update is ready to apply.');
+   return;
+  }
   offlineUpdateApplying=true;
+  appUpdateStatus='applying';
   reg.waiting.postMessage({type:'ATLAS_ACTIVATE_UPDATE'});
-  // The controllerchange event reloads after the new worker actually takes control.
-  if(route.view==='offline')render();
+  // Reload only after a user-approved worker takes control.
+  if(route.view==='offline'||modal==='app-update')render();
  }catch{
   offlineUpdateApplying=false;
-  flash('The update could not be activated. Your current edition is unchanged.');
+  appUpdateStatus='error';
+  if(modal==='app-update')render();
+  else flash('The update could not be activated. Your current edition is unchanged.');
  }
+}
+async function maybeCheckForUpdates(){
+ if(!navigator.onLine||document.hidden||offlineUpdateApplying)return;
+ const now=Date.now();
+ if(now-lastAutoUpdateCheck<30*60*1000)return;
+ lastAutoUpdateCheck=now;
+ await updateOffline({silent:true});
 }
 
 function you() {
   return `<main class="page you-page"><div class="page-title"><span class="overline">YOUR LITTLE CORNER OF THE WORLD</span><h1>Made for <em>you.</em></h1><p>Private progress. Your pace. Your rules.</p></div>
     <div class="profile-card"><div class="profile-avatar">✦</div><div><span class="overline">ATLAS EXPLORER</span><h2>${esc(actualName())}</h2><p>Level ${Math.floor(finished()/6)+1} · ${finished()} lessons completed</p></div></div>
-    <div class="settings-panel"><h2>Make it yours</h2><label class="field-label" for="profile-name">What should Atlas call you?</label><div class="name-row"><input id="profile-name" value="${esc(saved.userName)}" maxlength="40" placeholder="Curious learner"/>${button('Save','save-name','small-button')}</div><div class="settings-row"><span class="setting-icon">${icon(saved.theme==='dark'?'moon':'sun',21)}</span><div><strong>Appearance</strong><small>Switch between twilight and daylight</small></div>${button(saved.theme==='dark'?'Dark':'Light','theme','small-button')}</div><div class="settings-row"><span class="setting-icon">${icon(navigator.onLine?'wifi':'wifi-off',21)}</span><div><strong>Connection</strong><small>Lessons are included in your offline app</small></div><span class="setting-value">${navigator.onLine?'Online':'Offline'}</span></div><div class="settings-row"><span class="setting-icon">${icon('book',21)}</span><div><strong>Offline Library</strong><small>Check downloaded lessons and repair missing files</small></div>${button('Manage','offline-open','small-button')}</div><div class="settings-row"><span class="setting-icon">${icon('download',21)}</span><div><strong>Install Xyra Atlas</strong><small>Keep it on your phone's home screen</small></div>${button('How?','install','small-button')}</div></div>
+    <div class="settings-panel"><h2>Make it yours</h2><label class="field-label" for="profile-name">What should Atlas call you?</label><div class="name-row"><input id="profile-name" value="${esc(saved.userName)}" maxlength="40" placeholder="Curious learner"/>${button('Save','save-name','small-button')}</div><div class="settings-row"><span class="setting-icon">${icon(saved.theme==='dark'?'moon':'sun',21)}</span><div><strong>Appearance</strong><small>Switch between twilight and daylight</small></div>${button(saved.theme==='dark'?'Dark':'Light','theme','small-button')}</div><div class="settings-row"><span class="setting-icon">${icon(navigator.onLine?'wifi':'wifi-off',21)}</span><div><strong>Connection</strong><small>Lessons are included in your offline app</small></div><span class="setting-value">${navigator.onLine?'Online':'Offline'}</span></div><div class="settings-row"><span class="setting-icon">${icon('book',21)}</span><div><strong>Offline Library</strong><small>Check downloaded lessons and repair missing files</small></div>${button('Manage','offline-open','small-button')}</div><div class="settings-row"><span class="setting-icon">${icon('download',21)}</span><div><strong>Install Xyra Atlas</strong><small>Keep it on your phone's home screen</small></div>${button('How?','install','small-button')}</div><div class="settings-row"><span class="setting-icon">${icon('refresh',21)}</span><div><strong>App updates</strong><small>${offlineUpdateWaiting?'New version ready to install':'Check and refresh without reinstalling'}</small></div>${button(offlineUpdateWaiting?'Update now':'Check','app-update-open','small-button')}</div></div>
     <div class="settings-panel"><h2>Your data, your choice</h2><div class="storage-health-panel"><strong>Browser storage: ${storageProblem?storageProblem==='corrupt'?'Recovery needed':'Saving unavailable':'No save error detected'}</strong><span>${storageProblem?esc(storageHealthMessage(storageProblem)):'Progress is saved only in this browser, not synced to other devices.'}</span>${button('Try saving now','storage-retry','small-button')}</div><p class="settings-description">Progress is stored only in this browser on this device. It is not synced to a server. Export a backup before switching phones or clearing browser data.</p><div class="data-actions">${button(`${icon('download',18)} Export backup`,'export','secondary-button')}${button(`${icon('lock',18)} Encrypted backup`,'backup-encrypted-export','secondary-button')}${button(`${icon('upload',18)} Import backup`,'import','secondary-button')}${button(`${icon('shield',18)} Privacy controls`,'privacy-open','secondary-button')}${button(`${icon('trash',18)} Reset progress`,'reset-dialog','outline-danger')}</div><input type="file" id="backup-file" accept=".json,application/json" hidden /></div>
-    <div class="settings-panel"><h2>About Xyra Atlas</h2><p class="settings-description">A pocket atlas for the art of living—designed for curiosity, independence and the courage to learn difficult things.</p><p class="fineprint">Atlas 1.59 · Asset Quality edition. Some subjects are introductions, not complete professional courses. Laws vary by jurisdiction. Adult content is educational. There are no ads, trackers or accounts in this edition.</p>${button(`A note from Xyra ${chevron}`,'open-corner','text-action')}</div>
+    <div class="settings-panel"><h2>About Xyra Atlas</h2><p class="settings-description">A pocket atlas for the art of living—designed for curiosity, independence and the courage to learn difficult things.</p><p class="fineprint">Atlas 1.59 · Asset Quality edition. Some subjects are introductions, not complete professional courses. Laws vary by jurisdiction. Adult content is educational. There are no ads, trackers or accounts in this edition.</p>${button(`About this edition ${chevron}`,'open-updates','text-action')}${button(`A note from Xyra ${chevron}`,'open-corner','text-action')}</div>
   </main>`;
 }
 function privacyPage(){
@@ -1030,9 +1069,32 @@ function privacyPage(){
 }
 
 function errorView() { return `<main class="page"><div class="empty-state">${icon('compass',34)}<h2>This page wandered off the map.</h2><p>Let's find your way back.</p>${button('Go home','goto-home','primary-button')}</div></main>`; }
+function appUpdateView(){
+ const state=offlineUpdateApplying?'applying':offlineUpdateWaiting?'ready':appUpdateStatus;
+ const message=({
+  idle:'Check for the latest Atlas edition without removing this app.',
+  checking:'Checking for a newer edition…',
+  downloading:'Downloading the new edition and its offline lessons…',
+  ready:'A new edition has finished downloading. Apply it when you are ready to reload.',
+  applying:'Installing the new edition. Atlas will reopen when it takes control.',
+  'up-to-date':'You already have the latest available edition.',
+  offline:'Connect to the internet to look for a newer edition.',
+  unsupported:'App updates are unavailable in this browser.',
+  error:'The check or installation did not finish. Please try again while online.'
+ })[state]||'Check for updates.';
+ const busy=['checking','downloading','applying'].includes(state);
+ return '<div class="modal-icon">'+icon('refresh',26)+'</div>'+
+  '<span class="overline">APP UPDATES</span><h2>Keep Atlas fresh.</h2>'+
+  '<p role="status" aria-live="polite">'+message+'</p>'+
+  '<div class="app-update-details"><span>'+(offlineUpdateWaiting?'New edition ready':state==='up-to-date'?'Current edition':'Xyra Atlas PWA')+'</span><span>'+(navigator.onLine?'Online':'Offline')+'</span></div>'+
+  (offlineUpdateWaiting?button(offlineUpdateApplying?'Applying update…':'Install update now','offline-apply-update','primary-button',offlineUpdateApplying?'disabled':''):
+   button(state==='checking'?'Checking…':state==='downloading'?'Downloading…':'Check for updates','offline-update','primary-button',busy||!navigator.onLine?'disabled':''))+
+  button('Reload Atlas','app-reload','secondary-button',offlineUpdateApplying?'disabled':'')+
+  '<p class="fineprint">Updates only reload the app when approved. Saved progress stays on this device. Finish any unsaved text before updating. No reinstall or reset needed.</p>';
+}
 function modalView() {
   if (!modal) return '';
-  const inner = modal==='shadow' ? `<div class="modal-icon dark-icon">${icon('moon',28)}</div><span class="overline">A DIFFERENT KIND OF LESSON</span><h2>Enter the Shadow Library?</h2><p>This section explores manipulation, coercive behavior, psychological pressure, deception, adult intimacy, and sexual health. The purpose is understanding and informed choice—not abuse or exploitation.</p><div class="age-warning">${icon('info',19)} Contains mature educational discussions intended for adults 18+.</div><label class="checkbox-label"><input type="checkbox" id="age-agree" ${gateConfirmed?'checked':''}/><span>I am at least 18, and I understand the purpose of this material.</span></label>${button(`Enter the library ${icon('arrow',18)}`,'enter-shadow','primary-button',gateConfirmed?'':'disabled')}` :
+  const inner = modal==='app-update' ? appUpdateView() : modal==='shadow' ? `<div class="modal-icon dark-icon">${icon('moon',28)}</div><span class="overline">A DIFFERENT KIND OF LESSON</span><h2>Enter the Shadow Library?</h2><p>This section explores manipulation, coercive behavior, psychological pressure, deception, adult intimacy, and sexual health. The purpose is understanding and informed choice—not abuse or exploitation.</p><div class="age-warning">${icon('info',19)} Contains mature educational discussions intended for adults 18+.</div><label class="checkbox-label"><input type="checkbox" id="age-agree" ${gateConfirmed?'checked':''}/><span>I am at least 18, and I understand the purpose of this material.</span></label>${button(`Enter the library ${icon('arrow',18)}`,'enter-shadow','primary-button',gateConfirmed?'':'disabled')}` :
   modal==='install' ? `<div class="modal-icon">${icon('download',26)}</div><span class="overline">TAKE YOUR ATLAS WITH YOU</span><h2>Install Xyra Atlas</h2><p>After the first successful online visit, the app shell and included lessons can work offline once fully cached.</p><div class="install-steps"><strong>On iPhone / iPad</strong><p>Open this website in Safari. Tap Share, then “Add to Home Screen” and enable “Open as Web App”.</p><strong>On Android</strong><p>Open in Chrome. Use the browser menu and select “Install app” or “Add to Home screen”, when available.</p></div>${installEvent?button(`Install now ${icon('download',18)}`,'install-prompt','primary-button'):''}<p class="fineprint">Installing does not automatically sync data across phones. Use Export/Import backup to transfer progress.</p>` :
   modal==='personal-card-delete' && personalCardPendingDelete ? `<div class="modal-icon warning-icon">${icon('alert',26)}</div><h2>Delete this card?</h2><p>This removes the question, answer and its review schedule from this device. Other lesson progress stays unchanged.</p>${button('Keep card','close-modal','secondary-button')}${button('Delete card','personal-card-delete-confirm','outline-danger')}` :
   modal==='conversation-quest-replace' ? `<div class="modal-icon warning-icon">${icon('alert',26)}</div><h2>Replace unfinished conversation quest?</h2><p>Your current practice sequence will be replaced. Scores from completed quests remain saved.</p>${button('Keep my quest','close-modal','secondary-button')}${button('Replace quest','conversation-replace-confirm','outline-danger')}` :
@@ -1208,6 +1270,8 @@ async function handleAction(e) {
   else if(action==='privacy-erase-confirm'){if(modal!=='privacy-clear'||!dataGroupPendingId)return;const next=clearDataGroup(saved,createInitialState(),dataGroupPendingId);if(!next){flash('Could not erase this category.');return;}saved=next;dataGroupPendingId=null;modal='';if(persist()){render();flash('Selected category erased on this device.');}else{render();flash('Saving the erase failed. Check browser storage before closing.');}}
   else if(action==='offline-verify')await inspectOffline();
   else if(action==='offline-repair')await inspectOffline(true);
+  else if(action==='app-update-open'){modal='app-update';render();if(!offlineUpdateWaiting)await updateOffline();}
+  else if(action==='app-reload')location.reload();
   else if(action==='offline-update')await updateOffline();
   else if(action==='offline-apply-update')await applyOfflineUpdate();
   else if(action==='search') {nav('search');requestAnimationFrame(()=>document.getElementById('atlas-global-search')?.focus());}
@@ -1586,7 +1650,9 @@ document.addEventListener('keydown',e=>{
  else if(!e.shiftKey&&active===last){e.preventDefault();first.focus();}
 });
 window.addEventListener('hashchange',()=>{reviewRevealed=false;stopLanguageAudio();stopLessonAudio();route=parseHash();if(route.view!=='language'){focusedPhraseReview=null;focusedReviewSummary=null;phraseDraft='';phraseRevealed=false;}if(route.view==='offline'&&offlinePack.state==='idle')queueMicrotask(()=>inspectOffline());if(route.view==='course'&&route.courseId==='shadow'&&!shadowUnlocked)modal='shadow';if(route.view==='lesson'&&route.courseId==='shadow'&&!shadowUnlocked)modal='shadow';render();});
-window.addEventListener('online',render);window.addEventListener('offline',render);
+window.addEventListener('online',()=>{render();void maybeCheckForUpdates();});
+window.addEventListener('offline',render);
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)void maybeCheckForUpdates();});
 if('speechSynthesis' in window&&typeof window.speechSynthesis.addEventListener==='function'){
   window.speechSynthesis.addEventListener('voiceschanged',()=>{
     if(route.view==='language'){
@@ -1603,8 +1669,9 @@ if('serviceWorker' in navigator && location.protocol.startsWith('http')){
   });
   window.addEventListener('load',async()=>{
     try{
-      const reg=await navigator.serviceWorker.register('/sw.js');
+      const reg=await navigator.serviceWorker.register('/sw.js',{updateViaCache:'none'});
       watchOfflineRegistration(reg);
+      void maybeCheckForUpdates();
     }catch{/* Atlas remains usable online if service worker registration fails. */}
   });
 }
