@@ -7,7 +7,7 @@ import {buildEditorialReviewPacket} from './editorial-review-packet.mjs';
 import {buildSourceEvidenceMatrix,renderSourceEvidenceWorkbook} from './source-evidence-matrix.mjs';
 const packet=buildEditorialReviewPacket(COURSES,CLINICS);
 const matrix=buildSourceEvidenceMatrix(packet);
-if(matrix.summary.distinctURLs!==42||packet.lessons.length!==134||packet.decisions.length!==42)
+if(matrix.summary.distinctURLs!==51||packet.lessons.length!==139||packet.decisions.length!==42)
  throw Error('Source/course inventory changed: update and revalidate review coverage');
 const dir=path.join(process.cwd(),'artifacts');
 fs.mkdirSync(dir,{recursive:true});
