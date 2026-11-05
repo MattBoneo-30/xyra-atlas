@@ -82,7 +82,7 @@ try{
   await page.keyboard.press('Tab');
   const focusedSkip=await page.locator('#skip-content').boundingBox();
   expect(Boolean(focusedSkip)&&focusedSkip.y>=57,'keyboard-focused skip link appears below the status bar');
-  await page.locator('.topbar [data-action="open-updates"]').click();
+  await page.locator('.topbar [data-action="app-update-open"]').click();
   const modal=await page.locator('.modal-card').boundingBox();
   expect(Boolean(modal)&&modal.y>=59,'dialog clears the simulated status bar');
  });
@@ -323,7 +323,7 @@ try{
   expect(await page.evaluate(()=>document.activeElement?.id==='skip-content'),'first keyboard Tab focuses skip link');
   await page.keyboard.press('Enter');
   expect(await page.evaluate(()=>document.activeElement?.id==='atlas-main'),'skip action focuses the main learning content');
-  await page.locator('.topbar [data-action="open-updates"]').click();
+  await page.locator('.topbar [data-action="app-update-open"]').click();
   await page.locator('.modal-card').waitFor();
   await page.waitForFunction(()=>document.activeElement?.classList.contains('modal-close'));
   expect(await page.locator('.shell').evaluate(el=>el.inert),'background becomes inert when a dialog opens');
@@ -837,6 +837,7 @@ try{
   await page.locator('.modal-close').click();
   await page.locator('.bottom-nav [data-action="nav"][data-id="you"]').click();
   await waitRoute(page,'#/you');
+  await page.locator('.you-page [data-action="app-update-open"]').waitFor();
   expect(await page.locator('.you-page [data-action="app-update-open"]').count()===1,'your space offers a visible update shortcut');
   await page.locator('.you-page [data-action="app-update-open"]').click();
   expect(await page.locator('.modal-card [data-action="app-reload"]').count()===1,'settings reaches the same update dialog');
