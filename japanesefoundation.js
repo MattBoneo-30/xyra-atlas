@@ -4,6 +4,8 @@
  * https://www2.jpfbj.cn/irodori/resources/pdf/X_Hiragana_All.pdf
  * Sound associations are approximations, not transcriptions or native audio.
  */
+import {JAPANESE_NEXT_UNITS} from './japanesepath2.js';
+
 const row=(label,spec)=>({
  label,items:spec.split(' ').map(token=>{
   const [kana,roman]=token.split(':');
@@ -56,7 +58,7 @@ const MEMORY_HOOKS={
 const ex=(text,roman,meaning,breakdown)=>({text,roman,meaning,breakdown});
 const check=(prompt,answer,hint,others=[])=>({prompt,answer,hint,others});
 
-export const JAPANESE_UNITS=[
+const INTRO_JAPANESE_UNITS=[
  {
   id:'vowels',title:'Five sounds you already nearly know',stage:'01 · Start here',
   goal:'Recognize and read あ・い・う・え・お without guessing.',
@@ -177,13 +179,15 @@ export const JAPANESE_UNITS=[
    ['Read, then understand','ねこ (neko) is a cat, いぬ (inu) a dog, みず (mizu) water, and ほん (hon) a book. Practice decoding first; then recall what the word means without a translation prompt.'],
    ['は marks a topic in these sentences','In わたしは がくせいです (watashi wa gakusei desu), は is written ha but pronounced wa as a topic particle. The sentence means “I am a student” in a neutral, polite style.'],
    ['Build a demonstrative sentence','これは ほんです (kore wa hon desu) means “This is a book.” これ = this, は = topic marker, ほん = book, です = polite copula. Japanese commonly omits spaces in normal writing; spaces here are teaching aids.'],
-   ['What comes next','These nine foundation lessons introduce kana reading—not fluency. Continue with particles, verb conjugations, sentence order, common vocabulary, listening from native material, and written composition. The phrase drills below are optional reinforcement.']
+   ['What comes next','These first nine steps introduce kana reading, not fluency. Continue into the next units for vocabulary, sentence particles, location expressions and common verbs. Spoken interaction, listening to native materials and writing still need much more practice.']
   ],
   rows:[],
   examples:[ex('ねこ','neko','cat','ね + こ = neko.'),ex('いぬ','inu','dog','い + ぬ = inu.'),ex('わたしは がくせいです','watashi wa gakusei desu','I am a student.','は is pronounced wa here; がくせい = student; です expresses politeness.'),ex('これは ほんです','kore wa hon desu','This is a book.','これ = this; は = topic marker; ほん = book; です = polite ending.')],
   practice:[check('What does ねこ mean in English?','cat','It is an animal that meows.',['a cat']),check('How is the topic particle は pronounced in これは?','wa','It is not pronounced ha in this grammatical role.'),check('What does これは ほんです mean?','this is a book','これは = this (topic), ほん = book, です = polite ending.',['this is a book.'])],
  }
 ];
+
+export const JAPANESE_UNITS=[...INTRO_JAPANESE_UNITS,...JAPANESE_NEXT_UNITS];
 
 export const JAPANESE_BASIC_HIRAGANA=[H.vowels,H.k,H.s,H.t,H.n,H.h,H.m,H.y,H.r,H.w]
  .flatMap(r=>r.items.map(x=>x.kana));
@@ -246,7 +250,7 @@ export function japaneseFoundationPanel({done=[],activeId='vowels',practiceIndex
  const q=practiceIndex>=0?unit.practice[practiceIndex]:null;
  const practice=finished?
   '<div class="japanese-practice-done" role="status"><strong>Foundation checkpoint completed ✓</strong><p>You can revisit this material anytime. This records guided written recall, not pronunciation or fluency.</p>'+
-  (next? action('Continue to the next foundation','japanese-next','','primary-button'):'<p>You have completed the introductory kana-reading path. Continue with vocabulary, grammar and authentic listening practice.</p>')+'</div>':
+  (next? action('Continue to the next foundation','japanese-next','','primary-button'):'<p>You have completed Atlas’s introductory kana, vocabulary and early grammar path. Further grammar, kanji, authentic listening and conversation still require sustained study.</p>')+'</div>':
   q?'<div class="japanese-practice" id="japanese-practice"><span class="overline">GUIDED RECALL · '+(practiceIndex+1)+' / '+unit.practice.length+'</span><h4>'+escapeHTML(q.prompt)+'</h4>'+
    '<label class="field-label" for="japanese-answer">Type the answer without looking at the chart</label><input id="japanese-answer" type="text" maxlength="60" autocomplete="off" spellcheck="false" autocapitalize="off" placeholder="Your answer (romaji or English)" />'+
    (feedback?'<p class="japanese-feedback" role="status">'+escapeHTML(feedback)+'</p>':'')+
@@ -254,9 +258,9 @@ export function japaneseFoundationPanel({done=[],activeId='vowels',practiceIndex
    '<p class="fineprint">If unsure, revisit the explanation above. Wrong answers can be retried without penalty.</p></div>':
    '<div class="japanese-practice"><h4>Now try a short recall check</h4><p>First read the explanations and examples above. Only then try three typed questions. You do not need a Japanese keyboard.</p>'+
    action('Start guided recall','japanese-start','','primary-button')+'</div>';
- return '<section class="japanese-foundation" aria-label="Step-by-step Japanese reading foundation" id="japanese-foundation">'+
+ return '<section class="japanese-foundation" aria-label="Step-by-step Japanese beginner learning pathway" id="japanese-foundation">'+
   '<div class="japanese-foundation-head"><span class="overline">JAPANESE · START WITH UNDERSTANDING</span><h2>Learn sounds before guessing words.</h2>'+
-  '<p>Familiar vowel sounds → hiragana patterns → katakana → reading and sentence meaning. A slow, guided beginning—not a flashcard test.</p>'+
+  '<p>Familiar vowel sounds → hiragana → katakana → useful vocabulary → particles and verbs. Learn the explanation before attempting guided recall.</p>'+
   '<span class="japanese-count">'+completed.length+' / '+JAPANESE_UNITS.length+' foundation checkpoints</span></div>'+
   '<div class="japanese-foundation-layout"><nav class="japanese-unit-menu" aria-label="Japanese foundations">'+menu+'</nav>'+
   '<div class="japanese-lesson"><span class="overline">'+escapeHTML(unit.stage)+'</span><h3>'+escapeHTML(unit.title)+'</h3><p class="japanese-goal">'+escapeHTML(unit.goal)+'</p>'+
