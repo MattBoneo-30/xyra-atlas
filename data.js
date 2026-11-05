@@ -2,6 +2,7 @@ import { DEEP_TRACKS } from './deeptracks.js';
 import {DEEPER_FOUNDATIONS} from './depthcurriculum.js';
 import {deepenOriginalFoundations} from './foundationdepth.js';
 import {deepenIntermediateLessons} from './intermediatedepth.js';
+import {deepenAdvancedLessons} from './advanceddepth.js';
 import { FIELD_GUIDES } from './fieldguides.js';
 import { LIFE_PRACTICE } from './lifepractice.js';
 import { MASTERY_TRACKS } from './masterytracks.js';
@@ -308,6 +309,8 @@ for(const entry of COURSES) if(DEEPER_FOUNDATIONS[entry.id]) entry.lessons.push(
 deepenOriginalFoundations(COURSES);
 // Keep existing lesson identities and recaps, enrich the applied tier.
 deepenIntermediateLessons(COURSES);
+// Advanced case studies retain the original identity, explanations and source history.
+deepenAdvancedLessons(COURSES);
 export const LANGUAGES = [
   {name:'English',flag:'🇬🇧',code:'en'}, {name:'Japanese',flag:'🇯🇵',code:'ja'},
   {name:'Korean',flag:'🇰🇷',code:'ko'}, {name:'Spanish',flag:'🇪🇸',code:'es'},

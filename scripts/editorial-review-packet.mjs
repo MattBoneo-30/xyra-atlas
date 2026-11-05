@@ -32,6 +32,7 @@ export function buildEditorialReviewPacket(courses,clinics){
       studyMinutes:lesson.deepMinutes,
       sections:lesson.deepSections.map(s=>({heading:s.heading,body:s.body})),
       workedCase:lesson.deepExample,independentExercise:lesson.deepTask,
+      ...(lesson.deepModelAnswer?{modelResponse:lesson.deepModelAnswer}:{}),
       ...(lesson.deepRubric?.length?{selfReviewRubric:[...lesson.deepRubric]}:{})
     }}:{}),
     // Flowchart text is a teaching claim too. Include it in editorial review hashes.

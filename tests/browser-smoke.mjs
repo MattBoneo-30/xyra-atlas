@@ -142,6 +142,39 @@ try{
    expect(overflow.scroll<=overflow.width+2,course+' intermediate lesson fits mobile viewport');
   }
  });
+ await smoke('advanced-reasoning-and-model-answers-mobile',{viewport:{width:390,height:844},isMobile:true,hasTouch:true},async(page,context)=>{
+  for(const [course,id,term] of [
+    ['thinking','base-rate-and-selection-bias',"Simpson's paradox"],
+    ['science','observational-vs-experimental','Moon phases'],
+    ['digital','passkey-and-recovery-map','WebAuthn'],
+    ['laws','privacy-access-request-ph','RA 10173']
+  ]){
+   await page.goto(BASE+'/#/lesson/'+course+'/'+id,{waitUntil:'domcontentloaded'});
+   await page.locator('.reading-page').waitFor();
+   expect(await page.locator('.deep-study-section').count()===4,course+' has four explained advanced concepts');
+   expect(await page.locator('.deep-rubric li').count()===4,course+' has four self-review criteria');
+   expect(await page.locator('.worked-example').count()===2,course+' keeps the old and detailed examples');
+   expect((await page.locator('.lesson-content').textContent()).includes(term),course+' teaches its unique discipline');
+   const details=page.locator('.deep-model-answer');
+   expect(await details.count()===1,course+' has one model response');
+   expect(!(await details.evaluate(node=>node.open)),course+' does not reveal the model answer before practice');
+   await details.locator('summary').focus();
+   await page.keyboard.press('Enter');
+   expect(await details.evaluate(node=>node.open),course+' makes the model response keyboard-revealable');
+   expect((await details.locator('.deep-model-answer-content p').textContent()).length>350,'worked resolution is substantive');
+   const size=await mobileOverflow(page);
+   expect(size.scroll<=size.width+2,course+' advanced case fits narrow phones');
+  }
+  await page.evaluate(async()=>{await navigator.serviceWorker.ready});
+  await page.reload({waitUntil:'domcontentloaded'});
+  await page.waitForFunction(()=>Boolean(navigator.serviceWorker.controller));
+  await context.setOffline(true);
+  try{
+   await page.reload({waitUntil:'domcontentloaded'});
+   expect(await page.locator('.deep-model-answer').count()===1,'advanced answer remains readable offline');
+   expect(await page.locator('.deep-study-section').count()===4,'advanced explanations remain available offline');
+  }finally{await context.setOffline(false);}
+ });
  await smoke('astronomy-and-republic-act-depth',{viewport:{width:390,height:844},isMobile:true,hasTouch:true},async page=>{
   await page.goto(BASE+'/#/lesson/science/astronomy-moon-eclipses',{waitUntil:'domcontentloaded'});
   await page.locator('.reading-page').waitFor();
@@ -1689,7 +1722,7 @@ try{
    await page.waitForFunction(()=>Boolean(navigator.serviceWorker.controller));
    await context.setOffline(true);
    await page.reload({waitUntil:'domcontentloaded'});
-   await page.locator('.worked-example').waitFor();
+   await page.locator('.worked-example:not(.deep-worked-case)').waitFor();
    expect((await page.locator('.worked-example:not(.deep-worked-case)').textContent()).includes('station'),'new lesson remains offline');
    await context.setOffline(false);
  });

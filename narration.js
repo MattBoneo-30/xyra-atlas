@@ -27,5 +27,6 @@ export function buildLessonNarration(course,lesson,{maxLength=175}={}){
  if(lesson.deepRubric?.length)paragraphs.push('Self-review criteria.',...lesson.deepRubric);
  if(lesson.task)paragraphs.push('Practice exercise.',lesson.task);
  if(lesson.deepTask)paragraphs.push('Independent application.',lesson.deepTask);
+ if(lesson.deepModelAnswer)paragraphs.push('Model response for comparison after you attempt the exercise.',lesson.deepModelAnswer);
  return paragraphs.flatMap(text=>chunks(text,max)).filter(Boolean).slice(0,200);
 }
