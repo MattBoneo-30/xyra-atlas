@@ -33,6 +33,6 @@ test('offline course identities and original mastering assessments remain unchan
  for(const [courseId,lessons] of Object.entries(LIFE_PRACTICE))for(const l of lessons)assert.equal(findLesson(courseId,l.id),l);
  const audit=auditCurriculum(COURSES);
  assert.equal(audit.valid,true);
- assert.equal(audit.totals.workedExamples,134);
- assert.equal(audit.totals.answerRationales,134);
+ assert.equal(audit.totals.workedExamples,139);
+ assert.equal(audit.totals.answerRationales,139);
 });
