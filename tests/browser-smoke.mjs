@@ -867,10 +867,13 @@ try{
  await smoke('japanese-beginner-foundations',{viewport:{width:390,height:844},isMobile:true,hasTouch:true,deviceScaleFactor:2},async page=>{
   await page.goto(BASE+'/#/language',{waitUntil:'domcontentloaded'});
   await page.locator('.japanese-foundation').waitFor();
-  expect(await page.locator('.japanese-unit-select').count()===13,'Japanese course has thirteen sequential teaching units');
+  expect(await page.locator('.japanese-unit-select').count()===26,'Japanese course has 26 sequential teaching units');
   expect((await page.locator('.japanese-foundation').textContent()).includes('Five sounds you already nearly know'),'the first lesson teaches familiar vowel sounds');
   expect(await page.locator('.japanese-kana-tile').count()===5,'beginner sees five vowel characters before any quiz');
   expect(await page.locator('.japanese-unit-select').nth(1).isDisabled(),'later teaching units require their prerequisites');
+  expect(await page.locator('.phrase-lab').count()===0,'no konnichiwa cards before kana reading');
+  expect(await page.locator('.sprint-list').count()===0,'beginner cannot accidentally jump into the seven-day phrase sprint');
+  expect(await page.locator('.japanese-course-gate').count()===1,'lesson sequencing explains why phrases come later');
   expect(await page.locator('#japanese-answer').count()===0,'no guessing question until lesson has been read');
   const overflow=await mobileOverflow(page);
   expect(overflow.scroll<=overflow.width+2,'Japanese foundation fits mobile viewport');
@@ -885,7 +888,19 @@ try{
   expect((await getState(page)).japaneseFoundationDone.includes('vowels'),'foundation checkpoint persists locally');
   expect(await page.locator('.japanese-unit-select').nth(1).isEnabled(),'next lesson unlocks after guided recall');
   await page.locator('[data-action="japanese-next"]').click();
-  expect((await page.locator('.japanese-lesson h3').textContent()).includes('Build words with K and S'),'navigation advances to more complex sounds');
+  expect((await page.locator('.japanese-lesson h3').textContent()).includes('K row'),'next lesson starts with KA KI KU KE KO');
+  expect((await page.locator('.japanese-kana-grid').textContent()).includes('か'),'K row kana appears after vowel checkpoint');
+  expect(await page.locator('.japanese-kana-tile').count()===5,'K row isolates just five new kana');
+  expect(await page.locator('.phrase-lab').count()===0,'no phrase drills after merely opening K row');
+  await page.locator('[data-action="japanese-start"]').click();
+  for(const answer of ['ka','ki','koe']){
+   await page.locator('#japanese-answer').fill(answer);
+   await page.locator('[data-action="japanese-check"]').click();
+  }
+  await page.locator('[data-action="japanese-next"]').click();
+  expect((await page.locator('.japanese-lesson h3').textContent()).includes('S row'),'S row follows K row, not greetings');
+  expect((await page.locator('.japanese-kana-grid').textContent()).includes('し'),'SHI is explained in the S row');
+  expect(await page.locator('.phrase-lab').count()===0,'even after S row starts, no premature phrase drills');
   await page.reload({waitUntil:'domcontentloaded'});
   expect((await getState(page)).japaneseFoundationDone.includes('vowels'),'foundation progress survives PWA reload');
   expect(await page.locator('.japanese-unit-select').nth(1).isEnabled(),'next unit remains unlocked');
