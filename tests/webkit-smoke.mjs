@@ -63,7 +63,7 @@ try{
    await page.keyboard.press('Tab');
    const focusedSkip=await page.locator('#skip-content').boundingBox();
    assert.ok(focusedSkip && focusedSkip.y>=57,'keyboard skip shortcut appears beneath the status bar');
-   await page.locator('.topbar [data-action="open-updates"]').click();
+   await page.locator('.topbar [data-action="app-update-open"]').click();
    const modal=await page.locator('.modal-card').boundingBox();
    assert.ok(modal && modal.y>=59,'dialog clears simulated top safe area');
   });
