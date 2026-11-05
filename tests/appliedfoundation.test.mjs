@@ -5,7 +5,7 @@ import {COURSES,findLesson,totalLessons} from '../data.js';
 import {APPLIED_FOUNDATION,APPLIED_FOUNDATION_COUNT} from '../appliedfoundation.js';
 import {auditCurriculum} from '../curriculumaudit.js';
 test('eighteen original ethical reasoning and science lessons now have substantive teaching and work',()=>{
- assert.equal(APPLIED_FOUNDATION_COUNT,18);assert.equal(totalLessons,134);
+ assert.equal(APPLIED_FOUNDATION_COUNT,18);assert.equal(totalLessons,139);
  for(const [courseId,entries] of Object.entries(APPLIED_FOUNDATION))for(const [id,material] of Object.entries(entries)){
   const lesson=findLesson(courseId,id);
   assert.ok(lesson,courseId+':'+id);
