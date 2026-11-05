@@ -27,6 +27,8 @@ export function buildEditorialReviewPacket(courses,clinics){
     stageLearningObjective:objective?{goal:objective.goal,evidence:objective.evidence}:null,
     intro:lesson.intro,
     sections:lesson.sections.map(s=>({heading:s.heading,body:s.body})),
+    // Flowchart text is a teaching claim too. Include it in editorial review hashes.
+    ...(lesson.flow?{learningFlow:{title:lesson.flow.title,steps:lesson.flow.steps.map(step=>({label:step.label,detail:step.detail})),caption:lesson.flow.caption}}:{}),
     workedExample:lesson.example,task:lesson.task,
     stagePractice:[...(practiceGuide(course.id,lesson.stage)||[])],
     quiz:{question:lesson.quiz.question,options:[...lesson.quiz.options],correct:lesson.quiz.correct,explanation:lesson.quiz.explanation},
