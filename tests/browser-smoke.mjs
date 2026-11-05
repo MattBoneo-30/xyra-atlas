@@ -5,6 +5,7 @@ import { strict as assert } from 'node:assert';
 import { mkdir, writeFile, readFile } from 'node:fs/promises';
 import { chromium } from 'playwright';
 import {COURSES} from '../data.js';
+import {JAPANESE_UNITS} from '../japanesefoundation.js';
 
 const PORT=42751;
 const BASE='http://127.0.0.1:'+PORT;
@@ -57,6 +58,18 @@ function mobileOverflow(page){return page.evaluate(()=>({
  offenders:[...document.querySelectorAll('body *')].filter(el=>el.getBoundingClientRect().right>window.innerWidth+8 && getComputedStyle(el).position!=='fixed').slice(0,8).map(el=>el.tagName+'.'+String(el.className).slice(0,60))
 }));}
 function getState(page){return page.evaluate(()=>JSON.parse(localStorage.getItem('xyra-atlas-state-v1')||'{}'));}
+const JAPANESE_READING_PREREQUISITES=JAPANESE_UNITS
+ .slice(0,JAPANESE_UNITS.findIndex(x=>x.id==='first-sentences')+1).map(x=>x.id);
+async function prepareJapanesePhrasePractice(page){
+ // A completed-learner fixture, not an app bypass: ensure existing advanced tools remain testable.
+ await page.evaluate(ids=>{
+  const key='xyra-atlas-state-v1';
+  const state=JSON.parse(localStorage.getItem(key)||'{}');
+  state.japaneseFoundationDone=ids;
+  localStorage.setItem(key,JSON.stringify(state));
+ },JAPANESE_READING_PREREQUISITES);
+ await page.reload({waitUntil:'domcontentloaded'});
+}
 function waitRoute(page,value){return page.waitForFunction(route=>location.hash.includes(route),value,{timeout:10000});}
 
 try{
@@ -607,6 +620,7 @@ try{
 
  await smoke('language-written-recall-mobile-offline',{viewport:{width:390,height:844}},async (page,context)=>{
   await page.goto(BASE+'/#/language',{waitUntil:'domcontentloaded'});
+  await prepareJapanesePhrasePractice(page);
   await page.locator('.phrase-card').waitFor();
   await page.locator('#language-select').selectOption('ja');
   const draft=page.locator('#phrase-draft');
@@ -643,6 +657,7 @@ try{
  });
  await smoke('offline-language-challenge',{viewport:{width:390,height:844}},async(page)=>{
   await page.goto(BASE+'/#/language',{waitUntil:'domcontentloaded'});
+  await prepareJapanesePhrasePractice(page);
   await page.locator('.language-challenge').waitFor();
   await page.locator('#language-select').selectOption('ja');
   await page.locator('#language-challenge-mode').selectOption('recognition');
@@ -793,8 +808,8 @@ try{
 
  await smoke('offline-spaced-phrase-recall',{viewport:{width:390,height:844}},async(page)=>{
   await page.goto(BASE+'/#/language',{waitUntil:'domcontentloaded'});
-  await page.locator('.phrase-review-section').waitFor();
   await page.locator('#language-select').selectOption('es');
+  await page.locator('.phrase-review-section').waitFor();
   expect((await page.locator('.phrase-review-count').textContent()).includes('8 due'),'all eight new Spanish phrases start due');
   expect(await page.locator('.phrase-review-answer').count()===0,'answer is initially hidden');
   await page.locator('[data-action="phrase-review-reveal"]').click();
@@ -1219,8 +1234,8 @@ try{
 
  await smoke('offline-situational-conversation-quests',{viewport:{width:390,height:844}},async(page,context)=>{
   await page.goto(BASE+'/#/language',{waitUntil:'domcontentloaded'});
-  await page.locator('.conversation-quest').waitFor();
   await page.locator('#language-select').selectOption('es');
+  await page.locator('.conversation-quest').waitFor();
   expect(await page.locator('.conversation-quest-scenarios article').count()===3,'three contextual situations are available in Spanish');
   await page.locator('#conversation-quest-select').selectOption('directions');
   await page.locator('[data-action="conversation-start"]').click();
@@ -1339,6 +1354,7 @@ try{
   // Reload deliberately so the installed-voice stub runs before app.js.
   await page.goto(BASE+'/#/language',{waitUntil:'domcontentloaded'});
   await page.reload({waitUntil:'domcontentloaded'});
+  await prepareJapanesePhrasePractice(page);
   await page.locator('#language-audio-controls').waitFor();
   expect((await page.locator('.language-audio-indicator').textContent()).includes('Local voice ready'),'Japanese exact-locale local voice is ready');
   expect(await page.locator('#language-voice-picker option').count()===1,'only matching Japanese voice is offered');
