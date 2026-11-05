@@ -7,12 +7,12 @@ import {buildEditorialReviewPacket} from '../scripts/editorial-review-packet.mjs
 import {renderEditorialReviewHTML} from '../scripts/editorial-review-html.mjs';
 test('HTML reviewer copy includes all full authored records and immutable source hashes',()=>{
  const packet=buildEditorialReviewPacket(COURSES,CLINICS),html=renderEditorialReviewHTML(packet);
- assert.equal((html.match(/class="review-item"/g)||[]).length,176);
+ assert.equal((html.match(/class="review-item"/g)||[]).length,181);
  assert.equal((html.match(/class="group"/g)||[]).length,14);
  for(const item of [...packet.lessons,...packet.decisions])assert.ok(html.includes(item.contentHash),item.id);
  assert.ok(html.startsWith('<!doctype html>'));
  assert.ok(html.includes('All items pending independent review.'));
- assert.equal((html.match(/Stage learning objective — independently evaluate alignment/g)||[]).length,134);
+ assert.equal((html.match(/Stage learning objective — independently evaluate alignment/g)||[]).length,139);
  assert.ok(html.includes('Evidence of understanding:'));
  assert.ok(html.includes('noindex,nofollow'));
  assert.ok(html.includes('details:not([open])>.detail{display:block!important}'),'print must expand closed review sections');
