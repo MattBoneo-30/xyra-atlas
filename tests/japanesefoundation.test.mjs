@@ -7,7 +7,7 @@ import {
 } from '../japanesefoundation.js';
 
 test('Japanese teaches five vowels and all 46 basic characters in each kana system',()=>{
- assert.equal(JAPANESE_UNITS.length,13);
+ assert.equal(JAPANESE_UNITS.length,26);
  assert.deepEqual(JAPANESE_BASIC_HIRAGANA.slice(0,5),['あ','い','う','え','お']);
  assert.deepEqual(JAPANESE_BASIC_KATAKANA.slice(0,5),['ア','イ','ウ','エ','オ']);
  for(const alphabet of [JAPANESE_BASIC_HIRAGANA,JAPANESE_BASIC_KATAKANA]){
@@ -41,8 +41,8 @@ test('each foundation unit provides explanation, practical decoding and assessab
  assert.equal(evaluateJapaneseAnswer('invalid',0,'a').valid,false);
  assert.equal(evaluateJapaneseAnswer('vowels',99,'a').valid,false);
  assert.equal(evaluateJapaneseAnswer('vowels',0,'a<script>').correct,false);
- assert.equal(evaluateJapaneseAnswer('hiragana-ks',1,'si').correct,true,'common romanization variant accepted');
- assert.equal(evaluateJapaneseAnswer('katakana-rest',2,'long vowels').correct,true);
+ assert.equal(evaluateJapaneseAnswer('hiragana-s',1,'shi').correct,true,'S-row exception is taught explicitly');
+ assert.equal(evaluateJapaneseAnswer('katakana-w',2,'remon').correct,true);
 });
 test('completion normalization accepts only the continuous foundation prerequisite sequence',()=>{
  const ids=JAPANESE_UNITS.map(unit=>unit.id);
@@ -52,6 +52,9 @@ test('completion normalization accepts only the continuous foundation prerequisi
  assert.deepEqual(normalizeJapaneseFoundationDone([ids[0],ids[2]]),[ids[0]]);
  assert.deepEqual(normalizeJapaneseFoundationDone([ids[1],ids[0],ids[0]]),[ids[0],ids[1]]);
  assert.deepEqual(normalizeJapaneseFoundationDone(ids),ids);
+ assert.deepEqual(normalizeJapaneseFoundationDone(['vowels','hiragana-ks']),ids.slice(0,3),'old K/S completion retains both rows');
+ const legacy=['vowels','hiragana-ks','hiragana-tn','hiragana-hm','hiragana-rest','sound-changes','katakana-first','katakana-rest','first-sentences'];
+ assert.deepEqual(normalizeJapaneseFoundationDone(legacy),ids.slice(0,22),'prior completed kana stages migrate without lost progress');
 });
 test('new learners see instruction before questions, locked later stages and safe markup',()=>{
  const initial=japaneseFoundationPanel();
@@ -85,5 +88,28 @@ test('the app, backups, privacy reset and offline bundle include kana instructio
  assert.match(build,/'japanesefoundation\.js'/);
  assert.match(worker,/\/japanesefoundation\.js/);
  assert.match(worker,/\/japanesepath2\.js/);
+ assert.match(worker,/\/japaneserows\.js/);
  assert.match(build,/'japanesepath2\.js'/);
+ assert.match(build,/'japaneserows\.js'/);
+});
+
+test('kana is taught one row at a time before any phrase guessing',()=>{
+ const ids=JAPANESE_UNITS.map(x=>x.id);
+ assert.deepEqual(ids.slice(0,11),['vowels','hiragana-k','hiragana-s','hiragana-t','hiragana-n','hiragana-h','hiragana-m','hiragana-y','hiragana-r','hiragana-w','sound-changes']);
+ assert.deepEqual(ids.slice(11,21),['katakana-vowels','katakana-k','katakana-s','katakana-t','katakana-n','katakana-h','katakana-m','katakana-y','katakana-r','katakana-w']);
+ assert.equal(ids[21],'first-sentences');
+ for(const id of ids.slice(1,21)){
+  const unit=JAPANESE_UNITS.find(x=>x.id===id);
+  assert.ok(unit.rows.length>=1,'A visible kana chart is required in '+id);
+  assert.ok(unit.teaching.length>=3,'Teach before testing '+id);
+  assert.ok(unit.examples.length>=3,'Decode several examples in '+id);
+ }
+ const k=japaneseFoundationPanel({done:['vowels'],activeId:'hiragana-k'});
+ assert.ok(k.includes('か')&&k.includes('き')&&k.includes('く')&&k.includes('け')&&k.includes('こ'),'the K row is explicit');
+ const row2=japaneseFoundationPanel({done:['vowels','hiragana-k'],activeId:'hiragana-s'});
+ assert.ok(row2.includes('さ')&&row2.includes('し')&&row2.includes('す'),'S row follows K');
+ const app=fs.readFileSync('app.js','utf8');
+ assert.match(app,/done\.includes\('first-sentences'\)/);
+ assert.match(app,/showPhrasePractice\?\x60<div class="sprint-head"/);
+ assert.match(app,/PHRASES COME LATER/);
 });
