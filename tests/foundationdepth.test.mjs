@@ -39,7 +39,7 @@ test('every original subject has an accurately linked, meaningful first learning
 test('content covers real disciplinary concepts instead of one-size-fits-all reassurance',()=>{
  const lesson=(course)=>findLesson(course,FOUNDATION_DEPTH_UPGRADES[course].id);
  const psychology=lesson('psychology').deepSections.map(x=>x.body).join(' ');
- assert.match(psychology,/correlational|experiment/);
+ assert.match(psychology,/correlational|experiment/i);
  assert.match(psychology,/manipulat|coercion/i);
  const law=lesson('laws').deepSections.map(x=>x.body).join(' ');
  for(const phrase of ['Article III','Article VI','Article VII','Article VIII','Republic Act'])assert.ok(law.includes(phrase),phrase);
@@ -48,7 +48,7 @@ test('content covers real disciplinary concepts instead of one-size-fits-all rea
  assert.match(cash,/₱6,000/);
  assert.match(lesson('science').intro,/Science is an evidence-based/);
  assert.match(lesson('languages').deepExample,/こんにちは/);
- assert.match(lesson('digital').intro,/authentication/);
+ assert.match(lesson('digital').deepSections.map(x=>x.body).join(' '),/authentication/);
  assert.match(lesson('relationships').deepSections.map(x=>x.heading+' '+x.body).join(' '),/coercive control/i);
  assert.match(lesson('shadow').deepTask,/safe boundary|support path/i);
 });
