@@ -27,6 +27,7 @@ import { CASE_FILES,getCaseFile,evaluateCase,normalizeCasebook,advanceCase,reset
 import { STUDIO_DEFAULTS, sanitizeStudio, calculateSavings, calculateBusiness, calculateTime } from './studio.js';
 import { PHRASEBOOK,getPhrasePack, sanitizePhraseProgress } from './phrasebook.js';
 import {JAPANESE_UNITS,JAPANESE_SPEAKABLE,normalizeJapaneseFoundationDone,evaluateJapaneseAnswer,japaneseFoundationPanel} from './japanesefoundation.js';
+import {normalizeKanaReviews,kanaReviewStatus,evaluateKanaReview,scheduleKanaReview,kanaContrastNote,kanaReviewPanel} from './kanareview.js';
 import {normalizeLanguageSpeechRate,matchingLanguageVoices,languageVoiceAvailability,chooseOfflineLanguageVoice,languageVoiceMessage} from './voicecoach.js';
 import {normalizePhraseReviews,duePhraseReviews,phraseReviewStats,ratePhraseReview,clearPhraseReviews,createFocusedPhraseReview,advanceFocusedPhraseReview,selfCheckFocusedPhraseReview,summarizeFocusedPhraseReview} from './phrasereview.js';
 import {LANGUAGE_CHALLENGE_MODES,createLanguageChallenge,normalizeLanguageChallenge,currentLanguageQuestion,answerLanguageChallenge,advanceLanguageChallenge,languageChallengeResults,normalizeLanguageChallengeHistory,recordLanguageChallengeHistory} from './languagechallenge.js';
@@ -45,7 +46,7 @@ let storageProblem=null;
 let recoveryRaw=null;
 const esc = value => String(value ?? '').replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
 const plain = text => esc(text).replace(/\n/g, '<br>');
-function createInitialState(){return { completed: [], bookmarks: [], favorites: [], answers: {}, reviews: {}, fieldNotes: {}, capstoneChecks: {}, clinicAnswers:{}, lastOpened: null, dailyVisits: [], theme: 'dark', language: 'ja', languageSpeechRate:0.9, languageDays: [], japaneseFoundationDone: [], phrases: {}, phraseReviews:{}, languageChallenge:null, languageChallengeHistory:{}, conversationQuest:null, conversationQuestHistory:{}, studio: sanitizeStudio(null), userName: '', welcomeDismissed: false, learningPath: null, scenarios: {}, casebook: {}, mistakes:{}, exam:null, examHistory:[], personalCards:[], reader:normalizeReaderPreferences(null) };}
+function createInitialState(){return { completed: [], bookmarks: [], favorites: [], answers: {}, reviews: {}, fieldNotes: {}, capstoneChecks: {}, clinicAnswers:{}, lastOpened: null, dailyVisits: [], theme: 'dark', language: 'ja', languageSpeechRate:0.9, languageDays: [], japaneseFoundationDone: [], japaneseKanaReviews:{}, phrases: {}, phraseReviews:{}, languageChallenge:null, languageChallengeHistory:{}, conversationQuest:null, conversationQuestHistory:{}, studio: sanitizeStudio(null), userName: '', welcomeDismissed: false, learningPath: null, scenarios: {}, casebook: {}, mistakes:{}, exam:null, examHistory:[], personalCards:[], reader:normalizeReaderPreferences(null) };}
 function readStored() {
   try {
     const raw=localStorage.getItem(STORAGE_KEY);
@@ -61,6 +62,7 @@ function readStored() {
       dailyVisits: Array.isArray(data.dailyVisits) ? data.dailyVisits.filter(validDayKey).slice(-400) : [],
       languageDays: Array.isArray(data.languageDays) ? data.languageDays.filter(x => typeof x === 'string') : [],
       japaneseFoundationDone: normalizeJapaneseFoundationDone(data.japaneseFoundationDone),
+      japaneseKanaReviews: normalizeKanaReviews(data.japaneseKanaReviews),
       languageSpeechRate:normalizeLanguageSpeechRate(data.languageSpeechRate),
       phrases: sanitizePhraseProgress(data.phrases),
       phraseReviews:normalizePhraseReviews(data.phraseReviews,PHRASEBOOK),
@@ -98,6 +100,7 @@ let phraseRevealed = false, phraseIndex = 0;
 let japaneseUnitId=null;
 let japanesePracticeIndex=-1;
 let japanesePracticeFeedback='';
+let kanaRecallFeedback=null;
 // Written recall is deliberately short-lived and never persisted or graded.
 let phraseDraft = '';
 let focusedPhraseReview = null; // Session-only; never included in learner backups or storage.
@@ -906,6 +909,7 @@ function languagePage() {
     <div class="language-hero"><img src="/assets/course-languages.svg" alt="Decorative travel-inspired landscape"/><div><span class="overline">LET THE WORLD IN</span><h1>Language <em>Lab.</em></h1><p>One small conversation at a time.</p></div></div>
     <div class="section"><div class="section-heading"><div><span class="overline">CHOOSE YOUR STARTING POINT</span><h2>Pick a language</h2></div></div><label class="field-label" for="language-select">Your learning language</label><select id="language-select" aria-label="Choose a language" class="styled-select">${LANGUAGES.map(x=>`<option value="${x.code}" ${saved.language===x.code?'selected':''}>${x.flag} ${esc(x.name)}</option>`).join('')}</select><p class="fineprint">All 20 languages have introductory phrase practice. Japanese also has a step-by-step sound, hiragana, katakana and first-sentences foundation below. The other languages still need equivalent beginner curricula. Device speech does not assess pronunciation.</p></div>
     ${saved.language==='ja'?japaneseFoundationPanel({done,activeId:currentUnit.id,practiceIndex:japanesePracticeIndex,feedback:japanesePracticeFeedback}):''}
+    ${saved.language==='ja'?kanaReviewPanel({done,reviews:saved.japaneseKanaReviews,feedback:kanaRecallFeedback}):''}
     ${saved.language==='ja'&&showPhrasePractice?'<div class="japanese-practice-divider"><span class="overline">OPTIONAL REINFORCEMENT</span><h2>Phrase practice and seven-day sprint</h2><p>You have completed the kana-reading foundation. Practise phrases only after the sounds, patterns and basic sentence structures.</p></div>':''}
     ${showPhrasePractice?`<div class="sprint-head"><div><span class="overline">YOUR SEVEN-DAY LAUNCH</span><h2>${language.flag} ${esc(language.name)} sprint</h2><p>Practice 20–30 minutes daily. Build a practical foundation.</p></div><strong>${completedDays}/7</strong></div>${bars(completedDays,7)}
     <div class="sprint-list">${LEARNING_SPRINT.map(([title,description],i)=>`<button type="button" class="sprint-day ${saved.languageDays.includes(`${saved.language}:${i}`)?'complete':''}" data-action="toggle-day" data-id="${i}"><span class="day-check">${saved.languageDays.includes(`${saved.language}:${i}`)?icon('check',17):`0${i+1}`}</span><span><small>DAY ${i+1}</small><strong>${esc(title)}</strong><em>${esc(description)}</em></span></button>`).join('')}</div>
@@ -1181,6 +1185,7 @@ function normalizedBackupState(clean){
    language:LANGUAGES.some(x=>x.code===clean.language)?clean.language:'ja',
    languageDays:Array.isArray(clean.languageDays)?clean.languageDays.filter(x=>typeof x==='string').slice(0,200):[],
     japaneseFoundationDone:normalizeJapaneseFoundationDone(clean.japaneseFoundationDone),
+    japaneseKanaReviews:normalizeKanaReviews(clean.japaneseKanaReviews),
    languageSpeechRate:normalizeLanguageSpeechRate(clean.languageSpeechRate),
    phrases:sanitizePhraseProgress(clean.phrases),
    phraseReviews:normalizePhraseReviews(clean.phraseReviews,PHRASEBOOK),
