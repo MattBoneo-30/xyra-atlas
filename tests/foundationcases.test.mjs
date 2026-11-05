@@ -6,7 +6,7 @@ import {FOUNDATION_CASES,FOUNDATION_CASE_COUNT} from '../foundationcases.js';
 test('14 introductory or intermediate subjects receive substantive applied case examples',()=>{
  assert.equal(FOUNDATION_CASE_COUNT,14);
  assert.equal(COURSES.length,14);
- assert.equal(totalLessons,134);
+ assert.equal(totalLessons,139);
  assert.deepEqual(new Set(Object.keys(FOUNDATION_CASES)),new Set(COURSES.map(c=>c.id)));
  const examples=new Set();
  for(const [id,records] of Object.entries(FOUNDATION_CASES)){
