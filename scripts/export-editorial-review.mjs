@@ -6,7 +6,7 @@ import {CLINICS} from '../clinics.js';
 import {buildEditorialReviewPacket} from './editorial-review-packet.mjs';
 import {renderEditorialReviewHTML} from './editorial-review-html.mjs';
 const packet=buildEditorialReviewPacket(COURSES,CLINICS);
-if(packet.totals.subjects!==14||packet.totals.lessons!==134||packet.totals.decisions!==42)
+if(packet.totals.subjects!==14||packet.totals.lessons!==139||packet.totals.decisions!==42)
  throw Error('Curriculum changed: reviewer inventory must be explicitly revalidated');
 const output=path.join(process.cwd(),'artifacts','editorial-review-packet.json');
 fs.mkdirSync(path.dirname(output),{recursive:true});
