@@ -20,7 +20,7 @@ test('Japanese teaches five vowels and all 46 basic characters in each kana syst
  assert.equal(JAPANESE_BASIC_KATAKANA.includes('シ'),true);
  assert.equal(JAPANESE_BASIC_KATAKANA.includes('ン'),true);
  assert.ok(JAPANESE_SPEAKABLE.has('あ'));
- assert.ok(JAPANESE_SPEAKABLE.has('カメラ'));
+ assert.ok(JAPANESE_SPEAKABLE.has('マイク'));
  assert.ok(JAPANESE_SPEAKABLE.has('わたしは がくせいです'));
  assert.equal(JAPANESE_UNITS.at(-1).id,'actions-and-time');
 });
@@ -45,7 +45,8 @@ test('each foundation unit provides explanation, practical decoding and assessab
  assert.equal(evaluateJapaneseAnswer('vowels',99,'a').valid,false);
  assert.equal(evaluateJapaneseAnswer('vowels',0,'a<script>').correct,false);
  assert.equal(evaluateJapaneseAnswer('hiragana-s',1,'shi').correct,true,'S-row exception is taught explicitly');
- assert.equal(evaluateJapaneseAnswer('katakana-w',2,'remon').correct,true);
+ assert.equal(evaluateJapaneseAnswer('katakana-w',2,'n').correct,true);
+ assert.equal(evaluateJapaneseAnswer('katakana-w',4,'remon').correct,true);
 });
 test('every basic kana reading checks the entire row and does not preview untaught symbols',()=>{
  const taught=new Set();
@@ -86,11 +87,11 @@ test('new learners see instruction before questions, locked later stages and saf
  assert.match(initial,/japanese-teaching/);
  assert.match(initial,/japanese-kana-grid/);
  assert.match(initial,/あ/);
- assert.match(initial,/Try a short recall check|Now try a short recall check/);
+ assert.match(initial,/Now recall every new sound/);
  assert.doesNotMatch(initial,/id="japanese-answer"/,'question stays hidden until requested');
  assert.match(initial,/japanese-unit-select[^>]*disabled/);
  assert.match(initial,/data-action="japanese-speak"/);
- assert.match(initial,/typed questions/);
+ assert.match(initial,/short questions/);
  const working=japaneseFoundationPanel({practiceIndex:1,feedback:'Hint: try again'});
  assert.match(working,/id="japanese-answer"/);
  assert.match(working,/Hint: try again/);
