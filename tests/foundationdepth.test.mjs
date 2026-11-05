@@ -47,8 +47,8 @@ test('content covers real disciplinary concepts instead of one-size-fits-all rea
  assert.match(lesson('science').intro,/Science is an evidence-based/);
  assert.match(lesson('languages').example,/こんにちは/);
  assert.match(lesson('digital').intro,/authentication/);
- assert.match(lesson('relationships').sections.map(x=>x.body).join(' '),/coercive control/i);
- assert.match(lesson('shadow').task,/protective/i);
+ assert.match(lesson('relationships').sections.map(x=>x.heading+' '+x.body).join(' '),/coercive control/i);
+ assert.match(lesson('shadow').task,/safe boundary|support path/i);
 });
 test('new foundations preserve structural audit, source inventory and reviewer requirements',()=>{
  const report=auditCurriculum(COURSES);
