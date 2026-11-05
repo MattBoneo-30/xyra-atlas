@@ -23,7 +23,7 @@ test('duplicate and missing case records fail',()=>{
 });
 
 const passing=()=>({schemaVersion:1,cases:template.cases.map(x=>({
- id:x.id,status:'PASS',commit:'a'.repeat(40),deploymentUrl:'https://atlas.example.org',
+ id:x.id,status:'PASS',commit:'a'.repeat(40),deploymentUrl:'https://atlas-test-review.vercel.app',
  device:'physical handset',os:'iOS 18.7',browser:'Safari',
  testedAt:'2026-11-03T14:20:00+08:00',tester:'independent tester',
  procedure:'Follow documented install and offline flow on a real phone',
@@ -62,4 +62,37 @@ test('real-device approvals are bound to the exact source revision under release
  assert.equal(changed.passes,false);
  assert.equal(changed.errors.filter(x=>x.includes('different source commit')).length,18);
  assert.equal(changed.summary.PASS,18,'reported passes are preserved but cannot certify another revision');
+});
+
+test('reserved domain and IP literal deployment URLs cannot certify device QA',()=>{
+ const report=passing();
+ for(const url of [
+  'https://atlas.example.org','https://example.com','https://preview.example.net',
+  'https://atlas.example','https://atlas.test','https://test.localhost',
+  'https://machine.internal','https://127.0.0.1','https://192.168.1.5',
+  'https://[::1]','https://[2001:db8::1]',
+  'https://atlas-test-review.vercel.app/?token=anything',
+  'https://atlas-test-review.vercel.app/#/language'
+ ]){
+  report.cases[0].deploymentUrl=url;
+  assert.match(auditDeviceEvidence(report).errors.join(' '),/public HTTPS host: IOS-01/,url);
+ }
+ report.cases[0].deploymentUrl='https://atlas-test-review.vercel.app';
+ assert.equal(auditDeviceEvidence(report).passes,true,
+  'a plausible hostname is only a structural pass, never proof of a real deployed site');
+});
+test('impossible calendar dates cannot pass as device-test timestamps',()=>{
+ const report=passing();
+ for(const invalid of [
+  '2026-02-30T12:00:00Z','2025-02-29T12:00:00Z',
+  '2026-11-31T12:00:00Z','2026-00-05T12:00:00Z',
+  '2026-13-05T12:00:00Z','2026-11-03T24:00:00Z',
+  '2026-11-03T14:60:00Z','2026-11-03T14:20:60Z',
+  '2026-11-03T14:20:00+15:00'
+ ]){
+  report.cases[0].testedAt=invalid;
+  assert.match(auditDeviceEvidence(report).errors.join(' '),/invalid or future timestamp: IOS-01/,invalid);
+ }
+ report.cases[0].testedAt='2024-02-29T12:00:00Z';
+ assert.equal(auditDeviceEvidence(report).passes,true,'a real leap-day is valid');
 });

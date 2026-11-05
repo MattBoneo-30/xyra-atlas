@@ -17,7 +17,7 @@ concurrency:
 jobs:
   test-and-build:
     runs-on: ubuntu-24.04
-    timeout-minutes: 20
+    timeout-minutes: 25
     steps:
       - name: Check out source
         uses: actions/checkout@v7
@@ -164,6 +164,7 @@ jobs:
           if-no-files-found: ignore
           retention-days: 7
       - name: Install WebKit browser for cross-engine checks
+        timeout-minutes: 10
         run: npx playwright install --with-deps webkit
       - name: Exercise mobile and desktop WebKit engine
         run: npm run test:webkit
