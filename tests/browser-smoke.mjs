@@ -849,7 +849,7 @@ try{
  await smoke('japanese-beginner-foundations',{viewport:{width:390,height:844},isMobile:true,hasTouch:true,deviceScaleFactor:2},async page=>{
   await page.goto(BASE+'/#/language',{waitUntil:'domcontentloaded'});
   await page.locator('.japanese-foundation').waitFor();
-  expect(await page.locator('.japanese-unit-select').count()===9,'Japanese course has nine ordered units');
+  expect(await page.locator('.japanese-unit-select').count()===13,'Japanese course has thirteen sequential teaching units');
   expect((await page.locator('.japanese-foundation').textContent()).includes('Five sounds you already nearly know'),'the first lesson teaches familiar vowel sounds');
   expect(await page.locator('.japanese-kana-tile').count()===5,'beginner sees five vowel characters before any quiz');
   expect(await page.locator('.japanese-unit-select').nth(1).isDisabled(),'later teaching units require their prerequisites');
