@@ -11,7 +11,7 @@ const matrix=buildSourceEvidenceMatrix(packet);
 const roster=JSON.parse(fs.readFileSync('docs/editorial-reviewers.json','utf8'));
 const ledger=JSON.parse(fs.readFileSync('docs/source-claim-attestations.json','utf8'));
 const audit=auditSourceClaimAttestations(matrix,roster,ledger);
-if(audit.totals.distinctSourceURLs!==51||packet.lessons.length!==139||
+if(audit.totals.distinctSourceURLs!==52||packet.lessons.length!==139||
  packet.decisions.length!==42)
  throw Error('Source inventory changed: source-claim review process requires revalidation.');
 const dest=path.join(process.cwd(),'artifacts','source-claim-attestation-audit.json');
