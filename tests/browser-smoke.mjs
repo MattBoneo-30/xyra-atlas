@@ -86,6 +86,24 @@ try{
   const modal=await page.locator('.modal-card').boundingBox();
   expect(Boolean(modal)&&modal.y>=59,'dialog clears the simulated status bar');
  });
+ await smoke('astronomy-and-republic-act-depth',{viewport:{width:390,height:844},isMobile:true,hasTouch:true},async page=>{
+  await page.goto(BASE+'/#/lesson/science/astronomy-moon-eclipses',{waitUntil:'domcontentloaded'});
+  await page.locator('.reading-page').waitFor();
+  expect((await page.locator('.reading-head h1').textContent()).includes('Moon phases'),'astronomy lesson is reachable');
+  expect(await page.locator('.lesson-content>section[id^="lesson-section-"]').count()>=5,'astronomy has full explanatory sections');
+  expect(await page.locator('.learning-flow-track li').count()===4,'Moon lesson has a four-step causal flowchart');
+  expect(await page.locator('.lesson-sources a[href*="science.nasa.gov"]').count()>=1,'astronomy cites NASA evidence');
+  const spaceOverflow=await mobileOverflow(page);
+  expect(spaceOverflow.scroll<=spaceOverflow.width+2,'astronomy lesson fits mobile viewport');
+  await page.goto(BASE+'/#/lesson/laws/ph-ra10173-reading',{waitUntil:'domcontentloaded'});
+  await page.locator('.reading-page').waitFor();
+  expect((await page.locator('.reading-head h1').textContent()).includes('RA 10173'),'Republic Act lesson is reachable');
+  expect((await page.locator('.lesson-content').textContent()).includes('Section 12'),'actual law provisions appear in the chapter');
+  expect(await page.locator('.learning-flow-track li').count()===4,'law lesson teaches a reasoning process');
+  expect(await page.locator('.lesson-sources a[href*="privacy.gov.ph"]').count()>=1,'law source links to National Privacy Commission');
+  const lawOverflow=await mobileOverflow(page);
+  expect(lawOverflow.scroll<=lawOverflow.width+2,'legal lesson fits mobile viewport');
+ });
  await smoke('desktop-lessons', {viewport:{width:1365,height:900}},async(page)=>{
   expect(await page.locator('.home-page').count()===1,'home screen renders');
   await page.locator('.desktop-rail [data-action="nav"][data-id="explore"]').click();
