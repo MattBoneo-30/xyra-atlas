@@ -32,7 +32,10 @@ test('each foundation unit provides explanation, practical decoding and assessab
   assert.ok(unit.teaching.length>=3,unit.id+' needs multiple instructional explanations');
   assert.ok(unit.teaching.every(([heading,body])=>heading.length>6&&body.length>50));
   assert.ok(unit.examples.length>=3&&unit.examples.every(e=>e.breakdown.length>10));
-  assert.equal(unit.practice.length,3,unit.id+' has a post-instruction recall checkpoint');
+  const kanaStage=unit.id==='vowels'||unit.id.startsWith('hiragana-')||unit.id.startsWith('katakana-');
+  const kanaCount=unit.rows.flatMap(r=>r.items).length;
+  assert.equal(unit.practice.length,kanaStage?kanaCount+2:3,
+   unit.id+' must test every new kana plus two combined readings, or three grammar checks');
   for(let i=0;i<unit.practice.length;i++){
    assert.equal(evaluateJapaneseAnswer(unit.id,i,unit.practice[i].answer.toUpperCase()).correct,true);
    assert.equal(evaluateJapaneseAnswer(unit.id,i,'🦄 not an answer').correct,false);
@@ -43,6 +46,28 @@ test('each foundation unit provides explanation, practical decoding and assessab
  assert.equal(evaluateJapaneseAnswer('vowels',0,'a<script>').correct,false);
  assert.equal(evaluateJapaneseAnswer('hiragana-s',1,'shi').correct,true,'S-row exception is taught explicitly');
  assert.equal(evaluateJapaneseAnswer('katakana-w',2,'remon').correct,true);
+});
+test('every basic kana reading checks the entire row and does not preview untaught symbols',()=>{
+ const taught=new Set();
+ for(const unit of JAPANESE_UNITS){
+  for(const r of unit.rows)for(const item of r.items)for(const character of item.kana)taught.add(character);
+  if(!(unit.id==='vowels'||unit.id.startsWith('hiragana-')||unit.id.startsWith('katakana-')))continue;
+  const kana=unit.rows.flatMap(r=>r.items);
+  for(let i=0;i<kana.length;i++){
+   assert.equal(unit.practice[i].answer,kana[i].roman,unit.id+' omitted '+kana[i].kana);
+   assert.match(unit.practice[i].prompt,new RegExp(kana[i].kana));
+  }
+  for(const item of unit.examples){
+   for(const character of item.text){
+    if(/[\u3040-\u309f\u30a0-\u30ff\u30fc]/u.test(character)){
+     assert.ok(taught.has(character),unit.id+' used untaught '+character+' in '+item.text);
+    }
+   }
+  }
+  for(const item of unit.practice.slice(kana.length)){
+   assert.ok(item.prompt.includes('romaji.'),unit.id+' must test combined reading, not guess meaning');
+  }
+ }
 });
 test('completion normalization accepts only the continuous foundation prerequisite sequence',()=>{
  const ids=JAPANESE_UNITS.map(unit=>unit.id);
