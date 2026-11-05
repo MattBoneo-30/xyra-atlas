@@ -6,7 +6,7 @@ import {GENERAL_FOUNDATION,GENERAL_FOUNDATION_COUNT} from '../generalfoundation.
 import {auditCurriculum} from '../curriculumaudit.js';
 test('16 early foundation lessons have complete example-led sections and actionable exercises',()=>{
  assert.equal(GENERAL_FOUNDATION_COUNT,16);
- assert.equal(totalLessons,134);
+ assert.equal(totalLessons,139);
  for(const [courseId,lessons] of Object.entries(GENERAL_FOUNDATION))for(const [id,c] of Object.entries(lessons)){
   const lesson=findLesson(courseId,id);
   assert.ok(lesson,courseId+':'+id);
