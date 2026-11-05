@@ -78,7 +78,11 @@ const INTRO_JAPANESE_UNITS=[
   practice:[
    check('Read あ in romaji.','a','Think of a single “ah” sound.'),
    check('Read い in romaji.','i','Think of “ee” as in see.'),
-   check('Read え in romaji.','e','Think of the vowel in mesa.')
+   check('Read う in romaji.','u','Think of the relaxed Japanese u vowel.'),
+   check('Read え in romaji.','e','Think of the vowel in mesa.'),
+   check('Read お in romaji.','o','Think of the pure o in oras.'),
+   check('Read あい in romaji.','ai','Combine あ (a) and い (i), each with a clear sound.'),
+   check('Read いえ in romaji.','ie','Combine い (i) and え (e).')
   ]
  },
  {
@@ -276,11 +280,11 @@ export function japaneseFoundationPanel({done=[],activeId='vowels',practiceIndex
   '<div class="japanese-practice-done" role="status"><strong>Foundation checkpoint completed ✓</strong><p>You can revisit this material anytime. This records guided written recall, not pronunciation or fluency.</p>'+
   (next? action('Continue to the next foundation','japanese-next','','primary-button'):'<p>You have completed Atlas’s introductory kana, vocabulary and early grammar path. Further grammar, kanji, authentic listening and conversation still require sustained study.</p>')+'</div>':
   q?'<div class="japanese-practice" id="japanese-practice"><span class="overline">GUIDED RECALL · '+(practiceIndex+1)+' / '+unit.practice.length+'</span><h4>'+escapeHTML(q.prompt)+'</h4>'+
-   '<label class="field-label" for="japanese-answer">Type the answer without looking at the chart</label><input id="japanese-answer" type="text" maxlength="60" autocomplete="off" spellcheck="false" autocapitalize="off" placeholder="Your answer (romaji or English)" />'+
+   '<label class="field-label" for="japanese-answer">Type what you remember without looking at the chart</label><input id="japanese-answer" type="text" maxlength="60" autocomplete="off" spellcheck="false" autocapitalize="off" placeholder="Your answer (romaji or English)" />'+
    (feedback?'<p class="japanese-feedback" role="status">'+escapeHTML(feedback)+'</p>':'')+
    action('Check my answer','japanese-check','','primary-button')+
    '<p class="fineprint">If unsure, revisit the explanation above. Wrong answers can be retried without penalty.</p></div>':
-   '<div class="japanese-practice"><h4>Now try a short recall check</h4><p>First read the explanations and examples above. Only then try three typed questions. You do not need a Japanese keyboard.</p>'+
+   '<div class="japanese-practice"><h4>Now recall every new sound</h4><p>After studying the chart and decoding examples, answer all '+unit.practice.length+' short questions. Kana rows check every character and two combined words; you do not need a Japanese keyboard. Try again if a sound is unfamiliar.</p>'+
    action('Start guided recall','japanese-start','','primary-button')+'</div>';
  return '<section class="japanese-foundation" aria-label="Step-by-step Japanese beginner learning pathway" id="japanese-foundation">'+
   '<div class="japanese-foundation-head"><span class="overline">JAPANESE · START WITH UNDERSTANDING</span><h2>Learn sounds before guessing words.</h2>'+
