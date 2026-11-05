@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {DATA_GROUPS,describeDataGroups,clearDataGroup} from '../datacontrols.js';
 const baseline={completed:[],answers:{},reviews:{},mistakes:{},exam:null,examHistory:[],learningPath:null,
- capstoneChecks:{},clinicAnswers:{},dailyVisits:[],lastOpened:null,fieldNotes:{},personalCards:[],languageDays:[],japaneseFoundationDone:[],phrases:{},
+ capstoneChecks:{},clinicAnswers:{},dailyVisits:[],lastOpened:null,fieldNotes:{},personalCards:[],languageDays:[],japaneseFoundationDone:[],japaneseKanaReviews:{},phrases:{},
  phraseReviews:{},languageChallenge:null,languageChallengeHistory:{},conversationQuest:null,conversationQuestHistory:{},
  studio:{savings:{}},scenarios:{},casebook:{},favorites:[],bookmarks:[],theme:'dark',userName:'Explorer'};
 const filled={...baseline,completed:['psychology:thoughts'],answers:{'psychology:thoughts':1},
