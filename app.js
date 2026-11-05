@@ -899,13 +899,15 @@ function languagePage() {
   const language=LANGUAGES.find(x=>x.code===saved.language)||LANGUAGES[1];
   const done=normalizeJapaneseFoundationDone(saved.japaneseFoundationDone);
   const currentUnit=JAPANESE_UNITS.find(u=>u.id===japaneseUnitId) || JAPANESE_UNITS[done.length] || JAPANESE_UNITS.at(-1);
+  // Never ask an absolute beginner to recognize phrases before the kana-reading pathway.
+  const showPhrasePractice=saved.language!=='ja'||done.includes('first-sentences');
   const completedDays=LEARNING_SPRINT.filter((_,i)=>saved.languageDays.includes(`${saved.language}:${i}`)).length;
   return `<main class="page language-page"><div class="subnav">${button(`${icon('back',18)} Back to learning`,'goto-explore','back-link')}</div>
     <div class="language-hero"><img src="/assets/course-languages.svg" alt="Decorative travel-inspired landscape"/><div><span class="overline">LET THE WORLD IN</span><h1>Language <em>Lab.</em></h1><p>One small conversation at a time.</p></div></div>
     <div class="section"><div class="section-heading"><div><span class="overline">CHOOSE YOUR STARTING POINT</span><h2>Pick a language</h2></div></div><label class="field-label" for="language-select">Your learning language</label><select id="language-select" aria-label="Choose a language" class="styled-select">${LANGUAGES.map(x=>`<option value="${x.code}" ${saved.language===x.code?'selected':''}>${x.flag} ${esc(x.name)}</option>`).join('')}</select><p class="fineprint">All 20 languages have introductory phrase practice. Japanese also has a step-by-step sound, hiragana, katakana and first-sentences foundation below. The other languages still need equivalent beginner curricula. Device speech does not assess pronunciation.</p></div>
     ${saved.language==='ja'?japaneseFoundationPanel({done,activeId:currentUnit.id,practiceIndex:japanesePracticeIndex,feedback:japanesePracticeFeedback}):''}
-    ${saved.language==='ja'?'<div class="japanese-practice-divider"><span class="overline">OPTIONAL REINFORCEMENT</span><h2>Phrase practice and seven-day sprint</h2><p>Begin with the sound and writing lessons above. These phrase exercises are for reinforcement, not a substitute for understanding Japanese.</p></div>':''}
-    <div class="sprint-head"><div><span class="overline">YOUR SEVEN-DAY LAUNCH</span><h2>${language.flag} ${esc(language.name)} sprint</h2><p>Practice 20–30 minutes daily. Build a practical foundation.</p></div><strong>${completedDays}/7</strong></div>${bars(completedDays,7)}
+    ${saved.language==='ja'&&showPhrasePractice?'<div class="japanese-practice-divider"><span class="overline">OPTIONAL REINFORCEMENT</span><h2>Phrase practice and seven-day sprint</h2><p>You have completed the kana-reading foundation. Practise phrases only after the sounds, patterns and basic sentence structures.</p></div>':''}
+    ${showPhrasePractice?`<div class="sprint-head"><div><span class="overline">YOUR SEVEN-DAY LAUNCH</span><h2>${language.flag} ${esc(language.name)} sprint</h2><p>Practice 20–30 minutes daily. Build a practical foundation.</p></div><strong>${completedDays}/7</strong></div>${bars(completedDays,7)}
     <div class="sprint-list">${LEARNING_SPRINT.map(([title,description],i)=>`<button type="button" class="sprint-day ${saved.languageDays.includes(`${saved.language}:${i}`)?'complete':''}" data-action="toggle-day" data-id="${i}"><span class="day-check">${saved.languageDays.includes(`${saved.language}:${i}`)?icon('check',17):`0${i+1}`}</span><span><small>DAY ${i+1}</small><strong>${esc(title)}</strong><em>${esc(description)}</em></span></button>`).join('')}</div>
     ${(() => { const pack=getPhrasePack(saved.language);if(!pack)return `<section class="phrase-lab"><h2>Phrase pack coming soon</h2><p>The seven-day practice plan remains available while this language's lessons are prepared.</p></section>`;const words=pack.phrases,word=words[phraseIndex%words.length],known=saved.phrases[saved.language]||[];
  const focused=focusedPhraseReview?.code===saved.language?focusedPhraseReview:null;
@@ -915,7 +917,7 @@ function languagePage() {
     ${languageAudioPanel()}
     ${phraseReviewPanel()}
     ${languageChallengePanel()}
-    ${conversationQuestPanel()}
+    ${conversationQuestPanel()}`:`<section class="japanese-course-gate" role="note"><span class="overline">PHRASES COME LATER</span><h2>First learn to read what you hear.</h2><p>Your next step is <strong>${esc(currentUnit.title)}</strong>. The seven-day sprint, greeting cards, listening challenges and dialogues unlock after the kana and first-sentences lessons. Nothing to guess before it has been taught.</p><p>${done.length} of ${JAPANESE_UNITS.length} learning steps completed. Complete the guided recall above to continue through the sounds.</p></section>`}
     <div class="language-callout">${icon('info',22)}<p><strong>From beginner to native-like?</strong> That's a long-term journey. In one week, target greetings, essential questions and short conversations. Real proficiency grows through months and years of meaningful use.</p></div>
   </main>`;
 }
