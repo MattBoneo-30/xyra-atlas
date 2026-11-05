@@ -49,6 +49,20 @@ async function noHorizontalOverflow(page){
 try{
  await ready();
  browser=await webkit.launch({headless:true});
+ await checkScenario('mobile-pwa-status-bar-safe-area',
+  {viewport:{width:390,height:844},isMobile:true,hasTouch:true,deviceScaleFactor:2},
+  async page=>{
+   // Linux WebKit cannot emulate a hardware notch; simulate safe-area geometry in CSS.
+   await page.evaluate(()=>document.documentElement.style.setProperty('--app-safe-top','47px'));
+   const geometry=await page.evaluate(()=>{
+    const bar=document.querySelector('.topbar');
+    return {height:bar.getBoundingClientRect().height,padding:parseFloat(getComputedStyle(bar).paddingTop),innerTop:bar.querySelector('.topbar-inner').getBoundingClientRect().top};
+   });
+   assert.ok(Math.abs(geometry.height-117)<1 && geometry.padding===47 && geometry.innerTop>=47,'standalone header reserves top inset');
+   await page.locator('.topbar [data-action="open-updates"]').click();
+   const modal=await page.locator('.modal-card').boundingBox();
+   assert.ok(modal && modal.y>=59,'dialog clears simulated top safe area');
+  });
  await checkScenario('mobile-lesson-and-decisions',
   {viewport:{width:390,height:844},isMobile:true,hasTouch:true,deviceScaleFactor:2},
   async page=>{
