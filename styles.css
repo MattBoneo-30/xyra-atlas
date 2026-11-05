@@ -883,3 +883,20 @@ html[data-theme=light]{color-scheme:light;--bg:#fbf5f6;--bg-raised:#fff9fa;--car
 .kana-review-empty strong{font-size:14px;color:var(--text)}
 .kana-review-empty p,.kana-review-empty small{color:var(--muted);font-size:12px;line-height:1.7}
 @media(max-width:580px){.kana-review-panel{padding:19px 16px}.kana-review-card{padding:17px 12px}.kana-review-actions{display:grid;grid-template-columns:minmax(0,1fr)}.kana-review-actions button{width:100%}}
+
+/* Substantial introductory instruction stays separate from the original 3-section recap. */
+.deep-study-head{margin:14px 0 20px;padding:23px 23px 18px;border:1px solid var(--line-bright);background:linear-gradient(125deg,var(--card-soft),var(--card));border-radius:18px}
+.deep-study-head h2{font:normal clamp(25px,4vw,34px)/1.18 Georgia,serif;color:var(--text);margin:9px 0 11px}
+.deep-study-head p{font-size:13px;line-height:1.82;color:var(--muted);max-width:690px}
+.lesson-content>.deep-study-section{border-left:2px solid var(--line-bright);margin:17px 0;padding:16px 19px 21px;scroll-margin-top:105px}
+.deep-study-section .article-section-num{display:block;font-size:10px;letter-spacing:1.1px;color:var(--gold)}
+.deep-study-section h2{color:var(--text);font-size:clamp(20px,3.5vw,27px);line-height:1.3;margin:10px 0 13px}
+.deep-study-section p{color:var(--muted);font-size:14px;line-height:1.95;margin:0;max-width:790px;white-space:normal}
+.deep-study-recap{margin:31px 0 19px;padding:20px;border-top:1px solid var(--line-bright);border-bottom:1px solid var(--line-bright)}
+.deep-study-recap h2{font:normal 27px/1.25 Georgia,serif;margin:8px 0 10px;color:var(--text)}
+.deep-study-recap p{font-size:12px;line-height:1.75;color:var(--muted);margin:0}
+.deep-worked-case{border-color:var(--line-bright)}
+.deep-study-assignment{background:var(--card-soft);border-radius:13px;border:1px solid var(--line-bright);padding:18px;margin:17px 0 4px}
+.deep-study-assignment h4{font-size:17px;line-height:1.4;color:var(--text);margin:8px 0}
+.deep-study-assignment p{font-size:13px;line-height:1.85;color:var(--muted);margin:0}
+@media(max-width:520px){.deep-study-head{padding:19px 16px}.lesson-content>.deep-study-section{padding:15px 12px}.deep-study-recap{padding:17px 14px}.deep-study-assignment{padding:15px}}
