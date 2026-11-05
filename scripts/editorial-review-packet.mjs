@@ -27,6 +27,12 @@ export function buildEditorialReviewPacket(courses,clinics){
     stageLearningObjective:objective?{goal:objective.goal,evidence:objective.evidence}:null,
     intro:lesson.intro,
     sections:lesson.sections.map(s=>({heading:s.heading,body:s.body})),
+    // All newly authored teaching is reviewed and hashed, not silently omitted.
+    ...(lesson.deepSections?.length?{conceptFirstStudy:{
+      studyMinutes:lesson.deepMinutes,
+      sections:lesson.deepSections.map(s=>({heading:s.heading,body:s.body})),
+      workedCase:lesson.deepExample,independentExercise:lesson.deepTask
+    }}:{}),
     // Flowchart text is a teaching claim too. Include it in editorial review hashes.
     ...(lesson.flow?{learningFlow:{title:lesson.flow.title,steps:lesson.flow.steps.map(step=>({label:step.label,detail:step.detail})),caption:lesson.flow.caption}}:{}),
     workedExample:lesson.example,task:lesson.task,
