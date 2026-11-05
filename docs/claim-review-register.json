@@ -3,7 +3,8 @@
   "reviewDate": "2026-11-04",
   "status": "partial-maintainer-spot-check-not-expert-signoff",
   "primaryLinksChecked": 6,
-  "totalDistinctCourseURLs": 42,
+  "inventoryRecountedAt": "2026-11-05",
+  "totalDistinctCourseURLs": 51,
   "claims": [
     {
       "key": "npc-access-own-data",
