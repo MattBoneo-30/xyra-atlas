@@ -6,7 +6,7 @@ import {CRITICAL_FOUNDATION,CRITICAL_FOUNDATION_COUNT} from '../criticalfoundati
 import {auditCurriculum} from '../curriculumaudit.js';
 test('eighteen high-stakes original lessons deepen instruction and casework without altering IDs',()=>{
  assert.equal(CRITICAL_FOUNDATION_COUNT,18);
- assert.equal(totalLessons,134);
+ assert.equal(totalLessons,139);
  for(const [courseId,entries] of Object.entries(CRITICAL_FOUNDATION))for(const [id,addition] of Object.entries(entries)){
   const lesson=findLesson(courseId,id);
   assert.ok(lesson,courseId+':'+id);
