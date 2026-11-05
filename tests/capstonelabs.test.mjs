@@ -8,7 +8,7 @@ import {examPool} from '../exam.js';
 test('every subject has one distinct applied capstone and all original lessons and casework remain accessible',()=>{
  assert.equal(CAPSTONE_LAB_COUNT,14);
  assert.equal(COURSES.length,14);
- assert.equal(totalLessons,134);
+ assert.equal(totalLessons,139);
  assert.deepEqual(new Set(Object.keys(CAPSTONE_LABS)),new Set(COURSES.map(c=>c.id)));
  for(const course of COURSES){
   const labs=CAPSTONE_LABS[course.id];
