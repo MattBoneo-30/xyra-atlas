@@ -896,7 +896,7 @@ try{
   await page.locator('#japanese-answer').fill('wrong');
   await page.locator('[data-action="japanese-check"]').click();
   expect((await page.locator('.japanese-feedback').textContent()).includes('Not quite'),'wrong answers provide helpful guidance without penalty');
-  for(const correct of ['a','i','e']){
+  for(const correct of ['a','i','u','e','o','ai','ie']){
    await page.locator('#japanese-answer').fill(correct);
    await page.locator('[data-action="japanese-check"]').click();
   }
@@ -908,7 +908,8 @@ try{
   expect(await page.locator('.japanese-kana-tile').count()===5,'K row isolates just five new kana');
   expect(await page.locator('.phrase-lab').count()===0,'no phrase drills after merely opening K row');
   await page.locator('[data-action="japanese-start"]').click();
-  for(const answer of ['ka','ki','koe']){
+  expect((await page.locator('.japanese-practice').textContent()).includes('1 / 7'),'K row asks for every sound plus two words');
+  for(const answer of ['ka','ki','ku','ke','ko','kao','koe']){
    await page.locator('#japanese-answer').fill(answer);
    await page.locator('[data-action="japanese-check"]').click();
   }
