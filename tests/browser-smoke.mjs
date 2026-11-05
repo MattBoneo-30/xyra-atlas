@@ -69,6 +69,20 @@ try{
  const missingResponse=await fetch(BASE+'/this-asset-is-not-present.js');
  expect(missingResponse.status===404,'missing assets return 404 rather than fake HTML');
  browser=await chromium.launch({headless:true,args:['--no-sandbox']});
+ await smoke('mobile-pwa-status-bar-safe-area', {viewport:{width:390,height:844},isMobile:true,hasTouch:true,deviceScaleFactor:2},async page=>{
+  // Browser emulators have no hardware notch: simulate the CSS safe-area inset.
+  await page.evaluate(()=>document.documentElement.style.setProperty('--app-safe-top','47px'));
+  const geometry=await page.evaluate(()=>{
+   const bar=document.querySelector('.topbar');
+   return {height:bar.getBoundingClientRect().height,padding:parseFloat(getComputedStyle(bar).paddingTop),innerTop:bar.querySelector('.topbar-inner').getBoundingClientRect().top,skipTop:parseFloat(getComputedStyle(document.querySelector('.skip-link')).top),overflow:document.documentElement.scrollWidth-window.innerWidth};
+  });
+  expect(Math.abs(geometry.height-117)<1 && geometry.padding===47,'standalone header reserves the simulated status-bar inset');
+  expect(geometry.innerTop>=47 && geometry.skipTop>=57,'header controls and skip link clear the status bar');
+  expect(geometry.overflow<=2,'safe-area header fits mobile viewport');
+  await page.locator('.topbar [data-action="open-updates"]').click();
+  const modal=await page.locator('.modal-card').boundingBox();
+  expect(Boolean(modal)&&modal.y>=59,'dialog clears the simulated status bar');
+ });
  await smoke('desktop-lessons', {viewport:{width:1365,height:900}},async(page)=>{
   expect(await page.locator('.home-page').count()===1,'home screen renders');
   await page.locator('.desktop-rail [data-action="nav"][data-id="explore"]').click();
