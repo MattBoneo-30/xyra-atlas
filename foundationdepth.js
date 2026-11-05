@@ -21,14 +21,16 @@ export function deepenOriginalFoundations(courses){
    !upgrade.flow||!Array.isArray(upgrade.flow.steps)||upgrade.flow.steps.length!==4)
    throw Error('Incomplete authored teaching foundation for '+course.id);
   actual.add(course.id);
-  // Preserve the original supplemental case/reference sections from prior editorial passes.
-  // The first two short sections are replaced by explanatory teaching, not duplicated.
-  lesson.sections=[...upgrade.sections.map(s=>({...s})),...lesson.sections.slice(2)];
+  // The established original three sections, example and assignment are published
+  // course material; preserve them, including their exact text and source links.
+  // New substantive chapters appear FIRST in the reader as a distinct deep-study
+  // path. Short study plans continue to use the original core reading estimate.
   lesson.title=upgrade.title;
   lesson.intro=upgrade.intro;
-  lesson.minutes=Math.max(lesson.minutes||0,upgrade.minutes);
-  lesson.example=upgrade.example;
-  lesson.task=upgrade.task;
+  lesson.deepSections=upgrade.sections.map(s=>({...s}));
+  lesson.deepExample=upgrade.example;
+  lesson.deepTask=upgrade.task;
+  lesson.deepMinutes=upgrade.minutes;
   lesson.flow={title:upgrade.flow.title,steps:upgrade.flow.steps.map(x=>({...x})),caption:upgrade.flow.caption};
   lesson.foundationalDepth='concept-first-2026';
  }
