@@ -16,6 +16,15 @@ export function createChapterMap(course,lesson){
   preview:summarize(s.body,135),
   label:String(i+1).padStart(2,'0')
  }));
- return {title:lesson.title||'',course:course.title||'',steps,
+ const deepSteps=(Array.isArray(lesson.deepSections)?lesson.deepSections:[])
+  .filter(section=>section&&typeof section.heading==='string'&&typeof section.body==='string')
+  .map((section,i)=>({
+   id:'deep-study-section-'+i,
+   index:i,
+   heading:section.heading.trim(),
+   preview:summarize(section.body,135),
+   label:String(i+1).padStart(2,'0')
+  }));
+ return {title:lesson.title||'',course:course.title||'',steps,deepSteps,
   practice:typeof lesson.task==='string'&&lesson.task.trim()?{id:'lesson-practice',heading:'Apply what you learned',preview:summarize(lesson.task,140)}:null};
 }
