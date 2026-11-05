@@ -13,15 +13,15 @@ test('all 11 previously short advanced/personal applied lessons now teach full m
   assert.ok(lesson.task.length>=90,key+' missing meaningful independent task');
  }
 });
-test('entire 134-lesson educational collection meets transparent structural depth checks',()=>{
+test('entire 139-lesson educational collection meets transparent structural depth checks',()=>{
  const report=auditCurriculum(COURSES);
- assert.equal(totalLessons,134);
+ assert.equal(totalLessons,139);
  assert.equal(report.valid,true);
- assert.equal(report.totals.threeSectionDepth,134);
- assert.equal(report.totals.appliedExercises,134);
- assert.equal(report.totals.workedExamples,134);
- assert.equal(report.totals.answerRationales,134);
- assert.equal(report.totals.furtherReading,134);
+ assert.equal(report.totals.threeSectionDepth,139);
+ assert.equal(report.totals.appliedExercises,139);
+ assert.equal(report.totals.workedExamples,139);
+ assert.equal(report.totals.answerRationales,139);
+ assert.equal(report.totals.furtherReading,139);
  assert.equal(report.totals.lessonsWithEditorialFlags,0);
  assert.ok(report.limitations.some(x=>/Human specialist/.test(x)));
 });
