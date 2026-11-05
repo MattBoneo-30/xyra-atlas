@@ -7,7 +7,7 @@ export const DATA_GROUPS=Object.freeze([
  {id:'writing',label:'Private notes & study cards',description:'Field Notebook writing and custom Study Card Workshop questions and answers.',
   fields:['fieldNotes','personalCards']},
  {id:'language',label:'Language practice',description:'Learned phrases, recall schedules, sprint checks and both kinds of language challenges.',
-  fields:['languageDays','japaneseFoundationDone','phrases','phraseReviews','languageChallenge','languageChallengeHistory','conversationQuest','conversationQuestHistory']},
+  fields:['languageDays','japaneseFoundationDone','japaneseKanaReviews','phrases','phraseReviews','languageChallenge','languageChallengeHistory','conversationQuest','conversationQuestHistory']},
  {id:'practice',label:'Practice experiments',description:'Scenario Lab choices, branching Case Files and Practice Studio inputs.',
   fields:['studio','scenarios','casebook']},
  {id:'saved',label:'Saved references',description:'Favorite subject worlds and bookmarked lessons.',
