@@ -5,7 +5,7 @@ import {COURSES,findLesson,totalLessons} from '../data.js';
 import {PH_CASEWORK,PH_CASEWORK_COUNT} from '../phcasework.js';
 test('three substantial advanced Philippine case studies include trusted agency references',()=>{
  assert.equal(PH_CASEWORK_COUNT,3);
- assert.equal(totalLessons,134);
+ assert.equal(totalLessons,139);
  const known=new Set(),domains=new Set();
  for(const item of PH_CASEWORK.laws){
   assert.equal(item.stage,'Advanced');assert.ok(item.intro.length>100);
