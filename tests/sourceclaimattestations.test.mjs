@@ -44,7 +44,7 @@ const audit=(entries,roster=[reviewer],sourceMatrix=matrix)=>
 
 test('default real inventory stays pending and never implies approvals',()=>{
  const output=audit([],[]);
- assert.equal(output.totals.distinctSourceURLs,51);
+ assert.equal(output.totals.distinctSourceURLs,52);
  assert.equal(output.totals.approvedSourceUseSites,0);
  assert.ok(output.totals.sourceUseSites>=176);
  assert.equal(output.totals.pendingSourceUseSites,output.totals.sourceUseSites);

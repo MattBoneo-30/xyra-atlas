@@ -6,9 +6,9 @@ import {CLINICS} from '../clinics.js';
 import {buildEditorialReviewPacket} from '../scripts/editorial-review-packet.mjs';
 import {buildSourceEvidenceMatrix,renderSourceEvidenceWorkbook} from '../scripts/source-evidence-matrix.mjs';
 const packet=buildEditorialReviewPacket(COURSES,CLINICS);
-test('all 51 authored reference URLs map every source-use context without expert claims',()=>{
+test('all 52 authored reference URLs map every source-use context without expert claims',()=>{
  const matrix=buildSourceEvidenceMatrix(packet);
- assert.equal(matrix.summary.distinctURLs,51);
+ assert.equal(matrix.summary.distinctURLs,52);
  assert.equal(matrix.summary.independentlyApprovedURLs,0);
  assert.equal(matrix.summary.independentlyApprovedUseSites,0);
  assert.ok(matrix.summary.sourceUseSites>=176);
@@ -33,7 +33,7 @@ test('all 51 authored reference URLs map every source-use context without expert
 test('readable workbook contains 42 source sections with review checklists, never approval',()=>{
  const x=buildSourceEvidenceMatrix(packet);
  const md=renderSourceEvidenceWorkbook(x);
- assert.equal((md.match(/URL SHA-256:/g)||[]).length,51);
+ assert.equal((md.match(/URL SHA-256:/g)||[]).length,52);
  assert.ok(md.includes('No approvals are generated'));
  assert.ok(md.includes('not fact checked'));
  assert.ok(md.includes('All answer options (NOT fact checked):'));
