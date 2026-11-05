@@ -1374,6 +1374,66 @@ async function handleAction(e) {
   else if(action==='rate-review') {const card=getDueReviews()[0];if(!card||!reviewRevealed||id!==card.id)return;const outcome=button.dataset.outcome;if(!['again','remembered'].includes(outcome))return;saved.reviews[card.id]=recordReview(saved.reviews[card.id],outcome);reviewRevealed=false;persist();flash(outcome==='remembered'?'Nice recall! Your next review is scheduled.':'Good practice. This card returns in 10 minutes.');}
   else if(action==='toggle-day') toggle('languageDays',`${saved.language}:${id}`);
 
+  else if(action==='japanese-open'||action==='japanese-next'){
+   if(route.view!=='language'||saved.language!=='ja')return;
+   const done=normalizeJapaneseFoundationDone(saved.japaneseFoundationDone);
+   const current=JAPANESE_UNITS.find(u=>u.id===japaneseUnitId)||JAPANESE_UNITS[done.length]||JAPANESE_UNITS.at(-1);
+   const index=action==='japanese-next'?JAPANESE_UNITS.indexOf(current)+1:JAPANESE_UNITS.findIndex(u=>u.id===id);
+   if(index<0||index>=JAPANESE_UNITS.length||index>done.length)return;
+   japaneseUnitId=JAPANESE_UNITS[index].id;
+   japanesePracticeIndex=-1;japanesePracticeFeedback='';
+   render();
+   document.getElementById('japanese-foundation')?.scrollIntoView({block:'start',behavior:'auto'});
+  }
+  else if(action==='japanese-start'){
+   if(route.view!=='language'||saved.language!=='ja')return;
+   const done=normalizeJapaneseFoundationDone(saved.japaneseFoundationDone);
+   const unit=JAPANESE_UNITS.find(u=>u.id===japaneseUnitId)||JAPANESE_UNITS[done.length];
+   if(!unit||done.includes(unit.id)||JAPANESE_UNITS.indexOf(unit)!==done.length)return;
+   japaneseUnitId=unit.id;japanesePracticeIndex=0;japanesePracticeFeedback='';
+   render();
+   document.getElementById('japanese-answer')?.focus({preventScroll:true});
+  }
+  else if(action==='japanese-check'){
+   if(route.view!=='language'||saved.language!=='ja'||japanesePracticeIndex<0)return;
+   const done=normalizeJapaneseFoundationDone(saved.japaneseFoundationDone);
+   const unit=JAPANESE_UNITS.find(u=>u.id===japaneseUnitId);
+   if(!unit||done.includes(unit.id)||JAPANESE_UNITS.indexOf(unit)!==done.length)return;
+   const answer=document.getElementById('japanese-answer')?.value||'';
+   if(!answer.trim()){japanesePracticeFeedback='Try an answer first; reread the examples if you need a hint.';render();return;}
+   const result=evaluateJapaneseAnswer(unit.id,japanesePracticeIndex,answer);
+   if(!result.valid)return;
+   if(!result.correct){japanesePracticeFeedback='Not quite. '+result.hint+' Try again.';render();document.getElementById('japanese-answer')?.focus({preventScroll:true});return;}
+   japanesePracticeFeedback='';
+   if(japanesePracticeIndex===unit.practice.length-1){
+    saved.japaneseFoundationDone=normalizeJapaneseFoundationDone([...done,unit.id]);
+    japanesePracticeIndex=-1;
+    persist();
+   }else japanesePracticeIndex++;
+   render();
+   document.getElementById('japanese-answer')?.focus({preventScroll:true});
+  }
+  else if(action==='japanese-speak'){
+   if(route.view!=='language'||saved.language!=='ja')return;
+   const spoken=button.dataset.kana||'';
+   if(!JAPANESE_SPEAKABLE.has(spoken))return;
+   const note=document.getElementById('japanese-audio-note');
+   const snapshot=languageSpeechSnapshot();
+   const voice=chooseOfflineLanguageVoice(snapshot.voices,'ja-JP',languageVoiceURI);
+   if(!snapshot.supported||!voice){if(note)note.textContent='No compatible local Japanese voice is available. Study the sound guide and listen to qualified audio when possible.';return;}
+   stopLanguageAudio();
+   const token=languageAudioToken;
+   try{
+    const utterance=new SpeechSynthesisUtterance(spoken);
+    utterance.lang=voice.lang;utterance.voice=voice;utterance.rate=normalizeLanguageSpeechRate(saved.languageSpeechRate);
+    utterance.onend=()=>{if(token===languageAudioToken&&note)note.textContent='Listen again, then reproduce the sound without reading the romaji. Synthetic audio is not a native-speaker recording.';};
+    utterance.onerror=()=>{if(token===languageAudioToken&&note)note.textContent='The local voice could not play this sound. The written lesson remains available offline.';};
+    window.speechSynthesis.speak(utterance);
+    if(note)note.textContent='Playing an installed Japanese voice. Listen and imitate; pronunciation is not being graded.';
+   }catch{if(note)note.textContent='Speech playback is unavailable on this device.';}
+  }
+
+
   else if(action==='conversation-start'){
    if(route.view!=='language'||!getPhrasePack(saved.language))return;
    const questId=document.getElementById('conversation-quest-select')?.value;
