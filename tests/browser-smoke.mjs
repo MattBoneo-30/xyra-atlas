@@ -845,6 +845,33 @@ try{
   expect(overflow.scroll<=overflow.width+2,'app-update controls fit the mobile viewport');
  });
 
+ await smoke('japanese-beginner-foundations',{viewport:{width:390,height:844},isMobile:true,hasTouch:true,deviceScaleFactor:2},async page=>{
+  await page.goto(BASE+'/#/language',{waitUntil:'domcontentloaded'});
+  await page.locator('.japanese-foundation').waitFor();
+  expect(await page.locator('.japanese-unit-select').count()===9,'Japanese course has nine ordered units');
+  expect((await page.locator('.japanese-foundation').textContent()).includes('Five sounds you already nearly know'),'the first lesson teaches familiar vowel sounds');
+  expect(await page.locator('.japanese-kana-tile').count()===5,'beginner sees five vowel characters before any quiz');
+  expect(await page.locator('.japanese-unit-select').nth(1).isDisabled(),'later teaching units require their prerequisites');
+  expect(await page.locator('#japanese-answer').count()===0,'no guessing question until lesson has been read');
+  const overflow=await mobileOverflow(page);
+  expect(overflow.scroll<=overflow.width+2,'Japanese foundation fits mobile viewport');
+  await page.locator('.japanese-practice [data-action="japanese-start"]').click();
+  await page.locator('#japanese-answer').fill('wrong');
+  await page.locator('[data-action="japanese-check"]').click();
+  expect((await page.locator('.japanese-feedback').textContent()).includes('Not quite'),'wrong answers provide helpful guidance without penalty');
+  for(const correct of ['a','i','e']){
+   await page.locator('#japanese-answer').fill(correct);
+   await page.locator('[data-action="japanese-check"]').click();
+  }
+  expect((await getState(page)).japaneseFoundationDone.includes('vowels'),'foundation checkpoint persists locally');
+  expect(await page.locator('.japanese-unit-select').nth(1).isEnabled(),'next lesson unlocks after guided recall');
+  await page.locator('[data-action="japanese-next"]').click();
+  expect((await page.locator('.japanese-lesson h3').textContent()).includes('Build words with K and S'),'navigation advances to more complex sounds');
+  await page.reload({waitUntil:'domcontentloaded'});
+  expect((await getState(page)).japaneseFoundationDone.includes('vowels'),'foundation progress survives PWA reload');
+  expect(await page.locator('.japanese-unit-select').nth(1).isEnabled(),'next unit remains unlocked');
+ });
+
  await smoke('manual-offline-update-lifecycle',{viewport:{width:390,height:844}},async(page,context)=>{
   await page.goto(BASE+'/#/offline',{waitUntil:'domcontentloaded'});
   await page.evaluate(async()=>{await navigator.serviceWorker.ready;});
