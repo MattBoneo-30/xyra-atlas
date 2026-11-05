@@ -1682,7 +1682,7 @@ try{
  await smoke('portable-editorial-review-mobile',{viewport:{width:390,height:844},isMobile:true,hasTouch:true,deviceScaleFactor:2},async(page)=>{
    const html=await readFile('artifacts/editorial-review-packet.html','utf8');
    await page.setContent(html,{waitUntil:'domcontentloaded'});
-   expect(await page.locator('.review-item').count()===176,'external review HTML includes all 134 lessons and 42 decisions');
+   expect(await page.locator('.review-item').count()===181,'external review HTML includes all 139 lessons and 42 decisions');
    expect(await page.locator('nav[aria-label="Review subjects"] a').count()===14,'all subjects appear in the accessible review index');
    const item=page.locator('#lesson-psychology-thoughts');
    await item.locator('summary').focus();
