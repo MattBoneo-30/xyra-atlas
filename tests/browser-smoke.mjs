@@ -828,6 +828,23 @@ try{
  });
 
 
+ await smoke('pwa-update-controls',{viewport:{width:390,height:844},isMobile:true,hasTouch:true},async page=>{
+  expect(await page.locator('.app-update-topbar').count()===1,'mobile toolbar offers a permanent refresh action');
+  await page.locator('.app-update-topbar').click();
+  await page.locator('.modal-card').waitFor();
+  expect((await page.locator('.modal-card').textContent()).includes('Keep Atlas fresh.'),'refresh opens the in-app update manager');
+  expect(await page.locator('.modal-card [data-action="app-reload"]').count()===1,'manual reload is available without uninstalling');
+  await page.locator('.modal-close').click();
+  await page.locator('.bottom-nav [data-action="nav"][data-id="you"]').click();
+  await waitRoute(page,'#/you');
+  expect(await page.locator('.you-page [data-action="app-update-open"]').count()===1,'your space offers a visible update shortcut');
+  await page.locator('.you-page [data-action="app-update-open"]').click();
+  expect(await page.locator('.modal-card [data-action="app-reload"]').count()===1,'settings reaches the same update dialog');
+  await page.locator('.modal-close').click();
+  const overflow=await mobileOverflow(page);
+  expect(overflow.scroll<=overflow.width+2,'app-update controls fit the mobile viewport');
+ });
+
  await smoke('manual-offline-update-lifecycle',{viewport:{width:390,height:844}},async(page,context)=>{
   await page.goto(BASE+'/#/offline',{waitUntil:'domcontentloaded'});
   await page.evaluate(async()=>{await navigator.serviceWorker.ready;});
@@ -867,6 +884,9 @@ try{
    await page.locator('.offline-update-ready').waitFor();
    expect((await status()).version===original,'active release remains unchanged while update waits');
    expect(await page.locator('.update-ready-topbar').count()===1,'mobile toolbar indicates available update');
+   await page.locator('.update-ready-topbar').click();
+   expect(await page.locator('.modal-card [data-action="offline-apply-update"]').count()===1,'update icon offers direct installation after download');
+   await page.locator('.modal-close').click();
    expect((await page.locator('.offline-update-ready').textContent()).includes('Apply update'),'update needs explicit user consent');
    await context.setOffline(true);
    await page.locator('[data-action="offline-apply-update"]').click();
