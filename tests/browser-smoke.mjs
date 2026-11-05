@@ -1680,7 +1680,7 @@ try{
    await page.goto(BASE+'/#/lesson/languages/chunks',{waitUntil:'domcontentloaded'});
    await page.locator('.reading-page').waitFor();
    expect(await page.locator('.lesson-content section[id^="lesson-section-"]').count()===3,'original language foundation lesson now has full teaching structure');
-   expect((await page.locator('.worked-example').textContent()).includes('station'),'original language case is shown in reader');
+   expect((await page.locator('.worked-example:not(.deep-worked-case)').textContent()).includes('station'),'original language case is shown in reader');
    expect(await page.locator('.lesson-sources a').count()>=1,'further-reading source is available');
    const bounds=await mobileOverflow(page);
    expect(bounds.scroll<=bounds.width+8,'foundation case fits small phone');
@@ -1690,7 +1690,7 @@ try{
    await context.setOffline(true);
    await page.reload({waitUntil:'domcontentloaded'});
    await page.locator('.worked-example').waitFor();
-   expect((await page.locator('.worked-example').textContent()).includes('station'),'new lesson remains offline');
+   expect((await page.locator('.worked-example:not(.deep-worked-case)').textContent()).includes('station'),'new lesson remains offline');
    await context.setOffline(false);
  });
 
