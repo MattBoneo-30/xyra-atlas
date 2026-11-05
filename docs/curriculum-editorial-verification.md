@@ -2,6 +2,8 @@
 
 Review date: **2026-11-04** · Stage: **Advanced curriculum, still in progress**
 
+**Inventory update (2026-11-05):** Atlas now contains 139 lessons, 42 decisions and 51 distinct source URLs. The historical 134-lesson counts and source spot checks below describe the earlier baseline, not new expert approval. All five added astronomy/Philippine-law chapters remain pending independent specialist review.
+
 This document describes actual evidence checked rather than declaring all published course material verified. A green automated test proves structural and software behavior, not expert review of pedagogical or legal accuracy. Every lesson remains general education, not certification or individualized professional advice.
 
 ## Source checks completed

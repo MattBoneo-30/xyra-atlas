@@ -1,6 +1,6 @@
 # XYRA Atlas — independent source review handoff
 
-The current teaching library has 134 lessons, 42 applied decisions, and 42 distinct external reference URLs. Six Philippine NPC, BSP and DTI spot checks are limited maintainer observations, NOT independent expert approvals.
+The current teaching library has 139 lessons, 42 applied decisions, and 51 distinct external reference URLs. Six Philippine NPC, BSP and DTI spot checks are limited maintainer observations, NOT independent expert approvals.
 
 Run npm run export:source-evidence to build artifacts/source-evidence-matrix.json and artifacts/source-evidence-workbook.md. The first provides each referenced lesson and applied decision's exact SHA-256 source hash and full authored teaching context, grouped by the cited source URL. The second indexes those usages and offers a human review checklist. Both are separate from the deployable PWA and contain no learner records.
 

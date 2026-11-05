@@ -4,7 +4,7 @@
 
 ## What is built
 
-- A static, offline-first learning PWA: 14 subjects, 134 lessons, 42 applied decision drills and 160 starter phrases covering 20 languages.
+- A static, offline-first learning PWA: 14 subjects, 139 lessons, 42 applied decision drills and 160 starter phrases covering 20 languages.
 - Study cards, practice exams, offline phrase practice, local storage, encrypted backups, responsive navigation, accessibility checks and static artwork.
 - Vercel-ready project configuration in `vercel.json`; production output is `dist/`.
 - GitHub Actions builds and checks the app in Chromium and Linux WebKit and produces a downloadable release-candidate archive, SHA-256 manifest and human-readable gate summary.
@@ -34,7 +34,7 @@ Connect the GitHub repository to **your own** Vercel project, with Build Command
 
 ## Remaining production-final acceptance
 
-1. Independently verified qualified reviewers must approve **134/134 lessons, 42/42 decisions and all cited source uses**, including primary Philippine legal, banking and consumer references. The existing reviewer JSON and signed claim audit correctly begin at zero approvals.
+1. Independently verified qualified reviewers must approve **139/139 lessons, 42/42 decisions and all cited source uses**, including primary Philippine legal, banking and consumer references. The existing reviewer JSON and signed claim audit correctly begin at zero approvals.
 2. Independently qualified regional/native editors must review **160/160 phrases**, script, register, dialect and real pronunciation provenance. Synthetic speech is not native reference audio.
 3. The owner must approve final original painterly/cinematic world, chapter and character artwork; current accessible vectors are interim.
 4. Record real iPhone Safari and Android Chrome installed-PWA tests using `docs/device-evidence.json`. All 18 device cases remain NOT RUN until actually tested.
