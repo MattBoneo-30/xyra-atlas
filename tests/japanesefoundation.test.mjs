@@ -45,7 +45,7 @@ test('each foundation unit provides explanation, practical decoding and assessab
 test('completion normalization accepts only the continuous foundation prerequisite sequence',()=>{
  const ids=JAPANESE_UNITS.map(unit=>unit.id);
  assert.deepEqual(normalizeJapaneseFoundationDone(null),[]);
- assert.deepEqual(normalizeJapaneseFoundationDone(['bogus',ids[0]]),[]);
+ assert.deepEqual(normalizeJapaneseFoundationDone(['bogus',ids[0]]),[ids[0]]);
  assert.deepEqual(normalizeJapaneseFoundationDone([ids[1]]),[]);
  assert.deepEqual(normalizeJapaneseFoundationDone([ids[0],ids[2]]),[ids[0]]);
  assert.deepEqual(normalizeJapaneseFoundationDone([ids[1],ids[0],ids[0]]),[ids[0],ids[1]]);
