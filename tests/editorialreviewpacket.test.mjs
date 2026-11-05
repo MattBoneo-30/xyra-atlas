@@ -7,11 +7,11 @@ import {reviewHash,buildEditorialReviewPacket} from '../scripts/editorial-review
 import {CURRICULUM_OBJECTIVES} from '../curriculumpath.js';
 test('independent editorial handoff includes stable source hashes for all authored teaching and questions',()=>{
  const pack=buildEditorialReviewPacket(COURSES,CLINICS);
- assert.deepEqual(pack.totals,{subjects:14,lessons:134,decisions:42,uniqueSourceURLs:42,
+ assert.deepEqual(pack.totals,{subjects:14,lessons:139,decisions:42,uniqueSourceURLs:51,
    expertApprovedLessons:0,expertApprovedDecisions:0});
- assert.equal(pack.lessons.length,134);
+ assert.equal(pack.lessons.length,139);
  assert.equal(pack.decisions.length,42);
- assert.equal(new Set(pack.lessons.map(x=>x.id)).size,134);
+ assert.equal(new Set(pack.lessons.map(x=>x.id)).size,139);
  assert.equal(new Set(pack.decisions.map(x=>x.id)).size,42);
  assert.ok(pack.lessons.every(x=>x.contentHash===reviewHash(x.content)));
  assert.ok(pack.decisions.every(x=>x.contentHash===reviewHash(x.content)));
