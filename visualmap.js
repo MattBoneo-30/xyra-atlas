@@ -33,6 +33,8 @@ export function createChapterMap(course,lesson){
   }));
  const transfer=lesson.transferLab&&typeof lesson.transferLab.title==='string'?
   {id:'transfer-lab',heading:lesson.transferLab.title,preview:summarize(lesson.transferLab.scenario,135)}:null;
- return {title:lesson.title||'',course:course.title||'',steps,deepSteps,astronomySteps,transfer,
+ const inquiry=lesson.evidenceInquiry&&typeof lesson.evidenceInquiry.title==='string'?
+  {id:'evidence-inquiry',heading:lesson.evidenceInquiry.title,preview:summarize(lesson.evidenceInquiry.scenario,135)}:null;
+ return {title:lesson.title||'',course:course.title||'',steps,deepSteps,astronomySteps,transfer,inquiry,
   practice:typeof lesson.task==='string'&&lesson.task.trim()?{id:'lesson-practice',heading:'Apply what you learned',preview:summarize(lesson.task,140)}:null};
 }
