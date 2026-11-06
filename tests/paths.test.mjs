@@ -49,6 +49,23 @@ test('reject invalid imports, wrong goals, adult injections, duplicate lessons a
   assert.equal(normalizeLearningPath(adult,COURSES),null);
 });
 
+test('restored plans cannot exceed the selected daily budget or underreport lesson minutes',()=>{
+ const empty=Array.from({length:7},()=>[]);
+ const overloaded={
+  goal:'life',minutes:10,created:'2026-11-03',
+  days:[[
+   {courseId:'psychology',lessonId:'thoughts',minutes:1},
+   {courseId:'psychology',lessonId:'biases',minutes:1}
+  ],...empty.slice(1)]
+ };
+ assert.equal(normalizeLearningPath(overloaded,COURSES),null,'two 8+10 minute lessons cannot fit a ten-minute budget');
+ const valid={...overloaded,minutes:20};
+ const normalized=normalizeLearningPath(valid,COURSES);
+ assert.ok(normalized);
+ assert.equal(normalized.days[0].reduce((n,item)=>n+item.minutes,0),18);
+ assert.deepEqual(normalized.days[0].map(item=>item.minutes),[8,10],
+  'restored time estimates always use the bundled lesson, not untrusted item values');
+});
 test('app, build, backup and offline service worker all integrate a guided path',()=>{
   const app=fs.readFileSync('app.js','utf8'),build=fs.readFileSync('scripts/build.mjs','utf8'),sw=fs.readFileSync('sw.js','utf8');
   assert.match(app,/function pathPage\(/);
