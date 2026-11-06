@@ -30,9 +30,9 @@ export function extendScienceWithAstronomy(courses){
  const lesson=science?.lessons?.find(item=>item?.id==='systems');
  if(!lesson||!Array.isArray(lesson.sections)||!Array.isArray(lesson.sources)||typeof lesson.task!=='string')
   throw Error('Astronomy case requires the established science systems lesson');
- if(lesson.sections.some(section=>section.heading===ASTRONOMY_CASE_STUDY.sections[0].heading))
+ if(lesson.astronomySections?.some(section=>section.heading===ASTRONOMY_CASE_STUDY.sections[0].heading))
   return false;
- lesson.sections.push(...ASTRONOMY_CASE_STUDY.sections.map(section=>({...section})));
+ lesson.astronomySections=ASTRONOMY_CASE_STUDY.sections.map(section=>({...section}));
  const previous=new Set(lesson.sources.map(source=>source.url));
  for(const source of ASTRONOMY_CASE_STUDY.sources)
   if(!previous.has(source.url))lesson.sources.push({...source});
