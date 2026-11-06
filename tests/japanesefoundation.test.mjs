@@ -96,7 +96,7 @@ test('rendered Japanese foundation never reveals future units when progress is a
  const afterFirst=japaneseFoundationPanel({done:['vowels'],activeId:'katakana-w'});
  assert.match(afterFirst,/K row — か き く け こ/);
  assert.doesNotMatch(afterFirst,/class="japanese-contrast-guide"/);
- const contrast=japaneseFoundationPanel({done:JAPANESE_UNITS.slice(0,17).map(x=>x.id),activeId:'katakana-m'});
+ const contrast=japaneseFoundationPanel({done:JAPANESE_UNITS.slice(0,14).map(x=>x.id),activeId:'katakana-t'});
  assert.match(contrast,/シ \/ ツ/);
  const katakanaVowels=japaneseFoundationPanel({done:JAPANESE_UNITS.slice(0,11).map(x=>x.id),activeId:'katakana-vowels'});
  assert.match(katakanaVowels,/Five Japanese vowels and articulation/);
