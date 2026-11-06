@@ -6,6 +6,7 @@ import {deepenAdvancedLessons} from './advanceddepth.js';
 import {extendScienceWithAstronomy} from './scienceastronomy.js';
 import {attachTransferLabs} from './transferlabs.js';
 import {attachEvidenceInquiries} from './evidenceinquiries.js';
+import {attachFoundationDiagnostics} from './foundationdiagnostics.js';
 import { FIELD_GUIDES } from './fieldguides.js';
 import { LIFE_PRACTICE } from './lifepractice.js';
 import { MASTERY_TRACKS } from './masterytracks.js';
@@ -320,6 +321,8 @@ extendScienceWithAstronomy(COURSES);
 attachTransferLabs(COURSES);
 // One independent evidence investigation per published advanced course.
 attachEvidenceInquiries(COURSES);
+// Active recall after concept-first teaching across all fourteen subjects.
+attachFoundationDiagnostics(COURSES);
 export const LANGUAGES = [
   {name:'English',flag:'🇬🇧',code:'en'}, {name:'Japanese',flag:'🇯🇵',code:'ja'},
   {name:'Korean',flag:'🇰🇷',code:'ko'}, {name:'Spanish',flag:'🇪🇸',code:'es'},
