@@ -2,6 +2,39 @@
  * Source links checked against official agency websites 2026-11-04.
  * Source links are optional online references; procedures change.
  */
+/** Educational decision maps; paths depend on current jurisdiction, evidence and agency rules. */
+export const PH_CASE_DECISION_FLOWS=Object.freeze({
+ 'ph-data-access-case':Object.freeze({
+  title:'Your data-access request: a responsible decision path',
+  steps:Object.freeze([
+   Object.freeze({label:'Identify the data subject',detail:'Confirm that you are requesting your own records or have a lawful basis to act for another person; do not seek unrelated private files.'}),
+   Object.freeze({label:'Identify the controller',detail:'Locate the real organization and its verified data-protection or privacy channel, not an unverified social-media contact.'}),
+   Object.freeze({label:'Make a precise request',detail:'Specify categories, purposes or date range; provide reasonable identity verification while minimizing unrelated sensitive information.'}),
+   Object.freeze({label:'Evaluate the response',detail:'Check the NPC rules for limitations and complaint procedures before escalating. A delay alone does not prove a violation.'})
+  ]),
+  caption:'Learning framework informed by NPC data-subject rights. Not an entitlement to all internal records or a guarantee of an outcome.'
+ }),
+ 'ph-bank-assistance-case':Object.freeze({
+  title:'Financial complaint: first-level recourse before escalation',
+  steps:Object.freeze([
+   Object.freeze({label:'Check immediate safety',detail:'For suspected unauthorized activity, use the institution’s independently verified urgent reporting channel first; never reveal OTPs or account secrets.'}),
+   Object.freeze({label:'Document the issue',detail:'Preserve dates, transaction references, amounts, communications and requested remedy without posting full identifiers publicly.'}),
+   Object.freeze({label:'Use first-level assistance',detail:'Submit the issue through the BSP-supervised institution’s own financial consumer assistance or official support mechanism.'}),
+   Object.freeze({label:'Consider BSP only if eligible',detail:'If unresolved or inadequately addressed, verify BSP supervision and current Consumer Assistance Mechanism requirements; escalation is not automatic reimbursement.'})
+  ]),
+  caption:'Based on BSP consumer-assistance guidance. Other financial regulators may handle providers outside BSP supervision.'
+ }),
+ 'ph-consumer-dti-case':Object.freeze({
+  title:'Consumer dispute: evidence, seller response, and appropriate regulator',
+  steps:Object.freeze([
+   Object.freeze({label:'Identify the transaction',detail:'Preserve a dated listing, proof of purchase, promised terms, actual delivered item and communications.'}),
+   Object.freeze({label:'Check jurisdiction',detail:'Determine whether DTI’s consumer-complaint process covers the product, seller and alleged issue; other regulators may be responsible.'}),
+   Object.freeze({label:'Seek a proportionate remedy',detail:'Describe the discrepancy clearly to the legitimate seller and keep the response; then use DTI’s verified complaint channel if appropriate.'}),
+   Object.freeze({label:'Understand the next stage',detail:'Mediation seeks voluntary resolution. Adjudication, where available, has additional formal requirements and is not an automatic next-day refund.'})
+  ]),
+  caption:'Based on DTI complaint-handling and post-mediation guidance. Review current procedures before submitting a real case.'
+ })
+});
 const MATERIAL=[
   {
     "id": "ph-data-access-case",
@@ -135,6 +168,7 @@ export const PH_CASEWORK=Object.freeze({laws:Object.freeze(MATERIAL.map(entry=>O
  id:entry.id,title:entry.title,intro:entry.intro,stage:'Advanced',minutes:22,
  sections:Object.freeze(entry.sections.map(s=>Object.freeze({...s}))),
  example:entry.example,task:entry.task,quiz:Object.freeze({...entry.quiz}),
- sources:Object.freeze(entry.sources.map(([label,url])=>Object.freeze({label,url})))
+ flow:PH_CASE_DECISION_FLOWS[entry.id],
+  sources:Object.freeze(entry.sources.map(([label,url])=>Object.freeze({label,url})))
 })))});
 export const PH_CASEWORK_COUNT=PH_CASEWORK.laws.length;
