@@ -59,6 +59,23 @@ test('newly learned symbols are due, then a remembered sound is scheduled',()=>{
  assert.equal(state.due.length,4);
  assert.equal(state.practiced,1);
 });
+test('review queue prioritizes unseen kana, then difficult and oldest due readings without changing saved state',()=>{
+ const previous={
+  'あ':{step:0,dueAt:now-10000,attempts:5,misses:1},
+  'い':{step:1,dueAt:now-50000,attempts:3,misses:2},
+  'え':{step:3,dueAt:now-60000,attempts:3,misses:0}
+ };
+ const before=structuredClone(previous);
+ const state=kanaReviewStatus(vowelDone,previous,now);
+ assert.deepEqual(state.due.map(item=>item.kana),['う','お','い','あ','え']);
+ assert.equal(state.newCount,2);
+ assert.equal(state.weakCount,2);
+ assert.deepEqual(previous,before,'queue selection never rewrites saved review progress');
+ assert.equal(kanaReviewStatus(vowelDone,previous,now).due[0].kana,'う','stable offline order');
+ const html=kanaReviewPanel({done:vowelDone,reviews:previous,now});
+ assert.match(html,/New readings come first/);
+ assert.match(html,/<b>2<\/b> new/);
+});
 test('misses show correction, return later and never erase the completed foundation',()=>{
  const remembered=scheduleKanaReview(null,true,now);
  const missed=scheduleKanaReview(remembered,false,now);
