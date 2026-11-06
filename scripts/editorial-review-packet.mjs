@@ -35,6 +35,11 @@ export function buildEditorialReviewPacket(courses,clinics){
       ...(lesson.deepModelAnswer?{modelResponse:lesson.deepModelAnswer}:{}),
       ...(lesson.deepRubric?.length?{selfReviewRubric:[...lesson.deepRubric]}:{})
     }}:{}),
+    ...(lesson.astronomySections?.length?{astronomySupplement:{
+      reviewStatus:'pending-independent-review',
+      chapters:lesson.astronomySections.map(section=>({heading:section.heading,body:section.body})),
+      references:(lesson.astronomySources||[]).map(reference=>({label:reference.label,url:reference.url}))
+    }}:{}),
     // Flowchart text is a teaching claim too. Include it in editorial review hashes.
     ...(lesson.flow?{learningFlow:{title:lesson.flow.title,steps:lesson.flow.steps.map(step=>({label:step.label,detail:step.detail})),caption:lesson.flow.caption}}:{}),
     workedExample:lesson.example,task:lesson.task,
