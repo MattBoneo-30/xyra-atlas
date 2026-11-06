@@ -63,6 +63,9 @@ export function normalizeLearningPath(input,courses) {
       seen.add(key);
       clean.push({courseId:item.courseId,lessonId:item.lessonId,minutes:Math.max(1,Math.min(90,Number(lesson.minutes)||15))});
     }
+    // Imported plans are untrusted: use actual lesson durations, never the
+    // user's claimed item.minutes, and reject impossible daily study budgets.
+    if(clean.reduce((total,item)=>total+item.minutes,0)>input.minutes)return null;
     days.push(clean);
   }
   if(!days.some(day=>day.length))return null;
