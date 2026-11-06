@@ -932,3 +932,23 @@ html[data-theme=light]{color-scheme:light;--bg:#fbf5f6;--bg-raised:#fff9fa;--car
 .japanese-contrast-guide h4 span{color:var(--gold);white-space:nowrap}
 .japanese-contrast-guide p strong{color:var(--text)}
 @media(max-width:420px){.japanese-mouth-guide,.japanese-contrast-guide{padding:13px}.japanese-mouth-guide li{gap:9px;padding:9px}.japanese-mouth-glyph{flex-basis:38px;font-size:27px}}
+
+/* Subject transfer labs: optional worked solutions and original teaching cases. */
+.transfer-lab{scroll-margin-top:calc(96px + var(--app-safe-top));margin:35px 0;padding:clamp(17px,3vw,28px);border:1px solid var(--line-bright);border-radius:19px;background:var(--card)}
+.transfer-lab>.overline{color:var(--gold)}.transfer-lab>h2{font:normal clamp(22px,3.5vw,31px)/1.2 Georgia,serif;margin:9px 0 14px}
+.transfer-lab-intro{max-width:64ch;color:var(--muted);font-size:13px;line-height:1.75}
+.transfer-lab-scenario,.transfer-lab-challenge,.transfer-lab-model,.transfer-lab-counterexample{padding:16px 18px;border-radius:13px;margin:17px 0;background:var(--bg-raised);border:1px solid var(--line)}
+.transfer-lab-challenge{border-left:3px solid var(--gold);background:var(--card-soft)}
+.transfer-lab h3{font-size:15px;font-weight:750;margin:0 0 8px;color:var(--text)}
+.transfer-lab-scenario p,.transfer-lab-challenge p,.transfer-lab-model p,.transfer-lab-counterexample p{font-size:13px;color:var(--muted);line-height:1.85;margin:0;white-space:normal}
+.transfer-lab-solution{margin:20px 0;border:1px solid var(--line-bright);border-radius:13px;overflow:hidden}
+.transfer-lab-solution summary{padding:15px 16px;cursor:pointer;color:var(--text);font-size:13px;font-weight:750;background:var(--card-soft);line-height:1.6}
+.transfer-lab-solution summary:focus-visible{outline:2px solid var(--gold);outline-offset:-3px}
+.transfer-lab-answer{padding:1px 14px 4px}
+.transfer-lab-rubric{border-top:1px solid var(--line);padding-top:18px;margin-top:20px}
+.transfer-lab-rubric ol{margin:7px 0 15px;padding-left:23px;color:var(--muted);font-size:12px;line-height:1.85}
+.transfer-lab-rubric li{margin-bottom:7px;padding-left:4px}
+.transfer-lab>.fineprint{font-size:11px;line-height:1.7}
+.chapter-map-transfer{margin-bottom:9px}
+@media(max-width:470px){.transfer-lab-scenario,.transfer-lab-challenge,.transfer-lab-model,.transfer-lab-counterexample{padding:13px 12px;margin:13px 0}.transfer-lab-answer{padding:1px 7px 4px}.transfer-lab{margin:23px 0}}
+@media(prefers-reduced-motion:reduce){.transfer-lab-solution,.transfer-lab-solution summary{transition:none}}
