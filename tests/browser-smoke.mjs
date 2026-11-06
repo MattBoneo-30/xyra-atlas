@@ -962,6 +962,8 @@ try{
   expect(await page.locator('.japanese-unit-select').count()===26,'Japanese course has 26 sequential teaching units');
   expect((await page.locator('.japanese-foundation').textContent()).includes('Five sounds you already nearly know'),'the first lesson teaches familiar vowel sounds');
   expect(await page.locator('.japanese-kana-tile').count()===5,'beginner sees five vowel characters before any quiz');
+  expect(await page.locator('.japanese-mouth-guide').count()===1,'vowel articulation is taught before written recall');
+  expect(await page.locator('.japanese-mouth-glyph').count()===5,'all five vowels receive practical pronunciation cues');
   expect(await page.locator('.japanese-unit-select').nth(1).isDisabled(),'later teaching units require their prerequisites');
   expect(await page.locator('.phrase-lab').count()===0,'no konnichiwa cards before kana reading');
   expect(await page.locator('.sprint-list').count()===0,'beginner cannot accidentally jump into the seven-day phrase sprint');
@@ -1010,6 +1012,7 @@ try{
   }
   expect(await page.locator('#kana-review-answer').count()===1,'five taught vowels unlock a separate recall deck');
   expect((await page.locator('.kana-review-stats').textContent()).includes('5'),'five learned vowels appear due for review');
+  expect((await page.locator('.kana-review-stats').textContent()).includes('new'),'brand-new unlocked sounds are identified');
   expect((await page.locator('.kana-review-glyph').textContent()).includes('あ'),'recall begins with a taught kana');
   expect(await page.locator('.phrase-lab').count()===0,'the review deck never unlocks untaught phrase games');
   await page.locator('#kana-review-answer').fill('wrong');
