@@ -10,10 +10,13 @@ test('source checks read only author-created public HTTPS references',()=>{
  assert.equal(new Set(links.map(x=>x.url)).size,links.length);
  assert.ok(links.every(x=>isSafeReferenceURL(x.url)&&x.usedBy.length>=1));
  for(const bad of ['http://example.com','https://localhost/','https://127.0.0.1/','https://[::1]/',
-    'https://user:password@example.com','https://private.internal/docs','https://example.com:444/a']){
+    'https://user:password@example.com','https://private.internal/docs','https://example.com:444/a',
+    'https://localhost./','https://127.0.0.1./','https://example.com./',
+    'https://bad_host.example/','https://-bad.example/','https://bad-.example/']){
   assert.equal(isSafeReferenceURL(bad),false,bad);
  }
  assert.equal(isSafeReferenceURL('https://privacy.gov.ph/right-to-access/'),true);
+ assert.equal(links.length,52,'the hardened URL checker must preserve all 52 existing official/reference links');
 });
 test('HTTP classifications avoid claiming a 403 or 429 means a false citation',()=>{
  assert.equal(sourceHTTPStatus(200),'reachable');
