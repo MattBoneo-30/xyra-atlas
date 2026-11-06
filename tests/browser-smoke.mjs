@@ -956,6 +956,24 @@ try{
   expect(overflow.scroll<=overflow.width+2,'app-update controls fit the mobile viewport');
  });
 
+ await smoke('intermediate-transfer-labs-mobile',{viewport:{width:390,height:844},isMobile:true,hasTouch:true},async page=>{
+  // Distinct subjects exercise one shared reader component, with no mature-content bypass.
+  for(const [course,lesson] of [['psychology','emotions'],['laws','consumer'],['thinking','causation'],['languages','chunks']]){
+   await page.goto(BASE+'/#/lesson/'+course+'/'+lesson,{waitUntil:'domcontentloaded'});
+   await page.locator('.transfer-lab').waitFor();
+   expect(await page.locator('.transfer-lab-rubric li').count()===4,course+' shows four review criteria');
+   expect(await page.locator('.chapter-map-transfer').count()===1,course+' map includes transfer lab');
+   const details=page.locator('.transfer-lab-solution');
+   expect(await details.evaluate(el=>el.open)===false,course+' model answer is initially collapsed');
+   await page.locator('.chapter-map-transfer').click();
+   expect(await page.locator('#transfer-lab').evaluate(el=>document.activeElement===el),course+' chapter jump is keyboard-accessible');
+   await details.locator('summary').click();
+   expect(await details.evaluate(el=>el.open)===true,course+' model answer can be revealed deliberately');
+   expect((await details.textContent()).includes('Why a tempting shortcut fails'),course+' teaches a counterexample');
+   const overflow=await mobileOverflow(page);
+   expect(overflow.scroll<=overflow.width+2,course+' applied lab fits the mobile viewport');
+  }
+ });
  await smoke('japanese-beginner-foundations',{viewport:{width:390,height:844},isMobile:true,hasTouch:true,deviceScaleFactor:2},async page=>{
   await page.goto(BASE+'/#/language',{waitUntil:'domcontentloaded'});
   await page.locator('.japanese-foundation').waitFor();
