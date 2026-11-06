@@ -35,5 +35,14 @@ export function buildLessonNarration(course,lesson,{maxLength=175}={}){
    'Independent challenge.',lab.task,'Worked reasoning.',lab.worked,
    'Counterexample.',lab.counterexample,'Self-review checklist.',...lab.rubric,lab.caveat);
  }
+ if(lesson.evidenceInquiry){
+  const inquiry=lesson.evidenceInquiry;
+  paragraphs.push('Advanced evidence inquiry: '+inquiry.title,'Case brief.',inquiry.scenario,
+   'Evidence exhibits.',...inquiry.exhibits.flatMap(exhibit=>[exhibit.label,exhibit.detail]),
+   'Independent investigation.',inquiry.challenge,
+   'One reasoned interpretation.',inquiry.reasoning,
+   'Model response.',inquiry.model,'Counterexample.',inquiry.countercase,
+   'Evidence-quality self-check.',...inquiry.rubric,inquiry.limits);
+ }
  return paragraphs.flatMap(text=>chunks(text,max)).filter(Boolean).slice(0,200);
 }
