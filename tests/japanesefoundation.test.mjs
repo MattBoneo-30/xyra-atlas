@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {
  JAPANESE_UNITS,JAPANESE_BASIC_HIRAGANA,JAPANESE_BASIC_KATAKANA,
- JAPANESE_SPEAKABLE,normalizeJapaneseFoundationDone,evaluateJapaneseAnswer,japaneseFoundationPanel
+ JAPANESE_SPEAKABLE,JAPANESE_VOWEL_CUES,japaneseArticulationPanel,japaneseContrastPanel,normalizeJapaneseFoundationDone,evaluateJapaneseAnswer,japaneseFoundationPanel
 } from '../japanesefoundation.js';
 
 test('Japanese teaches five vowels and all 46 basic characters in each kana system',()=>{
@@ -69,6 +69,38 @@ test('every basic kana reading checks the entire row and does not preview untaug
    assert.ok(item.prompt.includes('romaji.'),unit.id+' must test combined reading, not guess meaning');
   }
  }
+});
+test('articulation guide teaches exactly five vowel qualities in both writing systems',()=>{
+ assert.deepEqual(JAPANESE_VOWEL_CUES.map(x=>x.romaji),['a','i','u','e','o']);
+ assert.deepEqual(JAPANESE_VOWEL_CUES.map(x=>x.hiragana),['あ','い','う','え','お']);
+ assert.deepEqual(JAPANESE_VOWEL_CUES.map(x=>x.katakana),['ア','イ','ウ','エ','オ']);
+ for(const script of ['vowels','katakana-vowels']){
+  const guide=japaneseArticulationPanel(script);
+  assert.match(guide,/aria-label="Five Japanese vowels and articulation"/);
+  assert.match(guide,/qualified native reference recordings/);
+  assert.equal((guide.match(/japanese-mouth-glyph/g)||[]).length,5);
+ }
+ assert.equal(japaneseArticulationPanel('hiragana-k'),'');
+ for(const unitId of ['hiragana-m','katakana-t','katakana-w']){
+  const card=japaneseContrastPanel(unitId);
+  assert.match(card,/CONTRAST BEFORE MOVING ON/);
+  assert.match(card,/does not assess pronunciation/);
+ }
+ assert.equal(japaneseContrastPanel('vowels'),'');
+});
+test('rendered Japanese foundation never reveals future units when progress is absent',()=>{
+ const first=japaneseFoundationPanel({done:[],activeId:'katakana-w'});
+ assert.match(first,/Five sounds you already nearly know/);
+ assert.doesNotMatch(first,/japanese-contrast-guide/);
+ assert.match(first,/japanese-mouth-guide/);
+ const afterFirst=japaneseFoundationPanel({done:['vowels'],activeId:'katakana-w'});
+ assert.match(afterFirst,/K row — か き く け こ/);
+ assert.doesNotMatch(afterFirst,/class="japanese-contrast-guide"/);
+ const contrast=japaneseFoundationPanel({done:JAPANESE_UNITS.slice(0,17).map(x=>x.id),activeId:'katakana-m'});
+ assert.match(contrast,/シ \/ ツ/);
+ const katakanaVowels=japaneseFoundationPanel({done:JAPANESE_UNITS.slice(0,11).map(x=>x.id),activeId:'katakana-vowels'});
+ assert.match(katakanaVowels,/Five Japanese vowels and articulation/);
+ assert.match(katakanaVowels,/ア/);
 });
 test('completion normalization accepts only the continuous foundation prerequisite sequence',()=>{
  const ids=JAPANESE_UNITS.map(unit=>unit.id);
