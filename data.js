@@ -5,6 +5,7 @@ import {deepenIntermediateLessons} from './intermediatedepth.js';
 import {deepenAdvancedLessons} from './advanceddepth.js';
 import {extendScienceWithAstronomy} from './scienceastronomy.js';
 import {attachTransferLabs} from './transferlabs.js';
+import {attachEvidenceInquiries} from './evidenceinquiries.js';
 import { FIELD_GUIDES } from './fieldguides.js';
 import { LIFE_PRACTICE } from './lifepractice.js';
 import { MASTERY_TRACKS } from './masterytracks.js';
@@ -317,6 +318,8 @@ deepenAdvancedLessons(COURSES);
 extendScienceWithAstronomy(COURSES);
 // Independent applied reasoning, attached to 14 existing intermediate lessons.
 attachTransferLabs(COURSES);
+// One independent evidence investigation per published advanced course.
+attachEvidenceInquiries(COURSES);
 export const LANGUAGES = [
   {name:'English',flag:'🇬🇧',code:'en'}, {name:'Japanese',flag:'🇯🇵',code:'ja'},
   {name:'Korean',flag:'🇰🇷',code:'ko'}, {name:'Spanish',flag:'🇪🇸',code:'es'},
