@@ -22,6 +22,7 @@ export function buildLessonNarration(course,lesson,{maxLength=175}={}){
  // Full conceptual teaching comes first in both visual and spoken reading modes.
  for(const section of lesson.deepSections||[])if(section)paragraphs.push(section.heading,section.body);
  for(const section of lesson.sections) if(section) paragraphs.push(section.heading,section.body);
+ for(const section of lesson.astronomySections||[])if(section)paragraphs.push(section.heading,section.body);
  if(lesson.example)paragraphs.push('Worked example.',lesson.example);
  if(lesson.deepExample)paragraphs.push('Detailed case analysis.',lesson.deepExample);
  if(lesson.deepRubric?.length)paragraphs.push('Self-review criteria.',...lesson.deepRubric);
