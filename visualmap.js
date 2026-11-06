@@ -31,6 +31,8 @@ export function createChapterMap(course,lesson){
    id:'astronomy-section-'+i,index:i,heading:section.heading.trim(),
    preview:summarize(section.body,135),label:String(i+1).padStart(2,'0')
   }));
- return {title:lesson.title||'',course:course.title||'',steps,deepSteps,astronomySteps,
+ const transfer=lesson.transferLab&&typeof lesson.transferLab.title==='string'?
+  {id:'transfer-lab',heading:lesson.transferLab.title,preview:summarize(lesson.transferLab.scenario,135)}:null;
+ return {title:lesson.title||'',course:course.title||'',steps,deepSteps,astronomySteps,transfer,
   practice:typeof lesson.task==='string'&&lesson.task.trim()?{id:'lesson-practice',heading:'Apply what you learned',preview:summarize(lesson.task,140)}:null};
 }
