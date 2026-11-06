@@ -952,3 +952,30 @@ html[data-theme=light]{color-scheme:light;--bg:#fbf5f6;--bg-raised:#fff9fa;--car
 .chapter-map-transfer{margin-bottom:9px}
 @media(max-width:470px){.transfer-lab-scenario,.transfer-lab-challenge,.transfer-lab-model,.transfer-lab-counterexample{padding:13px 12px;margin:13px 0}.transfer-lab-answer{padding:1px 7px 4px}.transfer-lab{margin:23px 0}}
 @media(prefers-reduced-motion:reduce){.transfer-lab-solution,.transfer-lab-solution summary{transition:none}}
+
+/* Advanced evidence inquiry: real-world reasoning made reviewable, not graded. */
+.evidence-inquiry{scroll-margin-top:calc(96px + var(--app-safe-top));margin:34px 0;padding:clamp(18px,3vw,28px);background:var(--card);border:1px solid var(--line-bright);border-radius:19px}
+.evidence-inquiry>.overline{color:var(--gold)}
+.evidence-inquiry>h2{font:normal clamp(23px,4vw,32px)/1.2 Georgia,serif;color:var(--text);margin:10px 0 13px}
+.evidence-inquiry-intro{max-width:66ch;font-size:13px;line-height:1.8;color:var(--muted)}
+.evidence-inquiry h3{font-size:15px;line-height:1.45;color:var(--text);margin:8px 0}
+.evidence-inquiry-case,.evidence-inquiry-challenge,.evidence-inquiry-analysis,.evidence-inquiry-model,.evidence-inquiry-countercase{margin:16px 0;padding:16px;border:1px solid var(--line);border-radius:12px;background:var(--bg-raised)}
+.evidence-inquiry-challenge{background:var(--card-soft);border-left:3px solid var(--gold)}
+.evidence-inquiry-case p,.evidence-inquiry-challenge p,.evidence-inquiry-analysis p,.evidence-inquiry-model p,.evidence-inquiry-countercase p{color:var(--muted);font-size:12px;line-height:1.85;margin:0}
+.evidence-exhibits{list-style:none;margin:15px 0 23px;padding:0;display:grid;gap:9px}
+.evidence-exhibits li{display:flex;align-items:start;gap:11px;padding:12px;border:1px solid var(--line);background:var(--card-soft);border-radius:11px;min-width:0}
+.evidence-exhibit-number{flex:none;display:grid;place-items:center;width:28px;height:28px;border:1px solid var(--line-bright);border-radius:9px;color:var(--gold);font-size:11px;font-weight:750}
+.evidence-exhibits li>div{min-width:0}
+.evidence-exhibits strong{display:block;font-size:12px;color:var(--text);margin-bottom:5px}
+.evidence-exhibits p{font-size:12px;line-height:1.75;color:var(--muted);margin:0;overflow-wrap:break-word}
+.evidence-inquiry-solution{margin:20px 0;border:1px solid var(--line-bright);border-radius:13px;overflow:hidden}
+.evidence-inquiry-solution>summary{padding:14px 16px;background:var(--card-soft);font-size:13px;color:var(--text);font-weight:750;cursor:pointer}
+.evidence-inquiry-solution>summary:focus-visible{outline:2px solid var(--gold);outline-offset:-3px}
+.evidence-inquiry-solution>section{margin:12px}
+.evidence-inquiry-review{margin:19px 0;padding-top:17px;border-top:1px solid var(--line)}
+.evidence-inquiry-review ol{margin:9px 0 14px;padding-left:22px;font-size:12px;line-height:1.85;color:var(--muted)}
+.evidence-inquiry-review li{margin:7px 0;padding-left:3px}
+.evidence-inquiry>.fineprint{font-size:11px;line-height:1.7}
+.chapter-map-inquiry{margin-bottom:9px}
+@media(max-width:450px){.evidence-inquiry{padding:15px;margin:24px 0}.evidence-exhibits li{padding:10px}.evidence-inquiry-case,.evidence-inquiry-challenge,.evidence-inquiry-analysis,.evidence-inquiry-model,.evidence-inquiry-countercase{padding:12px}.evidence-inquiry-solution>section{margin:8px}}
+@media(prefers-reduced-motion:reduce){.evidence-inquiry-solution,.evidence-inquiry-solution>summary{transition:none}}
