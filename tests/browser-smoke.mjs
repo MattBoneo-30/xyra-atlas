@@ -956,6 +956,29 @@ try{
   expect(overflow.scroll<=overflow.width+2,'app-update controls fit the mobile viewport');
  });
 
+ await smoke('advanced-evidence-inquiries-mobile',{viewport:{width:390,height:844},isMobile:true,hasTouch:true},async page=>{
+  for(const [course,lesson] of [
+   ['psychology','calibrate-beliefs'],
+   ['business','contribution-margin-scenario'],
+   ['science','observational-vs-experimental']
+  ]){
+   await page.goto(BASE+'/#/lesson/'+course+'/'+lesson,{waitUntil:'domcontentloaded'});
+   await page.locator('.evidence-inquiry').waitFor();
+   expect(await page.locator('.evidence-exhibits li').count()===3,course+' has three inspectable evidence exhibits');
+   expect(await page.locator('.evidence-inquiry-review li').count()===4,course+' has four review criteria');
+   expect(await page.locator('.chapter-map-inquiry').count()===1,course+' exposes a chapter link');
+   const solution=page.locator('.evidence-inquiry-solution');
+   expect(await solution.evaluate(el=>el.open)===false,course+' worked solution remains collapsed by default');
+   await page.locator('.chapter-map-inquiry').click();
+   expect(await page.locator('#evidence-inquiry').evaluate(el=>el===document.activeElement),course+' chapter jump moves keyboard focus');
+   await solution.locator('summary').click();
+   expect(await solution.evaluate(el=>el.open)===true,course+' reveals the solution only after user action');
+   expect(await solution.locator('.evidence-inquiry-model').isVisible(),course+' presents a worked model');
+   expect(await solution.locator('.evidence-inquiry-countercase').isVisible(),course+' presents a counterexample');
+   const overflow=await mobileOverflow(page);
+   expect(overflow.scroll<=overflow.width+2,course+' advanced inquiry fits a narrow viewport');
+  }
+ });
  await smoke('intermediate-transfer-labs-mobile',{viewport:{width:390,height:844},isMobile:true,hasTouch:true},async page=>{
   // Distinct subjects exercise one shared reader component, with no mature-content bypass.
   for(const [course,lesson] of [['psychology','emotions'],['laws','consumer'],['thinking','causation'],['languages','chunks']]){
