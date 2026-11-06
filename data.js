@@ -3,6 +3,7 @@ import {DEEPER_FOUNDATIONS} from './depthcurriculum.js';
 import {deepenOriginalFoundations} from './foundationdepth.js';
 import {deepenIntermediateLessons} from './intermediatedepth.js';
 import {deepenAdvancedLessons} from './advanceddepth.js';
+import {extendScienceWithAstronomy} from './scienceastronomy.js';
 import { FIELD_GUIDES } from './fieldguides.js';
 import { LIFE_PRACTICE } from './lifepractice.js';
 import { MASTERY_TRACKS } from './masterytracks.js';
@@ -311,6 +312,8 @@ deepenOriginalFoundations(COURSES);
 deepenIntermediateLessons(COURSES);
 // Advanced case studies retain the original identity, explanations and source history.
 deepenAdvancedLessons(COURSES);
+// Adds applied astronomy without changing the 139 stable lesson identities.
+extendScienceWithAstronomy(COURSES);
 export const LANGUAGES = [
   {name:'English',flag:'🇬🇧',code:'en'}, {name:'Japanese',flag:'🇯🇵',code:'ja'},
   {name:'Korean',flag:'🇰🇷',code:'ko'}, {name:'Spanish',flag:'🇪🇸',code:'es'},
