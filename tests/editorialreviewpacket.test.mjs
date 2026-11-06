@@ -40,6 +40,20 @@ test('changing a teaching claim or answer necessarily changes its verification d
  const second=buildEditorialReviewPacket(COURSES,CLINICS);
  assert.deepEqual(pack,second);
 });
+test('new astronomy study is visible to independent reviewers without inventing approval',()=>{
+ const packet=buildEditorialReviewPacket(COURSES,CLINICS);
+ const record=packet.lessons.find(item=>item.id==='science:systems');
+ assert.ok(record?.content?.astronomySupplement);
+ assert.equal(record.content.astronomySupplement.reviewStatus,'pending-independent-review');
+ assert.equal(record.content.astronomySupplement.chapters.length,3);
+ assert.equal(record.content.astronomySupplement.references.length,3);
+ const altered={...record.content,
+  astronomySupplement:{...record.content.astronomySupplement,chapters:[
+   {...record.content.astronomySupplement.chapters[0],body:'Editorially corrected content'},
+   ...record.content.astronomySupplement.chapters.slice(1)]}};
+ assert.notEqual(reviewHash(altered),record.contentHash);
+ assert.equal(packet.totals.expertApprovedLessons,0);
+});
 test('CI produces a reviewer artifact but never treats self-generated evidence as expert approval',()=>{
  const flow=fs.readFileSync('.github/workflows/verify.yml','utf8');
  const packageData=JSON.parse(fs.readFileSync('package.json','utf8'));
