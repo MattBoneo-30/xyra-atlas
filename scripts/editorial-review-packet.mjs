@@ -40,6 +40,15 @@ export function buildEditorialReviewPacket(courses,clinics){
       chapters:lesson.astronomySections.map(section=>({heading:section.heading,body:section.body})),
       references:(lesson.astronomySources||[]).map(reference=>({label:reference.label,url:reference.url}))
     }}:{}),
+    // Beginner retrieval prompts, alternatives and feedback are teaching claims.
+    ...(lesson.foundationDiagnostic?{foundationActiveRecall:{
+      key:lesson.foundationDiagnostic.key,reviewStatus:'pending-independent-review',
+      title:lesson.foundationDiagnostic.title,intro:lesson.foundationDiagnostic.intro,
+      questions:lesson.foundationDiagnostic.questions.map(q=>({
+       prompt:q.prompt,options:[...q.options],correct:q.correct,
+       explanation:q.explanation,transfer:q.transfer
+      }))
+    }}:{}),
     // Transfer labs and their solutions are equally subject to independent review.
     ...(lesson.transferLab?{intermediateTransferLab:{
       key:lesson.transferLab.key,title:lesson.transferLab.title,
