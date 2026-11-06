@@ -13,10 +13,19 @@ export function createDailyQuest(courses,scenarios,date) {
    {type:'scenario',id:scenarios[seed%scenarios.length].id}
  ]};
 }
-export function dailyQuestProgress(quest,completed,scenariosAnswered) {
- if(!quest)return {done:0,total:0};
- const learned=new Set(Array.isArray(completed)?completed:[]);
- const answers=scenariosAnswered&&typeof scenariosAnswered==='object'?scenariosAnswered:{};
- const done=quest.tasks.filter(t=>t.type==='lesson'?learned.has(t.courseId+':'+t.lessonId):Number.isInteger(answers[t.id])).length;
+export function dailyQuestProgress(quest,completed,scenariosAnswered,availableScenarios=[]) {
+ if(!quest||!Array.isArray(quest.tasks))return {done:0,total:0};
+ const learned=new Set(Array.isArray(completed)?completed.filter(x=>typeof x==='string'):[]);
+ const answers=scenariosAnswered&&typeof scenariosAnswered==='object'&&!Array.isArray(scenariosAnswered)?scenariosAnswered:{};
+ const scenarios=new Map((Array.isArray(availableScenarios)?availableScenarios:[])
+  .filter(s=>s&&typeof s.id==='string'&&Array.isArray(s.choices))
+  .map(s=>[s.id,s]));
+ const done=quest.tasks.filter(task=>{
+  if(task.type==='lesson')return learned.has(task.courseId+':'+task.lessonId);
+  if(task.type!=='scenario')return false;
+  const options=scenarios.get(task.id)?.choices;
+  const answer=answers[task.id];
+  return Boolean(options&&Number.isInteger(answer)&&answer>=0&&answer<options.length);
+ }).length;
  return {done,total:quest.tasks.length};
 }
