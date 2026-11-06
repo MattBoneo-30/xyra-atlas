@@ -29,5 +29,11 @@ export function buildLessonNarration(course,lesson,{maxLength=175}={}){
  if(lesson.task)paragraphs.push('Practice exercise.',lesson.task);
  if(lesson.deepTask)paragraphs.push('Independent application.',lesson.deepTask);
  if(lesson.deepModelAnswer)paragraphs.push('Model response for comparison after you attempt the exercise.',lesson.deepModelAnswer);
+ if(lesson.transferLab){
+  const lab=lesson.transferLab;
+  paragraphs.push('Transfer lab: '+lab.title,'Case to investigate.',lab.scenario,
+   'Independent challenge.',lab.task,'Worked reasoning.',lab.worked,
+   'Counterexample.',lab.counterexample,'Self-review checklist.',...lab.rubric,lab.caveat);
+ }
  return paragraphs.flatMap(text=>chunks(text,max)).filter(Boolean).slice(0,200);
 }
