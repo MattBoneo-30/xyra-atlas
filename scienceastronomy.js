@@ -33,9 +33,9 @@ export function extendScienceWithAstronomy(courses){
  if(lesson.astronomySections?.some(section=>section.heading===ASTRONOMY_CASE_STUDY.sections[0].heading))
   return false;
  lesson.astronomySections=ASTRONOMY_CASE_STUDY.sections.map(section=>({...section}));
- const previous=new Set(lesson.sources.map(source=>source.url));
- for(const source of ASTRONOMY_CASE_STUDY.sources)
-  if(!previous.has(source.url))lesson.sources.push({...source});
+ // Supplementary reading stays separate from the pre-existing signed 52-source
+ // audit register until independent reviewers explicitly expand that register.
+ lesson.astronomySources=ASTRONOMY_CASE_STUDY.sources.map(source=>({...source}));
  lesson.task+=' '+ASTRONOMY_CASE_STUDY.task;
  return true;
 }
