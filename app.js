@@ -600,7 +600,7 @@ function glossaryPage(){
 
 function questPage(){
  const q=createDailyQuest(COURSES,SCENARIOS,today());
- const progress=dailyQuestProgress(q,saved.completed,saved.scenarios);
+ const progress=dailyQuestProgress(q,saved.completed,saved.scenarios,SCENARIOS);
  const rows=(q?.tasks||[]).map((t,i)=>{
   if(t.type==='lesson'){const c=findCourse(t.courseId),l=findLesson(t.courseId,t.lessonId),done=isCompleted(t.courseId+':'+t.lessonId);return `<div class="quest-row"><span class="quest-icon">${done?icon('check',23):String(i+1).padStart(2,'0')}</span><div class="quest-row-copy"><span class="overline">${esc(c?.title||'LEARNING')}</span><h2>${esc(l?.title||'Your lesson')}</h2><p>${l?.minutes||10} minute lesson and quiz ${done?'· Completed':''}</p></div>${button(done?'Review':'Learn','open-lesson','small-button',`data-course="${esc(t.courseId)}" data-lesson="${esc(t.lessonId)}"`)}</div>`;}
   const s=SCENARIOS.find(x=>x.id===t.id),done=Number.isInteger(saved.scenarios?.[t.id]);return `<div class="quest-row"><span class="quest-icon">${done?icon('check',23):String(i+1).padStart(2,'0')}</span><div class="quest-row-copy"><span class="overline">REAL-LIFE PRACTICE</span><h2>${esc(s?.title||'Scenario Lab')}</h2><p>Reason through a choice ${done?'· Completed':''}</p></div>${button(done?'Revisit':'Practice','quest-scenario','small-button',`data-id="${esc(t.id)}"`)}</div>`;
