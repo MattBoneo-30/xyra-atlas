@@ -65,8 +65,15 @@ try{
    assert.ok(focusedSkip && focusedSkip.y>=57,'keyboard skip shortcut appears beneath the status bar');
    await page.locator('.topbar [data-action="app-update-open"]').click();
    await page.locator('.modal-card').waitFor({state:'visible'});
-   const modal=await page.locator('.modal-card').boundingBox();
-   assert.ok(modal && modal.y>=59,'dialog clears simulated top safe area');
+   // The update dialog may re-render during its async status check in WebKit.
+   // Wait for a measurable visible dialog, retaining the same safe-area threshold.
+   const modalTop=await page.waitForFunction(()=>{
+    const element=document.querySelector('.modal-card');
+    if(!element||getComputedStyle(element).visibility==='hidden')return false;
+    const rect=element.getBoundingClientRect();
+    return rect.width>0&&rect.height>0&&rect.top>=59 ? rect.top : false;
+   },null,{timeout:5000});
+   assert.ok(await modalTop.jsonValue()>=59,'dialog clears simulated top safe area');
   });
  await checkScenario('mobile-lesson-and-decisions',
   {viewport:{width:390,height:844},isMobile:true,hasTouch:true,deviceScaleFactor:2},
