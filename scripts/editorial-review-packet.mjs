@@ -48,6 +48,17 @@ export function buildEditorialReviewPacket(courses,clinics){
       workedReasoning:lesson.transferLab.worked,counterexample:lesson.transferLab.counterexample,
       selfReviewCriteria:[...lesson.transferLab.rubric],limitations:lesson.transferLab.caveat
     }}:{}),
+    // Review original evidence inquiries and each simulated exhibit as teaching claims.
+    ...(lesson.evidenceInquiry?{advancedEvidenceInquiry:{
+      key:lesson.evidenceInquiry.key,reviewStatus:'pending-independent-review',
+      title:lesson.evidenceInquiry.title,scenario:lesson.evidenceInquiry.scenario,
+      exhibits:lesson.evidenceInquiry.exhibits.map(ex=>({label:ex.label,detail:ex.detail})),
+      independentChallenge:lesson.evidenceInquiry.challenge,
+      workedReasoning:lesson.evidenceInquiry.reasoning,
+      modelResponse:lesson.evidenceInquiry.model,
+      counterexample:lesson.evidenceInquiry.countercase,
+      rubric:[...lesson.evidenceInquiry.rubric],limitations:lesson.evidenceInquiry.limits
+    }}:{}),
     // Flowchart text is a teaching claim too. Include it in editorial review hashes.
     ...(lesson.flow?{learningFlow:{title:lesson.flow.title,steps:lesson.flow.steps.map(step=>({label:step.label,detail:step.detail})),caption:lesson.flow.caption}}:{}),
     workedExample:lesson.example,task:lesson.task,
