@@ -56,6 +56,33 @@ const MEMORY_HOOKS={
  'ソ':'Compare with ン; the direction and placement of strokes matter.',
  'ン':'Compare with ソ; look at how the final long stroke rises.'
 };
+/** Speech cues are approximate teaching aids, not native audio or pronunciation assessment. */
+export const JAPANESE_VOWEL_CUES=Object.freeze([
+ Object.freeze({romaji:'a',hiragana:'あ',katakana:'ア',cue:'Open your mouth comfortably; use one short, steady vowel, similar to the a in Filipino ama.',check:'Say a–i–a and keep the two vowel shapes distinct.'}),
+ Object.freeze({romaji:'i',hiragana:'い',katakana:'イ',cue:'Bring the tongue forward and keep the lips relaxed, similar to the i in Filipino isip.',check:'Say i–e–i without turning either vowel into an English glide.'}),
+ Object.freeze({romaji:'u',hiragana:'う',katakana:'ウ',cue:'Raise the tongue and keep the lips less rounded than the English oo. The Japanese sound is not exactly the Filipino u.',check:'Compare u–o–u slowly; notice your lips changing.'}),
+ Object.freeze({romaji:'e',hiragana:'え',katakana:'エ',cue:'Use a clear, steady e, similar to the vowel in Filipino mesa; do not trail into an English ay sound.',check:'Say e–i–e at the same tempo.'}),
+ Object.freeze({romaji:'o',hiragana:'お',katakana:'オ',cue:'Round the lips gently and keep o steady, close to the o in Filipino oras; avoid finishing with an English w glide.',check:'Say o–a–o without adding an extra sound.'})
+]);
+const KANA_CONTRAST_STUDY=Object.freeze({
+ 'hiragana-h':Object.freeze({pair:'は / ほ',readings:'ha / ho',cue:'Look for the extra horizontal stroke in ほ; read the entire shape rather than its first stroke.'}),
+ 'hiragana-m':Object.freeze({pair:'ぬ / め',readings:'nu / me',cue:'Compare the crossing strokes and loops: ぬ and め should not be identified by their loops alone.'}),
+ 'katakana-t':Object.freeze({pair:'シ / ツ',readings:'shi / tsu',cue:'Check both the short-stroke direction and the long diagonal stroke before naming the sound.'}),
+ 'katakana-w':Object.freeze({pair:'ソ / ン',readings:'so / n',cue:'Check the direction of the long stroke and the relative placement of the short stroke.'})
+});
+export function japaneseArticulationPanel(unitId){
+ if(unitId!=='vowels'&&unitId!=='katakana-vowels')return '';
+ const script=unitId==='vowels'?'hiragana':'katakana';
+ const rows=JAPANESE_VOWEL_CUES.map(item=>
+  '<li><span class="japanese-mouth-glyph" lang="ja">'+escapeHTML(item[script])+'</span><div><strong>'+escapeHTML(item.romaji.toUpperCase())+'</strong><p>'+escapeHTML(item.cue)+'</p><small>'+escapeHTML(item.check)+'</small></div></li>'
+ ).join('');
+ return '<aside class="japanese-mouth-guide" aria-label="Five Japanese vowels and articulation"><span class="overline">SOUND LAB · MOUTH AND LISTENING</span><h4>Five vowels, five distinct sounds</h4><p>These mouth-position clues are approximate, especially for Japanese u. Compare the sounds with qualified native reference recordings; a browser voice cannot grade your speech.</p><ol>'+rows+'</ol><p class="fineprint">Memory test: cover the romanization, read the kana in a different order, then compare again with a reliable recording.</p></aside>';
+}
+export function japaneseContrastPanel(unitId){
+ const item=KANA_CONTRAST_STUDY[unitId];
+ if(!item)return '';
+ return '<aside class="japanese-contrast-guide" aria-label="Similar character comparison"><span class="overline">CONTRAST BEFORE MOVING ON</span><h4>Spot the difference: <span lang="ja">'+escapeHTML(item.pair)+'</span></h4><p><strong>'+escapeHTML(item.readings)+'</strong> — '+escapeHTML(item.cue)+'</p><p>Cover the readings, point to either character at random, then say its sound. Swap their order and repeat. This practice does not assess pronunciation.</p></aside>';
+}
 const ex=(text,roman,meaning,breakdown)=>({text,roman,meaning,breakdown});
 const check=(prompt,answer,hint,others=[])=>({prompt,answer,hint,others});
 
@@ -249,8 +276,10 @@ function action(text,act,attr='',className='secondary-button'){
 }
 export function japaneseFoundationPanel({done=[],activeId='vowels',practiceIndex=-1,feedback=''}={}){
  const completed=normalizeJapaneseFoundationDone(done);
- const unit=JAPANESE_UNITS.find(x=>x.id===activeId)||JAPANESE_UNITS[0];
- const index=JAPANESE_UNITS.indexOf(unit);
+ const requested=JAPANESE_UNITS.findIndex(x=>x.id===activeId);
+ // Never display an untaught unit after restoring older or malformed local progress.
+ const index=Math.min(requested>=0?requested:0,completed.length,JAPANESE_UNITS.length-1);
+ const unit=JAPANESE_UNITS[index];
  const next=JAPANESE_UNITS[index+1];
  const finished=completed.includes(unit.id);
  const unlocked=i=>i===0||completed.includes(JAPANESE_UNITS[i-1].id);
@@ -292,7 +321,7 @@ export function japaneseFoundationPanel({done=[],activeId='vowels',practiceIndex
   '<span class="japanese-count">'+completed.length+' / '+JAPANESE_UNITS.length+' foundation checkpoints</span></div>'+
   '<div class="japanese-foundation-layout"><nav class="japanese-unit-menu" aria-label="Japanese foundations">'+menu+'</nav>'+
   '<div class="japanese-lesson"><span class="overline">'+escapeHTML(unit.stage)+'</span><h3>'+escapeHTML(unit.title)+'</h3><p class="japanese-goal">'+escapeHTML(unit.goal)+'</p>'+
-  '<p>'+escapeHTML(unit.intro)+'</p>'+guidance+chart+
+  '<p>'+escapeHTML(unit.intro)+'</p>'+guidance+japaneseArticulationPanel(unit.id)+chart+japaneseContrastPanel(unit.id)+
   '<div class="japanese-word-list"><h4>Decode real examples</h4>'+examples+'</div>'+
   '<p class="japanese-audio-note" id="japanese-audio-note" role="status">Listen buttons use only a compatible installed local Japanese voice. If none is available, study the written clues and check native audio elsewhere; synthetic speech is not pronunciation assessment.</p>'+
   practice+'</div></div>'+
