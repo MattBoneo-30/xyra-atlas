@@ -40,6 +40,14 @@ export function buildEditorialReviewPacket(courses,clinics){
       chapters:lesson.astronomySections.map(section=>({heading:section.heading,body:section.body})),
       references:(lesson.astronomySources||[]).map(reference=>({label:reference.label,url:reference.url}))
     }}:{}),
+    // Transfer labs and their solutions are equally subject to independent review.
+    ...(lesson.transferLab?{intermediateTransferLab:{
+      key:lesson.transferLab.key,title:lesson.transferLab.title,
+      reviewStatus:'pending-independent-review',
+      scenario:lesson.transferLab.scenario,independentChallenge:lesson.transferLab.task,
+      workedReasoning:lesson.transferLab.worked,counterexample:lesson.transferLab.counterexample,
+      selfReviewCriteria:[...lesson.transferLab.rubric],limitations:lesson.transferLab.caveat
+    }}:{}),
     // Flowchart text is a teaching claim too. Include it in editorial review hashes.
     ...(lesson.flow?{learningFlow:{title:lesson.flow.title,steps:lesson.flow.steps.map(step=>({label:step.label,detail:step.detail})),caption:lesson.flow.caption}}:{}),
     workedExample:lesson.example,task:lesson.task,
