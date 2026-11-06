@@ -9,9 +9,15 @@ export function isSafeReferenceURL(value){
   const u=new URL(value);
   if(u.protocol!=='https:'||u.username||u.password||u.port&&u.port!=='443')return false;
   const host=u.hostname.toLowerCase();
-  if(host==='localhost'||host.endsWith('.local')||host.endsWith('.internal')||
-   host.endsWith('.localhost')||host==='0.0.0.0'||/^\d+(?:\.\d+){3}$/.test(host)||host.includes(':')||
-   !host.includes('.'))return false;
+  // Require ordinary DNS labels and reject trailing-root-dot spellings such as
+  // localhost. which can bypass a plain hostname comparison. URL parsing
+  // canonicalizes alternative numeric IPv4 representations before this check.
+  if(host.endsWith('.')||host==='localhost'||host.endsWith('.local')||
+   host.endsWith('.internal')||host.endsWith('.localhost')||
+   host==='0.0.0.0'||/^\d+(?:\.\d+){3}$/.test(host)||host.includes(':')||
+   !host.includes('.')||!host.split('.').every(label=>/^[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$/.test(label)))return false;
+  // String validation cannot rule out DNS rebinding. Probe only the fixed,
+  // author-reviewed URLs bundled with the curriculum; never accept user input.
   return true;
  }catch{return false;}
 }
