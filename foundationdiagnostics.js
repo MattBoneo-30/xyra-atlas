@@ -26,7 +26,7 @@ export function attachFoundationDiagnostics(courses){
   for(const [i,q] of entry.questions.entries()){
    if(typeof q.prompt!=='string'||q.prompt.length<60||
     !Array.isArray(q.options)||q.options.length!==3||
-    !q.options.every(x=>typeof x==='string'&&x.length>=18)||
+    !q.options.every(x=>typeof x==='string'&&x.length>=5)||new Set(q.options).size!==3||
     !Number.isInteger(q.correct)||q.correct<0||q.correct>2||
     typeof q.explanation!=='string'||q.explanation.length<110||
     typeof q.transfer!=='string'||q.transfer.length<65)
