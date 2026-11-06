@@ -25,6 +25,12 @@ export function createChapterMap(course,lesson){
    preview:summarize(section.body,135),
    label:String(i+1).padStart(2,'0')
   }));
- return {title:lesson.title||'',course:course.title||'',steps,deepSteps,
+ const astronomySteps=(Array.isArray(lesson.astronomySections)?lesson.astronomySections:[])
+  .filter(section=>section&&typeof section.heading==='string'&&typeof section.body==='string')
+  .map((section,i)=>({
+   id:'astronomy-section-'+i,index:i,heading:section.heading.trim(),
+   preview:summarize(section.body,135),label:String(i+1).padStart(2,'0')
+  }));
+ return {title:lesson.title||'',course:course.title||'',steps,deepSteps,astronomySteps,
   practice:typeof lesson.task==='string'&&lesson.task.trim()?{id:'lesson-practice',heading:'Apply what you learned',preview:summarize(lesson.task,140)}:null};
 }
