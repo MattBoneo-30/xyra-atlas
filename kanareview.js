@@ -33,10 +33,22 @@ export function normalizeKanaReviews(raw){
 }
 export function kanaReviewStatus(done,raw,now=Date.now()){
  const available=learnedKana(done),reviews=normalizeKanaReviews(raw);
- const due=available.filter(x=>!reviews[x.kana]||reviews[x.kana].dueAt<=now);
+ // New material is offered before revisiting a familiar row, then previously
+ // missed readings and the oldest due cards are prioritized. Stable row order is
+ // retained for ties. No changes to the persisted spaced-review format.
+ const due=available.filter(x=>!reviews[x.kana]||reviews[x.kana].dueAt<=now)
+  .sort((a,b)=>{
+   const left=reviews[a.kana],right=reviews[b.kana];
+   if(!left&&!right)return 0;
+   if(!left)return -1;
+   if(!right)return 1;
+   return right.misses-left.misses||left.dueAt-right.dueAt;
+  });
  const scheduled=available.filter(x=>reviews[x.kana]&&reviews[x.kana].dueAt>now);
  const practiced=available.filter(x=>(reviews[x.kana]?.attempts||0)>0).length;
- return {available,due,scheduled,practiced,nextAt:scheduled.length?Math.min(...scheduled.map(x=>reviews[x.kana].dueAt)):null};
+ const newCount=due.filter(x=>!reviews[x.kana]).length;
+ const weakCount=due.filter(x=>(reviews[x.kana]?.misses||0)>0).length;
+ return {available,due,scheduled,practiced,newCount,weakCount,nextAt:scheduled.length?Math.min(...scheduled.map(x=>reviews[x.kana].dueAt)):null};
 }
 export function evaluateKanaReview(item,value){
  if(!item||!ALLOWED.has(item.kana)||!value||!String(value).trim())return {valid:false,correct:false};
@@ -62,5 +74,5 @@ export function kanaReviewPanel({done=[],reviews={},feedback=null,now=Date.now()
   '<div class="kana-review-feedback" role="status"><strong>'+(feedback.correct?'Remembered ✓':'Let’s review that sound')+'</strong><p><span lang="ja">'+safe(feedback.kana)+'</span> = '+safe(feedback.expected)+'. '+(feedback.correct?'Next review scheduled.':'Try again after a short break; this does not block learning.')+'</p>'+(feedback.memory?'<p>'+safe(feedback.memory)+'</p>':'')+'</div>':'';
  const card=item?'<div class="kana-review-card"><span class="overline">READ WITHOUT THE ROMAJI</span><strong class="kana-review-glyph" lang="ja">'+safe(item.kana)+'</strong><label for="kana-review-answer" class="field-label">What is this kana’s sound?</label><input type="text" id="kana-review-answer" maxlength="25" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Type the romaji" /><div class="kana-review-actions"><button type="button" class="primary-button" data-action="kana-review-check">Check reading</button><button type="button" class="secondary-button" data-action="kana-review-reveal">Show answer & review later</button></div></div>':
   '<div class="kana-review-empty" role="status"><strong>Nothing due right now.</strong><p>Come back when the next review is scheduled. Existing lessons remain available.</p>'+(st.nextAt?'<small>Next due: '+safe(new Date(st.nextAt).toLocaleString())+'</small>':'')+'</div>';
- return '<section class="kana-review-panel" id="kana-review-panel" aria-label="Offline Japanese kana recall"><span class="overline">RECALL FROM MEMORY</span><h2>Remember what you learned.</h2><p>Optional review of <strong>completed kana only</strong>. Learn the symbols above before practising here; mistakes are part of the process.</p><div class="kana-review-stats"><span><b>'+st.due.length+'</b> due</span><span><b>'+st.practiced+'</b> practised</span><span><b>'+st.available.length+'</b> unlocked</span></div>'+response+card+'<p class="fineprint">Private and offline. Correct readings return after 1, 3, 7, 14, 30 or 60 days; forgotten ones after 10 minutes. This does not measure pronunciation or fluency.</p></section>';
+ return '<section class="kana-review-panel" id="kana-review-panel" aria-label="Offline Japanese kana recall"><span class="overline">RECALL FROM MEMORY</span><h2>Remember what you learned.</h2><p>Optional review of <strong>completed kana only</strong>. New readings come first; then previously missed and older due cards. Mistakes are part of the process.</p><div class="kana-review-stats"><span><b>'+st.due.length+'</b> due</span><span><b>'+st.practiced+'</b> practised</span><span><b>'+st.newCount+'</b> new</span><span><b>'+st.available.length+'</b> unlocked</span></div>'+response+card+'<p class="fineprint">Private and offline. Correct readings return after 1, 3, 7, 14, 30 or 60 days; forgotten ones after 10 minutes. This does not measure pronunciation or fluency.</p></section>';
 }
