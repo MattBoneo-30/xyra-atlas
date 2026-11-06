@@ -979,6 +979,32 @@ try{
    expect(overflow.scroll<=overflow.width+2,course+' advanced inquiry fits a narrow viewport');
   }
  });
+ await smoke('foundation-diagnostics-mobile-feedback',{viewport:{width:390,height:844},isMobile:true,hasTouch:true},async page=>{
+  for(const [course,lesson,correct] of [['psychology','thoughts',1],['laws','legal-basics',1],['science','method',2]]){
+   await page.goto(BASE+'/#/lesson/'+course+'/'+lesson,{waitUntil:'domcontentloaded'});
+   await page.locator('.foundation-diagnostic').waitFor();
+   expect(await page.locator('.foundation-diagnostic-question').count()===3,course+' has three unique beginner questions');
+   expect(await page.locator('.foundation-diagnostic-option').count()===9,course+' has three options per question');
+   expect(await page.locator('.chapter-map-diagnostic').count()===1,course+' links to the guided recall section');
+   await page.locator('.chapter-map-diagnostic').click();
+   expect(await page.locator('#foundation-diagnostic').evaluate(el=>document.activeElement===el),course+' chapter jump focuses the activity');
+   const before=await getState(page);
+   const group=page.locator('[data-foundation-question="0"]');
+   const wrong=(correct+1)%3;
+   await group.locator('[data-option="'+wrong+'"]').click();
+   expect((await group.locator('.foundation-diagnostic-feedback').textContent()).includes('Review the reasoning.'),course+' explains errors without penalizing a learner');
+   expect(await group.locator('[data-option="'+wrong+'"]').getAttribute('aria-pressed')==='true',course+' marks the selected option for assistive technology');
+   await group.locator('[data-option="'+correct+'"]').click();
+   expect((await group.locator('.foundation-diagnostic-feedback').textContent()).includes('Correct.'),course+' confirms the supported interpretation');
+   expect((await group.locator('.foundation-diagnostic-feedback').textContent()).includes('Apply it:'),course+' supplies a follow-up transfer challenge');
+   expect(await group.locator('[data-option="'+wrong+'"]').getAttribute('aria-pressed')==='false',course+' clears the previous selection');
+   const after=await getState(page);
+   expect(JSON.stringify(after.completed||[])===JSON.stringify(before.completed||[]),course+' diagnostics never auto-complete lessons');
+   expect(JSON.stringify(after.answers||{})===JSON.stringify(before.answers||{}),course+' diagnostics never alter graded quiz choices');
+   const overflow=await mobileOverflow(page);
+   expect(overflow.scroll<=overflow.width+2,course+' recall interface fits mobile width');
+  }
+ });
  await smoke('intermediate-transfer-labs-mobile',{viewport:{width:390,height:844},isMobile:true,hasTouch:true},async page=>{
   // Distinct subjects exercise one shared reader component, with no mature-content bypass.
   for(const [course,lesson] of [['psychology','emotions'],['laws','consumer'],['thinking','causation'],['languages','chunks']]){
