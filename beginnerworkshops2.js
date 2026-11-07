@@ -101,7 +101,7 @@ export const BEGINNER_WORKSHOPS_TWO={
     model:'Offer the defined migration at ₱18,000 over two weeks, or a limited initial deployment for a mutually agreed lower scope after feasibility review. Include a fixed acceptance checklist and a change estimate for additions. If constraints cannot be met responsibly, declining avoids misleading commitments.',
     diagnostic:'What would distinguish an honest limited-time offer from a false countdown designed solely to force acceptance?'}
   ],
-  rubric:['Makes price, schedule, scope and acceptance independently inspectable.','Offers a real feasible alternative rather than invented leverage.','Avoids false scarcity, unlimited promises and pressure tactics.','Preserves the ability of either party to decline.'],
+  rubric:['Makes price, schedule, scope and acceptance independently inspectable.','Offers a real feasible alternative rather than invented leverage.','Avoids false scarcity, unlimited promises and pressure tactics.','Preserves the ability of either party to decline an unsuitable agreement.'],
   limits:'Fictional commercial negotiation; contract-specific advice may require qualified review.'
  },
  shadow:{
