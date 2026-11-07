@@ -1830,6 +1830,37 @@ try{
  });
 
 
+ await smoke('subject-portfolio-journeys-mobile-offline',{viewport:{width:390,height:844},isMobile:true,hasTouch:true,deviceScaleFactor:2},async(page,context)=>{
+  for(const id of ['psychology','laws','business','savings','time','languages','communication','thinking','digital','career','science','relationships','negotiation']){
+   await page.goto(BASE+'/#/course/'+id,{waitUntil:'domcontentloaded'});
+   await page.locator('.portfolio-journey').waitFor();
+   const root=page.locator('.portfolio-journey');
+   expect(await root.locator('.portfolio-journey-stage').count()===3,id+' offers three linked stages');
+   expect(await root.locator('.portfolio-journey-details').count()===3,id+' has three example and evidence reviews');
+   expect(await root.locator('.portfolio-journey-rubric li').count()===4,id+' has four portfolio quality criteria');
+   const first=root.locator('.portfolio-journey-stage').first();
+   expect(await first.locator('.portfolio-journey-details').evaluate(el=>el.open)===false,id+' worked reasoning starts concealed');
+   const before=await getState(page);
+   await first.locator('summary').click();
+   expect(await first.locator('.portfolio-journey-details').evaluate(el=>el.open)===true,id+' learner reveals example deliberately');
+   const after=await getState(page);
+   expect(JSON.stringify(before.completed||[])===JSON.stringify(after.completed||[]),id+' viewing examples never completes lessons');
+   expect(JSON.stringify(before.answers||{})===JSON.stringify(after.answers||{}),id+' viewing examples never grades answers');
+   const links=await root.locator('.portfolio-journey-link').evaluateAll(els=>els.map(el=>el.getAttribute('href')));
+   expect(links.length===3&&links.every(url=>url.startsWith('#/lesson/'+id+'/')),id+' connects all three existing lessons');
+   const overflow=await mobileOverflow(page);
+   expect(overflow.scroll<=overflow.width+8,id+' journey fits narrow screens');
+  }
+  await page.goto(BASE+'/#/course/business',{waitUntil:'domcontentloaded'});
+  await page.locator('.portfolio-journey').waitFor();
+  await page.evaluate(async()=>{await navigator.serviceWorker.ready;});
+  await page.reload({waitUntil:'domcontentloaded'});
+  await page.waitForFunction(()=>Boolean(navigator.serviceWorker.controller));
+  await context.setOffline(true);
+  await page.reload({waitUntil:'domcontentloaded'});
+  expect(await page.locator('.portfolio-journey-stage').count()===3,'portfolio survives an offline reload');
+  await context.setOffline(false);
+ });
  await smoke('offline-curriculum-ladders',{viewport:{width:390,height:844},isMobile:true,hasTouch:true,deviceScaleFactor:2},async(page,context)=>{
   await page.goto(BASE+'/#/course/psychology',{waitUntil:'domcontentloaded'});
   await page.locator('.curriculum-ladder').waitFor();
