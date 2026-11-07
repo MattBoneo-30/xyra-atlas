@@ -108,7 +108,6 @@ let japaneseUnitId=null;
 let japanesePracticeIndex=-1;
 let japanesePracticeFeedback='';
 let kanaRecallFeedback=null;
-// Written recall is deliberately short-lived and never persisted or graded.
 let phraseDraft = '';
 let focusedPhraseReview = null; // Session-only; never included in learner backups or storage.
 let focusedReviewSummary = null;
@@ -161,7 +160,6 @@ const plural = (n, noun) => `${n} ${noun}${n === 1 ? '' : 's'}`;
 const wasVisited = date => saved.dailyVisits.includes(date);
 let storageWarningShown = false;
 function persist() {
-  // Preserve unreadable original storage until the person explicitly imports or resets.
   if(storageProblem==='corrupt'||storageProblem==='read-failed')return false;
   try { localStorage.setItem(STORAGE_KEY, JSON.stringify(saved));storageProblem=null;return true; }
   catch {
@@ -362,7 +360,6 @@ function coursePage() {
   const done=courseProgress(c);
   const ladder=learningLadder(c,saved.completed);
   const firstUnfinished=(ladder?.next&&c.lessons.find(l=>l.id===ladder.next.id))||c.lessons[0];
-  // The opening scene follows the learner's next stage, without changing saved progress.
   const nextWorldStage=ladder?.complete?'Advanced':firstUnfinished.stage;
   const nextWorld=getStageArt(c.id,nextWorldStage);
   const stages=['Beginner','Intermediate','Advanced'];
@@ -980,7 +977,6 @@ function languagePage() {
   const language=LANGUAGES.find(x=>x.code===saved.language)||LANGUAGES[1];
   const done=normalizeJapaneseFoundationDone(saved.japaneseFoundationDone);
   const currentUnit=JAPANESE_UNITS.find(u=>u.id===japaneseUnitId) || JAPANESE_UNITS[done.length] || JAPANESE_UNITS.at(-1);
-  // Never ask an absolute beginner to recognize phrases before the kana-reading pathway.
   const showPhrasePractice=saved.language!=='ja'||done.includes('first-sentences');
   const completedDays=LEARNING_SPRINT.filter((_,i)=>saved.languageDays.includes(`${saved.language}:${i}`)).length;
   return `<main class="page language-page"><div class="subnav">${button(`${icon('back',18)} Back to learning`,'goto-explore','back-link')}</div>
@@ -1066,7 +1062,6 @@ function watchOfflineRegistration(reg){
    offlineUpdateWaiting=waiting;
    if(waiting)appUpdateStatus='ready';
    else if(!offlineUpdateApplying&&appUpdateStatus==='ready')appUpdateStatus='idle';
-   // Don't replace a lesson or unsaved text while someone is reading.
    if(route.view==='offline'||modal==='app-update')render();
   }
  };
@@ -1130,7 +1125,6 @@ async function applyOfflineUpdate(){
   offlineUpdateApplying=true;
   appUpdateStatus='applying';
   reg.waiting.postMessage({type:'ATLAS_ACTIVATE_UPDATE'});
-  // Reload only after a user-approved worker takes control.
   if(route.view==='offline'||modal==='app-update')render();
  }catch{
   offlineUpdateApplying=false;
@@ -1326,7 +1320,6 @@ async function unlockEncryptedFile(){
 }
 function confirmBackupImport(){
  if(!pendingBackup)return;
- // Replace the persisted state first; never mutate the in-memory state if a write fails.
  const candidate=pendingBackup.state;
  const day=today();
  candidate.dailyVisits=[...new Set([...candidate.dailyVisits,day])].slice(-400);
