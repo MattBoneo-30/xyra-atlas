@@ -33,6 +33,7 @@ import {practicalStudioPanel} from './practicalstudios.js';
 import {decisionRevisionPanel} from './decisionrevisions.js';
 import {beginnerWorkshopPanel} from './beginnerworkshops.js';
 import {portfolioJourneyPanel} from './portfoliojourneys.js';
+import {responseSimulationPanel} from './responsesimulations.js';
 import {JAPANESE_UNITS,JAPANESE_SPEAKABLE,normalizeJapaneseFoundationDone,evaluateJapaneseAnswer,japaneseFoundationPanel} from './japanesefoundation.js';
 import {normalizeKanaReviews,kanaReviewStatus,evaluateKanaReview,scheduleKanaReview,kanaContrastNote,kanaReviewPanel} from './kanareview.js';
 import {normalizeLanguageSpeechRate,matchingLanguageVoices,languageVoiceAvailability,chooseOfflineLanguageVoice,languageVoiceMessage} from './voicecoach.js';
@@ -385,6 +386,7 @@ function coursePage() {
      </article>`).join('')}</div><p class="fineprint">Advanced lessons remain open for independent exploration. Completion is not a credential, assessment of professional judgment or guarantee of expertise.</p>
     </section>
     ${portfolioJourneyPanel(c,{isLessonDone:id=>isCompleted(idFor(c.id,id))})}
+    ${responseSimulationPanel(c)}
     ${clinicPanel(c)}
     <div class="section-heading lesson-list-title"><div><span class="overline">A PATH WORTH TAKING</span><h2 id="course-lessons-heading" tabindex="-1">Your lessons</h2></div></div>
     <div class="course-stage-tabs" role="group" aria-label="Filter lessons by learning level">${[['all','All levels',c.lessons.length],...stages.map(stage=>[stage,stage,stageCount(stage)])].map(([id,label,count])=>button(`${esc(label)} <span>${count}</span>`,'course-stage-filter',`course-stage-button ${courseStageFilter===id?'selected':''}`,`data-id="${esc(id)}" aria-pressed="${courseStageFilter===id}"`)).join('')}</div>
