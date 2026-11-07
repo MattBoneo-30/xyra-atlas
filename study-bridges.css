@@ -1,0 +1,23 @@
+/* Interdisciplinary field missions: accessible and offline. */
+.cross-subject-mission{margin:30px 0;padding:clamp(15px,3vw,26px);border:1px solid var(--line-bright);border-radius:17px;background:var(--card);scroll-margin-top:100px}
+.cross-subject-mission>.overline{color:var(--gold)}
+.cross-subject-mission>h2{font:normal clamp(23px,3vw,30px)/1.3 Georgia,serif;color:var(--text);margin:9px 0}
+.cross-subject-intro{color:var(--muted);font-size:13px;line-height:1.8;max-width:65ch}
+.cross-subject-peer{display:inline-block;margin:9px 0 15px;border:1px solid var(--line-bright);border-radius:9px;padding:10px 12px;font-size:12px;font-weight:700;color:var(--gold);line-height:1.5;overflow-wrap:anywhere}
+.cross-subject-peer:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
+.cross-subject-situation,.cross-subject-connection,.cross-subject-challenge{margin:14px 0;padding:15px;background:var(--card-soft);border:1px solid var(--line);border-radius:11px}
+.cross-subject-challenge{border-left:3px solid var(--gold)}
+.cross-subject-mission h3{font-size:15px;color:var(--text);line-height:1.4;margin:0 0 9px}
+.cross-subject-mission p{overflow-wrap:break-word}
+.cross-subject-situation p,.cross-subject-connection p,.cross-subject-challenge p{font-size:12px;line-height:1.85;color:var(--muted);margin:0}
+.cross-subject-answer{margin:18px 0;border:1px solid var(--line-bright);border-radius:11px;overflow:hidden}
+.cross-subject-answer summary{cursor:pointer;color:var(--text);font-size:13px;font-weight:750;line-height:1.6;background:var(--card-soft);padding:13px}
+.cross-subject-answer summary:focus-visible{outline:2px solid var(--gold);outline-offset:-3px}
+.cross-subject-answer p{margin:12px;font-size:12px;line-height:1.9;color:var(--muted)}
+.cross-subject-check{margin:16px 0;padding-top:15px;border-top:1px solid var(--line)}
+.cross-subject-check ol{padding-left:22px;margin:10px 0;font-size:12px;color:var(--muted);line-height:1.85}
+.cross-subject-check li{margin:7px 0}
+.cross-subject-mission>.fineprint{font-size:11px;line-height:1.8}
+.chapter-map-bridge{margin-bottom:9px}
+@media(max-width:450px){.cross-subject-mission{margin:21px 0;padding:13px}.cross-subject-situation,.cross-subject-connection,.cross-subject-challenge{padding:11px}}
+@media(prefers-reduced-motion:reduce){.cross-subject-answer summary{transition:none}}
