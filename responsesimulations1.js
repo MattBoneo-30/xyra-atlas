@@ -99,7 +99,7 @@ export const RESPONSE_SIMULATIONS_A={
   ],
   synthesis:'Draft a dependency diagram, a brief stakeholder update, and a conditional release plan with a measurable API-recovery test.',
   model:'A suitable update names the blocked endpoint, the impacted acceptance test, the work completed independently, a responsible owner, and a release-hold condition until the real integration succeeds.',
-  rubric:['Recognizes external dependencies and the need for verification.','Separates mock behavior from live integration evidence.','Preserves an honest, conditional schedule.','Protects sustainable workload and escalation responsibilities.'],
+  rubric:['Recognizes external dependencies and the need for verification.','Separates mock behavior from live integration evidence.','Preserves an honest, conditional release schedule and required verification.','Protects sustainable workload and escalation responsibilities.'],
   caveat:'Fictional project-management scenario; actual scheduling depends on resources and contracts.'
  },
  languages:{
@@ -139,7 +139,7 @@ export const RESPONSE_SIMULATIONS_A={
   ],
   synthesis:'Write a six-field handoff note: observation, environment, impact, owner, acceptance test, and fallback or escalation. Include an example of an honest status correction.',
   model:'“Local login regression passed. Staging returns the documented failure. Release remains blocked. Owner A is investigating deployment configuration; QA will rerun the recorded test after the next build.”',
-  rubric:['Separates test environments and verification states.','Uses observable evidence instead of blame.','Names owners, checkpoints and release conditions.','Communicates uncertainty without masking production risk.'],
+  rubric:['Separates test environments and verification states.','Uses observable test evidence instead of personal blame or assumptions.','Names owners, checkpoints and release conditions.','Communicates uncertainty without masking production risk.'],
   caveat:'Fictional engineering teamwork, not an evaluation of any real employee.'
  }
 };
