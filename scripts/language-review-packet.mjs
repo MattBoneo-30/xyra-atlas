@@ -5,6 +5,7 @@
 import {createHash} from 'node:crypto';
 import {LANGUAGE_STARTER_PATHS} from '../languagestarterpaths.js';
 import {LANGUAGE_LITERACY_CHECKS} from '../languageliteracy.js';
+import {SENTENCE_BRIDGES} from '../sentencebridges.js';
 const reviewCriteria=Object.freeze([
  'Translation expresses the intended meaning accurately in this locale.',
  'Register and politeness are appropriate for the stated everyday scenario.',
@@ -62,7 +63,21 @@ export function buildLanguageReviewPacket(packs,languages){
     contentHash:languagePhraseHash(content),reviewStatus:'awaiting-qualified-language-review',
     reviewerAttestation:null,reviewCriteria};
   }));
- return {schemaVersion:1,status:'native-or-qualified-editor-review-required',foundations,literacyChecks,
+ const sentenceBridges=Object.entries(SENTENCE_BRIDGES)
+  .filter(([code])=>names.has(code)&&Object.hasOwn(packs,code))
+  .flatMap(([code,guide])=>['question','negative'].map((kind,index)=>{
+   const unit=guide[kind];
+   const phrase=packs[code].phrases[index===0?4:5];
+   const content={code,language:names.get(code),locale:packs[code].locale,
+    kind,sourcePhraseId:phrase.id,sourcePhrase:phrase.target,
+    title:unit.title,principle:unit.principle,workedAnnotation:unit.notice,
+    limits:unit.contrast,independentTask:unit.task,
+    choices:[...unit.check],correct:unit.answer};
+   return {id:'sentence:'+code+':'+kind,content,
+    contentHash:languagePhraseHash(content),reviewStatus:'awaiting-qualified-language-review',
+    reviewerAttestation:null,reviewCriteria};
+  }));
+ return {schemaVersion:1,status:'native-or-qualified-editor-review-required',foundations,literacyChecks,sentenceBridges,
   summary:{languages:summary.length,phrases:records.length,qualifiedApprovedPhrases:0},
   languages:summary,records,notes:[
   'A phrase may be grammatical but inappropriate or unnatural in a specific region or situation.',
@@ -113,6 +128,23 @@ export function renderLanguageReviewMarkdown(packet){
      'Independent transfer practice: '+mdEscape(item.content.independentTask),
      'Exact item hash: '+mdEscape(item.contentHash),
      '**Status: Unreviewed; not a speech or language-level assessment.**','');
+   }
+  }
+  const grammar=packet.sentenceBridges?.filter(item=>item.content.code===lang.code)||[];
+  if(grammar.length){
+   chunks.push('','### Sequential sentence structure — qualified review pending','');
+   for(const item of grammar){
+    const c=item.content;
+    chunks.push('#### '+mdEscape(c.title),'',
+     'Authored model phrase ('+mdEscape(c.sourcePhraseId)+'): '+mdEscape(c.sourcePhrase),
+     'Teaching principle: '+mdEscape(c.principle),
+     'Worked grammar annotation: '+mdEscape(c.workedAnnotation),
+     'Limitations and exceptions: '+mdEscape(c.limits),
+     'Independent production task: '+mdEscape(c.independentTask),
+     'Choices: '+c.choices.map(mdEscape).join(' / '),
+     'Expected response index: '+String(c.correct),
+     'Exact content hash: '+mdEscape(item.contentHash),
+     '**Status: Unreviewed.** Grammar, morphology and regional forms require a qualified reviewer.','');
    }
   }
   chunks.push('', 'Editorial questions:',...reviewCriteria.map(x=>'- [ ] '+x),'',
