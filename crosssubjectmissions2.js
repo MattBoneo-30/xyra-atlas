@@ -27,7 +27,7 @@ export const CROSS_SUBJECT_MISSIONS_TWO={
   bridge:'Career portfolio work makes implementations inspectable; business sales require an honest value proposition and bounded delivery. Evidence-based claims improve trust while clear scope protects both buyer and provider.',
   challenge:'Draft a concise proposal naming the customer problem, two features, a demo acceptance test, revision limit, exclusions and an outcome you can actually verify. Separate product functionality from the business benefit that still depends on customer use.',
   model:'A reviewable offer shows a working stock-adjustment flow and reports specific tests, planned handoff, two revision rounds and a clear support window. It does not promise profit or perfect security. Price and delivery are based on an agreed specification.',
-  rubric:['The promised behavior can be demonstrated and tested.','Claims of security and business impact remain bounded by evidence.','Scope and revisions are limited and readable.','The buyer can accept, negotiate or decline without deceptive urgency.']
+  rubric:['The promised behavior can be demonstrated and tested.','Claims of security and business impact remain bounded by evidence.','The proposed project scope and revision limits are specific and readable.','The buyer can accept, negotiate or decline without deceptive urgency.']
  },
  science:{
   peerCourse:'thinking',peerLesson:'causation',
@@ -54,7 +54,7 @@ export const CROSS_SUBJECT_MISSIONS_TWO={
   bridge:'Negotiation seeks informed options; pricing turns time and operating constraints into an economic floor. Under the simplifying assumption of 24 hours at ₱700, the labor floor is ₱16,800, above the offered budget by ₱4,800.',
   challenge:'Create a cost table for the original scope and a revised 16-hour deliverable. Define three acceptance criteria and a change-request rule. Draft a respectful counteroffer and distinguish a real alternative client from a bluff.',
   model:'At the illustrative rate, the original 24-hour labor floor is ₱16,800 and 16 hours would cost ₱11,200 before other obligations. A smaller scope might fit ₱12,000 only if risks and overhead are still covered. Never promise unlimited revisions or invent competing offers.',
-  rubric:['Cost arithmetic and assumptions are explicit.','An alternative preserves core client value within defensible scope.','Revisions and acceptance are bounded.','No unsupported leverage or guaranteed outcome is claimed.']
+  rubric:['Pricing calculations state both the rate and the exact scope assumptions.','An alternative preserves core client value within defensible scope.','The proposal defines bounded revision rounds and observable acceptance criteria.','No unsupported leverage or guaranteed outcome is claimed.']
  },
  shadow:{
   peerCourse:'digital',peerLesson:'scams',
