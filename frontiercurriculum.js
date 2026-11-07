@@ -75,11 +75,7 @@ export function attachFrontierWorkshops(courses){
   if(lesson.frontierWorkshop)continue;
   if([entry.method,entry.caseStudy,entry.assignment].some(x=>x.length<180))
    throw Error('Frontier instruction too short: '+course.id);
-  lesson.sections.push(
-   {heading:'FIELDWORK · '+entry.title,body:entry.method},
-   {heading:'WORKED CASE · Compare the evidence',body:entry.caseStudy},
-   {heading:'INDEPENDENT CHALLENGE · Test your judgment',body:entry.assignment});
-  lesson.frontierWorkshop=entry.title;
+  lesson.frontierWorkshop=entry;
   added++;
  }
  return added;
@@ -109,6 +105,15 @@ const notes={
  el:['Greek script, stress accents and inflections cannot be reconstructed reliably from an English translation alone.','Rehearse the complete station question and a follow-up with an experienced speaker; record where comprehension fails.']
 };
 export const LANGUAGE_FIELDWORK=Object.freeze(Object.fromEntries(Object.entries(notes).map(([code,[focus,mission]])=>[code,Object.freeze({focus,mission})])));
+export function frontierWorkshopPanel(work){
+ if(!work)return '';
+ return '<section class="frontier-workshop" aria-label="Applied frontier workshop">'+
+  '<span class="overline">APPLIED FIELDWORK · UNGRADED</span><h2>'+esc(work.title)+'</h2>'+
+  '<h3>Method</h3><p>'+esc(work.method)+'</p>'+
+  '<h3>Worked case</h3><p>'+esc(work.caseStudy)+'</p>'+
+  '<details><summary>Independent evidence challenge</summary><p>'+esc(work.assignment)+'</p></details>'+
+  '<p class="fineprint">Independent expert review is pending. Complete the task in your private Field Notebook; completion of this lesson is not certification.</p></section>';
+}
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','"':'&#39;'}[c]));
 export function validateFrontierWorkshops(courses,codes){
  if(!Array.isArray(codes)||codes.length!==20||new Set(codes).size!==20||
