@@ -52,9 +52,9 @@ test('language foundations ship offline and do not redefine stored language cour
  const sw=fs.readFileSync('sw.js','utf8'),build=fs.readFileSync('scripts/build.mjs','utf8');
  assert.match(sw,/\/languagestarterpaths\.js/);
  assert.match(build,/'languagestarterpaths\.js'/);
- assert.match(build,/'language-path\\.css'/);
- assert.match(sw,/\\/language-path\\.css/);
- assert.match(fs.readFileSync('index.html','utf8'),/href="\\/language-path\\.css"/);
+ assert.ok(build.includes("'language-path.css'"));
+ assert.ok(sw.includes('/language-path.css'));
+ assert.ok(fs.readFileSync('index.html','utf8').includes('href="/language-path.css"'));
  const app=fs.readFileSync('app.js','utf8');
  assert.match(app,/import \{languageStarterPanel\}/);
  assert.match(app,/\$\{languageStarterPanel\(saved\.language,getPhrasePack\(saved\.language\)/);
