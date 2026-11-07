@@ -10,6 +10,7 @@ import {attachDecisionRevisions} from './decisionrevisions.js';
 import {attachEvidenceInquiries} from './evidenceinquiries.js';
 import {attachPracticalStudios} from './practicalstudios.js';
 import {attachFoundationDiagnostics} from './foundationdiagnostics.js';
+import {attachBeginnerWorkshops} from './beginnerworkshops.js';
 import { FIELD_GUIDES } from './fieldguides.js';
 import { LIFE_PRACTICE } from './lifepractice.js';
 import { MASTERY_TRACKS } from './masterytracks.js';
@@ -332,6 +333,8 @@ attachEvidenceInquiries(COURSES);
 attachPracticalStudios(COURSES);
 // Active recall after concept-first teaching across all fourteen subjects.
 attachFoundationDiagnostics(COURSES);
+// Two-step practical learning beyond initial foundation drills in every subject.
+attachBeginnerWorkshops(COURSES);
 export const LANGUAGES = [
   {name:'English',flag:'🇬🇧',code:'en'}, {name:'Japanese',flag:'🇯🇵',code:'ja'},
   {name:'Korean',flag:'🇰🇷',code:'ko'}, {name:'Spanish',flag:'🇪🇸',code:'es'},
