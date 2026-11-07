@@ -63,6 +63,16 @@ export function buildLessonNarration(course,lesson,{maxLength=175}={}){
    'Independent challenge.',lab.task,'Worked reasoning.',lab.worked,
    'Counterexample.',lab.counterexample,'Self-review checklist.',...lab.rubric,lab.caveat);
  }
+ if(lesson.responseSimulation){
+  const sim=lesson.responseSimulation;
+  paragraphs.push('Interactive decision simulation: '+sim.title,'Starting scenario.',sim.situation);
+  for(const [index,round] of sim.rounds.entries()){
+   paragraphs.push('Decision '+(index+1)+': '+round.title,round.prompt);
+   for(const choice of round.choices)paragraphs.push('Option. '+choice[0], 'Consequence. '+choice[1]);
+  }
+  paragraphs.push('Independent synthesis.',sim.synthesis,'Illustrative model.',sim.model,
+   'Self-review criteria.',...sim.rubric,sim.caveat);
+ }
  if(lesson.decisionRevision){
   const decision=lesson.decisionRevision;
   paragraphs.push('Evidence-reversal lab: '+decision.title,'Initial case.',decision.case,
