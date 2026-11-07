@@ -40,9 +40,9 @@ export function buildLanguageReviewPacket(packs,languages){
   summary.push({code,language:names.get(code),locale:pack.locale,
    phraseCount:pack.phrases.length,verifiedPhrases:0,regionalNote:pack.note||''});
  }
- const foundations=Object.entries(LANGUAGE_STARTER_PATHS).map(([code,guide])=>{
-  if(!names.has(code)||!summary.some(item=>item.code===code))
-   throw Error('Missing matching language for foundation: '+code);
+ const foundations=Object.entries(LANGUAGE_STARTER_PATHS)
+  .filter(([code])=>names.has(code)&&Object.hasOwn(packs,code))
+  .map(([code,guide])=>{
   const content={code,language:names.get(code),locale:packs[code].locale,
    writing:guide.writing,sound:guide.sound,pattern:guide.pattern,
    context:guide.context,limitations:guide.avoid};
