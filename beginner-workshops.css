@@ -1,0 +1,24 @@
+/* Beginner workshop: evidence-first, independent work and worked comparisons. */
+.beginner-workshop{margin:28px 0;padding:clamp(15px,3vw,26px);border:1px solid var(--line-bright);border-radius:18px;background:var(--card);scroll-margin-top:100px}
+.beginner-workshop>.overline{color:var(--gold)}
+.beginner-workshop>h2{margin:10px 0;font:normal clamp(23px,3.2vw,30px)/1.3 Georgia,serif;color:var(--text)}
+.beginner-workshop-goal{font-size:13px;line-height:1.8;max-width:70ch;color:var(--muted)}
+.beginner-workshop h3{font-size:15px;color:var(--text);margin:0 0 8px;line-height:1.5}
+.beginner-workshop h4{font-size:13px;color:var(--text);margin:0 0 7px}
+.beginner-workshop-case,.beginner-workshop-step{padding:clamp(12px,2.5vw,19px);margin:15px 0;border:1px solid var(--line);background:var(--card-soft);border-radius:12px}
+.beginner-workshop-case p,.beginner-workshop-step p{margin:0;color:var(--muted);font-size:12px;line-height:1.85;overflow-wrap:break-word}
+.beginner-workshop-number{display:block;color:var(--gold);font-size:10px;letter-spacing:.07em;font-weight:750;margin:0 0 8px}
+.beginner-workshop-task{margin:15px 0;padding:12px 14px;border-left:3px solid var(--gold);background:var(--card);border-radius:9px}
+.beginner-workshop-check{margin:12px 0!important;padding:9px 0;border-top:1px solid var(--line)}
+.beginner-workshop-check strong{color:var(--text)}
+.beginner-workshop-model{margin:14px 0 0;border-radius:10px;border:1px solid var(--line-bright);background:var(--card);overflow:hidden}
+.beginner-workshop-model summary{cursor:pointer;padding:13px;font-size:12px;font-weight:750;line-height:1.65;color:var(--text)}
+.beginner-workshop-model summary:focus-visible{outline:2px solid var(--gold);outline-offset:-3px}
+.beginner-workshop-model p{padding:0 13px 14px}
+.beginner-workshop-rubric{margin:18px 0;border-top:1px solid var(--line);padding-top:16px}
+.beginner-workshop-rubric ol{margin:8px 0;padding-left:23px;font-size:12px;line-height:1.85;color:var(--muted)}
+.beginner-workshop-rubric li{margin:7px 0;padding-left:2px}
+.beginner-workshop>.fineprint{font-size:11px;line-height:1.7}
+.chapter-map-workshop{margin-bottom:9px;font-weight:750;font-size:13px;color:var(--text)}
+@media(max-width:450px){.beginner-workshop{padding:13px}.beginner-workshop-task{padding:10px}}
+@media(prefers-reduced-motion:reduce){.beginner-workshop-model summary{transition:none}}
