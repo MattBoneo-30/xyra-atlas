@@ -12,6 +12,7 @@ import {attachPracticalStudios} from './practicalstudios.js';
 import {attachFoundationDiagnostics} from './foundationdiagnostics.js';
 import {attachBeginnerWorkshops} from './beginnerworkshops.js';
 import {attachPortfolioJourneys} from './portfoliojourneys.js';
+import {validateResponseSimulations} from './responsesimulations.js';
 import { FIELD_GUIDES } from './fieldguides.js';
 import { LIFE_PRACTICE } from './lifepractice.js';
 import { MASTERY_TRACKS } from './masterytracks.js';
@@ -338,6 +339,8 @@ attachFoundationDiagnostics(COURSES);
 attachBeginnerWorkshops(COURSES);
 // Three connected project deliverables per subject, attached to existing stage lessons.
 attachPortfolioJourneys(COURSES);
+// Two decisions with tailored consequences per subject; no added lesson IDs.
+validateResponseSimulations(COURSES);
 export const LANGUAGES = [
   {name:'English',flag:'🇬🇧',code:'en'}, {name:'Japanese',flag:'🇯🇵',code:'ja'},
   {name:'Korean',flag:'🇰🇷',code:'ko'}, {name:'Spanish',flag:'🇪🇸',code:'es'},
