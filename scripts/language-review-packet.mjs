@@ -64,7 +64,8 @@ export function buildLanguageReviewPacket(packs,languages){
     reviewerAttestation:null,reviewCriteria};
   }));
  const sentenceBridges=Object.entries(SENTENCE_BRIDGES)
-  .filter(([code])=>names.has(code)&&Object.hasOwn(packs,code))
+  .filter(([code])=>names.has(code)&&Object.hasOwn(packs,code)&&
+    Array.isArray(packs[code]?.phrases)&&packs[code].phrases.length>=6)
   .flatMap(([code,guide])=>['question','negative'].map((kind,index)=>{
    const unit=guide[kind];
    const phrase=packs[code].phrases[index===0?4:5];
