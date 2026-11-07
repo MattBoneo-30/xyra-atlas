@@ -1879,8 +1879,6 @@ try{
    await first.locator('[data-sim-choice="1"]').click();
    expect(await first.locator('[data-sim-choice="1"]').getAttribute('aria-pressed')==='true',course+' exposes current selection accessibly');
    expect(await first.locator('[data-sim-choice="2"]').getAttribute('aria-pressed')==='false',course+' clears the earlier selection');
-   const strong=first.locator('[data-sim-choice]').filter({hasText:'___not_an_actual_choice___'});
-   expect(await strong.count()===0,'selectors do not accidentally match unrelated choices');
    await second.locator('[data-sim-choice="0"]').click();
    expect(await sim.locator('.response-simulation-final').isVisible(),course+' reveals independent decision memo after second step');
    expect(await sim.locator('.response-simulation-final li').count()===4,course+' has four independent evaluation criteria');
@@ -1888,6 +1886,12 @@ try{
    expect(await model.evaluate(el=>el.open)===false,course+' worked synthesis starts hidden');
    await model.locator('summary').click();
    expect(await model.evaluate(el=>el.open)===true,course+' worked synthesis is learner-controlled');
+   await first.locator('[data-sim-choice="0"]').click();
+   expect(await sim.locator('.response-simulation-final').isHidden(),course+' changing the first decision clears stale synthesis');
+   expect(await second.locator('.response-simulation-feedback').isHidden(),course+' old second-step feedback resets');
+   expect(await second.locator('[data-sim-choice="0"]').getAttribute('aria-pressed')==='false',course+' earlier second choice resets');
+   await second.locator('[data-sim-choice="1"]').click();
+   expect(await sim.locator('.response-simulation-final').isVisible(),course+' memo can be completed again');
    const after=await getState(page);
    expect(JSON.stringify(before.completed||[])===JSON.stringify(after.completed||[]),course+' simulation does not complete lessons');
    expect(JSON.stringify(before.answers||{})===JSON.stringify(after.answers||{}),course+' simulation does not change quiz scores');
