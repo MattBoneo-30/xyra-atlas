@@ -54,7 +54,7 @@ test('fourteen distinct two-step beginner workshops deepen original lessons',()=
  assert.equal(distinctCases.size,14);
  assert.equal(distinctTasks.size,28);
  assert.equal(attachBeginnerWorkshops(COURSES),0,'reattaching must not mutate completed curriculum');
- assert.throws(()=>attachBeginnerWorkshops([]),/coverage incomplete/);
+ assert.throws(()=>attachBeginnerWorkshops([]),/subject coverage/);
 });
 
 test('all beginner workshop exercises enter independently reviewable hashes',()=>{
