@@ -57,6 +57,16 @@ export function buildEditorialReviewPacket(courses,clinics){
       workedReasoning:lesson.transferLab.worked,counterexample:lesson.transferLab.counterexample,
       selfReviewCriteria:[...lesson.transferLab.rubric],limitations:lesson.transferLab.caveat
     }}:{}),
+    // Advanced studio assignments, worked responses and rubrics require review.
+    ...(lesson.practicalStudio?{advancedPracticalStudio:{
+      key:lesson.practicalStudio.key,reviewStatus:'pending-independent-review',
+      title:lesson.practicalStudio.title,situation:lesson.practicalStudio.situation,
+      rounds:lesson.practicalStudio.rounds.map(round=>({
+        title:round.title,concept:round.focus,evidence:round.evidence,
+        independentAssignment:round.assignment,workedResponse:round.model
+      })),
+      rubric:[...lesson.practicalStudio.rubric]
+    }}:{}),
     // Every cross-subject scenario, answer, and companion link needs review.
     ...(lesson.crossSubjectMission?{interdisciplinaryMission:{
       key:lesson.crossSubjectMission.key,reviewStatus:'pending-independent-review',
