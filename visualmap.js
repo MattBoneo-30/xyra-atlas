@@ -38,6 +38,9 @@ export function createChapterMap(course,lesson){
  const diagnostic=lesson.foundationDiagnostic&&typeof lesson.foundationDiagnostic.title==='string'?
   {id:'foundation-diagnostic',heading:lesson.foundationDiagnostic.title,
    preview:summarize(lesson.foundationDiagnostic.intro,135)}:null;
- return {title:lesson.title||'',course:course.title||'',steps,deepSteps,astronomySteps,transfer,inquiry,diagnostic,
+ const bridge=lesson.crossSubjectMission&&typeof lesson.crossSubjectMission.title==='string'?
+  {id:'cross-subject-mission',heading:lesson.crossSubjectMission.title,
+   preview:summarize(lesson.crossSubjectMission.scene,135)}:null;
+ return {title:lesson.title||'',course:course.title||'',steps,deepSteps,astronomySteps,transfer,inquiry,diagnostic,bridge,
   practice:typeof lesson.task==='string'&&lesson.task.trim()?{id:'lesson-practice',heading:'Apply what you learned',preview:summarize(lesson.task,140)}:null};
 }
