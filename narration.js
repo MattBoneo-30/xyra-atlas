@@ -39,6 +39,14 @@ export function buildLessonNarration(course,lesson,{maxLength=175}={}){
   }
   paragraphs.push('Studio self-review checklist.',...studio.rubric);
  }
+ if(lesson.beginnerWorkshop){
+  const lab=lesson.beginnerWorkshop;
+  paragraphs.push('Guided beginner workshop: '+lab.title,'Learning objective.',lab.goal,'Starting case.',lab.case);
+  for(const [i,step] of lab.steps.entries())
+   paragraphs.push('Workshop step '+(i+1)+': '+step.name,'Independent activity.',step.instruction,
+    'Assumption check.',step.diagnostic,'Worked comparison.',step.model);
+  paragraphs.push('Independent quality checklist.',...lab.rubric,lab.limits);
+ }
  if(lesson.foundationDiagnostic){
   const check=lesson.foundationDiagnostic;
   paragraphs.push('Foundation active recall: '+check.title,check.intro);
