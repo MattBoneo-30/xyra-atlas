@@ -6,6 +6,7 @@ import {deepenAdvancedLessons} from './advanceddepth.js';
 import {extendScienceWithAstronomy} from './scienceastronomy.js';
 import {attachTransferLabs} from './transferlabs.js';
 import {attachCrossSubjectMissions} from './crosssubjectmissions.js';
+import {attachDecisionRevisions} from './decisionrevisions.js';
 import {attachEvidenceInquiries} from './evidenceinquiries.js';
 import {attachPracticalStudios} from './practicalstudios.js';
 import {attachFoundationDiagnostics} from './foundationdiagnostics.js';
@@ -323,6 +324,8 @@ extendScienceWithAstronomy(COURSES);
 attachTransferLabs(COURSES);
 // Peer-linked subject synthesis without new lesson or progress identities.
 attachCrossSubjectMissions(COURSES);
+// Revisit an initial intermediate decision when material evidence changes.
+attachDecisionRevisions(COURSES);
 // One independent evidence investigation per published advanced course.
 attachEvidenceInquiries(COURSES);
 // Two applied production-and-verification rounds per published advanced subject.
