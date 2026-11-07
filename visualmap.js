@@ -47,6 +47,9 @@ export function createChapterMap(course,lesson){
  const decision=lesson.decisionRevision&&typeof lesson.decisionRevision.title==='string'?
   {id:'decision-revision',heading:lesson.decisionRevision.title,
    preview:summarize(lesson.decisionRevision.case,135)}:null;
- return {title:lesson.title||'',course:course.title||'',steps,deepSteps,astronomySteps,transfer,inquiry,diagnostic,bridge,studio,decision,
+ const workshop=lesson.beginnerWorkshop&&typeof lesson.beginnerWorkshop.title==='string'?
+  {id:'beginner-workshop',heading:lesson.beginnerWorkshop.title,
+   preview:summarize(lesson.beginnerWorkshop.case,135)}:null;
+ return {title:lesson.title||'',course:course.title||'',steps,deepSteps,astronomySteps,transfer,inquiry,diagnostic,bridge,studio,decision,workshop,
   practice:typeof lesson.task==='string'&&lesson.task.trim()?{id:'lesson-practice',heading:'Apply what you learned',preview:summarize(lesson.task,140)}:null};
 }
