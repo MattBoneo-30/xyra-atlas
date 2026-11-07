@@ -44,7 +44,7 @@ export function getLanguageStarterPath(code,pack){
   }))
  };
 }
-export function languageStarterPanel(code,pack){
+export function languageStarterPanel(code,pack,{showExamples=true}={}){
  const path=getLanguageStarterPath(code,pack);
  if(!path)return '';
  const rtl=code==='ar'?' dir="rtl"':'';
@@ -54,7 +54,7 @@ export function languageStarterPanel(code,pack){
   '<span class="overline">START HERE · YOUR SOUND-TO-CONVERSATION PATH</span><h2>Learn the foundations before relying on phrases</h2>'+
   '<p class="language-path-intro">Four guided steps for this language. These are self-directed foundations, not a full A1 curriculum, pronunciation evaluation or native-reviewed course. Existing Japanese kana lessons remain the deeper required sequence.</p>'+
   '<ol class="language-path-stages">'+steps+'</ol>'+
-  '<div class="language-path-phrase-practice"><h3>Cover, recall, then reveal</h3><p>Use familiar authored phrases to test meaning and written recognition. This does not grade listening or speaking.</p><ol>'+examples+'</ol></div>'+
+  (showExamples?'<div class="language-path-phrase-practice"><h3>Cover, recall, then reveal</h3><p>Use familiar authored phrases to test meaning and written recognition. This does not grade listening or speaking.</p><ol>'+examples+'</ol></div>':'<p class="fineprint">Phrase recognition unlocks after the Japanese kana-reading prerequisites. Follow the full Japanese pathway below first.</p>')+
   '<p class="fineprint">'+safe(path.warnings)+' Review a qualified source or teacher for natural pronunciation, register and local usage. Written examples work offline; independent reference audio may need internet.</p>'+
   '</section>';
 }
