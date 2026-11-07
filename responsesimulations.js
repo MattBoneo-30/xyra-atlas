@@ -108,6 +108,23 @@ export function activateResponseSimulationChoice(root,step,option){
  feedback.hidden=false;
  feedback.textContent=(result.stronger?'Stronger decision. ':'Consider the trade-off. ')+
   result.consequence+' '+result.next;
+ if(step===0){
+  const later=root.querySelector('[data-sim-step="1"]');
+  if(later){
+   later.querySelectorAll('[data-sim-choice]').forEach(button=>{
+    button.classList.remove('is-selected');
+    button.setAttribute('aria-pressed','false');
+   });
+   const earlierFeedback=later.querySelector('.response-simulation-feedback');
+   if(earlierFeedback){earlierFeedback.hidden=true;earlierFeedback.textContent='';}
+  }
+  const final=root.querySelector('.response-simulation-final');
+  if(final){
+   final.hidden=true;
+   const worked=final.querySelector('.response-simulation-model');
+   if(worked)worked.open=false;
+  }
+ }
  const next=step===0?root.querySelector('[data-sim-step="1"]'):root.querySelector('.response-simulation-final');
  if(next)next.hidden=false;
  return true;
