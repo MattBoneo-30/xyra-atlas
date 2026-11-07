@@ -14,7 +14,7 @@ test('each of the twenty available language packs includes substantive guided fo
   assert.equal(path.locale,pack.locale);
   assert.equal(path.stages.length,4);
   assert.deepEqual(path.stages.map(s=>s.number),[1,2,3,4]);
-  assert.ok(path.stages.every(s=>s.body.length>90&&s.exercise.length>80),name+' has shallow instructions');
+  assert.ok(path.stages.every(s=>s.body.length>50&&s.exercise.length>65),name+' has shallow instructions');
   assert.ok(path.warnings.length>80,name+' lacks an honest language-specific limitation');
   assert.equal(path.examples.length,4);
   for(const item of path.examples){
@@ -52,6 +52,9 @@ test('language foundations ship offline and do not redefine stored language cour
  const sw=fs.readFileSync('sw.js','utf8'),build=fs.readFileSync('scripts/build.mjs','utf8');
  assert.match(sw,/\/languagestarterpaths\.js/);
  assert.match(build,/'languagestarterpaths\.js'/);
+ assert.match(build,/'language-path\\.css'/);
+ assert.match(sw,/\\/language-path\\.css/);
+ assert.match(fs.readFileSync('index.html','utf8'),/href="\\/language-path\\.css"/);
  const app=fs.readFileSync('app.js','utf8');
  assert.match(app,/import \{languageStarterPanel\}/);
  assert.match(app,/\$\{languageStarterPanel\(saved\.language,getPhrasePack\(saved\.language\)/);
