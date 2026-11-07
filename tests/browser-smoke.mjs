@@ -956,6 +956,28 @@ try{
   expect(overflow.scroll<=overflow.width+2,'app-update controls fit the mobile viewport');
  });
 
+ await smoke('advanced-practical-studios-mobile',{viewport:{width:390,height:844},isMobile:true,hasTouch:true},async page=>{
+  for(const [course,lesson] of [['psychology','calibrate-beliefs'],['business','contribution-margin-scenario'],['science','observational-vs-experimental']]){
+   await page.goto(BASE+'/#/lesson/'+course+'/'+lesson,{waitUntil:'domcontentloaded'});
+   await page.locator('.practical-studio').waitFor();
+   expect(await page.locator('.practical-studio-round').count()===2,course+' has two applied rounds');
+   expect(await page.locator('.practical-studio-model').count()===2,course+' has model responses for both rounds');
+   expect(await page.locator('.practical-studio-rubric li').count()===4,course+' provides a self-review rubric');
+   expect(await page.locator('.chapter-map-studio').count()===1,course+' exposes a chapter navigation jump');
+   const before=await getState(page);
+   const answer=page.locator('.practical-studio-model').first();
+   expect(await answer.evaluate(el=>el.open)===false,course+' conceals the worked example by default');
+   await page.locator('.chapter-map-studio').click();
+   expect(await page.locator('#practical-studio').evaluate(el=>document.activeElement===el),course+' chapter jump restores focus');
+   await answer.locator('summary').click();
+   expect(await answer.evaluate(el=>el.open)===true,course+' model is revealed by learner action');
+   const after=await getState(page);
+   expect(JSON.stringify(before.completed||[])===JSON.stringify(after.completed||[]),course+' reading the model does not complete a lesson');
+   expect(JSON.stringify(before.answers||{})===JSON.stringify(after.answers||{}),course+' reading the model does not change graded quizzes');
+   const overflow=await mobileOverflow(page);
+   expect(overflow.scroll<=overflow.width+2,course+' studio fits mobile width');
+  }
+ });
  await smoke('advanced-evidence-inquiries-mobile',{viewport:{width:390,height:844},isMobile:true,hasTouch:true},async page=>{
   for(const [course,lesson] of [
    ['psychology','calibrate-beliefs'],
@@ -1039,6 +1061,34 @@ try{
    const overflow=await mobileOverflow(page);
    expect(overflow.scroll<=overflow.width+2,course+' applied lab fits the mobile viewport');
   }
+ });
+ await smoke('language-literacy-pattern-checks-mobile',{viewport:{width:390,height:844},isMobile:true,hasTouch:true},async page=>{
+  await page.goto(BASE+'/#/language',{waitUntil:'domcontentloaded'});
+  await page.locator('#language-select').waitFor();
+  for(const [code,correct] of [['en',1],['ko',0],['ar',1],['tr',1],['el',2]]){
+   await page.locator('#language-select').selectOption(code);
+   await page.locator('.language-literacy-question').first().waitFor();
+   expect(await page.locator('.language-literacy-question').count()===2,code+' has two distinct written pattern checks');
+   expect(await page.locator('[data-action="language-literacy-answer"]').count()===6,code+' presents three choices per check');
+   const before=await getState(page),group=page.locator('.language-literacy-question').first();
+   const wrong=(correct+1)%3;
+   await group.locator('[data-option="'+wrong+'"]').click();
+   expect((await group.locator('.language-literacy-feedback').textContent()).includes('Review this distinction.'),code+' teaches through an incorrect choice');
+   expect(await group.locator('[data-option="'+wrong+'"]').getAttribute('aria-pressed')==='true',code+' exposes selection to assistive tech');
+   await group.locator('[data-option="'+correct+'"]').click();
+   expect((await group.locator('.language-literacy-feedback').textContent()).includes('Correct.'),code+' confirms the answer');
+   expect((await group.locator('.language-literacy-feedback').textContent()).includes('Next practice:'),code+' gives a transfer exercise');
+   expect(await group.locator('[data-option="'+wrong+'"]').getAttribute('aria-pressed')==='false',code+' clears the prior selection');
+   const after=await getState(page);
+   expect(JSON.stringify(before.completed||[])===JSON.stringify(after.completed||[]),code+' does not auto-complete lessons');
+   expect(JSON.stringify(before.answers||{})===JSON.stringify(after.answers||{}),code+' does not change quiz grades');
+   expect(JSON.stringify(before.phrases||{})===JSON.stringify(after.phrases||{}),code+' does not create claimed phrase fluency');
+   const overflow=await mobileOverflow(page);
+   expect(overflow.scroll<=overflow.width+2,code+' literacy controls fit mobile');
+  }
+  await page.locator('#language-select').selectOption('ja');
+  await page.locator('.language-literacy-locked').waitFor();
+  expect(await page.locator('[data-action="language-literacy-answer"]').count()===0,'Japanese practice remains gated by its kana curriculum');
  });
  await smoke('twenty-language-guided-foundations-mobile',{viewport:{width:390,height:844},isMobile:true,hasTouch:true},async page=>{
   await page.goto(BASE+'/#/language',{waitUntil:'domcontentloaded'});
