@@ -55,7 +55,8 @@ test('cross-subject lesson content is navigable, narrated and visibly optional',
  assert.match(app,/id="cross-subject-mission"/);
  assert.match(app,/index==='bridge'\?'cross-subject-mission'/);
  assert.match(app,/class="cross-subject-answer"/);
- assert.match(app,/href="\'+esc\(companion\)/);
+ assert.match(app,/encodeURIComponent\(item\.peerCourse\)/);
+ assert.match(app,/encodeURIComponent\(item\.peerLesson\)/);
 });
 test('independent reviewer packet hashes cross-subject cases and leaves approvals pending',()=>{
  const packet=buildEditorialReviewPacket(COURSES,CLINICS);
