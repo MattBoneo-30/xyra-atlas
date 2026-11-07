@@ -5,6 +5,7 @@ import {deepenIntermediateLessons} from './intermediatedepth.js';
 import {deepenAdvancedLessons} from './advanceddepth.js';
 import {extendScienceWithAstronomy} from './scienceastronomy.js';
 import {attachTransferLabs} from './transferlabs.js';
+import {attachCrossSubjectMissions} from './crosssubjectmissions.js';
 import {attachEvidenceInquiries} from './evidenceinquiries.js';
 import {attachFoundationDiagnostics} from './foundationdiagnostics.js';
 import { FIELD_GUIDES } from './fieldguides.js';
@@ -319,6 +320,8 @@ deepenAdvancedLessons(COURSES);
 extendScienceWithAstronomy(COURSES);
 // Independent applied reasoning, attached to 14 existing intermediate lessons.
 attachTransferLabs(COURSES);
+// Peer-linked subject synthesis without new lesson or progress identities.
+attachCrossSubjectMissions(COURSES);
 // One independent evidence investigation per published advanced course.
 attachEvidenceInquiries(COURSES);
 // Active recall after concept-first teaching across all fourteen subjects.
