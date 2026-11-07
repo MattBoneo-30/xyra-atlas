@@ -67,6 +67,14 @@ export function buildEditorialReviewPacket(courses,clinics){
       })),
       rubric:[...lesson.practicalStudio.rubric]
     }}:{}),
+    // Counterfactual decisions, new evidence and revised answers require review.
+    ...(lesson.decisionRevision?{decisionRevisionLab:{
+      key:lesson.decisionRevision.key,reviewStatus:'pending-independent-review',
+      title:lesson.decisionRevision.title,initialCase:lesson.decisionRevision.case,
+      initialChallenge:lesson.decisionRevision.firstTask,newEvidence:lesson.decisionRevision.reveal,
+      revisedModel:lesson.decisionRevision.revision,independentFollowUp:lesson.decisionRevision.follow,
+      rubric:[...lesson.decisionRevision.rubric],limits:lesson.decisionRevision.caveat
+    }}:{}),
     // Every cross-subject scenario, answer, and companion link needs review.
     ...(lesson.crossSubjectMission?{interdisciplinaryMission:{
       key:lesson.crossSubjectMission.key,reviewStatus:'pending-independent-review',
