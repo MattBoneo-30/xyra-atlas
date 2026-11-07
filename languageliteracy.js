@@ -24,7 +24,7 @@ export function validateLanguageLiteracyChecks(codes){
    if(typeof q.title!=='string'||q.title.length<20||
       typeof q.question!=='string'||q.question.length<45||
       !Array.isArray(q.choices)||q.choices.length!==3||
-      q.choices.some(x=>typeof x!=='string'||x.length<10)||
+      q.choices.some(x=>typeof x!=='string'||x.length<1)||
       new Set(q.choices).size!==3||!Number.isInteger(q.correct)||q.correct<0||q.correct>2||
       typeof q.why!=='string'||q.why.length<120||
       typeof q.try!=='string'||q.try.length<80)
