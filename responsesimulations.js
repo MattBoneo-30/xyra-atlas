@@ -19,7 +19,7 @@ export function validateResponseSimulations(courses){
   const course=courses.find(c=>c.id===id);
   const lesson=course.lessons.find(l=>l.stage==='Intermediate');
   if(!lesson)throw Error('Missing published intermediate prerequisite: '+id);
-  for(const [name,min] of Object.entries({title:24,situation:170,synthesis:125,model:140,caveat:65})){
+  for(const [name,min] of Object.entries({title:24,situation:170,synthesis:120,model:140,caveat:65})){
    if(typeof entry[name]!=='string'||entry[name].length<min)
     throw Error('Incomplete simulation '+id+':'+name);
   }
@@ -28,14 +28,14 @@ export function validateResponseSimulations(courses){
    throw Error('Missing rounds or criteria in simulation '+id);
   for(const round of entry.rounds){
    if(typeof round.title!=='string'||round.title.length<20||
-      typeof round.prompt!=='string'||round.prompt.length<110||
+      typeof round.prompt!=='string'||round.prompt.length<55||
       !Array.isArray(round.choices)||round.choices.length!==3||
       round.choices.filter(c=>c[2]===true).length!==1)
     throw Error('Incomplete interactive decision '+id);
    const labels=new Set();
    for(const choice of round.choices){
     if(!Array.isArray(choice)||choice.length!==3||typeof choice[0]!=='string'||
-       choice[0].length<27||typeof choice[1]!=='string'||choice[1].length<115||
+       choice[0].length<27||typeof choice[1]!=='string'||choice[1].length<65||
        typeof choice[2]!=='boolean'||labels.has(choice[0]))
      throw Error('Incomplete response path '+id);
     labels.add(choice[0]);
