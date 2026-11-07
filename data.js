@@ -11,6 +11,7 @@ import {attachEvidenceInquiries} from './evidenceinquiries.js';
 import {attachPracticalStudios} from './practicalstudios.js';
 import {attachFoundationDiagnostics} from './foundationdiagnostics.js';
 import {attachBeginnerWorkshops} from './beginnerworkshops.js';
+import {attachPortfolioJourneys} from './portfoliojourneys.js';
 import { FIELD_GUIDES } from './fieldguides.js';
 import { LIFE_PRACTICE } from './lifepractice.js';
 import { MASTERY_TRACKS } from './masterytracks.js';
@@ -335,6 +336,8 @@ attachPracticalStudios(COURSES);
 attachFoundationDiagnostics(COURSES);
 // Two-step practical learning beyond initial foundation drills in every subject.
 attachBeginnerWorkshops(COURSES);
+// Three connected project deliverables per subject, attached to existing stage lessons.
+attachPortfolioJourneys(COURSES);
 export const LANGUAGES = [
   {name:'English',flag:'🇬🇧',code:'en'}, {name:'Japanese',flag:'🇯🇵',code:'ja'},
   {name:'Korean',flag:'🇰🇷',code:'ko'}, {name:'Spanish',flag:'🇪🇸',code:'es'},
