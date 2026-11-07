@@ -40,6 +40,16 @@ export function buildEditorialReviewPacket(courses,clinics){
       chapters:lesson.astronomySections.map(section=>({heading:section.heading,body:section.body})),
       references:(lesson.astronomySources||[]).map(reference=>({label:reference.label,url:reference.url}))
     }}:{}),
+    // Three-stage portfolio artifacts span existing lessons and require review.
+    ...(lesson.portfolioJourney?{subjectPortfolioJourney:{
+      key:lesson.portfolioJourney.key,reviewStatus:'pending-independent-review',
+      title:lesson.portfolioJourney.title,brief:lesson.portfolioJourney.brief,
+      artifacts:lesson.portfolioJourney.artifacts.map(a=>({
+        stage:a.stage,linkedLessonId:a.lessonId,title:a.name,task:a.build,
+        evidenceCriteria:a.test,workedReference:a.example
+      })),rubric:[...lesson.portfolioJourney.rubric],
+      limitations:lesson.portfolioJourney.limit
+    }}:{}),
     // Two-step beginner workshops are authored evidence and require signoff.
     ...(lesson.beginnerWorkshop?{guidedBeginnerWorkshop:{
       key:lesson.beginnerWorkshop.key,reviewStatus:'pending-independent-review',
