@@ -4,6 +4,7 @@
  */
 import {createHash} from 'node:crypto';
 import {LANGUAGE_STARTER_PATHS} from '../languagestarterpaths.js';
+import {LANGUAGE_LITERACY_CHECKS} from '../languageliteracy.js';
 const reviewCriteria=Object.freeze([
  'Translation expresses the intended meaning accurately in this locale.',
  'Register and politeness are appropriate for the stated everyday scenario.',
@@ -50,7 +51,18 @@ export function buildLanguageReviewPacket(packs,languages){
    content,reviewStatus:'awaiting-qualified-language-review',
    reviewerAttestation:null,reviewCriteria};
  });
- return {schemaVersion:1,status:'native-or-qualified-editor-review-required',foundations,
+ const literacyChecks=Object.entries(LANGUAGE_LITERACY_CHECKS)
+  .filter(([code])=>names.has(code)&&Object.hasOwn(packs,code))
+  .flatMap(([code,checks])=>checks.map((check,index)=>{
+   const content={code,language:names.get(code),locale:packs[code].locale,
+    item:index+1,title:check.title,question:check.question,
+    choices:[...check.choices],correct:check.correct,
+    explanation:check.why,independentTask:check.try};
+   return {id:'literacy:'+code+':'+(index+1),content,
+    contentHash:languagePhraseHash(content),reviewStatus:'awaiting-qualified-language-review',
+    reviewerAttestation:null,reviewCriteria};
+  }));
+ return {schemaVersion:1,status:'native-or-qualified-editor-review-required',foundations,literacyChecks,
   summary:{languages:summary.length,phrases:records.length,qualifiedApprovedPhrases:0},
   languages:summary,records,notes:[
   'A phrase may be grammatical but inappropriate or unnatural in a specific region or situation.',
@@ -88,6 +100,20 @@ export function renderLanguageReviewMarkdown(packet){
     'Limitations: '+mdEscape(foundation.content.limitations),
     'Foundation content hash: '+mdEscape(foundation.contentHash),
     '**Status: Unreviewed**. The guide is not a complete A1 curriculum or a verified pronunciation reference.','');
+  }
+  const literacy=packet.literacyChecks?.filter(item=>item.content.code===lang.code)||[];
+  if(literacy.length){
+   chunks.push('','### Literacy pattern checks — qualified review pending','');
+   for(const item of literacy){
+    chunks.push('#### '+mdEscape(item.content.title),'',
+     'Prompt: '+mdEscape(item.content.question),
+     'Options: '+item.content.choices.map(mdEscape).join(' / '),
+     'Authored answer index: '+String(item.content.correct),
+     'Explanation: '+mdEscape(item.content.explanation),
+     'Independent transfer practice: '+mdEscape(item.content.independentTask),
+     'Exact item hash: '+mdEscape(item.contentHash),
+     '**Status: Unreviewed; not a speech or language-level assessment.**','');
+   }
   }
   chunks.push('', 'Editorial questions:',...reviewCriteria.map(x=>'- [ ] '+x),'',
    'Evidence of independent human approval: **not supplied**.','');
