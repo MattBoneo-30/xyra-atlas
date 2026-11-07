@@ -27,6 +27,7 @@ import { CASE_FILES,getCaseFile,evaluateCase,normalizeCasebook,advanceCase,reset
 import { STUDIO_DEFAULTS, sanitizeStudio, calculateSavings, calculateBusiness, calculateTime } from './studio.js';
 import { PHRASEBOOK,getPhrasePack, sanitizePhraseProgress } from './phrasebook.js';
 import {languageStarterPanel} from './languagestarterpaths.js';
+import {languageLiteracyPanel,languageLiteracyFeedback} from './languageliteracy.js';
 import {JAPANESE_UNITS,JAPANESE_SPEAKABLE,normalizeJapaneseFoundationDone,evaluateJapaneseAnswer,japaneseFoundationPanel} from './japanesefoundation.js';
 import {normalizeKanaReviews,kanaReviewStatus,evaluateKanaReview,scheduleKanaReview,kanaContrastNote,kanaReviewPanel} from './kanareview.js';
 import {normalizeLanguageSpeechRate,matchingLanguageVoices,languageVoiceAvailability,chooseOfflineLanguageVoice,languageVoiceMessage} from './voicecoach.js';
@@ -980,6 +981,7 @@ function languagePage() {
     <div class="language-hero"><img src="/assets/course-languages.svg" alt="Decorative travel-inspired landscape"/><div><span class="overline">LET THE WORLD IN</span><h1>Language <em>Lab.</em></h1><p>One small conversation at a time.</p></div></div>
     <div class="section"><div class="section-heading"><div><span class="overline">CHOOSE YOUR STARTING POINT</span><h2>Pick a language</h2></div></div><label class="field-label" for="language-select">Your learning language</label><select id="language-select" aria-label="Choose a language" class="styled-select">${LANGUAGES.map(x=>`<option value="${x.code}" ${saved.language===x.code?'selected':''}>${x.flag} ${esc(x.name)}</option>`).join('')}</select><p class="fineprint">All 20 languages now include an introductory writing, sound, recognition and conversation practice path. These are guided foundations, not full A1 curricula or certified pronunciation instruction. Japanese retains its longer sequential kana and sentence course below.</p></div>
     ${languageStarterPanel(saved.language,getPhrasePack(saved.language),{showExamples:showPhrasePractice})}
+    ${languageLiteracyPanel(saved.language,{unlocked:showPhrasePractice})}
     ${saved.language==='ja'?japaneseFoundationPanel({done,activeId:currentUnit.id,practiceIndex:japanesePracticeIndex,feedback:japanesePracticeFeedback}):''}
     ${saved.language==='ja'?kanaReviewPanel({done,reviews:saved.japaneseKanaReviews,feedback:kanaRecallFeedback}):''}
     ${saved.language==='ja'&&showPhrasePractice?'<div class="japanese-practice-divider"><span class="overline">OPTIONAL REINFORCEMENT</span><h2>Phrase practice and seven-day sprint</h2><p>You have completed the kana-reading foundation. Practise phrases only after the sounds, patterns and basic sentence structures.</p></div>':''}
@@ -1427,6 +1429,23 @@ async function handleAction(e) {
   else if(action==='create-path') {const goal=document.getElementById('path-goal')?.value;const minutes=Number(document.getElementById('path-minutes')?.value);const stamp=today();const next=createLearningPath(COURSES,goal,minutes,saved.completed,stamp);if(!next){flash('No unfinished lessons fit this focus and study time. Try another goal.');return;}saved.learningPath=next;persist();flash('Your seven-session learning path is ready!');}
   else if(action==='studio') nav('studio');
   else if(action==='jump-chapter'){if(route.view==='lesson'){const index=button.dataset.index;const target=index==='practice'?'lesson-practice':index==='transfer'?'transfer-lab':index==='bridge'?'cross-subject-mission':index==='inquiry'?'evidence-inquiry':index==='diagnostic'?'foundation-diagnostic':/^deep-\d+$/.test(index)?'deep-study-section-'+index.slice(5):/^astro-\d+$/.test(index)?'astronomy-section-'+index.slice(6):/^\d+$/.test(index)?'lesson-section-'+index:null;const el=target?document.getElementById(target):null;if(el){el.scrollIntoView({behavior:window.matchMedia?.('(prefers-reduced-motion: reduce)').matches?'instant':'smooth',block:'start'});el.setAttribute('tabindex','-1');el.focus({preventScroll:true});}}}
+  else if(action==='language-literacy-answer'){
+    if(route.view!=='language')return;
+    const index=Number(button.dataset.question),choice=Number(button.dataset.option);
+    const result=languageLiteracyFeedback(saved.language,index,choice);
+    const group=button.closest('[data-literacy-index]');
+    if(!result||!group||group.dataset.literacyIndex!==String(index)||!group.closest('#language-literacy'))return;
+    group.querySelectorAll('[data-action="language-literacy-answer"]').forEach(el=>{
+      const active=el===button;el.classList.toggle('is-selected',active);
+      el.setAttribute('aria-pressed',String(active));
+    });
+    const feedback=group.querySelector('.language-literacy-feedback');
+    if(feedback){
+      feedback.classList.toggle('is-correct',result.correct);
+      feedback.textContent=(result.correct?'Correct. ':'Review this distinction. ')+
+        result.explanation+' Next practice: '+result.transfer;
+    }
+  }
   else if(action==='foundation-diagnostic-answer'){
     if(route.view!=='lesson')return;
     const course=findCourse(route.courseId),lesson=findLesson(route.courseId,route.lessonId);
