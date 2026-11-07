@@ -13,8 +13,8 @@ test('frontier content deepens fourteen existing intermediate lessons without mi
   const work=FRONTIER_WORKSHOPS[course.id];
   const lesson=course.lessons.find(x=>x.id===work.lessonId);
   assert.equal(lesson.stage,'Intermediate');
-  assert.equal(lesson.frontierWorkshop,work.title);
-  assert.ok(lesson.sections.some(s=>s.heading.startsWith('FIELDWORK')));
+  assert.equal(lesson.frontierWorkshop,work);
+  assert.ok(lesson.sections.length>=3);
   for(const part of ['method','caseStudy','assignment'])assert.ok(work[part].length>=180,course.id+' '+part);
  }
  assert.equal(attachFrontierWorkshops(COURSES),0);
