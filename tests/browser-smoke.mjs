@@ -1005,6 +1005,23 @@ try{
    expect(overflow.scroll<=overflow.width+2,course+' recall interface fits mobile width');
   }
  });
+ await smoke('cross-subject-field-missions-mobile',{viewport:{width:390,height:844},isMobile:true,hasTouch:true},async page=>{
+  for(const [course,lesson] of [['business','sales'],['languages','chunks'],['science','probability']]){
+   await page.goto(BASE+'/#/lesson/'+course+'/'+lesson,{waitUntil:'domcontentloaded'});
+   await page.locator('.cross-subject-mission').waitFor();
+   expect(await page.locator('.cross-subject-check li').count()===4,course+' has four assessable cross-subject criteria');
+   expect(await page.locator('.chapter-map-bridge').count()===1,course+' map exposes its peer-linked mission');
+   await page.locator('.chapter-map-bridge').click();
+   expect(await page.locator('#cross-subject-mission').evaluate(el=>document.activeElement===el),course+' chapter jump focuses the mission');
+   const answer=page.locator('.cross-subject-answer');
+   expect(await answer.evaluate(el=>el.open)===false,course+' model is concealed before learner action');
+   await answer.locator('summary').click();
+   expect(await answer.evaluate(el=>el.open)===true,course+' learner may choose to inspect a model');
+   expect((await page.locator('.cross-subject-peer').getAttribute('href')).startsWith('#/lesson/'),course+' companion lesson has a proper local route');
+   const overflow=await mobileOverflow(page);
+   expect(overflow.scroll<=overflow.width+2,course+' mission fits mobile viewport');
+  }
+ });
  await smoke('intermediate-transfer-labs-mobile',{viewport:{width:390,height:844},isMobile:true,hasTouch:true},async page=>{
   // Distinct subjects exercise one shared reader component, with no mature-content bypass.
   for(const [course,lesson] of [['psychology','emotions'],['laws','consumer'],['thinking','causation'],['languages','chunks']]){
@@ -1022,6 +1039,29 @@ try{
    const overflow=await mobileOverflow(page);
    expect(overflow.scroll<=overflow.width+2,course+' applied lab fits the mobile viewport');
   }
+ });
+ await smoke('twenty-language-guided-foundations-mobile',{viewport:{width:390,height:844},isMobile:true,hasTouch:true},async page=>{
+  await page.goto(BASE+'/#/language',{waitUntil:'domcontentloaded'});
+  await page.locator('#language-select').waitFor();
+  for(const code of ['en','ko','es','fil','ar']){
+   await page.locator('#language-select').selectOption(code);
+   await page.locator('.language-starter-path').waitFor();
+   expect(await page.locator('.language-path-step').count()===4,code+' shows four progressive learning steps');
+   expect(await page.locator('.language-path-phrase').count()===4,code+' supports four cover-and-reveal phrases');
+   const first=page.locator('.language-path-phrase').first();
+   const before=await getState(page);
+   await first.locator('summary').click();
+   expect(await first.locator('.language-path-target').isVisible(),code+' phrase reveal works without auto grading');
+   const after=await getState(page);
+   expect(JSON.stringify(after.phrases||{})===JSON.stringify(before.phrases||{}),code+' reveals do not change phrase progress');
+   if(code==='ar')expect(await first.locator('.language-path-target').getAttribute('dir')==='rtl','Arabic target phrase has RTL direction');
+   const overflow=await mobileOverflow(page);
+   expect(overflow.scroll<=overflow.width+2,code+' foundation fits a narrow mobile viewport');
+  }
+  await page.locator('#language-select').selectOption('ja');
+  await page.locator('.japanese-foundation').waitFor();
+  expect(await page.locator('.language-path-step').count()===4,'Japanese gets the overview without replacing its full kana instruction');
+  expect(await page.locator('.language-path-phrase').count()===0,'Japanese phrase reveals respect full kana prerequisites');
  });
  await smoke('japanese-beginner-foundations',{viewport:{width:390,height:844},isMobile:true,hasTouch:true,deviceScaleFactor:2},async page=>{
   await page.goto(BASE+'/#/language',{waitUntil:'domcontentloaded'});
