@@ -55,6 +55,13 @@ export function buildLessonNarration(course,lesson,{maxLength=175}={}){
    'Independent challenge.',lab.task,'Worked reasoning.',lab.worked,
    'Counterexample.',lab.counterexample,'Self-review checklist.',...lab.rubric,lab.caveat);
  }
+ if(lesson.decisionRevision){
+  const decision=lesson.decisionRevision;
+  paragraphs.push('Evidence-reversal lab: '+decision.title,'Initial case.',decision.case,
+   'First judgment.',decision.firstTask,'New evidence.',decision.reveal,
+   'Revised interpretation.',decision.revision,'Follow-up exercise.',decision.follow,
+   'Self-review rubric.',...decision.rubric,decision.caveat);
+ }
  if(lesson.crossSubjectMission){
   const bridge=lesson.crossSubjectMission;
   paragraphs.push('Cross-subject mission: '+bridge.title,'Case to solve.',bridge.scene,
