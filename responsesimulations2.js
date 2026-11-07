@@ -19,7 +19,7 @@ export const RESPONSE_SIMULATIONS_B={
   ],
   synthesis:'Write a corrected public metric statement with its denominator, outcome definition, missingness concerns and a test that could genuinely measure learning.',
   model:'The original 95% headline was not a learning result. In the larger record, 950/1600 ≈ 59.4% did not request support. Neither fraction proves understanding or improvement; a validated outcome study is needed.',
-  rubric:['Uses the complete eligible population when calculating rates.','Distinguishes routing from actual learning outcomes.','Updates conclusions when new records appear.','Avoids inventing the reasons for silence or escalation.'],
+  rubric:['Uses the complete eligible population when calculating rates.','Distinguishes routing from actual learning outcomes.','Updates numerical conclusions transparently when additional records appear.','Avoids inventing the reasons for silence or escalation.'],
   caveat:'Fictional statistical case, not evidence about a real company or learning product.'
  },
  digital:{
@@ -119,7 +119,7 @@ export const RESPONSE_SIMULATIONS_B={
   ],
   synthesis:'Draft two comparable written packages and a respectful decline path, defining deliverables, timeline, revision count, payment conditions and acceptance tests.',
   model:'Keep the original full-scope option or propose a five-day limited deliverable after a feasibility review. Any additional revisions or features require a separately agreed scope and estimate.',
-  rubric:['Compares scope, price, timeline and quality on equal terms.','Bases proposals on actual delivery capacity.','Provides explicit revision and acceptance boundaries.','Avoids false deadlines, threats or unlimited commitments.'],
+  rubric:['Compares scope, price, timeline and quality on equal terms.','Bases proposed delivery commitments on demonstrable capacity and scope.','Provides explicit revision and acceptance boundaries.','Avoids false deadlines, threats or unlimited commitments.'],
   caveat:'Fictional freelance negotiation, not a specific contract or legal opinion.'
  },
  shadow:{
