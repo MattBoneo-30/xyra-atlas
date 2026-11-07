@@ -29,6 +29,16 @@ export function buildLessonNarration(course,lesson,{maxLength=175}={}){
  if(lesson.task)paragraphs.push('Practice exercise.',lesson.task);
  if(lesson.deepTask)paragraphs.push('Independent application.',lesson.deepTask);
  if(lesson.deepModelAnswer)paragraphs.push('Model response for comparison after you attempt the exercise.',lesson.deepModelAnswer);
+ if(lesson.practicalStudio){
+  const studio=lesson.practicalStudio;
+  paragraphs.push('Advanced practical studio: '+studio.title,'Starting brief.',studio.situation);
+  for(const [i,round] of studio.rounds.entries()){
+    paragraphs.push('Studio round '+(i+1)+': '+round.title,
+      'Concept to apply.',round.focus,'Evidence available.',round.evidence,
+      'Your independent assignment.',round.assignment,'Worked comparison.',round.model);
+  }
+  paragraphs.push('Studio self-review checklist.',...studio.rubric);
+ }
  if(lesson.foundationDiagnostic){
   const check=lesson.foundationDiagnostic;
   paragraphs.push('Foundation active recall: '+check.title,check.intro);
