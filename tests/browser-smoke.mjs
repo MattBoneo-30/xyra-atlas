@@ -1044,6 +1044,27 @@ try{
    expect(overflow.scroll<=overflow.width+2,course+' mission fits mobile viewport');
   }
  });
+ await smoke('intermediate-decision-revisions-mobile',{viewport:{width:390,height:844},isMobile:true,hasTouch:true},async page=>{
+  for(const [course,lesson] of [['business','sales'],['thinking','causation'],['languages','chunks']]){
+   await page.goto(BASE+'/#/lesson/'+course+'/'+lesson,{waitUntil:'domcontentloaded'});
+   await page.locator('#decision-revision').waitFor();
+   const reveal=page.locator('.decision-revision-reveal');
+   expect(await reveal.evaluate(el=>el.open)===false,course+' initially withholds new evidence');
+   expect(await page.locator('.chapter-map-decision').count()===1,course+' has a direct jump in the chapter map');
+   const beforeState=await getState(page);
+   await page.locator('.chapter-map-decision').click();
+   expect(await page.locator('#decision-revision').evaluate(el=>el===document.activeElement),course+' chapter jump focuses the new exercise');
+   await reveal.locator('summary').click();
+   expect(await reveal.evaluate(el=>el.open)===true,course+' evidence is revealed by deliberate user action');
+   expect(await reveal.locator('.decision-revision-change').count()===3,course+' shows evidence, revised answer and follow-up');
+   expect(await page.locator('.decision-revision-rubric li').count()===4,course+' includes four review criteria');
+   const afterState=await getState(page);
+   expect(JSON.stringify(beforeState.completed||[])===JSON.stringify(afterState.completed||[]),course+' evidence reveal must not mark complete');
+   expect(JSON.stringify(beforeState.answers||{})===JSON.stringify(afterState.answers||{}),course+' evidence reveal must not change quizzes');
+   const overflow=await mobileOverflow(page);
+   expect(overflow.scroll<=overflow.width+2,course+' activity fits a narrow viewport');
+  }
+ });
  await smoke('intermediate-transfer-labs-mobile',{viewport:{width:390,height:844},isMobile:true,hasTouch:true},async page=>{
   // Distinct subjects exercise one shared reader component, with no mature-content bypass.
   for(const [course,lesson] of [['psychology','emotions'],['laws','consumer'],['thinking','causation'],['languages','chunks']]){
@@ -1089,6 +1110,36 @@ try{
   await page.locator('#language-select').selectOption('ja');
   await page.locator('.language-literacy-locked').waitFor();
   expect(await page.locator('[data-action="language-literacy-answer"]').count()===0,'Japanese practice remains gated by its kana curriculum');
+ });
+ await smoke('sequential-language-grammar-bridges-mobile',{viewport:{width:390,height:844},isMobile:true,hasTouch:true},async page=>{
+  await page.goto(BASE+'/#/language',{waitUntil:'domcontentloaded'});
+  await page.locator('#language-select').waitFor();
+  for(const code of ['en','ko','fil','ar','tr']){
+   await page.locator('#language-select').selectOption(code);
+   const root=page.locator('.sentence-bridge');
+   await root.waitFor();
+   expect(await root.locator('.sentence-bridge-unit').count()===2,code+' includes question and negation stages');
+   expect(await root.locator('[data-sentence-step="1"]').isHidden(),code+' requires completing the first check before progressing');
+   const beforeState=await getState(page),first=root.locator('[data-sentence-step="0"]');
+   await first.locator('[data-option="1"]').click();
+   expect((await first.locator('.sentence-bridge-feedback').textContent()).includes('Review the pattern.'),code+' explains an incorrect response');
+   expect(await root.locator('[data-sentence-step="1"]').isHidden(),code+' wrong answer cannot unlock stage two');
+   await first.locator('[data-option="0"]').click();
+   expect((await first.locator('.sentence-bridge-feedback').textContent()).includes('Correct.'),code+' confirms the interpretation');
+   expect(await root.locator('[data-sentence-step="1"]').isVisible(),code+' unlocks negation after correct reasoning');
+   const second=root.locator('[data-sentence-step="1"]');
+   await second.locator('[data-option="0"]').click();
+   expect((await second.locator('.sentence-bridge-feedback').textContent()).includes('Practice:'),code+' supplies independent follow-up');
+   if(code==='ar')expect(await root.locator('.sentence-bridge-target').first().getAttribute('dir')==='rtl','Arabic authored text is RTL');
+   const afterState=await getState(page);
+   expect(JSON.stringify(beforeState.completed||[])===JSON.stringify(afterState.completed||[]),code+' grammar does not auto-complete courses');
+   expect(JSON.stringify(beforeState.answers||{})===JSON.stringify(afterState.answers||{}),code+' grammar does not alter graded quizzes');
+   const overflow=await mobileOverflow(page);
+   expect(overflow.scroll<=overflow.width+2,code+' sentence instruction fits mobile');
+  }
+  await page.locator('#language-select').selectOption('ja');
+  await page.locator('.sentence-bridge-locked').waitFor();
+  expect(await page.locator('[data-action="sentence-bridge-answer"]').count()===0,'Japanese kana prerequisite is preserved');
  });
  await smoke('twenty-language-guided-foundations-mobile',{viewport:{width:390,height:844},isMobile:true,hasTouch:true},async page=>{
   await page.goto(BASE+'/#/language',{waitUntil:'domcontentloaded'});
