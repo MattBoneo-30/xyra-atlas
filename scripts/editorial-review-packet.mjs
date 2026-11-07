@@ -40,6 +40,19 @@ export function buildEditorialReviewPacket(courses,clinics){
       chapters:lesson.astronomySections.map(section=>({heading:section.heading,body:section.body})),
       references:(lesson.astronomySources||[]).map(reference=>({label:reference.label,url:reference.url}))
     }}:{}),
+    // All response paths and safer-choice flags require independent subject review.
+    ...(lesson.responseSimulation?{interactiveDecisionSimulation:{
+      key:lesson.responseSimulation.key,title:lesson.responseSimulation.title,
+      scenario:lesson.responseSimulation.situation,
+      rounds:lesson.responseSimulation.rounds.map(round=>({
+        title:round.title,question:round.prompt,
+        options:round.choices.map(choice=>({label:choice[0],consequence:choice[1],preferred:choice[2]}))
+      })),transferTask:lesson.responseSimulation.synthesis,
+      modelResponse:lesson.responseSimulation.model,
+      rubric:[...lesson.responseSimulation.rubric],
+      limits:lesson.responseSimulation.caveat,
+      reviewStatus:'pending-independent-review'
+    }}:{}),
     // Three-stage portfolio artifacts span existing lessons and require review.
     ...(lesson.portfolioJourney?{subjectPortfolioJourney:{
       key:lesson.portfolioJourney.key,reviewStatus:'pending-independent-review',
