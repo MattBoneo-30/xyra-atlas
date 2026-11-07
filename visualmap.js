@@ -41,6 +41,9 @@ export function createChapterMap(course,lesson){
  const bridge=lesson.crossSubjectMission&&typeof lesson.crossSubjectMission.title==='string'?
   {id:'cross-subject-mission',heading:lesson.crossSubjectMission.title,
    preview:summarize(lesson.crossSubjectMission.scene,135)}:null;
- return {title:lesson.title||'',course:course.title||'',steps,deepSteps,astronomySteps,transfer,inquiry,diagnostic,bridge,
+ const studio=lesson.practicalStudio&&typeof lesson.practicalStudio.title==='string'?
+  {id:'practical-studio',heading:lesson.practicalStudio.title,
+   preview:summarize(lesson.practicalStudio.situation,135)}:null;
+ return {title:lesson.title||'',course:course.title||'',steps,deepSteps,astronomySteps,transfer,inquiry,diagnostic,bridge,studio,
   practice:typeof lesson.task==='string'&&lesson.task.trim()?{id:'lesson-practice',heading:'Apply what you learned',preview:summarize(lesson.task,140)}:null};
 }
