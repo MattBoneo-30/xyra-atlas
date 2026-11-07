@@ -1001,6 +1001,28 @@ try{
    expect(overflow.scroll<=overflow.width+2,course+' advanced inquiry fits a narrow viewport');
   }
  });
+ await smoke('guided-beginner-workshops-mobile',{viewport:{width:390,height:844},isMobile:true,hasTouch:true},async page=>{
+  for(const [course,lesson] of [['psychology','biases'],['business','pricing'],['savings','emergency'],['languages','pronunciation']]){
+   await page.goto(BASE+'/#/lesson/'+course+'/'+lesson,{waitUntil:'domcontentloaded'});
+   await page.locator('#beginner-workshop').waitFor();
+   expect(await page.locator('.beginner-workshop-step').count()===2,course+' has two real learning steps');
+   expect(await page.locator('.beginner-workshop-model').count()===2,course+' has two worked models');
+   expect(await page.locator('.beginner-workshop-rubric li').count()===4,course+' includes quality criteria');
+   expect(await page.locator('.chapter-map-workshop').count()===1,course+' chapter links to the workshop');
+   const model=page.locator('.beginner-workshop-model').first();
+   expect(await model.evaluate(el=>el.open)===false,course+' works through the problem before seeing the answer');
+   const before=await getState(page);
+   await page.locator('.chapter-map-workshop').click();
+   expect(await page.locator('#beginner-workshop').evaluate(el=>el===document.activeElement),course+' jump focuses the workshop');
+   await model.locator('summary').click();
+   expect(await model.evaluate(el=>el.open)===true,course+' reveals the authored comparison on learner action');
+   const after=await getState(page);
+   expect(JSON.stringify(before.completed||[])===JSON.stringify(after.completed||[]),course+' self-review must not mark a lesson complete');
+   expect(JSON.stringify(before.answers||{})===JSON.stringify(after.answers||{}),course+' self-review must not change quiz grades');
+   const overflow=await mobileOverflow(page);
+   expect(overflow.scroll<=overflow.width+2,course+' workshop fits mobile width');
+  }
+ });
  await smoke('foundation-diagnostics-mobile-feedback',{viewport:{width:390,height:844},isMobile:true,hasTouch:true},async page=>{
   for(const [course,lesson,correct] of [['psychology','thoughts',1],['laws','legal-basics',1],['science','method',2]]){
    await page.goto(BASE+'/#/lesson/'+course+'/'+lesson,{waitUntil:'domcontentloaded'});
