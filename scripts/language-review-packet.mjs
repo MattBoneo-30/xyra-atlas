@@ -3,6 +3,7 @@
  * No automated translation verification, synthesized "native" score, or credentials.
  */
 import {createHash} from 'node:crypto';
+import {LANGUAGE_STARTER_PATHS} from '../languagestarterpaths.js';
 const reviewCriteria=Object.freeze([
  'Translation expresses the intended meaning accurately in this locale.',
  'Register and politeness are appropriate for the stated everyday scenario.',
@@ -39,7 +40,17 @@ export function buildLanguageReviewPacket(packs,languages){
   summary.push({code,language:names.get(code),locale:pack.locale,
    phraseCount:pack.phrases.length,verifiedPhrases:0,regionalNote:pack.note||''});
  }
- return {schemaVersion:1,status:'native-or-qualified-editor-review-required',
+ const foundations=Object.entries(LANGUAGE_STARTER_PATHS).map(([code,guide])=>{
+  if(!names.has(code)||!summary.some(item=>item.code===code))
+   throw Error('Missing matching language for foundation: '+code);
+  const content={code,language:names.get(code),locale:packs[code].locale,
+   writing:guide.writing,sound:guide.sound,pattern:guide.pattern,
+   context:guide.context,limitations:guide.avoid};
+  return {id:'foundation:'+code,contentHash:languagePhraseHash(content),
+   content,reviewStatus:'awaiting-qualified-language-review',
+   reviewerAttestation:null,reviewCriteria};
+ });
+ return {schemaVersion:1,status:'native-or-qualified-editor-review-required',foundations,
   summary:{languages:summary.length,phrases:records.length,qualifiedApprovedPhrases:0},
   languages:summary,records,notes:[
   'A phrase may be grammatical but inappropriate or unnatural in a specific region or situation.',
@@ -66,6 +77,17 @@ export function renderLanguageReviewMarkdown(packet){
    chunks.push('| '+mdEscape(c.phraseId)+' | '+mdEscape(c.intendedMeaning)+' | '+mdEscape(c.translation)+
     ' | '+mdEscape(c.approximateRomanization||'Not provided')+
     ' | '+mdEscape(row.contentHash)+' | **Unreviewed** |');
+  }
+  const foundation=packet.foundations?.find(item=>item.content.code===lang.code);
+  if(foundation){
+   chunks.push('','### Guided foundation — requires independent review','',
+    'Writing: '+mdEscape(foundation.content.writing),
+    'Sound: '+mdEscape(foundation.content.sound),
+    'Meaning and structure: '+mdEscape(foundation.content.pattern),
+    'Communication: '+mdEscape(foundation.content.context),
+    'Limitations: '+mdEscape(foundation.content.limitations),
+    'Foundation content hash: '+mdEscape(foundation.contentHash),
+    '**Status: Unreviewed**. The guide is not a complete A1 curriculum or a verified pronunciation reference.','');
   }
   chunks.push('', 'Editorial questions:',...reviewCriteria.map(x=>'- [ ] '+x),'',
    'Evidence of independent human approval: **not supplied**.','');
