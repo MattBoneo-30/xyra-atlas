@@ -1861,6 +1861,50 @@ try{
   expect(await page.locator('.portfolio-journey-stage').count()===3,'portfolio survives an offline reload');
   await context.setOffline(false);
  });
+ await smoke('interactive-response-simulations-mobile-offline',{viewport:{width:390,height:844},isMobile:true,hasTouch:true,deviceScaleFactor:2},async(page,context)=>{
+  for(const course of ['psychology','laws','business','savings','time','languages','communication','thinking','digital','career','science','relationships','negotiation']){
+   await page.goto(BASE+'/#/course/'+course,{waitUntil:'domcontentloaded'});
+   const sim=page.locator('.response-simulation');
+   await sim.waitFor();
+   await sim.locator('.response-simulation-shell>summary').click();
+   expect(await sim.locator('.response-simulation-round').count()===2,course+' contains two decisions');
+   const first=sim.locator('[data-sim-step="0"]'),second=sim.locator('[data-sim-step="1"]');
+   expect(await second.isHidden(),course+' does not reveal changed evidence before a choice');
+   const before=await getState(page);
+   await first.locator('[data-sim-choice="2"]').click();
+   const feedback=first.locator('.response-simulation-feedback');
+   expect(await feedback.isVisible(),course+' reveals a tailored consequence');
+   expect((await feedback.textContent()).includes('Consider the trade-off.'),course+' labels a weaker option appropriately');
+   expect(await second.isVisible(),course+' reveals the second decision after choosing');
+   await first.locator('[data-sim-choice="1"]').click();
+   expect(await first.locator('[data-sim-choice="1"]').getAttribute('aria-pressed')==='true',course+' exposes current selection accessibly');
+   expect(await first.locator('[data-sim-choice="2"]').getAttribute('aria-pressed')==='false',course+' clears the earlier selection');
+   const strong=first.locator('[data-sim-choice]').filter({hasText:'___not_an_actual_choice___'});
+   expect(await strong.count()===0,'selectors do not accidentally match unrelated choices');
+   await second.locator('[data-sim-choice="0"]').click();
+   expect(await sim.locator('.response-simulation-final').isVisible(),course+' reveals independent decision memo after second step');
+   expect(await sim.locator('.response-simulation-final li').count()===4,course+' has four independent evaluation criteria');
+   const model=sim.locator('.response-simulation-model');
+   expect(await model.evaluate(el=>el.open)===false,course+' worked synthesis starts hidden');
+   await model.locator('summary').click();
+   expect(await model.evaluate(el=>el.open)===true,course+' worked synthesis is learner-controlled');
+   const after=await getState(page);
+   expect(JSON.stringify(before.completed||[])===JSON.stringify(after.completed||[]),course+' simulation does not complete lessons');
+   expect(JSON.stringify(before.answers||{})===JSON.stringify(after.answers||{}),course+' simulation does not change quiz scores');
+   const width=await mobileOverflow(page);
+   expect(width.scroll<=width.width+8,course+' simulator fits narrow screens');
+  }
+  await page.goto(BASE+'/#/course/business',{waitUntil:'domcontentloaded'});
+  await page.locator('.response-simulation').waitFor();
+  await page.evaluate(async()=>{await navigator.serviceWorker.ready;});
+  await page.reload({waitUntil:'domcontentloaded'});
+  await page.waitForFunction(()=>Boolean(navigator.serviceWorker.controller));
+  await context.setOffline(true);
+  await page.reload({waitUntil:'domcontentloaded'});
+  await page.locator('.response-simulation').waitFor();
+  expect(await page.locator('.response-simulation-round').count()===2,'business simulator still works without internet');
+  await context.setOffline(false);
+ });
  await smoke('offline-curriculum-ladders',{viewport:{width:390,height:844},isMobile:true,hasTouch:true,deviceScaleFactor:2},async(page,context)=>{
   await page.goto(BASE+'/#/course/psychology',{waitUntil:'domcontentloaded'});
   await page.locator('.curriculum-ladder').waitFor();
