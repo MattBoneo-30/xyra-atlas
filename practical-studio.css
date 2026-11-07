@@ -1,0 +1,22 @@
+/* Applied advanced studies are isolated to preserve the base stylesheet budget. */
+.practical-studio{scroll-margin-top:100px;border:1px solid var(--line-bright);border-radius:18px;background:var(--card);margin:32px 0;padding:clamp(15px,3vw,27px)}
+.practical-studio>.overline{color:var(--gold)}
+.practical-studio>h2{margin:10px 0;font:normal clamp(23px,3.4vw,31px)/1.28 Georgia,serif;color:var(--text)}
+.practical-studio-intro{max-width:70ch;line-height:1.8;color:var(--muted);font-size:13px}
+.practical-studio h3{font-size:16px;line-height:1.45;color:var(--text);margin:8px 0}
+.practical-studio h4{font-size:12px;color:var(--text);margin:16px 0 6px}
+.practical-studio-situation,.practical-studio-round{border:1px solid var(--line);border-radius:13px;background:var(--card-soft);padding:clamp(13px,2.4vw,20px);margin:18px 0}
+.practical-studio-situation p,.practical-studio-round p{font-size:12px;line-height:1.85;color:var(--muted);overflow-wrap:break-word;margin:7px 0}
+.practical-studio-number{display:block;font-size:10px;letter-spacing:.08em;font-weight:750;color:var(--gold);margin-bottom:7px}
+.practical-studio-task{padding:12px 14px;border-left:3px solid var(--gold);border-radius:9px;background:var(--card);margin:16px 0}
+.practical-studio-model{border:1px solid var(--line-bright);border-radius:10px;background:var(--card);margin-top:15px;overflow:hidden}
+.practical-studio-model summary{padding:13px;cursor:pointer;font-size:13px;color:var(--text);font-weight:750;line-height:1.6}
+.practical-studio-model summary:focus-visible{outline:2px solid var(--gold);outline-offset:-3px}
+.practical-studio-model p{margin:0;padding:1px 13px 14px}
+.practical-studio-rubric{padding-top:17px;border-top:1px solid var(--line);margin:18px 0}
+.practical-studio-rubric ol{padding-left:23px;font-size:12px;line-height:1.85;color:var(--muted)}
+.practical-studio-rubric li{margin:8px 0}
+.practical-studio>.fineprint{font-size:11px;line-height:1.75}
+.chapter-map-studio{margin-bottom:9px}
+@media(max-width:450px){.practical-studio{padding:13px}.practical-studio-task{padding:10px}}
+@media(prefers-reduced-motion:reduce){.practical-studio-model summary{transition:none}}
