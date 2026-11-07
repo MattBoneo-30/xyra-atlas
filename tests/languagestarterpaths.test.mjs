@@ -4,6 +4,7 @@ import fs from 'node:fs';
 import {LANGUAGES} from '../data.js';
 import {PHRASEBOOK,getPhrasePack} from '../phrasebook.js';
 import {LANGUAGE_STARTER_PATHS,getLanguageStarterPath,languageStarterPanel} from '../languagestarterpaths.js';
+import {buildLanguageReviewPacket,renderLanguageReviewMarkdown,languagePhraseHash} from '../scripts/language-review-packet.mjs';
 
 test('each of the twenty available language packs includes substantive guided foundations',()=>{
  assert.equal(LANGUAGES.length,20);
@@ -61,4 +62,24 @@ test('language foundations ship offline and do not redefine stored language cour
  const pathSource=fs.readFileSync('languagestarterpaths.js','utf8');
  assert.doesNotMatch(pathSource,/localStorage|sessionStorage|speechSynthesis|fetch\(/);
  assert.match(pathSource,/not a full A1 curriculum/);
+});
+
+test('qualified language workbook includes all twenty new foundations without changing old phrase hashes',()=>{
+ const packet=buildLanguageReviewPacket(PHRASEBOOK,LANGUAGES);
+ assert.equal(packet.summary.phrases,160);
+ assert.equal(packet.records.length,160);
+ assert.equal(packet.foundations.length,20);
+ for(const item of packet.foundations){
+  assert.equal(item.reviewStatus,'awaiting-qualified-language-review');
+  assert.equal(item.reviewerAttestation,null);
+  assert.equal(item.contentHash,languagePhraseHash(item.content));
+  assert.ok(item.content.writing.length>35&&item.content.sound.length>55);
+ }
+ const workbook=renderLanguageReviewMarkdown(packet);
+ assert.match(workbook,/Guided foundation — requires independent review/);
+ assert.match(workbook,/Foundation content hash:/);
+ const subset=buildLanguageReviewPacket({ko:PHRASEBOOK.ko},[{code:'ko',name:'Korean'}]);
+ assert.equal(subset.records.length,8);
+ assert.equal(subset.foundations.length,1,'reviewing a subset must not fabricate missing language records');
+ assert.equal(subset.foundations[0].content.code,'ko');
 });
