@@ -7,6 +7,7 @@ import {extendScienceWithAstronomy} from './scienceastronomy.js';
 import {attachTransferLabs} from './transferlabs.js';
 import {attachCrossSubjectMissions} from './crosssubjectmissions.js';
 import {attachEvidenceInquiries} from './evidenceinquiries.js';
+import {attachPracticalStudios} from './practicalstudios.js';
 import {attachFoundationDiagnostics} from './foundationdiagnostics.js';
 import { FIELD_GUIDES } from './fieldguides.js';
 import { LIFE_PRACTICE } from './lifepractice.js';
@@ -324,6 +325,8 @@ attachTransferLabs(COURSES);
 attachCrossSubjectMissions(COURSES);
 // One independent evidence investigation per published advanced course.
 attachEvidenceInquiries(COURSES);
+// Two applied production-and-verification rounds per published advanced subject.
+attachPracticalStudios(COURSES);
 // Active recall after concept-first teaching across all fourteen subjects.
 attachFoundationDiagnostics(COURSES);
 export const LANGUAGES = [
