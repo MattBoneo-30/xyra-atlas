@@ -1,4 +1,5 @@
 import { COURSES, LANGUAGES, LEARNING_SPRINT, DAILY_NOTES, findCourse, findLesson, totalLessons } from './data.js';
+import {languageFieldworkPanel} from './frontiercurriculum.js';
 import { makeReviewCards, dueReviewCards, recordReview, normalizeReviews } from './review.js';
 import { searchGlossary,GLOSSARY } from './glossary.js';
 import { SEARCH_KINDS,buildSearchIndex,searchAtlas } from './search.js';
@@ -987,6 +988,7 @@ function languagePage() {
     ${languageStarterPanel(saved.language,getPhrasePack(saved.language),{showExamples:showPhrasePractice})}
     ${languageLiteracyPanel(saved.language,{unlocked:showPhrasePractice})}
     ${sentenceBridgePanel(saved.language,getPhrasePack(saved.language),{unlocked:showPhrasePractice})}
+    ${languageFieldworkPanel(saved.language,getPhrasePack(saved.language),{unlocked:showPhrasePractice})}
     ${saved.language==='ja'?japaneseFoundationPanel({done,activeId:currentUnit.id,practiceIndex:japanesePracticeIndex,feedback:japanesePracticeFeedback}):''}
     ${saved.language==='ja'?kanaReviewPanel({done,reviews:saved.japaneseKanaReviews,feedback:kanaRecallFeedback}):''}
     ${saved.language==='ja'&&showPhrasePractice?'<div class="japanese-practice-divider"><span class="overline">OPTIONAL REINFORCEMENT</span><h2>Phrase practice and seven-day sprint</h2><p>You have completed the kana-reading foundation. Practise phrases only after the sounds, patterns and basic sentence structures.</p></div>':''}
