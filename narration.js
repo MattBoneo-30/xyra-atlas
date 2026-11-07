@@ -45,6 +45,13 @@ export function buildLessonNarration(course,lesson,{maxLength=175}={}){
    'Independent challenge.',lab.task,'Worked reasoning.',lab.worked,
    'Counterexample.',lab.counterexample,'Self-review checklist.',...lab.rubric,lab.caveat);
  }
+ if(lesson.crossSubjectMission){
+  const bridge=lesson.crossSubjectMission;
+  paragraphs.push('Cross-subject mission: '+bridge.title,'Case to solve.',bridge.scene,
+   'How the subjects connect.',bridge.bridge,'Independent challenge.',bridge.challenge,
+   'Worked interdisciplinary response.',bridge.model,
+   'Self-review checklist.',...bridge.rubric);
+ }
  if(lesson.evidenceInquiry){
   const inquiry=lesson.evidenceInquiry;
   paragraphs.push('Advanced evidence inquiry: '+inquiry.title,'Case brief.',inquiry.scenario,
