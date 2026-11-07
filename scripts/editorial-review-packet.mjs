@@ -40,6 +40,16 @@ export function buildEditorialReviewPacket(courses,clinics){
       chapters:lesson.astronomySections.map(section=>({heading:section.heading,body:section.body})),
       references:(lesson.astronomySources||[]).map(reference=>({label:reference.label,url:reference.url}))
     }}:{}),
+    // Two-step beginner workshops are authored evidence and require signoff.
+    ...(lesson.beginnerWorkshop?{guidedBeginnerWorkshop:{
+      key:lesson.beginnerWorkshop.key,reviewStatus:'pending-independent-review',
+      title:lesson.beginnerWorkshop.title,objective:lesson.beginnerWorkshop.goal,
+      scenario:lesson.beginnerWorkshop.case,
+      steps:lesson.beginnerWorkshop.steps.map(step=>({title:step.name,
+       independentActivity:step.instruction,assumptionCheck:step.diagnostic,
+       modelResponse:step.model})),rubric:[...lesson.beginnerWorkshop.rubric],
+      limitations:lesson.beginnerWorkshop.limits
+    }}:{}),
     // Beginner retrieval prompts, alternatives and feedback are teaching claims.
     ...(lesson.foundationDiagnostic?{foundationActiveRecall:{
       key:lesson.foundationDiagnostic.key,reviewStatus:'pending-independent-review',
