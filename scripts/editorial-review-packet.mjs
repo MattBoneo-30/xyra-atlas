@@ -57,6 +57,17 @@ export function buildEditorialReviewPacket(courses,clinics){
       workedReasoning:lesson.transferLab.worked,counterexample:lesson.transferLab.counterexample,
       selfReviewCriteria:[...lesson.transferLab.rubric],limitations:lesson.transferLab.caveat
     }}:{}),
+    // Every cross-subject scenario, answer, and companion link needs review.
+    ...(lesson.crossSubjectMission?{interdisciplinaryMission:{
+      key:lesson.crossSubjectMission.key,reviewStatus:'pending-independent-review',
+      title:lesson.crossSubjectMission.title,
+      companion:{course:lesson.crossSubjectMission.peerCourse,lesson:lesson.crossSubjectMission.peerLesson},
+      scenario:lesson.crossSubjectMission.scene,
+      connection:lesson.crossSubjectMission.bridge,
+      challenge:lesson.crossSubjectMission.challenge,
+      modelResponse:lesson.crossSubjectMission.model,
+      selfReviewRubric:[...lesson.crossSubjectMission.rubric]
+    }}:{}),
     // Review original evidence inquiries and each simulated exhibit as teaching claims.
     ...(lesson.evidenceInquiry?{advancedEvidenceInquiry:{
       key:lesson.evidenceInquiry.key,reviewStatus:'pending-independent-review',
