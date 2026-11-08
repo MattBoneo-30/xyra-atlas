@@ -1,0 +1,17 @@
+/* Advanced Mastery Defense: written reasoning, not a simulated professional exam. */
+.mastery-defense{margin:22px 0 30px;padding:clamp(16px,3vw,27px);border:1px solid var(--line-bright);border-radius:18px;background:var(--card);scroll-margin-top:92px}
+.mastery-defense>.overline{color:var(--gold)}
+.mastery-defense h2{font:normal clamp(23px,3.3vw,32px)/1.3 Georgia,serif;color:var(--text);margin:10px 0}
+.mastery-defense h3{font-size:16px;color:var(--text);margin:20px 0 8px;line-height:1.4}
+.mastery-defense h4{font-size:14px;color:var(--text)}
+.mastery-defense p,.mastery-defense li{font-size:13px;line-height:1.85;color:var(--muted);overflow-wrap:anywhere;max-width:82ch}
+.mastery-defense .mastery-defense-intro{font-size:14px;color:var(--text)}
+.mastery-defense-insert{width:100%;border:1px solid var(--gold);border-radius:12px;background:var(--bg-raised);padding:13px 16px;color:var(--text);cursor:pointer;text-align:left;font-size:13px;font-weight:700;line-height:1.5}
+.mastery-defense-insert:hover{background:var(--card-soft)}
+.mastery-defense-insert:focus-visible,.mastery-defense-reference summary:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
+.mastery-defense-status{border-left:3px solid var(--line-bright);padding:8px 12px}
+.mastery-defense-reference{margin:18px 0;border:1px solid var(--line);border-radius:12px;padding:14px}
+.mastery-defense-reference summary{color:var(--gold);cursor:pointer;font-size:13px;font-weight:700;line-height:1.5}
+.mastery-defense ol{padding-inline-start:25px}
+@media(max-width:450px){.mastery-defense{padding:14px}.mastery-defense-insert{padding:12px}}
+@media(prefers-reduced-motion:reduce){.mastery-defense-insert{transition:none}}
