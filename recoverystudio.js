@@ -5,6 +5,7 @@
  * diagnose why a specific multiple-choice option was chosen.
  * No extra grade, new completion identity, storage, or network requests.
  */
+export {quizChoiceFeedback} from './misconceptioncoach.js';
 import {RECOVERY_CASES_A} from './recoverystudio1.js';
 import {RECOVERY_CASES_B} from './recoverystudio2.js';
 
