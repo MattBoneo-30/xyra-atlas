@@ -482,6 +482,14 @@ try{
   await page.locator('.mistake-option[data-index="0"]').click();
   await page.locator('.mistake-explanation').waitFor();
   expect((await page.locator('.mistake-explanation').textContent()).length>60,'wrong retry shows an explanatory learning hint');
+  const recovery=page.locator('#recovery-studio');
+  await recovery.waitFor();
+  expect(await recovery.locator('details').evaluate(el=>el.open)===false,'worked transfer answer is initially hidden');
+  expect((await recovery.textContent()).includes('broader beginner practice'),'level-specific recovery clearly discloses its limits');
+  const beforeModel=await getState(page);
+  await recovery.locator('summary').click();
+  expect(await recovery.locator('details').evaluate(el=>el.open)===true,'learner controls the worked comparison');
+  expect(JSON.stringify((await getState(page)).completed||[])===JSON.stringify(beforeModel.completed||[]),'reading recovery does not complete a lesson');
   expect((await getState(page)).mistakes?.['psychology:thoughts']?.wrong===2,'repeat incorrect answer increments count');
   await page.locator('.mistake-option[data-index="1"]').click();
   await page.locator('.mistake-empty').waitFor();
@@ -491,6 +499,37 @@ try{
   expect((state.completed||[]).length===0,'re-practice does not mark lesson completed');
   await page.screenshot({path:snapshots+'/mistake-lab.png',fullPage:true});
  });
+ await smoke('recovery-studio-mobile-offline',{viewport:{width:390,height:844},isMobile:true,hasTouch:true},async(page,context)=>{
+   await page.goto(BASE+'/#/journey',{waitUntil:'domcontentloaded'});
+   await page.evaluate(()=>{
+    const key='xyra-atlas-state-v1',state=JSON.parse(localStorage.getItem(key));
+    state.mistakes={'psychology:thoughts':{wrong:1,lastChoice:0,lastWrongAt:new Date().toISOString()}};
+    localStorage.setItem(key,JSON.stringify(state));
+   });
+   await page.goto(BASE+'/#/mistakes',{waitUntil:'domcontentloaded'});
+   await page.reload({waitUntil:'domcontentloaded'});
+   await page.locator('.mistake-option[data-index="0"]').waitFor();
+   expect(await page.locator('#recovery-studio').count()===0,'model remains hidden before incorrect re-attempt');
+   await page.locator('.mistake-option[data-index="0"]').click();
+   const recovery=page.locator('#recovery-studio');
+   await recovery.waitFor();
+   const before=await getState(page);
+   await recovery.locator('summary').click();
+   const after=await getState(page);
+   expect(JSON.stringify(before.answers||{})===JSON.stringify(after.answers||{}),'opening recovery changes no graded answers');
+   expect(JSON.stringify(before.completed||[])===JSON.stringify(after.completed||[]),'opening model changes no completion');
+   const overflow=await mobileOverflow(page);
+   expect(overflow.scroll<=overflow.width+8,'recovery fits narrow mobile layout');
+   await page.evaluate(async()=>{await navigator.serviceWorker.ready;});
+   await page.reload({waitUntil:'domcontentloaded'});
+   await page.waitForFunction(()=>Boolean(navigator.serviceWorker.controller));
+   await context.setOffline(true);
+   await page.reload({waitUntil:'domcontentloaded'});
+   expect(await page.locator('.mistakes-page').count()===1,'mistake page loads offline');
+   await page.locator('.mistake-option[data-index="0"]').click();
+   expect(await page.locator('#recovery-studio').count()===1,'fresh transfer case works offline');
+   await context.setOffline(false);
+  });
  await smoke('multi-question-mistake-navigation',{viewport:{width:1280,height:800}},async page=>{
   await page.locator('.desktop-rail [data-action="nav"][data-id="explore"]').click();
   await page.locator('[data-action="open-course"][data-id="psychology"]').first().click();
