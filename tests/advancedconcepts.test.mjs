@@ -19,13 +19,15 @@ test('fourteen distinct specialist continuations enrich published advanced lesso
   const original=ADVANCED_DEPTH[course.id];
   const l=findLesson(course.id,entry.id);
   assert.ok(l&&l.stage==='Advanced',course.id+' must target an existing advanced lesson');
-  assert.equal(entry.id,original.id);
   assert.strictEqual(l.specialistConceptStudy,entry);
-  assert.equal(l.deepTitle,original.title,'published deep study title must be untouched');
-  assert.equal(l.deepMinutes,original.minutes,'published deep study time must be untouched');
-  assert.equal(l.deepModelAnswer,original.answer,'published model response must be untouched');
-  assert.equal(l.deepTask,original.task,'published deep task must be untouched');
-  assert.equal(l.deepSections.length,4,'all four original advanced explanations remain');
+  const flagship=findLesson(course.id,original.id);
+  assert.ok(flagship,'existing advanced flagship still exists');
+  assert.equal(flagship.deepTitle,original.title,'flagship title must be untouched');
+  assert.equal(flagship.deepMinutes,original.minutes,'flagship time must be untouched');
+  assert.equal(flagship.deepModelAnswer,original.answer,'original model response must be untouched');
+  assert.equal(flagship.deepTask,original.task,'original exercise must be untouched');
+  assert.equal(flagship.deepSections.length,4,'all four original explanations remain');
+  if(l.id!==flagship.id)assert.ok(!l.deepSections?.length,'separate specialist lesson does not overwrite flagship');
   assert.equal(l.sections.length,3,'original core lesson is unchanged');
   assert.equal(l.minutes,21,'legacy study plan minutes remain');
   assert.equal(l.quiz.options.length,3);
@@ -65,7 +67,7 @@ test('new teaching appears inside existing lesson reader and supported narrated 
  for(const c of COURSES){
   const lesson=findLesson(c.id,ADVANCED_CONCEPT_STUDIES[c.id].id);
   const text=buildLessonNarration(c,lesson).join(' ');
-  assert.ok(text.includes(lesson.deepSections[0].heading),c.id+' missing original audio study');
+  if(lesson.deepSections?.length)assert.ok(text.includes(lesson.deepSections[0].heading),c.id+' missing original audio study');
   assert.ok(text.includes(lesson.specialistConceptStudy.sections[0].heading),
    c.id+' missing specialist audio study');
  }
@@ -77,10 +79,11 @@ test('every new authored concept and model answer joins independent reviewer con
  for(const c of COURSES){
   const study=ADVANCED_CONCEPT_STUDIES[c.id];
   const record=packet.lessons.find(row=>row.id===c.id+':'+study.id);
-  assert.ok(record?.content?.conceptFirstStudy,'existing study is in review');
-  assert.ok(record.content.specialistConceptContinuation,'new study is in review '+c.id);
+  const flagshipRecord=packet.lessons.find(row=>row.id===c.id+':'+ADVANCED_DEPTH[c.id].id);
+  assert.ok(flagshipRecord?.content?.conceptFirstStudy,'existing flagship study remains in review');
+  assert.ok(record?.content?.specialistConceptContinuation,'new study is in review '+c.id);
   const newStudy=record.content.specialistConceptContinuation;
-  assert.equal(record.content.conceptFirstStudy.sections.length,4);
+  assert.equal(flagshipRecord.content.conceptFirstStudy.sections.length,4);
   assert.equal(newStudy.sections.length,3);
   assert.equal(newStudy.reviewStatus,'pending-independent-review');
   assert.equal(newStudy.workedCase,study.case);
