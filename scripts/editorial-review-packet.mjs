@@ -71,6 +71,18 @@ export function buildEditorialReviewPacket(courses,clinics){
       workedCase:lesson.frontierWorkshop.caseStudy,
       evidenceChallenge:lesson.frontierWorkshop.assignment
     }}:{}),
+    // Each alternate decision response is public teaching requiring verification.
+    ...(lesson.calibrationLab?{evidenceCalibration:{
+      reviewStatus:'pending-independent-review',
+      title:lesson.calibrationLab.title,situation:lesson.calibrationLab.situation,
+      rounds:[lesson.calibrationLab.first,lesson.calibrationLab.second].map(round=>({
+       prompt:round.prompt,
+       choices:round.options.map(option=>({label:option[0],reason:option[1]})),
+       preferredContextualIndex:round.preferred
+      })),newEvidence:lesson.calibrationLab.reveal,
+      independentExercise:lesson.calibrationLab.transfer,
+      selfReviewCriteria:[...lesson.calibrationLab.rubric]
+    }}:{}),
     // Two-step beginner workshops are authored evidence and require signoff.
     ...(lesson.beginnerWorkshop?{guidedBeginnerWorkshop:{
       key:lesson.beginnerWorkshop.key,reviewStatus:'pending-independent-review',
