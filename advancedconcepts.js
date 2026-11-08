@@ -33,21 +33,32 @@ export function attachAdvancedConceptStudies(courses){
    if(lesson.specialistConceptStudy!==item)throw Error('Specialist study conflict: '+course.id);
    continue;
   }
-  if(lesson.deepSections?.length||lesson.deepExample||lesson.deepTask||
-    lesson.deepModelAnswer||lesson.deepRubric?.length)
-   throw Error('Specialist study would overwrite published depth: '+course.id);
+  if(lesson.advancedDepth!=='case-and-counterexample-2026'||
+     !Array.isArray(lesson.deepSections)||lesson.deepSections.length!==4||
+     !lesson.deepModelAnswer||!lesson.deepTask)
+   throw Error('Specialist continuation requires an existing full advanced study: '+course.id);
   changes.push({lesson,item});
  }
  // Validate before attaching, so an invalid course cannot result in a partial upgrade.
- for(const {lesson,item} of changes){
-  lesson.specialistConceptStudy=item;
-  lesson.deepTitle=item.title;
-  lesson.deepMinutes=item.minutes;
-  lesson.deepSections=item.sections.map(section=>({...section}));
-  lesson.deepExample=item.case;
-  lesson.deepTask=item.task;
-  lesson.deepModelAnswer=item.model;
-  lesson.deepRubric=[...item.rubric];
- }
+ for(const {lesson,item} of changes)lesson.specialistConceptStudy=item;
  return changes.length;
+}
+const esc=value=>String(value??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+export function specialistConceptPanel(item){
+ if(!item||item.reviewStatus!=='pending-independent-review')return '';
+ const sections=item.sections.map((section,index)=>
+   '<section class="deep-study-section" id="specialist-concept-section-'+index+'">'+
+   '<span class="article-section-num">0'+(index+1)+' / SPECIALIST CONCEPT</span>'+
+   '<h3>'+esc(section.heading)+'</h3><p>'+esc(section.body)+'</p></section>'
+ ).join('');
+ return '<section class="specialist-concept-study" id="specialist-concept-study" aria-label="Specialist concept continuation">'+
+  '<div class="deep-study-head"><span class="overline">SPECIALIST CONTINUATION · EXTEND THE METHOD</span>'+
+  '<h2>'+esc(item.title)+'</h2><p>Explore three additional connected concepts, an applied case and a reasoned comparison. This material remains unreviewed and does not change the original study or completion record.</p></div>'+
+  sections+
+  '<aside class="worked-example"><span class="overline">APPLIED SPECIALIST CASE</span>'+
+  '<h3>Trace the method</h3><p>'+esc(item.case)+'</p></aside>'+
+  '<section class="specialist-concept-task"><h3>Your independent challenge</h3><p>'+esc(item.task)+'</p>'+
+  '<details class="specialist-concept-answer"><summary>Reveal worked comparison after trying</summary><p>'+esc(item.model)+'</p></details>'+
+  '<h3>Check your evidence</h3><ol>'+item.rubric.map(value=>'<li>'+esc(value)+'</li>').join('')+'</ol></section>'+
+  '<p class="fineprint">Educational authoring pending qualified specialist review; no assessment certification or individualized advice.</p></section>';
 }
