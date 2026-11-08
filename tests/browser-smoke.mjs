@@ -1902,6 +1902,35 @@ try{
  });
 
 
+ await smoke('specialist-deep-studies-native-reader-mobile-offline',{viewport:{width:390,height:844},isMobile:true,hasTouch:true},async(page,context)=>{
+  for(const [course,lesson] of [['laws','privacy-access-request-ph'],['business','contribution-margin-scenario'],['digital','passkey-and-recovery-map']]){
+   await page.goto(BASE+'/#/lesson/'+course+'/'+lesson,{waitUntil:'domcontentloaded'});
+   const chapter=page.locator('.reading-page .deep-study-head');
+   await chapter.waitFor();
+   expect(await page.locator('.deep-study-section').count()===3,course+' has three substantial full-study sections');
+   expect(await page.locator('.chapter-map-deep-node').count()===3,course+' full chapters join chapter navigation');
+   const model=page.locator('.deep-model-answer');
+   expect(await model.count()===1,course+' has one worked self-review response');
+   expect(await model.evaluate(el=>el.open)===false,course+' answer starts concealed');
+   const before=await getState(page);
+   await model.locator('summary').click();
+   expect(await model.evaluate(el=>el.open)===true,course+' worked model can be reviewed deliberately');
+   const after=await getState(page);
+   expect(JSON.stringify(before.completed||[])===JSON.stringify(after.completed||[]),course+' reading is not automatic completion');
+   expect(JSON.stringify(before.answers||{})===JSON.stringify(after.answers||{}),course+' model does not grade the learner');
+   const overflow=await mobileOverflow(page);
+   expect(overflow.scroll<=overflow.width+8,course+' long lesson avoids mobile overflow');
+  }
+  await page.goto(BASE+'/#/lesson/business/contribution-margin-scenario',{waitUntil:'domcontentloaded'});
+  await page.locator('.deep-study-section').first().waitFor();
+  await page.evaluate(async()=>{await navigator.serviceWorker.ready;});
+  await page.reload({waitUntil:'domcontentloaded'});
+  await page.waitForFunction(()=>Boolean(navigator.serviceWorker.controller));
+  await context.setOffline(true);
+  await page.reload({waitUntil:'domcontentloaded'});
+  expect(await page.locator('.deep-study-section').count()===3,'substantive advanced chapters are readable offline');
+  await context.setOffline(false);
+ });
  await smoke('subject-skill-spirals-progressive-mobile-offline',{viewport:{width:390,height:844},isMobile:true,hasTouch:true},async(page,context)=>{
   for(const subject of ['business','science','relationships','languages']){
    await page.goto(BASE+'/#/course/'+subject,{waitUntil:'domcontentloaded'});
