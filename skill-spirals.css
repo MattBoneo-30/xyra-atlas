@@ -17,3 +17,4 @@
 .skill-spiral-link{display:inline-block;margin-top:8px;font-weight:700;font-size:13px;color:var(--gold);text-decoration:underline;text-underline-offset:3px;line-height:1.7}
 .skill-spiral .fineprint{font-size:11px;line-height:1.75;color:var(--muted)}
 @media(max-width:450px){.skill-spiral{padding:13px}.skill-spiral-stage{padding:13px}}
+.skill-spiral-fold{margin:17px 0}.skill-spiral-fold>summary{padding:14px 17px;border:1px solid var(--line-bright);border-radius:12px;background:var(--card-soft);color:var(--gold);font-size:13px;font-weight:750;line-height:1.6;cursor:pointer}.skill-spiral-fold[open]>summary{border-color:var(--gold)}.skill-spiral-fold>summary:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
