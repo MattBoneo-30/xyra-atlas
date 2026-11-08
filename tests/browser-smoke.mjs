@@ -461,6 +461,29 @@ try{
   expect((await page.locator('#field-note-input').inputValue()).includes('Copper orchid'),'notebook opens the exact lesson and original note');
   await page.screenshot({path:snapshots+'/notebook-lesson.png',fullPage:true});
  });
+ await smoke('full-lesson-comparison-and-extended-authored-coach',{viewport:{width:390,height:844},isMobile:true,hasTouch:true},async page=>{
+   await page.goto(BASE+'/#/lesson/psychology/biases',{waitUntil:'domcontentloaded'});
+   await page.locator('.quiz-option[data-index="0"]').waitFor();
+   expect(await page.locator('.choice-coach').count()===0,'comparison starts hidden');
+   await page.locator('.quiz-option[data-index="0"]').click();
+   const comparison=await page.locator('.choice-coach').textContent();
+   expect(comparison.includes('Compare the two answers'),'other lessons now provide a comparison');
+   expect(comparison.includes('You chose:')&&comparison.includes('Lesson answer:'),'comparison is grounded in real choices');
+   expect(comparison.includes('not an individually authored analysis'),'comparison is honestly labeled');
+   await page.locator('.quiz-option[data-index="1"]').click();
+   expect(await page.locator('.choice-coach').count()===0,'correct answer clears the coaching panel');
+
+   await page.goto(BASE+'/#/lesson/psychology/calibrate-beliefs',{waitUntil:'domcontentloaded'});
+   await page.locator('.quiz-option[data-index="1"]').waitFor();
+   await page.locator('.quiz-option[data-index="1"]').click();
+   expect((await page.locator('.choice-coach').textContent()).includes('Feeling certain does not create a measurable forecast'),
+    'additional specialist lesson receives authored reasoning');
+   await page.locator('.quiz-option[data-index="2"]').click();
+   expect((await page.locator('.choice-coach').textContent()).includes('A prediction that can be reinterpreted'),
+    'different distractor receives a different authored rationale');
+   const bounds=await mobileOverflow(page);
+   expect(bounds.scroll<=bounds.width+8,'supplementary coaching fits mobile');
+  });
  await smoke('choice-specific-quiz-feedback-mobile-offline',{viewport:{width:390,height:844},isMobile:true,hasTouch:true},async(page,context)=>{
   await page.goto(BASE+'/#/lesson/psychology/thoughts',{waitUntil:'domcontentloaded'});
   await page.locator('.quiz-option[data-index="0"]').waitFor();
