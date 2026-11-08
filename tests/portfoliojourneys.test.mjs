@@ -86,7 +86,7 @@ test('all forty-two new artifact claims are included in independent review hashe
 
 test('portfolio assets, navigation and existing course state remain unchanged offline',()=>{
  const app=fs.readFileSync('app.js','utf8');
- assert.match(app,/portfolioJourneyPanel\(c,\{isLessonDone:id=>isCompleted\(idFor\(c\.id,id\)\)\}\)/);
+ assert.match(app,/portfolioJourneyPanel\(c,\{isLessonDone:id=>isCompleted\(idFor\(c\.id,id\)\),hasFieldNote:/);
  assert.ok(app.length<240000,'base app remains inside maintained file-size constraint');
  const sw=fs.readFileSync('sw.js','utf8');
  const build=fs.readFileSync('scripts/build.mjs','utf8');
