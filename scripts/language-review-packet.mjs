@@ -6,6 +6,7 @@ import {createHash} from 'node:crypto';
 import {LANGUAGE_STARTER_PATHS} from '../languagestarterpaths.js';
 import {LANGUAGE_LITERACY_CHECKS} from '../languageliteracy.js';
 import {SENTENCE_BRIDGES} from '../sentencebridges.js';
+import {LANGUAGE_FIELDWORK} from '../frontiercurriculum.js';
 const reviewCriteria=Object.freeze([
  'Translation expresses the intended meaning accurately in this locale.',
  'Register and politeness are appropriate for the stated everyday scenario.',
@@ -78,7 +79,19 @@ export function buildLanguageReviewPacket(packs,languages){
     contentHash:languagePhraseHash(content),reviewStatus:'awaiting-qualified-language-review',
     reviewerAttestation:null,reviewCriteria};
   }));
- return {schemaVersion:1,status:'native-or-qualified-editor-review-required',foundations,literacyChecks,sentenceBridges,
+ const fieldwork=Object.entries(LANGUAGE_FIELDWORK)
+  .filter(([code])=>names.has(code)&&Object.hasOwn(packs,code))
+  .map(([code,unit])=>{
+   const used=[3,4,6].map(index=>packs[code].phrases[index]);
+   if(used.some(item=>!item))throw Error('Missing fieldwork phrase: '+code);
+   const content={code,language:names.get(code),locale:packs[code].locale,
+    languageFocus:unit.focus,appliedMission:unit.mission,
+    linkedPhrases:used.map(item=>({id:item.id,target:item.target,meaning:item.english})),
+    caveat:'An authored text exercise is not a verified spontaneous conversation or pronunciation assessment.'};
+   return {id:'fieldwork:'+code,content,contentHash:languagePhraseHash(content),
+    reviewStatus:'awaiting-qualified-language-review',reviewerAttestation:null,reviewCriteria};
+  });
+ return {schemaVersion:1,status:'native-or-qualified-editor-review-required',foundations,literacyChecks,sentenceBridges,fieldwork,
   summary:{languages:summary.length,phrases:records.length,qualifiedApprovedPhrases:0},
   languages:summary,records,notes:[
   'A phrase may be grammatical but inappropriate or unnatural in a specific region or situation.',
@@ -147,6 +160,17 @@ export function renderLanguageReviewMarkdown(packet){
      'Exact content hash: '+mdEscape(item.contentHash),
      '**Status: Unreviewed.** Grammar, morphology and regional forms require a qualified reviewer.','');
    }
+  }
+  const fieldwork=packet.fieldwork?.find(item=>item.content.code===lang.code);
+  if(fieldwork){
+   const c=fieldwork.content;
+   chunks.push('','### Multi-turn language fieldwork — review pending','',
+    'Context and register: '+mdEscape(c.languageFocus),
+    'Applied task: '+mdEscape(c.appliedMission),
+    'Existing linked phrase models: '+c.linkedPhrases.map(p=>mdEscape(p.id+': '+p.target)).join(' / '),
+    'Limitations: '+mdEscape(c.caveat),
+    'Exact content hash: '+mdEscape(fieldwork.contentHash),
+    '**Status: Unreviewed.** Qualified native/regional review required.','');
   }
   chunks.push('', 'Editorial questions:',...reviewCriteria.map(x=>'- [ ] '+x),'',
    'Evidence of independent human approval: **not supplied**.','');
