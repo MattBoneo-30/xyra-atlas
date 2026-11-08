@@ -10,3 +10,6 @@
 .recovery-studio-method summary:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
 .recovery-studio-method p strong,.recovery-studio-verify strong{color:var(--text)}
 @media(max-width:450px){.recovery-studio{padding:13px}}
+.choice-coach{display:block;margin-top:10px;padding:11px 12px;border-left:3px solid var(--gold);border-radius:7px;background:var(--card-soft);color:var(--text);font-size:13px;line-height:1.8}
+.choice-coach strong{display:block;margin-bottom:4px;color:var(--text);font-size:12px}
+.choice-coach small{display:block;margin-top:7px;color:var(--muted);font-size:11px;line-height:1.5}
