@@ -62,6 +62,6 @@ export function skillSpiralPanel(course){
   '<span class="overline">ONE SKILL · THREE DIFFICULTY LEVELS</span>'+
   '<h2>From worked examples to independent judgment</h2>'+
   '<p class="skill-spiral-intro">Attempt each new problem before revealing its worked comparison. Progressively less guidance builds practice, but no answer is automatically scored. Save your reasoning in the linked private Field Notebook.</p>'+
-  '<ol class="skill-spiral-stages">'+steps+'</ol>'+
+  '<details class="skill-spiral-fold"><summary>Explore the three practice stages</summary><ol class="skill-spiral-stages">'+steps+'</ol></details>'+
   '<p class="fineprint">All forty-two practice activities await independent specialist review. Reading an answer or completing a linked lesson does not prove mastery or accreditation.</p></section>';
 }
