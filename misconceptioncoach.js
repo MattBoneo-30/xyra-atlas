@@ -20,7 +20,7 @@ const STAGES=Object.freeze(['Beginner','Intermediate','Advanced']);
 const safe=text=>String(text??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
 export function misconceptionUnit(courseId,lesson){
  const record=MISCONCEPTION_COACH[courseId]?.[lesson?.stage];
- if(!record||record.lessonId!==lesson.id)return null;
+ if(!record||record.lessonId!==(lesson.lessonId||lesson.id))return null;
  const quiz=lesson.quiz||lesson;
  if(!Array.isArray(quiz?.options)||!Number.isInteger(quiz.correct))return null;
  const wrong=quiz.options.filter((_,i)=>i!==quiz.correct);
