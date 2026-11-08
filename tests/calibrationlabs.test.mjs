@@ -45,6 +45,10 @@ test('all fourteen subjects have two distinct evidence decisions and contextual 
   assert.match(html,/pending/);
  }
  assert.equal(titles.size,14);
+ // Answer keys must not make the best-supported choice trivially predictable.
+ assert.deepEqual(new Set(Object.values(CALIBRATION_LABS).map(l=>l.first.preferred)),new Set([0,1,2]));
+ assert.deepEqual(new Set(Object.values(CALIBRATION_LABS).map(l=>l.second.preferred)),new Set([0,1,2]));
+ assert.ok(Object.values(CALIBRATION_LABS).some(l=>l.first.preferred!==l.second.preferred));
  assert.equal(prompts.size,28);
  assert.equal(explanations.size,84);
  assert.equal(attachCalibrationLabs(COURSES),0,'re-attaching to stable lessons changes nothing');
