@@ -84,7 +84,7 @@ test('transfer explanations are ungraded, offline, private, and small enough to 
  }
  const app=read('app.js');
  assert.match(app,/mistakeFeedback\?\.id===first\.id\?recoveryStudioPanel\(first\):''/);
- assert.match(app,/import \{recoveryStudioPanel\} from '\.\/recoverystudio\.js'/);
+ assert.match(app,/import \{recoveryStudioPanel,quizChoiceFeedback\} from '\.\/recoverystudio\.js'/);
  assert.ok(Buffer.byteLength(app)<240000,'main app byte budget preserved');
  assert.match(read('index.html'),/recovery-studio\.css/);
  assert.match(read('recovery-studio.css'),/focus-visible/);
