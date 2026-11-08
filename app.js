@@ -1,5 +1,6 @@
 import { COURSES, LANGUAGES, LEARNING_SPRINT, DAILY_NOTES, findCourse, findLesson, totalLessons } from './data.js';
 import {languageFieldworkPanel,frontierWorkshopPanel} from './frontiercurriculum.js';
+import {languageEvidencePanel} from './languageevidence.js';
 import {calibrationLabPanel} from './calibrationlabs.js';
 import {masteryDefensePanel,masteryDefenseTemplate,composeDefenseNote} from './masterydefenses.js';
 import './calibration-interactions.js';
@@ -992,6 +993,7 @@ function languagePage() {
     ${languageLiteracyPanel(saved.language,{unlocked:showPhrasePractice})}
     ${sentenceBridgePanel(saved.language,getPhrasePack(saved.language),{unlocked:showPhrasePractice})}
     ${languageFieldworkPanel(saved.language,getPhrasePack(saved.language),{unlocked:showPhrasePractice})}
+    ${languageEvidencePanel(saved.language,getPhrasePack(saved.language),{unlocked:showPhrasePractice})}
     ${saved.language==='ja'?japaneseFoundationPanel({done,activeId:currentUnit.id,practiceIndex:japanesePracticeIndex,feedback:japanesePracticeFeedback}):''}
     ${saved.language==='ja'?kanaReviewPanel({done,reviews:saved.japaneseKanaReviews,feedback:kanaRecallFeedback}):''}
     ${saved.language==='ja'&&showPhrasePractice?'<div class="japanese-practice-divider"><span class="overline">OPTIONAL REINFORCEMENT</span><h2>Phrase practice and seven-day sprint</h2><p>You have completed the kana-reading foundation. Practise phrases only after the sounds, patterns and basic sentence structures.</p></div>':''}
