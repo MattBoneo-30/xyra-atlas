@@ -6,6 +6,7 @@
 import {PORTFOLIO_JOURNEYS_ONE} from './portfoliojourneys1.js';
 import {PORTFOLIO_JOURNEYS_TWO} from './portfoliojourneys2.js';
 import {skillSpiralPanel} from './skillspirals.js';
+import {evidencePathPanel} from './evidencepath.js';
 export const PORTFOLIO_JOURNEYS=Object.freeze({...PORTFOLIO_JOURNEYS_ONE,...PORTFOLIO_JOURNEYS_TWO});
 export const PORTFOLIO_JOURNEY_COUNT=Object.keys(PORTFOLIO_JOURNEYS).length;
 const STAGES=Object.freeze(['Beginner','Intermediate','Advanced']);
@@ -58,7 +59,7 @@ export function attachPortfolioJourneys(courses){
  return queued.length;
 }
 const safe=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-export function portfolioJourneyPanel(course,{isLessonDone=()=>false}={}){
+export function portfolioJourneyPanel(course,{isLessonDone=()=>false,hasFieldNote=()=>false}={}){
  const item=course?.portfolioJourney;
  if(!item)return '';
  const cards=item.artifacts.map((stage,i)=>{
