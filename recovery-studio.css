@@ -13,3 +13,6 @@
 .choice-coach{display:block;margin-top:10px;padding:11px 12px;border-left:3px solid var(--gold);border-radius:7px;background:var(--card-soft);color:var(--text);font-size:13px;line-height:1.8}
 .choice-coach strong{display:block;margin-bottom:4px;color:var(--text);font-size:12px}
 .choice-coach small{display:block;margin-top:7px;color:var(--muted);font-size:11px;line-height:1.5}
+
+.choice-coach-compare span{display:block;margin-top:7px;overflow-wrap:anywhere}
+.choice-coach-compare b{color:var(--text)}
