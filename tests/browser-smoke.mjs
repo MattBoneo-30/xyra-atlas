@@ -1186,6 +1186,29 @@ try{
   const overflow=await mobileOverflow(page);
   expect(overflow.scroll<=overflow.width+2,'mastery defense fits 390px mobile viewport');
  });
+ await smoke('language-evidence-authentic-transfer-mobile',{viewport:{width:390,height:844},isMobile:true,hasTouch:true},async page=>{
+  await page.goto(BASE+'/#/language',{waitUntil:'domcontentloaded'});
+  await page.locator('#language-select').waitFor();
+  for(const code of ['en','fil','ar','pt']){
+   await page.locator('#language-select').selectOption(code);
+   const mission=page.locator('#language-evidence');
+   await mission.waitFor();
+   expect(await mission.locator('h2').count()===1,code+' has one distinct transfer mission');
+   const before=await getState(page);
+   await mission.locator('summary').click();
+   expect(await mission.locator('li').count()===4,code+' reveals source-authored phrases only');
+   const after=await getState(page);
+   expect(JSON.stringify(before.completed||[])===JSON.stringify(after.completed||[]),code+' language mission is not automatic completion');
+   expect(JSON.stringify(before.answers||{})===JSON.stringify(after.answers||{}),code+' language mission is not quiz grading');
+   const overflow=await mobileOverflow(page);
+   expect(overflow.scroll<=overflow.width+2,code+' mission fits narrow mobile viewport');
+  }
+  await page.locator('#language-select').selectOption('ja');
+  const japanese=page.locator('#language-evidence');
+  await japanese.waitFor();
+  expect((await japanese.textContent()).includes('Finish the Japanese kana'),'Japanese mission preserves prerequisite');
+  expect(await japanese.locator('li').count()===0,'locked Japanese lesson does not reveal phrases');
+ });
  await smoke('evidence-calibration-two-step-revision-mobile',{viewport:{width:390,height:844},isMobile:true,hasTouch:true},async page=>{
   await page.goto(BASE+'/#/lesson/business/sales',{waitUntil:'domcontentloaded'});
   const root=page.locator('#calibration-lab');
