@@ -82,5 +82,5 @@ export function portfolioJourneyPanel(course,{isLessonDone=()=>false,hasFieldNot
   '<ol class="portfolio-journey-stages">'+cards+'</ol>'+
   '<div class="portfolio-journey-rubric"><h3>Use these checks for the complete portfolio</h3><ul>'+
    item.rubric.map(x=>'<li>'+safe(x)+'</li>').join('')+'</ul></div>'+
-  '<p class="fineprint">'+safe(item.limit)+' All authored cases and review criteria await independent subject review.</p></section>'+skillSpiralPanel(course);
+  '<p class="fineprint">'+safe(item.limit)+' All authored cases and review criteria await independent subject review.</p></section>'+skillSpiralPanel(course)+evidencePathPanel(course,{isLessonDone,hasFieldNote});
 }
