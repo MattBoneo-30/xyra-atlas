@@ -1163,6 +1163,29 @@ try{
   await page.locator('.sentence-bridge-locked').waitFor();
   expect(await page.locator('[data-action="sentence-bridge-answer"]').count()===0,'Japanese kana prerequisite is preserved');
  });
+ await smoke('mastery-defense-written-artifact-offline-mobile',{viewport:{width:390,height:844},isMobile:true,hasTouch:true},async page=>{
+  await page.goto(BASE+'/#/lesson/business/systems',{waitUntil:'domcontentloaded'});
+  const root=page.locator('#mastery-defense');
+  await root.waitFor();
+  expect(await root.locator('li').count()===4,'advanced defense has four evidence checks');
+  const note=page.locator('#field-note-input'),key='business:systems';
+  await note.fill('Existing notebook entry: a product should have measurable demand.');
+  const original=await note.inputValue();
+  await root.locator('[data-action="mastery-insert-template"]').click();
+  const inserted=await note.inputValue();
+  expect(inserted.startsWith(original),'scaffold must preserve earlier notes');
+  expect(inserted.includes('Evidence and calculations:'),'scaffold inserted into existing field note');
+  const state=await getState(page);
+  expect(state.fieldNotes[key]===inserted,'scaffold saved through existing local Field Notebook');
+  await root.locator('[data-action="mastery-insert-template"]').click();
+  expect(await note.inputValue()===inserted,'second click does not duplicate a saved scaffold');
+  expect((await root.locator('.mastery-defense-status').textContent()).includes('already'),'duplicate gets a clear explanation');
+  await page.reload({waitUntil:'domcontentloaded'});
+  await page.locator('#field-note-input').waitFor();
+  expect((await page.locator('#field-note-input').inputValue())===inserted,'notebook draft survives reload');
+  const overflow=await mobileOverflow(page);
+  expect(overflow.scroll<=overflow.width+2,'mastery defense fits 390px mobile viewport');
+ });
  await smoke('evidence-calibration-two-step-revision-mobile',{viewport:{width:390,height:844},isMobile:true,hasTouch:true},async page=>{
   await page.goto(BASE+'/#/lesson/business/sales',{waitUntil:'domcontentloaded'});
   const root=page.locator('#calibration-lab');
