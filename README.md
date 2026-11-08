@@ -19,7 +19,7 @@
 - **Skill Spirals:** 42 progressive cases across 14 subjects, with worked examples, misconception checks and linked notebooks.
 - **Mastery Defense:** 14 advanced writing cases. **Language Transfer:** 20 locale-aware missions. Independent reviews remain pending.
 - Local bookmarks, favorites, quizzes, progress, achievement badges, themes, and JSON export/import for transferring between devices.
-- **Recovery Studio + Choice Coach:** 42 transfer cases and 84 exact-option explanations across 42 original lessons; no new grades.
+- **Recovery + Choice Coach:** 42 transfer cases; 112 authored wrong-choice explanations for 56 lessons, with clearly labeled answer comparisons for the remaining 83. All 139 lessons covered.
 - **Review Deck:** recall flashcards unlocked by completed lessons; spaced practice at 1, 3, 7, 14, 30, and 60-day intervals, with 10-minute repeats for forgotten material. Review schedules are stored locally and included in progress backups.
 - Offline app shell and included course library, cached by a same-origin service worker.
 - No account, advertisement, external API call or tracking service is required for the current edition.
