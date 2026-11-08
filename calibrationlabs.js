@@ -73,7 +73,7 @@ const drafts={
     ['Assume a bigger payment always saves the same interest regardless of loan terms.','Interest calculations, timing and prepayment terms must be checked against the actual agreement.']
    ],preferred:0},
   reveal:'A lower-than-usual paycheck arrives next month. The originally proposed extra payment would leave insufficient funds for rent and food.',
-  second:{prompt:'How should the plan respond?',
+  second:{prompt:'How should the debt repayment plan respond to this income shortfall?',
    options:[
     ['Revise the payment schedule, preserve essentials, and contact the lender early if minimums are at risk.','This treats repayment as a cash-flow problem under uncertainty rather than defending an unworkable schedule.'],
     ['Borrow at an unknown rate immediately to preserve the old repayment target.','Unexamined new credit can move or deepen the risk without fixing the actual budget shock.'],
@@ -111,7 +111,7 @@ const drafts={
     ['Repeat the first question more loudly without listening to the reply.','Volume does not by itself resolve a vocabulary or speech-rate gap.']
    ],preferred:0},
   reveal:'The repeated reply still contains an unfamiliar direction. A public map and the written station name are available nearby.',
-  second:{prompt:'What should you do before acting?',
+  second:{prompt:'What should you confirm before following unfamiliar directions?',
    options:[
     ['Use the written destination and map to confirm one usable step, and seek a slower explanation if needed.','Combining textual evidence with clarification closes the comprehension gap without claiming native-like fluency.'],
     ['Guess a verb ending and give directions back to the listener.','Unsupported invented morphology risks confusion and does not confirm the route.'],
@@ -130,7 +130,7 @@ const drafts={
     ['Answer every message instantly but resent the team privately.','Without a communicated expectation, the pattern is likely to continue.']
    ],preferred:0},
   reveal:'A colleague now describes an actual production outage affecting customers, but has used the same informal channel as routine reminders.',
-  second:{prompt:'How should the boundary evolve?',
+  second:{prompt:'How should this communication boundary evolve for genuine emergencies?',
    options:[
     ['Clarify and test a genuine emergency pathway with explicit criteria, preserving the regular-hours rule.','A reasonable exception improves coordination rather than making every late message urgent.'],
     ['Declare all future night messages emergencies.','Without triage criteria, the exception swallows the boundary and repeats the original problem.'],
@@ -149,7 +149,7 @@ const drafts={
     ['Reject all software interventions as incapable of affecting productivity.','The data are insufficient to prove this effect, not evidence that no tool could ever help.']
    ],preferred:0},
   reveal:'After controlling for baseline output, the apparent advantage shrinks. Other changes to staffing happened at the same time.',
-  second:{prompt:'How should the conclusion change?',
+  second:{prompt:'How should your causal conclusion change after the new evidence?',
    options:[
     ['Describe the association as uncertain, investigate staffing effects, and design a fairer comparison.','The new information weakens confidence in the original attribution without proving the tool has no effect.'],
     ['Keep claiming the original improvement as fully caused by the tool.','That conclusion is inconsistent with the new confounding evidence.'],
@@ -206,7 +206,7 @@ const drafts={
     ['Proof the underlying phenomenon never changes.','The repeated sample cannot justify an unlimited claim about all environments or time periods.']
    ],preferred:0},
   reveal:'A reference measurement reveals a stable offset, and readings drift more strongly when ambient temperature rises.',
-  second:{prompt:'How should the report be revised?',
+  second:{prompt:'How should the measurement report be revised after calibration?',
    options:[
     ['Report the bias and environmental limit, revise the method, and remeasure against a traceable reference.','The new data reveal systematic error that simple repeated averaging would not remove.'],
     ['Average more uncalibrated readings and ignore the reference.','More samples can narrow random error but do not remove an uncorrected systematic offset.'],
