@@ -83,6 +83,16 @@ export function buildEditorialReviewPacket(courses,clinics){
       independentExercise:lesson.calibrationLab.transfer,
       selfReviewCriteria:[...lesson.calibrationLab.rubric]
     }}:{}),
+    // Advanced written defense, counterargument and rubric all require review.
+    ...(lesson.masteryDefense?{advancedMasteryDefense:{
+      reviewStatus:'pending-independent-review',
+      title:lesson.masteryDefense.title,caseBrief:lesson.masteryDefense.brief,
+      independentAssignment:lesson.masteryDefense.assignment,
+      workedComparison:lesson.masteryDefense.model,
+      strongestCounterargument:lesson.masteryDefense.counter,
+      selfReviewCriteria:[...lesson.masteryDefense.checks],
+      limits:lesson.masteryDefense.boundary
+    }}:{}),
     // Two-step beginner workshops are authored evidence and require signoff.
     ...(lesson.beginnerWorkshop?{guidedBeginnerWorkshop:{
       key:lesson.beginnerWorkshop.key,reviewStatus:'pending-independent-review',
