@@ -6,8 +6,13 @@ import { mkdir, writeFile, readFile } from 'node:fs/promises';
 import { chromium } from 'playwright';
 import {COURSES} from '../data.js';
 import {JAPANESE_UNITS} from '../japanesefoundation.js';
+import {BROWSER_SHARD_COUNT,browserShardFor} from '../scripts/browser-shard-utils.mjs';
 
-const PORT=42751;
+const PORT=Number(process.env.ATLAS_TEST_PORT||42751);
+const ACTIVE_SHARD=Number(process.env.ATLAS_BROWSER_SHARD||0);
+if(!Number.isInteger(ACTIVE_SHARD)||ACTIVE_SHARD<0||ACTIVE_SHARD>BROWSER_SHARD_COUNT)
+ throw Error('Invalid Chromium smoke shard index');
+let smokeOrdinal=0,executed=0;
 const BASE='http://127.0.0.1:'+PORT;
 const snapshots='artifacts/browser';
 await mkdir(snapshots,{recursive:true});
@@ -33,6 +38,9 @@ async function ready(){
  throw Error('Timed out starting Atlas preview: '+serverOutput.join(''));
 }
 async function smoke(name,options,fn){
+ const position=smokeOrdinal++;
+ if(ACTIVE_SHARD&&browserShardFor(position)!==ACTIVE_SHARD)return;
+ executed++;
  const context=await browser.newContext(options),page=await context.newPage();
  page.setDefaultTimeout(12000);
  page.setDefaultNavigationTimeout(15000);
@@ -2429,4 +2437,5 @@ try{
 }
 clearTimeout(watchdog);
 if(failures)throw Error(failures+' browser smoke scenario(s) failed. Check screenshots and logs.');
-console.log('\nAll real Chromium browser smoke scenarios passed.');
+if(executed===0)throw Error('Browser smoke shard assigned zero scenarios');
+console.log('\nChromium shard '+(ACTIVE_SHARD||'all')+' passed '+executed+' of '+smokeOrdinal+' total real browser scenarios.');
