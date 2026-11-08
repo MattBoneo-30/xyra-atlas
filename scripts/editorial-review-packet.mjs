@@ -6,6 +6,7 @@ import {createHash} from 'node:crypto';
 import {practiceGuide} from '../practiceguides.js';
 import {authoredCourseLinks} from '../sourcehealth.js';
 import {CURRICULUM_OBJECTIVES} from '../curriculumpath.js';
+import {EVIDENCE_PROTOCOLS} from '../evidenceprotocols.js';
 const toRecord=value=>value!==null&&typeof value==='object'&&!Array.isArray(value);
 const highStakes=new Set(['laws','savings','science','relationships','digital','shadow']);
 export function reviewHash(content){
@@ -25,6 +26,7 @@ export function buildEditorialReviewPacket(courses,clinics){
    const objective=CURRICULUM_OBJECTIVES[course.id]?.[lesson.stage];
    const content={title:lesson.title,stage:lesson.stage,
     stageLearningObjective:objective?{goal:objective.goal,evidence:objective.evidence}:null,
+    ...(lesson.portfolioJourney?{independentEvidenceStandards:{reviewStatus:'pending-independent-review',stages:EVIDENCE_PROTOCOLS[course.id]?.map(([title,protocol,trap],i)=>({stage:['Beginner','Intermediate','Advanced'][i],title,reviewProtocol:protocol,commonFailure:trap}))}}:{}),
     intro:lesson.intro,
     sections:lesson.sections.map(s=>({heading:s.heading,body:s.body})),
     // All newly authored teaching is reviewed and hashed, not silently omitted.
