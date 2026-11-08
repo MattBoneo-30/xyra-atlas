@@ -47,7 +47,7 @@ const esc=value=>String(value??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt
 export function specialistConceptPanel(item){
  if(!item||item.reviewStatus!=='pending-independent-review')return '';
  const sections=item.sections.map((section,index)=>
-   '<section class="deep-study-section" id="specialist-concept-section-'+index+'">'+
+   '<section class="specialist-concept-section" id="specialist-concept-section-'+index+'">'+
    '<span class="article-section-num">0'+(index+1)+' / SPECIALIST CONCEPT</span>'+
    '<h3>'+esc(section.heading)+'</h3><p>'+esc(section.body)+'</p></section>'
  ).join('');
