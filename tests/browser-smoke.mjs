@@ -1907,8 +1907,8 @@ try{
    await page.goto(BASE+'/#/lesson/'+course+'/'+lesson,{waitUntil:'domcontentloaded'});
    const chapter=page.locator('.reading-page .deep-study-head');
    await chapter.waitFor();
-   expect(await page.locator('.specialist-concept-study .deep-study-section').count()===3,course+' has three additional full-study sections');
-   expect(await page.locator('.deep-study-section').count()===7,course+' preserves four earlier deep sections');
+   expect(await page.locator('.specialist-concept-study .specialist-concept-section').count()===3,course+' has three additional full-study sections');
+   expect(await page.locator('.deep-study-section').count()===4,course+' preserves four earlier deep sections');
    expect(await page.locator('.chapter-map-deep-node').count()===4,course+' original chapter navigation remains intact');
    const model=page.locator('.deep-model-answer');
    expect(await model.count()===1,course+' retains original worked self-review');
@@ -1932,7 +1932,7 @@ try{
   await page.waitForFunction(()=>Boolean(navigator.serviceWorker.controller));
   await context.setOffline(true);
   await page.reload({waitUntil:'domcontentloaded'});
-  expect(await page.locator('.specialist-concept-study .deep-study-section').count()===3,'specialist continuation remains readable offline');
+  expect(await page.locator('.specialist-concept-study .specialist-concept-section').count()===3,'specialist continuation remains readable offline');
   await context.setOffline(false);
  });
  await smoke('subject-skill-spirals-progressive-mobile-offline',{viewport:{width:390,height:844},isMobile:true,hasTouch:true},async(page,context)=>{
