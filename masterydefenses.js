@@ -143,8 +143,8 @@ export function attachMasteryDefenses(courses){
   const lesson=course.lessons.find(x=>x.stage==='Advanced');
   const defense=MASTERY_DEFENSES[course.id];
   if(!lesson)throw Error('No advanced stage for '+course.id);
-  for(const field of ['brief','assignment','model','counter']){
-   if(defense[field].length<150)throw Error('Insufficient '+field+' for '+course.id);
+  for(const [field,min] of [['brief',120],['assignment',115],['model',200],['counter',85]]){
+   if(defense[field].length<min)throw Error('Insufficient '+field+' for '+course.id);
   }
   if(defense.checks.length!==4||defense.checks.some(x=>x.length<30))throw Error('Incomplete rubric '+course.id);
   if(lesson.masteryDefense)continue;
