@@ -1,8 +1,8 @@
 /* Language sentence structure: sequential, ungraded grammar investigation. */
-.sentence-bridge{margin:23px 0 28px;padding:clamp(15px,3vw,26px);border:1px solid var(--line-bright);border-radius:18px;background:var(--card);scroll-margin-top:100px}
-.sentence-bridge>.overline{color:var(--gold)}
-.sentence-bridge>h2{margin:9px 0;font:normal clamp(23px,3.4vw,30px)/1.25 Georgia,serif;color:var(--text)}
-.sentence-bridge-intro,.sentence-bridge>.fineprint{max-width:70ch;line-height:1.8;color:var(--muted);font-size:12px}
+.sentence-bridge,.language-fieldwork{margin:23px 0 28px;padding:clamp(15px,3vw,26px);border:1px solid var(--line-bright);border-radius:18px;background:var(--card);scroll-margin-top:100px}
+.sentence-bridge>.overline,.language-fieldwork>.overline{color:var(--gold)}
+.sentence-bridge>h2,.language-fieldwork>h2{margin:9px 0;font:normal clamp(23px,3.4vw,30px)/1.25 Georgia,serif;color:var(--text)}
+.sentence-bridge-intro,.sentence-bridge>.fineprint,.language-fieldwork>.fineprint{max-width:70ch;line-height:1.8;color:var(--muted);font-size:12px}
 .sentence-bridge-unit{border:1px solid var(--line);border-radius:12px;padding:clamp(13px,2.5vw,20px);background:var(--card-soft);margin:16px 0}
 .sentence-bridge-unit[hidden]{display:none}
 .sentence-bridge-label{font-size:10px;letter-spacing:.06em;font-weight:750;color:var(--gold)}
@@ -24,6 +24,6 @@
 .sentence-bridge-transfer{margin:12px 0;padding:12px;border:1px solid var(--line);border-radius:9px}
 .sentence-bridge-transfer summary{font-size:12px;font-weight:750;color:var(--gold);cursor:pointer}
 .sentence-bridge-transfer p{font-size:12px;line-height:1.8;color:var(--muted)}
-.sentence-bridge-locked{padding:13px;border-left:3px solid var(--gold);background:var(--card-soft);font-size:12px;line-height:1.8;color:var(--muted)}
-@media(max-width:450px){.sentence-bridge{padding:13px}.sentence-bridge-unit{padding:12px}.sentence-bridge-evidence{padding:12px}}
+.sentence-bridge-locked,.language-fieldwork-locked{padding:13px;border-left:3px solid var(--gold);background:var(--card-soft);font-size:12px;line-height:1.8;color:var(--muted)}
+@media(max-width:450px){.sentence-bridge,.language-fieldwork{padding:13px}.sentence-bridge-unit{padding:12px}.sentence-bridge-evidence{padding:12px}}
 @media(prefers-reduced-motion:reduce){.sentence-bridge-options button{transition:none}}
