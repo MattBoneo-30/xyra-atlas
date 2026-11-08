@@ -1,5 +1,6 @@
 import { DEEP_TRACKS } from './deeptracks.js';
 import {attachFrontierWorkshops} from './frontiercurriculum.js';
+import {attachCalibrationLabs} from './calibrationlabs.js';
 import {DEEPER_FOUNDATIONS} from './depthcurriculum.js';
 import {deepenOriginalFoundations} from './foundationdepth.js';
 import {deepenIntermediateLessons} from './intermediatedepth.js';
@@ -344,6 +345,7 @@ attachPortfolioJourneys(COURSES);
 validateResponseSimulations(COURSES);
 // Deeper fieldwork without changing any stable lesson identity.
 attachFrontierWorkshops(COURSES);
+attachCalibrationLabs(COURSES);
 export const LANGUAGES = [
   {name:'English',flag:'🇬🇧',code:'en'}, {name:'Japanese',flag:'🇯🇵',code:'ja'},
   {name:'Korean',flag:'🇰🇷',code:'ko'}, {name:'Spanish',flag:'🇪🇸',code:'es'},
