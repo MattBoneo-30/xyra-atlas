@@ -6,14 +6,15 @@
 
 ## Current build: offline-first release candidate (not production approved)
 
-- A violet-and-gold responsive interface, **14 distinct original vector course worlds** plus three cinematic portal scenes and fourteen case-specific illustrated chapters, Xyra's Corner artwork and a home-screen app icon. The same course identity appears on home tiles, category cards, course covers and lessons.
-- 14 learning subjects and **139 interactive lessons**: the earlier 134 lessons, including **14 applied capstone labs** and **3 Philippine casework lessons**, plus **five source-linked astronomy and Philippine law depth chapters**. New chapters include causal flowcharts, worked examples and official references; existing capstone self-checks remain.
+- A violet-and-gold mobile-first interface with original offline-ready course worlds, accessible vector illustrations, cinematic portals and a home-screen icon.
+- **14 subjects and 139 structured lessons**, including sourced legal/astronomy chapters, applied capstones, Philippine casework, evidence labs and worked examples. Lesson identifiers remain stable.
 - Psychology, legal literacy, business, money, productivity, communication, critical thinking, language study, digital literacy, career, science, relationships and influence.
 - **The Shadow Library (18+ educational content)** covers manipulation, gaslighting, lies, emotional leverage, deceptive interface design, consent and adult media literacy. The age acknowledgment is a *content gate*, not verified age or identity security.
 - Japanese foundations: **26 sequenced checkpoints**, 46 basic hiragana and 46 basic katakana, vowel memory associations, row-by-row reading, everyday nouns, particles and simple verbs. Optional offline kana recall reviews only previously taught characters, schedules remembered/missed sounds, and preserves private progress in backups. Synthetic device audio does not grade pronunciation.
 - Seven-day language practice framework with **160 practical offline starter phrases across all 20 selectable languages**; every language now has phrase cards, spaced recall, two-way recognition and situational practice.
-- Interactive phrase-recall cards, local mastery marking, backup/import and optional speech synthesis where installed voices support it. All packs retain the seven-day training plan and local-only audio rules; new regional phrases still need native-speaker review.
-- **Field Notebook:** private per-lesson exercise writing, automatic offline saving and JSON backup/restore, with validation and a 2,000-character limit per note.
+- Phrase recall, spaced review, situational language practice and optional on-device speech synthesis; native/regional review remains pending.
+- **Field Notebook:** private per-lesson writing with automatic offline saving, JSON backups and a 2,000-character limit; advanced writing scaffolds preserve existing notes.
+- **Mastery Defense (14 subjects):** independent advanced case briefs, worked comparisons, counterarguments and evidence rubrics. **Language Transfer (20 locales):** locale-sensitive authentic-communication missions using the existing vetted-inventory review process. All new author content remains unreviewed.
 - Local bookmarks, favorites, quizzes, progress, achievement badges, themes, and JSON export/import for transferring between devices.
 - **Review Deck:** recall flashcards unlocked by completed lessons; spaced practice at 1, 3, 7, 14, 30, and 60-day intervals, with 10-minute repeats for forgotten material. Review schedules are stored locally and included in progress backups.
 - Offline app shell and included course library, cached by a same-origin service worker.
@@ -21,7 +22,7 @@
 
 ## Release notes
 
-This project is developed iteratively. The detailed, chronological feature and verification history has been moved to [CHANGELOG.md](CHANGELOG.md), so this README remains useful for installation and evaluation. A recent verified CI run is [the full Node, Chromium and WebKit pipeline](https://github.com/MattBoneo-30/xyra-atlas/actions/runs/41799867985). Check the [latest Actions results](https://github.com/MattBoneo-30/xyra-atlas/actions) for the current main commit before release.
+Development and verification history lives in [CHANGELOG.md](CHANGELOG.md). Consult [the latest GitHub Actions checks](https://github.com/MattBoneo-30/xyra-atlas/actions) before deploying; a passing code pipeline is not external editorial approval.
 
 ## Scope and verification
 
