@@ -21,6 +21,15 @@ export function buildLessonNarration(course,lesson,{maxLength=175}={}){
  const paragraphs=[lesson.title,lesson.intro];
  // Full conceptual teaching comes first in both visual and spoken reading modes.
  for(const section of lesson.deepSections||[])if(section)paragraphs.push(section.heading,section.body);
+ if(lesson.specialistConceptStudy){
+  const study=lesson.specialistConceptStudy;
+  paragraphs.push('Specialist continuation: '+study.title);
+  for(const section of study.sections)paragraphs.push(section.heading,section.body);
+  paragraphs.push('Applied specialist case.',study.case,'Independent challenge.',study.task,
+   'Worked comparison after your attempt.',study.model,
+   'Specialist self-review checklist.',...study.rubric,
+   'Independent specialist review is pending.');
+ }
  for(const section of lesson.sections) if(section) paragraphs.push(section.heading,section.body);
  for(const section of lesson.astronomySections||[])if(section)paragraphs.push(section.heading,section.body);
  if(lesson.example)paragraphs.push('Worked example.',lesson.example);
