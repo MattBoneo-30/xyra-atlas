@@ -3,6 +3,7 @@ import {attachFrontierWorkshops} from './frontiercurriculum.js';
 import {attachCalibrationLabs} from './calibrationlabs.js';
 import {attachMasteryDefenses} from './masterydefenses.js';
 import {validateEvidenceProtocols} from './evidencepath.js';
+import {validateRecoveryCases} from './recoverystudio.js';
 import {attachSkillSpirals} from './skillspirals.js';
 import {attachAdvancedConceptStudies} from './advancedconcepts.js';
 import {DEEPER_FOUNDATIONS} from './depthcurriculum.js';
@@ -353,6 +354,7 @@ attachCalibrationLabs(COURSES);
 attachMasteryDefenses(COURSES);
 attachSkillSpirals(COURSES);
 validateEvidenceProtocols(COURSES);
+validateRecoveryCases(COURSES);
 attachAdvancedConceptStudies(COURSES);
 export const LANGUAGES = [
   {name:'English',flag:'🇬🇧',code:'en'}, {name:'Japanese',flag:'🇯🇵',code:'ja'},
