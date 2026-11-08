@@ -1907,10 +1907,14 @@ try{
    await page.goto(BASE+'/#/lesson/'+course+'/'+lesson,{waitUntil:'domcontentloaded'});
    const chapter=page.locator('.reading-page .deep-study-head');
    await chapter.waitFor();
-   expect(await page.locator('.deep-study-section').count()===3,course+' has three substantial full-study sections');
-   expect(await page.locator('.chapter-map-deep-node').count()===3,course+' full chapters join chapter navigation');
+   expect(await page.locator('.specialist-concept-study .deep-study-section').count()===3,course+' has three additional full-study sections');
+   expect(await page.locator('.deep-study-section').count()===7,course+' preserves four earlier deep sections');
+   expect(await page.locator('.chapter-map-deep-node').count()===4,course+' original chapter navigation remains intact');
    const model=page.locator('.deep-model-answer');
-   expect(await model.count()===1,course+' has one worked self-review response');
+   expect(await model.count()===1,course+' retains original worked self-review');
+   const specialist=page.locator('.specialist-concept-answer');
+   expect(await specialist.count()===1,course+' adds a distinct specialist model comparison');
+   expect(await specialist.evaluate(el=>el.open)===false,course+' new worked comparison starts concealed');
    expect(await model.evaluate(el=>el.open)===false,course+' answer starts concealed');
    const before=await getState(page);
    await model.locator('summary').click();
@@ -1928,7 +1932,7 @@ try{
   await page.waitForFunction(()=>Boolean(navigator.serviceWorker.controller));
   await context.setOffline(true);
   await page.reload({waitUntil:'domcontentloaded'});
-  expect(await page.locator('.deep-study-section').count()===3,'substantive advanced chapters are readable offline');
+  expect(await page.locator('.specialist-concept-study .deep-study-section').count()===3,'specialist continuation remains readable offline');
   await context.setOffline(false);
  });
  await smoke('subject-skill-spirals-progressive-mobile-offline',{viewport:{width:390,height:844},isMobile:true,hasTouch:true},async(page,context)=>{
