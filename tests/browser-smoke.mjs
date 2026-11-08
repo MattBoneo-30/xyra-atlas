@@ -1907,6 +1907,8 @@ try{
    await page.goto(BASE+'/#/lesson/'+course+'/'+lesson,{waitUntil:'domcontentloaded'});
    const chapter=page.locator('.reading-page .deep-study-head');
    await chapter.waitFor();
+   expect(await chapter.count()===1,course+' retains exactly one original deep-study heading');
+   expect(await page.locator('.specialist-worked-case').count()===1,course+' adds a distinct specialist case');
    expect(await page.locator('.specialist-concept-study .specialist-concept-section').count()===3,course+' has three additional full-study sections');
    expect(await page.locator('.deep-study-section').count()===4,course+' preserves four earlier deep sections');
    expect(await page.locator('.chapter-map-deep-node').count()===4,course+' original chapter navigation remains intact');
