@@ -46,7 +46,7 @@ test('fourteen distinct specialist continuations enrich published advanced lesso
   assert.ok(!cases.has(entry.case)&&!worked.has(entry.model),'reused generic case');
   cases.add(entry.case);worked.add(entry.model);ids.add(course.id+':'+l.id);
   const rendered=specialistConceptPanel(entry);
-  assert.equal((rendered.match(/class="deep-study-section"/g)||[]).length,3);
+  assert.equal((rendered.match(/class="specialist-concept-section"/g)||[]).length,3);
   assert.equal((rendered.match(/class="specialist-concept-answer"/g)||[]).length,1);
   assert.equal((rendered.match(/<li>/g)||[]).length,4);
   assert.match(rendered,/qualified specialist review/i);
