@@ -17,8 +17,9 @@
 - **Specialist continuations:** 14 existing advanced lessons gain three full concept explanations, worked cases, independent tasks and detailed model comparisons; external review remains pending.
 - **Evidence Paths:** 42 review protocols distinguish lesson completion, private drafts and independent validation.
 - **Skill Spirals:** 42 progressive cases across 14 subjects, with worked examples, misconception checks and linked notebooks.
-- **Mastery Defense (14 subjects):** independent advanced case briefs, worked comparisons, counterarguments and evidence rubrics. **Language Transfer (20 locales):** locale-sensitive authentic-communication missions using the existing vetted-inventory review process. All new author content remains unreviewed.
+- **Mastery Defense:** 14 advanced writing cases. **Language Transfer:** 20 locale-aware missions. Independent reviews remain pending.
 - Local bookmarks, favorites, quizzes, progress, achievement badges, themes, and JSON export/import for transferring between devices.
+- **Recovery Studio:** 42 fresh practice cases after missed quiz retries, with concealed worked reasoning and no extra grades.
 - **Review Deck:** recall flashcards unlocked by completed lessons; spaced practice at 1, 3, 7, 14, 30, and 60-day intervals, with 10-minute repeats for forgotten material. Review schedules are stored locally and included in progress backups.
 - Offline app shell and included course library, cached by a same-origin service worker.
 - No account, advertisement, external API call or tracking service is required for the current edition.
