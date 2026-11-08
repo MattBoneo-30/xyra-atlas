@@ -1,4 +1,5 @@
 /** Local-only practice queue, not a proficiency estimate. */
+import {getRecoveryCase} from './recoverystudio.js';
 function quizLookup(courses){
  const out=new Map();
  for(const course of Array.isArray(courses)?courses:[])for(const lesson of course.lessons||[])
@@ -32,7 +33,7 @@ export function buildMistakeQueue(courses,raw,{includeMature=false}={}){
   if(c.dark&&!includeMature)continue;
   for(const l of c.lessons||[]){
    const id=c.id+':'+l.id,m=data[id];
-   if(m)items.push({id,courseId:c.id,lessonId:l.id,courseTitle:c.title,title:l.title,question:l.quiz.question,
+   if(m)items.push({id,courseId:c.id,lessonId:l.id,courseTitle:c.title,title:l.title,question:l.quiz.question,stage:l.stage,recovery:getRecoveryCase(c.id,l.stage),
       options:l.quiz.options,correct:l.quiz.correct,explanation:l.quiz.explanation,wrong:m.wrong,lastWrongAt:m.lastWrongAt});
   }
  }
