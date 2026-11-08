@@ -4,6 +4,7 @@ import {attachCalibrationLabs} from './calibrationlabs.js';
 import {attachMasteryDefenses} from './masterydefenses.js';
 import {validateEvidenceProtocols} from './evidencepath.js';
 import {validateRecoveryCases} from './recoverystudio.js';
+import {validateMisconceptionCoach} from './misconceptioncoach.js';
 import {attachSkillSpirals} from './skillspirals.js';
 import {attachAdvancedConceptStudies} from './advancedconcepts.js';
 import {DEEPER_FOUNDATIONS} from './depthcurriculum.js';
@@ -355,6 +356,7 @@ attachMasteryDefenses(COURSES);
 attachSkillSpirals(COURSES);
 validateEvidenceProtocols(COURSES);
 validateRecoveryCases(COURSES);
+validateMisconceptionCoach(COURSES);
 attachAdvancedConceptStudies(COURSES);
 export const LANGUAGES = [
   {name:'English',flag:'🇬🇧',code:'en'}, {name:'Japanese',flag:'🇯🇵',code:'ja'},
