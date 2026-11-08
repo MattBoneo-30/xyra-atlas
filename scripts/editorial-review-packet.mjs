@@ -35,6 +35,16 @@ export function buildEditorialReviewPacket(courses,clinics){
       ...(lesson.deepModelAnswer?{modelResponse:lesson.deepModelAnswer}:{}),
       ...(lesson.deepRubric?.length?{selfReviewRubric:[...lesson.deepRubric]}:{})
     }}:{}),
+    ...(lesson.specialistConceptStudy?{specialistConceptContinuation:{
+      reviewStatus:'pending-independent-review',
+      title:lesson.specialistConceptStudy.title,
+      studyMinutes:lesson.specialistConceptStudy.minutes,
+      sections:lesson.specialistConceptStudy.sections.map(s=>({heading:s.heading,body:s.body})),
+      workedCase:lesson.specialistConceptStudy.case,
+      independentTask:lesson.specialistConceptStudy.task,
+      modelAnswer:lesson.specialistConceptStudy.model,
+      selfReviewRubric:[...lesson.specialistConceptStudy.rubric]
+    }}:{}),
     ...(lesson.astronomySections?.length?{astronomySupplement:{
       reviewStatus:'pending-independent-review',
       chapters:lesson.astronomySections.map(section=>({heading:section.heading,body:section.body})),
