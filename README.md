@@ -14,6 +14,7 @@
 - Seven-day language practice framework with **160 practical offline starter phrases across all 20 selectable languages**; every language now has phrase cards, spaced recall, two-way recognition and situational practice.
 - Phrase recall, spaced review, situational language practice and optional on-device speech synthesis; native/regional review remains pending.
 - **Field Notebook:** private per-lesson writing with automatic offline saving, JSON backups and a 2,000-character limit; advanced writing scaffolds preserve existing notes.
+- **Skill Spirals:** 42 original progressive cases across all 14 subjects, from worked examples to independent transfer, with misconception checks and linked notebook lessons.
 - **Mastery Defense (14 subjects):** independent advanced case briefs, worked comparisons, counterarguments and evidence rubrics. **Language Transfer (20 locales):** locale-sensitive authentic-communication missions using the existing vetted-inventory review process. All new author content remains unreviewed.
 - Local bookmarks, favorites, quizzes, progress, achievement badges, themes, and JSON export/import for transferring between devices.
 - **Review Deck:** recall flashcards unlocked by completed lessons; spaced practice at 1, 3, 7, 14, 30, and 60-day intervals, with 10-minute repeats for forgotten material. Review schedules are stored locally and included in progress backups.
