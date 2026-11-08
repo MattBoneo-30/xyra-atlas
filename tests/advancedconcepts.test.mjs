@@ -49,7 +49,7 @@ test('fourteen distinct specialist continuations enrich published advanced lesso
   assert.equal((rendered.match(/class="deep-study-section"/g)||[]).length,3);
   assert.equal((rendered.match(/class="specialist-concept-answer"/g)||[]).length,1);
   assert.equal((rendered.match(/<li>/g)||[]).length,4);
-  assert.match(rendered,/independent specialist review/i);
+  assert.match(rendered,/qualified specialist review/i);
   assert.doesNotMatch(rendered,/data-action="complete-lesson"/);
  }
  assert.equal(ids.size,14);
