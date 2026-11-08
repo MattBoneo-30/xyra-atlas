@@ -1438,6 +1438,29 @@ async function handleAction(e) {
   else if(action==='create-path') {const goal=document.getElementById('path-goal')?.value;const minutes=Number(document.getElementById('path-minutes')?.value);const stamp=today();const next=createLearningPath(COURSES,goal,minutes,saved.completed,stamp);if(!next){flash('No unfinished lessons fit this focus and study time. Try another goal.');return;}saved.learningPath=next;persist();flash('Your seven-session learning path is ready!');}
   else if(action==='studio') nav('studio');
   else if(action==='jump-chapter'){if(route.view==='lesson'){const index=button.dataset.index;const target=index==='practice'?'lesson-practice':index==='transfer'?'transfer-lab':index==='bridge'?'cross-subject-mission':index==='studio'?'practical-studio':index==='decision'?'decision-revision':index==='workshop'?'beginner-workshop':index==='inquiry'?'evidence-inquiry':index==='diagnostic'?'foundation-diagnostic':/^deep-\d+$/.test(index)?'deep-study-section-'+index.slice(5):/^astro-\d+$/.test(index)?'astronomy-section-'+index.slice(6):/^\d+$/.test(index)?'lesson-section-'+index:null;const el=target?document.getElementById(target):null;if(el){el.scrollIntoView({behavior:window.matchMedia?.('(prefers-reduced-motion: reduce)').matches?'instant':'smooth',block:'start'});el.setAttribute('tabindex','-1');el.focus({preventScroll:true});}}}
+  else if(action==='mastery-insert-template'){
+    if(route.view!=='lesson')return;
+    const panel=button.closest('#mastery-defense');
+    const courseId=panel?.dataset.masteryCourse,lessonId=panel?.dataset.masteryLesson;
+    if(!panel||route.courseId!==courseId||route.lessonId!==lessonId)return;
+    const course=findCourse(courseId),lesson=findLesson(courseId,lessonId);
+    if(!lesson?.masteryDefense||(course?.dark&&!shadowUnlocked))return;
+    const field=document.getElementById('field-note-input');
+    const status=panel.querySelector('.mastery-defense-status');
+    if(!field||field.dataset.fieldNote!==idFor(courseId,lessonId))return;
+    const result=composeDefenseNote(field.value,masteryDefenseTemplate(lesson.masteryDefense),MAX_FIELD_NOTE_LENGTH);
+    if(!result.ok){
+      if(status)status.textContent=result.reason==='already-added'?
+       'The writing scaffold is already in your notebook.':
+       'Your notebook does not have enough room for this scaffold. Export or shorten notes before inserting it.';
+      return;
+    }
+    field.value=result.value;
+    field.dispatchEvent(new Event('input',{bubbles:true}));
+    if(status)status.textContent='Writing scaffold inserted and saved locally. Complete each field with your own evidence.';
+    field.focus({preventScroll:true});
+    field.scrollIntoView({block:'center',behavior:window.matchMedia?.('(prefers-reduced-motion: reduce)').matches?'instant':'smooth'});
+  }
   else if(action==='sentence-bridge-answer'){
     if(route.view!=='language')return;
     const done=normalizeJapaneseFoundationDone(saved.japaneseFoundationDone);
