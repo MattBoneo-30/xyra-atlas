@@ -33,10 +33,10 @@ export function attachAdvancedConceptStudies(courses){
    if(lesson.specialistConceptStudy!==item)throw Error('Specialist study conflict: '+course.id);
    continue;
   }
-  if(lesson.advancedDepth!=='case-and-counterexample-2026'||
-     !Array.isArray(lesson.deepSections)||lesson.deepSections.length!==4||
-     !lesson.deepModelAnswer||!lesson.deepTask)
-   throw Error('Specialist continuation requires an existing full advanced study: '+course.id);
+  // Some subjects have an original flagship study on another advanced lesson.
+  // Extend the authored target without moving or replacing that flagship.
+  if(lesson.deepSections?.length&&(!lesson.deepModelAnswer||!lesson.deepTask))
+   throw Error('Existing lesson depth is incomplete: '+course.id);
   changes.push({lesson,item});
  }
  // Validate before attaching, so an invalid course cannot result in a partial upgrade.
