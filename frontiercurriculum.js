@@ -126,10 +126,10 @@ export function validateFrontierWorkshops(courses,codes){
 export function languageFieldworkPanel(code,pack,{unlocked=true}={}){
  if(!Object.hasOwn(LANGUAGE_FIELDWORK,code)||!pack||!Array.isArray(pack.phrases)||pack.phrases.length<8)return '';
  const note=LANGUAGE_FIELDWORK[code];
- const heading='<section class="sentence-bridge" id="language-fieldwork" aria-label="Multi-turn language fieldwork">'+
+ const heading='<section class="language-fieldwork" id="language-fieldwork" aria-label="Multi-turn language fieldwork">'+
   '<span class="overline">FIELDWORK · AFTER THE GRAMMAR BRIDGE</span><h2>Make a conversation survive real life</h2>'+
   '<p class="sentence-bridge-intro">Three connected, unscored tasks with phrases from your existing offline pack. Do not confuse reading prepared lines with understanding spontaneous replies.</p>';
- if(!unlocked)return heading+'<p class="sentence-bridge-locked">Complete the Japanese kana and first-sentences foundation to unlock multi-turn fieldwork.</p></section>';
+ if(!unlocked)return heading+'<p class="language-fieldwork-locked">Complete the Japanese kana and first-sentences foundation to unlock multi-turn fieldwork.</p></section>';
  const stages=[
   ['01 · Ask to slow down','You missed part of the reply. Request repetition without pretending you understood.',3],
   ['02 · Find a location','Use the station question, then imagine two possible directions and identify which words you would need verified.',4],
