@@ -26,6 +26,7 @@ import {focusQuestionPool,createFocusedExam} from './focusedexam.js';
 import {PERSONAL_CARD_LIMIT,CARD_FRONT_LIMIT,CARD_BACK_LIMIT,normalizePersonalCards,createPersonalCard,updatePersonalCard,deletePersonalCard,duePersonalCards,ratePersonalCard,searchPersonalCards} from './personalcards.js';
 import {buildNotebookIndex,searchNotebook} from './notebook.js';
 import {normalizeMistakes,recordQuizAttempt,buildMistakeQueue} from './mistakes.js';
+import {recoveryStudioPanel} from './recoverystudio.js';
 import { createDailyQuest,dailyQuestProgress } from './dailyquest.js';
 import { buildKnowledgeMap,suggestKnowledgeTrails } from './atlasmap.js';
 import { SCENARIOS,normalizeScenarioAnswers,recordScenarioAnswer,scenarioProgress } from './scenarios.js';
@@ -744,16 +745,17 @@ function mistakesPage(){
  const questions=buildMistakeQueue(COURSES,saved.mistakes,{includeMature:shadowUnlocked});
  const first=questions.length?questions[mistakeIndex%questions.length]:null;
  return `<main class="page mistakes-page"><div class="subnav">${button(`${icon('back',18)} Back to journey`,'goto-journey','back-link')}</div>
- <header class="mistakes-hero"><span class="overline">CURIOSITY INCLUDES TRYING AGAIN</span><h1>Your <em>Mistake Lab.</em></h1><p>Questions you missed in lessons return here for another chance. It is practice, not a score or judgment.</p><span>${questions.length} ${questions.length===1?'question':'questions'} to revisit</span></header>
+ <header class="mistakes-hero"><span class="overline">CURIOSITY INCLUDES TRYING AGAIN</span><h1>Your <em>Mistake Lab.</em></h1><p>Revisit missed questions with a fresh transfer case. This is practice, not a grade.</p><span>${questions.length} ${questions.length===1?'question':'questions'} to revisit</span></header>
  ${first?`<section class="mistake-practice"><div class="mistake-heading"><span class="overline">${esc(first.courseTitle)} · ${esc(first.title)}</span><span>${first.wrong} missed ${first.wrong===1?'attempt':'attempts'}</span></div><h2>${esc(first.question)}</h2>
  ${questions.length>1?`<div class="mistake-pager" aria-label="Practice question navigation"><span>Question ${(mistakeIndex%questions.length)+1} of ${questions.length}</span><div>${button('Previous','mistake-cycle','secondary-button','data-id="prev"')}${button('Next question','mistake-cycle','secondary-button','data-id="next"')}</div></div>`:''}
  <div class="mistake-options">${first.options.map((answer,i)=>`<button type="button" class="mistake-option" data-action="mistake-answer" data-id="${esc(first.id)}" data-index="${i}"><span>${String.fromCharCode(65+i)}</span><strong>${esc(answer)}</strong></button>`).join('')}</div>
- <p class="mistake-guidance">Correct answers clear questions from your practice queue. To complete a lesson, return to its full explanation and activity.</p>
+ <p class="mistake-guidance">Correct answers clear this queue. Lesson completion still requires the full lesson.</p>
  ${mistakeFeedback?.id===first.id?`<div class="mistake-explanation" role="status"><strong>Not quite — here's what to remember.</strong><p>${esc(first.explanation)}</p></div>`:''}
+ ${mistakeFeedback?.id===first.id?recoveryStudioPanel(first):''}
  ${button(`Read the lesson ${icon('arrow',16)}`,'open-lesson','secondary-button',`data-course="${esc(first.courseId)}" data-lesson="${esc(first.lessonId)}"`)}</section>`:
  `<div class="mistake-empty"><span>✦</span><h2>Your queue is clear.</h2><p>Any missed lesson checks will appear here for another try.</p>${button('Explore lessons','goto-explore','primary-button')}</div>`}
  ${questions.length>1?`<div class="mistake-upcoming"><span class="overline">ALSO TO REVISIT</span>${questions.filter(c=>c.id!==first?.id).slice(0,6).map(c=>`<button type="button" data-action="open-lesson" class="mistake-next" data-course="${esc(c.courseId)}" data-lesson="${esc(c.lessonId)}"><span>${esc(c.title)}</span><small>${esc(c.courseTitle)}</small>${icon('arrow',15)}</button>`).join('')}</div>`:''}
- <p class="info-line">Mistake records are private, saved in your browser and included in JSON backups. Shadow Library questions remain hidden until its mature-content acknowledgment.</p></main>`;
+ <p class="info-line">Mistakes stay in local backups. Mature questions remain hidden until unlocked.</p></main>`;
 }
 
 function reviewPage() {
