@@ -1908,6 +1908,10 @@ try{
    const root=page.locator('#skill-spiral');
    await root.waitFor();
    expect(await root.locator('.skill-spiral-stage').count()===3,subject+' offers three difficulty levels');
+   const fold=root.locator('.skill-spiral-fold');
+   expect(await fold.evaluate(el=>el.open)===false,subject+' long practice starts collapsed');
+   await fold.locator(':scope > summary').click();
+   expect(await fold.evaluate(el=>el.open)===true,subject+' learner expands practice');
    const first=root.locator('.skill-spiral-response').first();
    expect(await first.evaluate(el=>el.open)===false,subject+' worked answer starts concealed');
    const before=await getState(page);
