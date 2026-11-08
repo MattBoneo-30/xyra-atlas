@@ -63,16 +63,19 @@ test('each authored defense and counterargument are source-hashed for independen
 test('mastery interface joins offline build without external calls or separate progress records',()=>{
  const app=fs.readFileSync('app.js','utf8');
  assert.match(app,/masteryDefensePanel\(l\.masteryDefense,c\.id,l\.id\)/);
- assert.match(app,/composeDefenseNote\(field\.value/);
- assert.match(app,/field\.dispatchEvent\(new Event\('input'/);
- assert.match(app,/route\.courseId!==courseId/);
- assert.match(app,/field\.dataset\.fieldNote!==idFor/);
+ const interaction=fs.readFileSync('masterydefense-interactions.js','utf8');
+ assert.match(interaction,/composeDefenseNote\(field\.value/);
+ assert.match(interaction,/field\.dispatchEvent\(new Event\('input'/);
+ assert.match(interaction,/field\.dataset\.fieldNote!==courseId/);
+ assert.match(interaction,/panel\.closest\('\.reading-page'\)/);
+ assert.doesNotMatch(interaction,/\b(fetch|localStorage|sessionStorage|persist)\s*\(/);
  const module=fs.readFileSync('masterydefenses.js','utf8');
  assert.doesNotMatch(module,/\b(fetch|localStorage|sessionStorage|persist)\s*\(/);
- for(const file of ['masterydefenses.js','mastery-defenses.css']){
+ for(const file of ['masterydefenses.js','masterydefense-interactions.js','mastery-defenses.css']){
   assert.ok(fs.readFileSync('sw.js','utf8').includes('/'+file));
   assert.ok(fs.readFileSync('scripts/build.mjs','utf8').includes("'"+file+"'"));
  }
  assert.match(fs.readFileSync('index.html','utf8'),/mastery-defenses\.css/);
+ assert.match(fs.readFileSync('index.html','utf8'),/masterydefense-interactions\.js/);
  assert.equal(JSON.parse(fs.readFileSync('docs/stage-gates.json','utf8')).gates[0].complete,false);
 });
