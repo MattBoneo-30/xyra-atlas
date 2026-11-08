@@ -63,6 +63,14 @@ export function buildEditorialReviewPacket(courses,clinics){
       })),rubric:[...lesson.portfolioJourney.rubric],
       limitations:lesson.portfolioJourney.limit
     }}:{}),
+    // Author-authored supplementary fieldwork is not expert approval.
+    ...(lesson.frontierWorkshop?{frontierFieldwork:{
+      reviewStatus:'pending-independent-review',
+      title:lesson.frontierWorkshop.title,
+      method:lesson.frontierWorkshop.method,
+      workedCase:lesson.frontierWorkshop.caseStudy,
+      evidenceChallenge:lesson.frontierWorkshop.assignment
+    }}:{}),
     // Two-step beginner workshops are authored evidence and require signoff.
     ...(lesson.beginnerWorkshop?{guidedBeginnerWorkshop:{
       key:lesson.beginnerWorkshop.key,reviewStatus:'pending-independent-review',
