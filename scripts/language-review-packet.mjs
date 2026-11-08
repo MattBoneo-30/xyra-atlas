@@ -7,6 +7,7 @@ import {LANGUAGE_STARTER_PATHS} from '../languagestarterpaths.js';
 import {LANGUAGE_LITERACY_CHECKS} from '../languageliteracy.js';
 import {SENTENCE_BRIDGES} from '../sentencebridges.js';
 import {LANGUAGE_FIELDWORK} from '../frontiercurriculum.js';
+import {LANGUAGE_EVIDENCE_MISSIONS} from '../languageevidence.js';
 const reviewCriteria=Object.freeze([
  'Translation expresses the intended meaning accurately in this locale.',
  'Register and politeness are appropriate for the stated everyday scenario.',
@@ -92,7 +93,21 @@ export function buildLanguageReviewPacket(packs,languages){
    return {id:'fieldwork:'+code,content,contentHash:languagePhraseHash(content),
     reviewStatus:'awaiting-qualified-language-review',reviewerAttestation:null,reviewCriteria};
   });
- return {schemaVersion:1,status:'native-or-qualified-editor-review-required',foundations,literacyChecks,sentenceBridges,fieldwork,
+ const transferMissions=Object.entries(LANGUAGE_EVIDENCE_MISSIONS)
+  .filter(([code])=>names.has(code)&&Object.hasOwn(packs,code)&&
+   Array.isArray(packs[code]?.phrases)&&packs[code].phrases.length>=7)
+  .map(([code,item])=>{
+   const content={code,language:names.get(code),locale:packs[code].locale,
+    title:item.title,problem:item.problem,independentTask:item.task,
+    verificationProtocol:item.verification,
+    reviewedPhraseModels:[3,4,5,6].map(i=>({
+     id:packs[code].phrases[i].id,translation:packs[code].phrases[i].target,
+     intendedMeaning:packs[code].phrases[i].english
+    }))};
+   return {id:'transfer:'+code,content,contentHash:languagePhraseHash(content),
+    reviewStatus:'awaiting-qualified-language-review',reviewerAttestation:null,reviewCriteria};
+  });
+ return {schemaVersion:1,status:'native-or-qualified-editor-review-required',foundations,literacyChecks,sentenceBridges,fieldwork,transferMissions,
   summary:{languages:summary.length,phrases:records.length,qualifiedApprovedPhrases:0},
   languages:summary,records,notes:[
   'A phrase may be grammatical but inappropriate or unnatural in a specific region or situation.',
@@ -172,6 +187,17 @@ export function renderLanguageReviewMarkdown(packet){
     'Limitations: '+mdEscape(c.caveat),
     'Exact content hash: '+mdEscape(fieldwork.contentHash),
     '**Status: Unreviewed.** Qualified native/regional review required.','');
+  }
+  const transfer=packet.transferMissions?.find(item=>item.content.code===lang.code);
+  if(transfer){
+   const c=transfer.content;
+   chunks.push('','### Real-world language transfer — unreviewed','',
+    'Scenario: '+mdEscape(c.problem),
+    'Independent learner task: '+mdEscape(c.independentTask),
+    'Verification standard: '+mdEscape(c.verificationProtocol),
+    'Existing authored phrase models: '+c.reviewedPhraseModels.map(p=>mdEscape(p.id+': '+p.translation)).join(' / '),
+    'Exact content hash: '+mdEscape(transfer.contentHash),
+    '**Status: Unreviewed.** Independent native/regional review is required.','');
   }
   chunks.push('', 'Editorial questions:',...reviewCriteria.map(x=>'- [ ] '+x),'',
    'Evidence of independent human approval: **not supplied**.','');
