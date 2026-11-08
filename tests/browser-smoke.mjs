@@ -1163,6 +1163,32 @@ try{
   await page.locator('.sentence-bridge-locked').waitFor();
   expect(await page.locator('[data-action="sentence-bridge-answer"]').count()===0,'Japanese kana prerequisite is preserved');
  });
+ await smoke('evidence-calibration-two-step-revision-mobile',{viewport:{width:390,height:844},isMobile:true,hasTouch:true},async page=>{
+  await page.goto(BASE+'/#/lesson/business/sales',{waitUntil:'domcontentloaded'});
+  const root=page.locator('#calibration-lab');
+  await root.waitFor();
+  const first=root.locator('[data-calibration-round="0"]');
+  const second=root.locator('[data-calibration-round="1"]');
+  expect(await second.isHidden(),'new evidence must be initially hidden');
+  expect(await root.locator('[data-calibration-reveal]').isHidden(),'reveal is gated on a first judgment');
+  const before=await getState(page);
+  await first.locator('[data-option="1"]').click();
+  expect((await first.locator('.calibration-feedback').textContent()).includes('Check the trade-off.'),'unsupported first decision gets grounded explanation');
+  expect(await second.isVisible(),'new evidence follows first decision');
+  await second.locator('[data-option="2"]').click();
+  expect(await root.locator('[data-calibration-finish]').isVisible(),'completed revision exposes transfer task');
+  await first.locator('[data-option="0"]').click();
+  expect(await root.locator('[data-calibration-finish]').isHidden(),'changing original judgment invalidates downstream conclusion');
+  expect(await second.locator('[aria-pressed="true"]').count()===0,'stale revision choice is cleared');
+  await second.locator('[data-option="0"]').click();
+  expect((await second.locator('.calibration-feedback').textContent()).includes('Best supported in this case.'),'revised decision provides specific feedback');
+  expect(await root.locator('[data-calibration-finish]').isVisible(),'self-review available after revised decision');
+  const after=await getState(page);
+  expect(JSON.stringify(before.completed||[])===JSON.stringify(after.completed||[]),'calibration cannot mark a lesson complete');
+  expect(JSON.stringify(before.answers||{})===JSON.stringify(after.answers||{}),'calibration cannot alter graded answer records');
+  const overflow=await mobileOverflow(page);
+  expect(overflow.scroll<=overflow.width+2,'new fieldwork decision controls fit narrow screens');
+ });
  await smoke('twenty-language-guided-foundations-mobile',{viewport:{width:390,height:844},isMobile:true,hasTouch:true},async page=>{
   await page.goto(BASE+'/#/language',{waitUntil:'domcontentloaded'});
   await page.locator('#language-select').waitFor();
