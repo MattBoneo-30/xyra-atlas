@@ -273,10 +273,19 @@ const drafts={
   rubric:['Are claims tied to dated records?','Do I act on verified financial risks rather than speculative motives?','Is the verification or escalation path independent?']
  }
 };
-const entries=Object.entries(drafts).map(([id,value])=>[id,Object.freeze({
+// Different preferred-option positions prevent a repeated answer-key pattern.
+ // Deterministic rotation keeps exported review hashes stable across sessions.
+const rotated=(round,offset)=>{
+ const count=round.options.length,shift=offset%count;
+ return Object.freeze({...round,
+  preferred:(round.preferred+shift)%count,
+  options:Object.freeze(round.options.map((_,index)=>Object.freeze(
+    round.options[(index-shift+count)%count])))});
+};
+const entries=Object.entries(drafts).map(([id,value],index)=>[id,Object.freeze({
  ...value,
- first:Object.freeze({...value.first,options:Object.freeze(value.first.options.map(o=>Object.freeze(o)))}),
- second:Object.freeze({...value.second,options:Object.freeze(value.second.options.map(o=>Object.freeze(o)))}),
+ first:rotated(value.first,index%3),
+ second:rotated(value.second,(index+1)%3),
  rubric:Object.freeze([...value.rubric]),
  reviewStatus:'pending-independent-review'
 })]);
