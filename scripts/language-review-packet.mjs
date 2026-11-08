@@ -80,7 +80,8 @@ export function buildLanguageReviewPacket(packs,languages){
     reviewerAttestation:null,reviewCriteria};
   }));
  const fieldwork=Object.entries(LANGUAGE_FIELDWORK)
-  .filter(([code])=>names.has(code)&&Object.hasOwn(packs,code))
+  .filter(([code])=>names.has(code)&&Object.hasOwn(packs,code)&&
+    Array.isArray(packs[code]?.phrases)&&packs[code].phrases.length>=7)
   .map(([code,unit])=>{
    const used=[3,4,6].map(index=>packs[code].phrases[index]);
    if(used.some(item=>!item))throw Error('Missing fieldwork phrase: '+code);
