@@ -52,10 +52,10 @@ export function specialistConceptPanel(item){
    '<h3>'+esc(section.heading)+'</h3><p>'+esc(section.body)+'</p></section>'
  ).join('');
  return '<section class="specialist-concept-study" id="specialist-concept-study" aria-label="Specialist concept continuation">'+
-  '<div class="deep-study-head"><span class="overline">SPECIALIST CONTINUATION · EXTEND THE METHOD</span>'+
+  '<div class="specialist-study-head"><span class="overline">SPECIALIST CONTINUATION · EXTEND THE METHOD</span>'+
   '<h2>'+esc(item.title)+'</h2><p>Explore three additional connected concepts, an applied case and a reasoned comparison. This material remains unreviewed and does not change the original study or completion record.</p></div>'+
   sections+
-  '<aside class="worked-example"><span class="overline">APPLIED SPECIALIST CASE</span>'+
+  '<aside class="specialist-worked-case"><span class="overline">APPLIED SPECIALIST CASE</span>'+
   '<h3>Trace the method</h3><p>'+esc(item.case)+'</p></aside>'+
   '<section class="specialist-concept-task"><h3>Your independent challenge</h3><p>'+esc(item.task)+'</p>'+
   '<details class="specialist-concept-answer"><summary>Reveal worked comparison after trying</summary><p>'+esc(item.model)+'</p></details>'+
