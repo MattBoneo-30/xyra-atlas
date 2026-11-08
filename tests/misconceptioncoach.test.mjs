@@ -4,6 +4,7 @@ import fs from 'node:fs';
 import {COURSES,totalLessons} from '../data.js';
 import {MISCONCEPTION_COACH,misconceptionUnit,misconceptionReason,quizChoiceFeedback,validateMisconceptionCoach} from '../misconceptioncoach.js';
 import {CLINICS} from '../clinics.js';
+import {buildMistakeQueue,recordQuizAttempt} from '../mistakes.js';
 import {buildEditorialReviewPacket,reviewHash} from '../scripts/editorial-review-packet.mjs';
 
 test('each of 14 subjects and three stages has two accurate wrong-option explanations',()=>{
@@ -57,6 +58,23 @@ test('never attach a wrong-choice explanation to a changed quiz, answer index or
  assert.equal(quizChoiceFeedback('psychology',edited,0),'');
  assert.equal(misconceptionUnit('psychology',{...lesson,id:'another-lesson'}),null);
  assert.equal(quizChoiceFeedback('psychology',lesson,3),'');
+});
+test('mistake queue carries full IDs but choice coaching resolves the underlying lesson identity',()=>{
+ for(const course of COURSES){
+  for(const stage of ['Beginner','Intermediate','Advanced']){
+   const target=MISCONCEPTION_COACH[course.id][stage];
+   const l=course.lessons.find(x=>x.id===target.lessonId);
+   const wrong=l.quiz.options.findIndex((_,i)=>i!==l.quiz.correct);
+   const mistakes=recordQuizAttempt({},COURSES,course.id+':'+l.id,wrong,Date.UTC(2026,10,8));
+   const queue=buildMistakeQueue(COURSES,mistakes,{includeMature:true});
+   assert.equal(queue.length,1);
+   const row=queue[0];
+   assert.equal(row.id,course.id+':'+l.id);
+   assert.equal(row.lessonId,l.id);
+   assert.equal(misconceptionReason(course.id,row,wrong),misconceptionReason(course.id,l,wrong));
+   assert.match(quizChoiceFeedback(course.id,row,wrong),/Why this particular option falls short/);
+  }
+ }
 });
 test('all 84 feedback claims join exact content hashes for independent editorial review',()=>{
  const packet=buildEditorialReviewPacket(COURSES,CLINICS);
