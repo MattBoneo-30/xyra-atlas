@@ -93,6 +93,16 @@ export function buildEditorialReviewPacket(courses,clinics){
       selfReviewCriteria:[...lesson.masteryDefense.checks],
       limits:lesson.masteryDefense.boundary
     }}:{}),
+    // All 42 progressive exercises, model reasoning and misconception checks
+    // are authored material and must be included in independent review hashes.
+    ...(lesson.skillSpiral?{progressiveSkillSpiral:{
+      reviewStatus:'pending-independent-review',
+      stages:lesson.skillSpiral.map(item=>({
+       stage:item.stage,title:item.title,scenario:item.scenario,
+       independentTask:item.challenge,workedComparison:item.worked,
+       commonMisconception:item.misconception,evidenceStandard:item.proof
+      }))
+    }}:{}),
     // Two-step beginner workshops are authored evidence and require signoff.
     ...(lesson.beginnerWorkshop?{guidedBeginnerWorkshop:{
       key:lesson.beginnerWorkshop.key,reviewStatus:'pending-independent-review',
