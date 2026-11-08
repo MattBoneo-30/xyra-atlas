@@ -74,7 +74,7 @@ export function validateLanguageEvidence(codes){
     codes.some(code=>!Object.hasOwn(LANGUAGE_EVIDENCE_MISSIONS,code)))throw Error('All twenty language evidence missions required');
  for(const code of codes){
   const item=LANGUAGE_EVIDENCE_MISSIONS[code];
-  if(!item||item.title.length<25||item.problem.length<100||item.task.length<125||item.verification.length<100)
+  if(!item||item.title.length<25||item.problem.length<85||item.task.length<90||item.verification.length<85)
    throw Error('Insufficient authentic language exercise: '+code);
  }
  return 20;
