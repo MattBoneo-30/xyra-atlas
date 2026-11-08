@@ -8,6 +8,7 @@ import {authoredCourseLinks} from '../sourcehealth.js';
 import {CURRICULUM_OBJECTIVES} from '../curriculumpath.js';
 import {EVIDENCE_PROTOCOLS} from '../evidenceprotocols.js';
 import {getRecoveryCase} from '../recoverystudio.js';
+import {misconceptionUnit} from '../misconceptioncoach.js';
 const toRecord=value=>value!==null&&typeof value==='object'&&!Array.isArray(value);
 const highStakes=new Set(['laws','savings','science','relationships','digital','shadow']);
 export function reviewHash(content){
@@ -28,6 +29,7 @@ export function buildEditorialReviewPacket(courses,clinics){
    const content={title:lesson.title,stage:lesson.stage,
     stageLearningObjective:objective?{goal:objective.goal,evidence:objective.evidence}:null,
     ...(course.lessons.find(l=>l.stage===lesson.stage)===lesson?{mistakeRecoveryStage:{...getRecoveryCase(course.id,lesson.stage)}}:{}),
+    ...(misconceptionUnit(course.id,lesson)?{choiceSpecificMisconceptions:{...misconceptionUnit(course.id,lesson),wrongOptions:misconceptionUnit(course.id,lesson).wrongOptions.map(row=>({...row}))}}:{}),
     ...(lesson.portfolioJourney?{independentEvidenceStandards:{reviewStatus:'pending-independent-review',stages:EVIDENCE_PROTOCOLS[course.id]?.map(([title,protocol,trap],i)=>({stage:['Beginner','Intermediate','Advanced'][i],title,reviewProtocol:protocol,commonFailure:trap}))}}:{}),
     intro:lesson.intro,
     sections:lesson.sections.map(s=>({heading:s.heading,body:s.body})),
