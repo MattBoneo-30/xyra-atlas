@@ -94,7 +94,7 @@ const drafts={
   reveal:'An unavoidable family obligation removes four hours from the planned sixteen, while a partially completed feature has an unclear remaining effort.',
   second:{prompt:'How do you handle the changed forecast?',
    options:[
-    ['Re-estimate the remaining critical task, protect a shippable minimum, and communicate what moves.','A good plan updates with evidence and preserves explicit completion criteria.'],
+    ['Re-estimate the remaining critical task, protect a shippable minimum, and communicate what moves.','A good plan updates with evidence, preserves explicit completion criteria, and communicates which lower-priority commitment must move.'],
     ['Continue promising the full original scope without revisiting the timeline.','Known capacity loss should change the forecast; otherwise deadlines are presented without support.'],
     ['Start three new tasks to compensate for the delay.','Additional work in progress increases switching and makes the bottleneck harder to finish.']
    ],preferred:0},
@@ -108,13 +108,13 @@ const drafts={
    options:[
     ['Request repetition and confirm only the detail you actually recognized.','Admitting a gap is more useful than pretending a full answer was understood. The phrase must suit the speaker and locale.'],
     ['Nod and walk in an unverified direction.','Polite appearance does not substitute for understanding directions, particularly in an unfamiliar place.'],
-    ['Repeat the first question more loudly without listening to the reply.','Volume does not by itself resolve a vocabulary or speech-rate gap.']
+    ['Repeat the first question more loudly without listening to the reply.','Volume alone does not resolve a vocabulary or speech-rate gap; this response repeats the request without checking whether the answer was understood.']
    ],preferred:0},
   reveal:'The repeated reply still contains an unfamiliar direction. A public map and the written station name are available nearby.',
   second:{prompt:'What should you confirm before following unfamiliar directions?',
    options:[
     ['Use the written destination and map to confirm one usable step, and seek a slower explanation if needed.','Combining textual evidence with clarification closes the comprehension gap without claiming native-like fluency.'],
-    ['Guess a verb ending and give directions back to the listener.','Unsupported invented morphology risks confusion and does not confirm the route.'],
+    ['Guess a verb ending and give directions back to the listener.','Unsupported invented morphology risks confusion and does not confirm the route; request an independently checked example instead.'],
     ['Treat hearing the same phrase twice as proof of understanding.','Repeated sound exposure is not equivalent to interpreting the information correctly.']
    ],preferred:0},
   transfer:'Create a four-turn clarification exchange and identify which translation, register and pronunciation details need a qualified regional reviewer.',
@@ -127,7 +127,7 @@ const drafts={
    options:[
     ['State normal reply hours and ask the team to agree on an urgent escalation route.','This defines a behavior you can control while protecting genuine operational needs.'],
     ['Accuse everyone who sends a message of trying to harm you.','Assigning motive without evidence can intensify conflict and avoids designing a workable team norm.'],
-    ['Answer every message instantly but resent the team privately.','Without a communicated expectation, the pattern is likely to continue.']
+    ['Answer every message instantly but resent the team privately.','Without a communicated expectation, the pattern is likely to continue and both sides may remain unaware of the practical boundary.']
    ],preferred:0},
   reveal:'A colleague now describes an actual production outage affecting customers, but has used the same informal channel as routine reminders.',
   second:{prompt:'How should this communication boundary evolve for genuine emergencies?',
@@ -145,15 +145,15 @@ const drafts={
   first:{prompt:'What is the most useful challenge to the causal claim?',
    options:[
     ['Compare outcomes before and after adoption while accounting for baseline team differences.','The voluntary early-adopter group may differ before treatment; a suitable comparison is necessary before causal attribution.'],
-    ['Accept the vendor’s explanation because the observed average is higher.','A between-group difference alone cannot rule out selection or confounding.'],
+    ['Accept the vendor’s explanation because the observed average is higher.','A between-group difference alone cannot rule out selection or confounding, particularly when experienced teams volunteered first.'],
     ['Reject all software interventions as incapable of affecting productivity.','The data are insufficient to prove this effect, not evidence that no tool could ever help.']
    ],preferred:0},
   reveal:'After controlling for baseline output, the apparent advantage shrinks. Other changes to staffing happened at the same time.',
   second:{prompt:'How should your causal conclusion change after the new evidence?',
    options:[
     ['Describe the association as uncertain, investigate staffing effects, and design a fairer comparison.','The new information weakens confidence in the original attribution without proving the tool has no effect.'],
-    ['Keep claiming the original improvement as fully caused by the tool.','That conclusion is inconsistent with the new confounding evidence.'],
-    ['State that the tool has been proven harmful.','A shrinking advantage does not establish a negative causal effect.']
+    ['Keep claiming the original improvement as fully caused by the tool.','That conclusion is inconsistent with the new confounding evidence and hides uncertainty about the cause of the observed change.'],
+    ['State that the tool has been proven harmful.','A shrinking advantage does not establish a negative causal effect; a fairer comparison would be needed before claiming either direction.']
    ],preferred:0},
   transfer:'Draw a three-node confounding diagram and identify one result that would change your preferred causal story.',
   rubric:['Are baseline differences accounted for?','Did I distinguish uncertainty from a negative finding?','Is the next test designed to rule out a plausible alternative?']
@@ -165,7 +165,7 @@ const drafts={
    options:[
     ['Open the official app or a known bookmark independently and inspect account alerts.','Independent access avoids handing credentials to a link whose destination the sender controls.'],
     ['Enter your password on the text link to see whether the threat is real.','Credential submission is exactly what many phishing pages seek; testing it can create the incident.'],
-    ['Send the message to friends with instructions to click it.','Redistribution may expose more people without establishing legitimacy.']
+    ['Send the message to friends with instructions to click it.','Redistribution may expose more people without establishing legitimacy and can amplify an attacker-controlled credential collection link.']
    ],preferred:0},
   reveal:'You remember entering credentials on the linked page before realizing it looked suspicious. It is unknown whether they were captured.',
   second:{prompt:'What changes from verification to containment?',
@@ -190,7 +190,7 @@ const drafts={
   second:{prompt:'What belongs in the case study update?',
    options:[
     ['Document the environment difference, isolate a reproduction, fix or disclose the failure, and show the verification result.','An accurate defect history can be stronger engineering evidence than an unqualified success claim.'],
-    ['Remove the deployment link but keep the “fully deployed” claim.','That headline becomes misleading once the operational limitation is known.'],
+    ['Remove the deployment link but keep the “fully deployed” claim.','That headline becomes misleading once the operational limitation is known; describe exactly which deployment environment was verified.'],
     ['Blame the hosting provider without checking application behavior.','Attributing fault before investigation is an unsupported claim that skips debugging.']
    ],preferred:0},
   transfer:'Write a project case page with an architecture diagram, test commands, measured results and one explicitly unresolved risk.',
@@ -222,7 +222,7 @@ const drafts={
    options:[
     ['Describe the impact, listen to the other account, and agree on a specific scheduling repair.','The known facts support a repair-focused conversation; a single disagreement is not enough to infer abuse or a diagnosis.'],
     ['Diagnose one friend with a personality disorder.','No clinical evaluation is available, and labeling from an isolated dispute is unwarranted.'],
-    ['Assume a healthy friendship never involves conflict.','Disagreements can occur without coercion; the pattern and response matter.']
+    ['Assume a healthy friendship never involves conflict.','Disagreements can occur without coercion; the pattern, mutual safety and willingness to repair matter more than the mere presence of conflict.']
    ],preferred:0},
   reveal:'Later, one friend repeatedly threatens to publish private messages whenever the other declines an invitation. The person targeted feels afraid to say no.',
   second:{prompt:'How does this change the assessment?',
@@ -239,7 +239,7 @@ const drafts={
   situation:'A freelancer is offered ₱18,000 for a website with unspecified revisions, deadlines and handover criteria. The headline price seems attractive.',
   first:{prompt:'What should be clarified before accepting?',
    options:[
-    ['Deliverables, revision rounds, change requests, acceptance criteria and payment schedule.','The total workload and nonprice terms determine whether the offer is viable.'],
+    ['Deliverables, revision rounds, change requests, acceptance criteria and payment schedule.','The total workload and nonprice terms determine whether the offer is viable; undefined revisions can overwhelm a seemingly good headline price.'],
     ['Only whether the buyer can increase the upfront amount.','An improved headline can still hide unlimited effort and low effective hourly earnings.'],
     ['Nothing; ambiguity always benefits the freelancer.','Undefined responsibilities often increase dispute and unpaid revision risk for both parties.']
    ],preferred:0},
@@ -267,7 +267,7 @@ const drafts={
    options:[
     ['Stop using the unverified payment channel, request documentation, and use a trusted dispute route if needed.','The new payment demand creates a concrete financial risk even without proof of the seller’s personal motives.'],
     ['Pay quickly to test whether the shipment is real.','Using a payment as a verification experiment risks loss and may invite further demands.'],
-    ['Arrange a confrontation solely to detect lies from body language.','Nonverbal stereotypes are not a reliable proof method and may increase risk.']
+    ['Arrange a confrontation solely to detect lies from body language.','Nonverbal stereotypes are not a reliable proof method and a confrontation may increase risk while failing to establish the truth of the payment claim.']
    ],preferred:0},
   transfer:'Build a dated claims ledger and define when uncertainty is sufficient to refuse payment without accusing a person of a crime.',
   rubric:['Are claims tied to dated records?','Do I act on verified financial risks rather than speculative motives?','Is the verification or escalation path independent?']
