@@ -1971,6 +1971,37 @@ try{
   expect(await page.locator('.skill-spiral-stage').count()===3,'study sequence stays available offline');
   await context.setOffline(false);
  });
+ await smoke('subject-evidence-path-milestones-mobile-offline',{viewport:{width:390,height:844},isMobile:true,hasTouch:true},async(page,context)=>{
+   for(const courseId of ['business','psychology','languages','science']){
+    await page.goto(BASE+'/#/course/'+courseId,{waitUntil:'domcontentloaded'});
+    const root=page.locator('#evidence-path');
+    await root.waitFor();
+    const fold=root.locator('.evidence-path-overview');
+    expect(await fold.evaluate(el=>el.open)===false,courseId+' evidence milestones start compact');
+    await fold.locator('summary').first().click();
+    expect(await root.locator('.evidence-path-stage').count()===3,courseId+' has three evidence milestones');
+    expect(await root.locator('.evidence-path-criteria').count()===3,courseId+' has independent review standards');
+    expect((await root.locator('[data-evidence-status]').count())===3,'each stage has a status');
+    const first=root.locator('.evidence-path-criteria').first();
+    const before=await getState(page);
+    await first.locator('summary').click();
+    expect(await first.evaluate(el=>el.open)===true,'review explanation opens on demand');
+    const after=await getState(page);
+    expect(JSON.stringify(before.completed||[])===JSON.stringify(after.completed||[]),'checking evidence does not complete a lesson');
+    expect(JSON.stringify(before.answers||{})===JSON.stringify(after.answers||{}),'checking evidence does not change quiz scores');
+    const overflow=await mobileOverflow(page);
+    expect(overflow.scroll<=overflow.width+8,courseId+' evidence path fits mobile');
+   }
+   await page.goto(BASE+'/#/course/business',{waitUntil:'domcontentloaded'});
+   await page.locator('#evidence-path').waitFor();
+   await page.evaluate(async()=>{await navigator.serviceWorker.ready;});
+   await page.reload({waitUntil:'domcontentloaded'});
+   await page.waitForFunction(()=>Boolean(navigator.serviceWorker.controller));
+   await context.setOffline(true);
+   await page.reload({waitUntil:'domcontentloaded'});
+   expect(await page.locator('#evidence-path').count()===1,'evidence protocol remains available offline');
+   await context.setOffline(false);
+  });
  await smoke('subject-portfolio-journeys-mobile-offline',{viewport:{width:390,height:844},isMobile:true,hasTouch:true,deviceScaleFactor:2},async(page,context)=>{
   for(const id of ['psychology','laws','business','savings','time','languages','communication','thinking','digital','career','science','relationships','negotiation']){
    await page.goto(BASE+'/#/course/'+id,{waitUntil:'domcontentloaded'});
