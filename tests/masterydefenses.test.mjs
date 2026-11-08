@@ -24,7 +24,8 @@ test('all fourteen advanced subjects include a distinct written evidence defense
   assert.match(panel,/data-action="mastery-insert-template"/);
   assert.match(panel,/data-mastery-lesson=/);
   assert.match(panel,/Advanced mastery defense assignment/);
-  assert.doesNotMatch(panel,/Mark lesson complete|automatic grade|mastery achieved/);
+  assert.doesNotMatch(panel,/Mark lesson complete|mastery achieved/);
+  assert.match(panel,/No automatic grade/);
  }
  assert.equal(titles.size,14);
  assert.equal(attachMasteryDefenses(COURSES),0,'re-attach is idempotent');
