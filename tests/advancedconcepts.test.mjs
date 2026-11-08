@@ -48,6 +48,7 @@ test('fourteen distinct specialist continuations enrich published advanced lesso
   const rendered=specialistConceptPanel(entry);
   assert.equal((rendered.match(/class="specialist-concept-section"/g)||[]).length,3);
   assert.equal((rendered.match(/class="specialist-concept-answer"/g)||[]).length,1);
+  assert.doesNotMatch(rendered,/class="deep-study-head"|class="worked-example"/,'specialist content must not impersonate legacy sections');
   assert.equal((rendered.match(/<li>/g)||[]).length,4);
   assert.match(rendered,/qualified specialist review/i);
   assert.doesNotMatch(rendered,/data-action="complete-lesson"/);
