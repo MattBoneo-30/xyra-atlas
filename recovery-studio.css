@@ -1,0 +1,12 @@
+/* Level-specific recovery practice. No automatic grading or stored answers. */
+.recovery-studio{margin:18px 0;padding:clamp(14px,2.6vw,22px);border:1px solid var(--line-bright);border-radius:14px;background:var(--card-soft)}
+.recovery-studio>.overline{color:var(--gold)}
+.recovery-studio h3{font-size:18px;color:var(--text);line-height:1.4;margin:9px 0 12px}
+.recovery-studio p{font-size:13px;line-height:1.8;color:var(--muted);overflow-wrap:anywhere;max-width:76ch}
+.recovery-studio .recovery-studio-warning{font-size:12px}
+.recovery-studio-prompt{padding:13px 15px;background:var(--card);border-left:3px solid var(--gold);border-radius:8px;color:var(--text)!important}
+.recovery-studio-method{margin:12px 0;padding:13px;border:1px solid var(--line);background:var(--card);border-radius:11px}
+.recovery-studio-method summary{color:var(--gold);font-size:13px;font-weight:700;line-height:1.5;cursor:pointer}
+.recovery-studio-method summary:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
+.recovery-studio-method p strong,.recovery-studio-verify strong{color:var(--text)}
+@media(max-width:450px){.recovery-studio{padding:13px}}
