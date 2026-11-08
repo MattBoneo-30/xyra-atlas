@@ -3,6 +3,7 @@ import {attachFrontierWorkshops} from './frontiercurriculum.js';
 import {attachCalibrationLabs} from './calibrationlabs.js';
 import {attachMasteryDefenses} from './masterydefenses.js';
 import {attachSkillSpirals} from './skillspirals.js';
+import {attachAdvancedConceptStudies} from './advancedconcepts.js';
 import {DEEPER_FOUNDATIONS} from './depthcurriculum.js';
 import {deepenOriginalFoundations} from './foundationdepth.js';
 import {deepenIntermediateLessons} from './intermediatedepth.js';
@@ -350,6 +351,7 @@ attachFrontierWorkshops(COURSES);
 attachCalibrationLabs(COURSES);
 attachMasteryDefenses(COURSES);
 attachSkillSpirals(COURSES);
+attachAdvancedConceptStudies(COURSES);
 export const LANGUAGES = [
   {name:'English',flag:'🇬🇧',code:'en'}, {name:'Japanese',flag:'🇯🇵',code:'ja'},
   {name:'Korean',flag:'🇰🇷',code:'ko'}, {name:'Spanish',flag:'🇪🇸',code:'es'},
