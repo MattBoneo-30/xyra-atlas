@@ -1,7 +1,7 @@
 /* Specialist full-lesson continuations: substantive teaching within the reader. */
 .specialist-concept-study{margin:27px 0 32px;border:1px solid var(--line-bright);border-radius:18px;padding:clamp(15px,3vw,25px);background:var(--card);scroll-margin-top:95px}
 .specialist-concept-study .deep-study-head{margin:0 0 22px}
-.specialist-concept-study .deep-study-section{margin:22px 0}
+.specialist-concept-study .specialist-concept-section{margin:22px 0;border-top:1px solid var(--line);padding-top:14px}
 .specialist-concept-study h3{font-size:17px;line-height:1.45;color:var(--text);margin:16px 0 9px}
 .specialist-concept-study p,.specialist-concept-study li{font-size:13px;line-height:1.85;color:var(--muted);overflow-wrap:anywhere;max-width:79ch}
 .specialist-concept-task{padding:17px;border:1px solid var(--line);background:var(--card-soft);border-radius:14px;margin-top:19px}
