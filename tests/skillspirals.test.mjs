@@ -38,6 +38,7 @@ test('forty-two distinct exercises form a three-stage progression for every subj
   const courseMarkup=portfolioJourneyPanel(course);
   assert.equal((courseMarkup.match(/class="skill-spiral-stage"/g)||[]).length,3);
   assert.equal((courseMarkup.match(/class="skill-spiral-response"/g)||[]).length,3);
+  assert.match(courseMarkup,/class="skill-spiral-fold"/);
   for(const linked of course.portfolioJourney.artifacts){
    assert.ok(courseMarkup.includes('#/lesson/'+course.id+'/'+linked.lessonId));
   }
