@@ -10,6 +10,7 @@ import {EVIDENCE_PROTOCOLS} from '../evidenceprotocols.js';
 import {MASTERY_RESEARCH} from '../masteryresearch.js';
 import {FIELD_EXPEDITIONS} from '../fieldexpeditions.js';
 import {FIRST_PRINCIPLES} from '../firstprinciples.js';
+import {COMPETENCY_BRIDGES} from '../competencybridges.js';
 import {QUALIFYING} from '../qualifyingclinic.js';
 import {SYNTHESIS_SEMINARS} from '../synthesisseminars.js';
 import {getRecoveryCase} from '../recoverystudio.js';
@@ -124,6 +125,15 @@ export function buildEditorialReviewPacket(courses,clinics){
        commonMisconception:item.misconception,evidenceStandard:item.proof
       }))
     }}:{}),
+    // Stage-specific competency bridges are authored teaching claims.
+    // Review exact text at Beginner, Intermediate and Advanced levels,
+    // including examples, misconceptions and evidence standards.
+    ...((lesson.beginnerWorkshop||lesson.decisionRevision||lesson.practicalStudio)?{
+      stageCompetencyBridge:{
+        stage:lesson.stage,reviewStatus:'pending-independent-review',
+        ...COMPETENCY_BRIDGES[course.id][lesson.stage]
+      }
+    }:{}),
     // Two-step beginner workshops are authored evidence and require signoff.
     ...(lesson.beginnerWorkshop?{guidedBeginnerWorkshop:{
       key:lesson.beginnerWorkshop.key,reviewStatus:'pending-independent-review',
