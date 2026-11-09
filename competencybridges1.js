@@ -111,7 +111,7 @@ export const COMPETENCY_BRIDGES_ONE={
       "objective": "Translate an aspiration into one acceptance criterion another person can verify.",
       "scenario": "A developer says a notes application is 'almost finished' but spends each day changing its theme. Search sometimes gives no feedback, including after a user types a nonmatching title.",
       "reasoning": "A useful deliverable names the person, action and observable outcome. Completion requires a normal path and a relevant failure or empty state; decorative perfection cannot substitute for functionality.",
-      "challenge": "Write three checks for searching a note and one cosmetic change that will not block release.",
+      "challenge": "Write three checks for searching a note and one cosmetic change that will not block release. Include a nonmatching search and keyboard access.",
       "feedback": "The user can find an existing note, see a clear empty-result message for a missing note and submit using a keyboard. A new shadow style is out of scope for the defined result.",
       "proof": "The task includes a repeatable result and error path, not merely an undefined 'polish' objective."
     },
