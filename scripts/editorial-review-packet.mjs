@@ -8,6 +8,7 @@ import {authoredCourseLinks} from '../sourcehealth.js';
 import {CURRICULUM_OBJECTIVES} from '../curriculumpath.js';
 import {EVIDENCE_PROTOCOLS} from '../evidenceprotocols.js';
 import {MASTERY_RESEARCH} from '../masteryresearch.js';
+import {FIELD_EXPEDITIONS} from '../fieldexpeditions.js';
 import {QUALIFYING} from '../qualifyingclinic.js';
 import {SYNTHESIS_SEMINARS} from '../synthesisseminars.js';
 import {getRecoveryCase} from '../recoverystudio.js';
@@ -158,6 +159,12 @@ export function buildEditorialReviewPacket(courses,clinics){
         independentAssignment:round.assignment,workedResponse:round.model
       })),
       rubric:[...lesson.practicalStudio.rubric]
+    }}:{}),
+    // Six independently authored longitudinal sessions per learning world:
+    // concepts, work, evidence requirements and all worked comparisons must
+    // enter the exact-content reviewer hash, not merely the UI or README.
+    ...(lesson.practicalStudio?{longitudinalFieldExpedition:{
+      reviewStatus:'pending-independent-review',...FIELD_EXPEDITIONS[course.id]
     }}:{}),
     // The independent master-level dossier is rendered on the advanced lesson.
     // Its entire authored packet is part of the exact-content review hash.
