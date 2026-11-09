@@ -7,6 +7,7 @@ import {ADVANCED_DEPTH} from './advanceddepth.js';
 import {MASTERY_RESEARCH,masteryResearchPanel} from './masteryresearch.js';
 import {qualificationPanel} from './qualifyingclinic.js';
 import {fieldExpeditionPanel} from './fieldexpeditions.js';
+import {firstPrinciplesPanel} from './firstprinciples.js';
 import {PRACTICAL_STUDIOS_ONE} from './practicalstudios1.js';
 import {PRACTICAL_STUDIOS_TWO} from './practicalstudios2.js';
 export const PRACTICAL_STUDIOS=Object.freeze({...PRACTICAL_STUDIOS_ONE,...PRACTICAL_STUDIOS_TWO});
@@ -55,7 +56,7 @@ export function attachPracticalStudios(courses){
 const safe=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 export function practicalStudioPanel(studio){
  if(!studio)return '';
- return '<section class="practical-studio" id="practical-studio" aria-label="Advanced practical studio">'+
+ return firstPrinciplesPanel(studio.key.split(':')[0])+'<section class="practical-studio" id="practical-studio" aria-label="Advanced practical studio">'+
   '<span class="overline">ADVANCED · BUILD, TEST AND EXPLAIN</span><h2>'+safe(studio.title)+'</h2>'+
   '<p class="practical-studio-intro">This is a two-round applied studio. Make each artifact before opening the worked response. It is fictional, optional and not a professional or graded qualification.</p>'+
   '<div class="practical-studio-situation"><h3>Starting brief</h3><p>'+safe(studio.situation)+'</p></div>'+
