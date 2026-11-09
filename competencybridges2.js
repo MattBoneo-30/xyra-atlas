@@ -137,7 +137,7 @@ export const COMPETENCY_BRIDGES_TWO={
       "objective": "Distinguish an opening offer from the realistic alternative available to you.",
       "scenario": "A freelancer is offered ₱8,000 for a prototype estimated at fifty hours. Another available job pays ₱6,000 for twenty-five hours. The larger offer sounds better without considering time or risk.",
       "reasoning": "A negotiation alternative is what you can actually do if the current deal is declined. Gross hourly comparisons are a starting point, but payment risk, scope and total work matter. An imaginary future client is not a credible BATNA.",
-      "challenge": "Compute the two initial gross hourly rates and list one missing term that could alter the choice.",
+      "challenge": "Compute the two initial gross hourly rates and list one missing term that could alter the choice, such as revision scope or payment timing.",
       "feedback": "The first offer is ₱160 per estimated hour, the second ₱240. Unlimited revisions or approval-only payment could make the apparently higher fee worse; these terms should be clarified.",
       "proof": "The comparison uses expected work, not only headline price, and names an actual alternative."
     },
