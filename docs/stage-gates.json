@@ -154,6 +154,11 @@
           "type": "commit",
           "value": "b6cb0569c68416588f3e962f1056242e190cdb85",
           "note": "56 original inquiry stations added to exact-content specialist review records and printable reviewer packet; source-level checks completed, all professional approvals still pending, and no lesson identity or saved grade changed."
+        },
+        {
+          "type": "commit",
+          "value": "c654eea5c243a2d692cd7f49655720bca4086d9d",
+          "note": "14 original interdisciplinary case studies now staged, each with two subject lenses, independent assignment, worked reasoning, alternative interpretation and evidence criterion. Exact source included in specialist review hashes and print packet. Specialist signoff remains outstanding."
         }
       ],
       "blockers": [
@@ -232,6 +237,11 @@
           "type": "commit",
           "value": "b6cb0569c68416588f3e962f1056242e190cdb85",
           "note": "Four-stop illustrated inquiry maps now staged for all 14 subject pages, with 56 original explanations, tasks, countercases and evidence standards. Source syntax, coverage, responsive CSS, offline registration and app size checked in isolation. Real-device and owner artwork acceptance pending."
+        },
+        {
+          "type": "commit",
+          "value": "c654eea5c243a2d692cd7f49655720bca4086d9d",
+          "note": "Six-node concept maps with 84 links to existing courses and lessons, responsive original-art disclosure panels and offline CSS/JS, source-level verification completed. Genuine owner art approval, full browser suite and physical-device checks remain outstanding."
         }
       ],
       "blockers": [
