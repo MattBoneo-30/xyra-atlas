@@ -3,8 +3,10 @@
  * Decisions are revised when the learner reveals new evidence.
  */
 import {TRANSFER_LABS} from './transferlabs.js';
+import {SYNTHESIS_SEMINARS,synthesisSeminarPanel,validateSynthesisSeminars} from './synthesisseminars.js';
 import {DECISION_REVISIONS_ONE} from './decisionrevisions1.js';
 import {DECISION_REVISIONS_TWO} from './decisionrevisions2.js';
+validateSynthesisSeminars();
 export const DECISION_REVISIONS=Object.freeze({...DECISION_REVISIONS_ONE,...DECISION_REVISIONS_TWO});
 export const DECISION_REVISION_COUNT=Object.keys(DECISION_REVISIONS).length;
 export function attachDecisionRevisions(courses){
@@ -55,5 +57,5 @@ export function decisionRevisionPanel(item){
    '<div class="decision-revision-change"><h3>Independent follow-up</h3><p>'+safe(item.follow)+'</p></div></details>'+
   '<div class="decision-revision-rubric"><h3>Check how your conclusion changed</h3><ol>'+
     item.rubric.map(x=>'<li>'+safe(x)+'</li>').join('')+'</ol></div>'+
-  '<p class="fineprint">'+safe(item.caveat)+' Content awaits independent review and does not change stored grades or certification.</p></section>';
+  '<p class="fineprint">'+safe(item.caveat)+' Content awaits independent review and does not change stored grades or certification.</p></section>'+synthesisSeminarPanel(SYNTHESIS_SEMINARS[item.key.split(':')[0]]);
 }
