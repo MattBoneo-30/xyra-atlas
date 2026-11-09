@@ -85,3 +85,39 @@
 @media(min-width:1100px){.qualifying-cases{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:460px){.qualifying-clinic,.qualifying-case,.qualifying-defense{padding:13px}}
 @media(prefers-reduced-motion:reduce){.qualifying-choice{transition:none}}
+
+/* Opt-in six-session field expedition: compact until the learner chooses to expand. */
+.field-expedition{margin:26px 0;color:var(--text);scroll-margin-top:90px}
+.field-expedition-disclosure,.field-expedition-preview{border:1px solid var(--line-bright);border-radius:17px;background:var(--card);overflow:hidden}
+.field-expedition-disclosure>summary,.field-expedition-preview>summary{padding:clamp(16px,3vw,24px);cursor:pointer;list-style-position:inside}
+.field-expedition-disclosure>summary strong,.field-expedition-preview>summary strong{display:block;font-size:clamp(17px,2.3vw,21px);line-height:1.4;margin:9px 0}
+.field-expedition-summary-note{display:block;color:var(--muted);font-size:12px}
+.field-expedition-disclosure>summary:focus-visible,.field-expedition-model>summary:focus-visible,.field-expedition-preview>summary:focus-visible,.field-expedition-preview a:focus-visible{outline:3px solid var(--gold);outline-offset:-3px}
+.field-expedition-body{padding:0 clamp(14px,3vw,25px) clamp(16px,3vw,25px)}
+.field-expedition p,.field-expedition-preview p{font-size:13px;line-height:1.85;overflow-wrap:anywhere}
+.field-expedition-intro{color:var(--muted);margin:0 0 18px}
+.field-expedition-context,.field-expedition-defense{padding:16px;border:1px solid var(--line);border-radius:12px;background:var(--card-soft)}
+.field-expedition-context h3,.field-expedition-defense h3{font-size:17px;margin:0 0 9px}
+.field-expedition-context p,.field-expedition-defense p{margin:0}
+.field-expedition-cadence{padding:11px 0;color:var(--muted);font-size:12px!important}
+.field-expedition-sessions{list-style:none;counter-reset:field-expedition-step;padding:0;display:grid;gap:14px;margin:16px 0 22px}
+.field-expedition-session{padding:17px;background:var(--card-soft);border:1px solid var(--line);border-radius:13px}
+.field-expedition-kicker{font-size:11px;letter-spacing:.08em;font-weight:750;color:var(--gold)}
+.field-expedition-session h3{font-size:17px;margin:10px 0;line-height:1.4}
+.field-expedition-session h4,.field-expedition-defense h4{font-size:13px;margin:14px 0 7px}
+.field-expedition-session p{margin:5px 0}
+.field-expedition-principle{color:var(--muted)}
+.field-expedition-model{margin:16px 0 0;border-radius:9px;border:1px solid var(--line-bright)}
+.field-expedition-model>summary{padding:13px;cursor:pointer;font-size:12px;line-height:1.65;font-weight:700}
+.field-expedition-model>p{padding:0 13px 14px;margin:0}
+.field-expedition-defense ol{margin:10px 0 0;padding-left:23px;font-size:12px;line-height:1.85}
+.field-expedition-defense li{padding:3px 0}
+.field-expedition-body>.fineprint{font-size:11px;color:var(--muted);margin:18px 0 0}
+.field-expedition-preview{margin:23px 0}
+.field-expedition-preview>summary{padding:17px}
+.field-expedition-preview>summary strong{font-size:15px;margin:6px 0 0}
+.field-expedition-preview>p,.field-expedition-preview>a{margin:9px 18px;font-size:12px;line-height:1.8}
+.field-expedition-preview>a{display:inline-block;color:var(--gold);font-weight:750;text-underline-offset:3px}
+.field-expedition-preview>.fineprint{font-size:11px;color:var(--muted);margin-bottom:19px}
+@media(min-width:1050px){.field-expedition-sessions{grid-template-columns:repeat(2,minmax(0,1fr))}.field-expedition-session{min-width:0}}
+@media(max-width:450px){.field-expedition-disclosure>summary{padding:14px}.field-expedition-session,.field-expedition-context,.field-expedition-defense{padding:13px}}
