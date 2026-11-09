@@ -1,3 +1,4 @@
+import {competencyBridgePanel} from './competencybridges.js';
 /** Advanced practical studios: two rounds for each of fourteen subjects.
  * Fictional numbers/cases. Validate source data before any mutation so the
  * published curriculum and learner progress remain stable on failure.
@@ -56,7 +57,7 @@ export function attachPracticalStudios(courses){
 const safe=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 export function practicalStudioPanel(studio){
  if(!studio)return '';
- return firstPrinciplesPanel(studio.key.split(':')[0])+'<section class="practical-studio" id="practical-studio" aria-label="Advanced practical studio">'+
+ return firstPrinciplesPanel(studio.key.split(':')[0])+competencyBridgePanel(studio.key.split(':')[0],'Advanced')+'<section class="practical-studio" id="practical-studio" aria-label="Advanced practical studio">'+
   '<span class="overline">ADVANCED · BUILD, TEST AND EXPLAIN</span><h2>'+safe(studio.title)+'</h2>'+
   '<p class="practical-studio-intro">This is a two-round applied studio. Make each artifact before opening the worked response. It is fictional, optional and not a professional or graded qualification.</p>'+
   '<div class="practical-studio-situation"><h3>Starting brief</h3><p>'+safe(studio.situation)+'</p></div>'+
