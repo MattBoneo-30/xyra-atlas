@@ -217,6 +217,11 @@
           "type": "commit",
           "value": "a895864c1c2aac799ed308d22d8a52ffc694b421",
           "note": "Source-level visual upgrade: original-art horizon gallery, numbered course scenes, three-stage reader compass, ephemeral reading-position ribbon, reduced-motion/contrast/mobile CSS, enforced main bundle size, and unexecuted physical-device acceptance matrix. Does not constitute art approval or physical device QA."
+        },
+        {
+          "type": "commit",
+          "value": "014b863b048625fbc1bdde558bad9a15cd20daef",
+          "note": "Staged only on dev/atlas-visual-experience: original-art 14-world Explore portals, canonical world numbers under filters, next-stage previews, honest completion meters, and personal 14-node learning constellation. Branch-specific Vercel preview deployments disabled. Static renderer, syntax, offline registration and budget checks done; no human art signoff or physical-device QA. See docs/visual-development-branch.md."
         }
       ],
       "blockers": [
