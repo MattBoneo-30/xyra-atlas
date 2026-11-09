@@ -42,6 +42,21 @@ function synthesisSupplement(unit){
  '<h5>Transfer challenge</h5>'+p(unit.transfer)+
  '<h5>Limitations</h5>'+p(unit.limits)+'</section>';
 }
+function qualificationSupplement(unit){
+ if(!unit)return '';
+ return '<section class="review-appendix"><h4>Mastery qualification decisions — externally verify each alternative and its rationale</h4>'+
+ '<h5>'+esc(unit.title)+'</h5>'+
+ unit.cases.map((caseItem,i)=>
+  '<h6>Decision '+(i+1)+': '+esc(caseItem.title)+'</h6>'+p(caseItem.scene)+
+  '<ol class="choices">'+caseItem.choices.map((choice,j)=>
+   '<li'+(j===caseItem.preferred?' class="answer"':'')+'>'+
+    esc(choice.label)+(j===caseItem.preferred?' (author preferred, unverified)':'')+
+    p(choice.reason)+'</li>').join('')+'</ol>'+
+  '<strong>Transfer task</strong>'+p(caseItem.transfer)).join('')+
+ '<h5>Independent research defense</h5>'+p(unit.defense)+
+ '<h5>Defense criteria</h5>'+list(unit.criteria,true)+
+ '<p class="disclaimer">Authored preferred options, calculations and interpretations require independent review, not automatic certification.</p></section>';
+}
 function lesson(item){
  const c=item.content;
  return '<details id="lesson-'+slug(item.id)+'" class="review-item"><summary><strong>'+esc(c.title)+
@@ -58,7 +73,7 @@ function lesson(item){
  '<h4>Evidence and transfer practice</h4>'+list(c.stagePractice||[],true)+
  '<h4>Assessment question</h4>'+p(c.quiz.question)+answers(c.quiz.options,c.quiz.correct)+
  '<h4>Assessment rationale</h4>'+p(c.quiz.explanation)+sources(c.references)+
- researchSupplement(c.masterLevelResearchPracticum)+synthesisSupplement(c.intermediateSynthesisSeminar)+
+ researchSupplement(c.masterLevelResearchPracticum)+synthesisSupplement(c.intermediateSynthesisSeminar)+qualificationSupplement(c.qualificationDecisions)+
  '<h4>Human review checklist</h4>'+list(item.checklist||[])+
  '<p class="disclaimer">This author-supplied copy is not an independent expert approval. Review actual evidence, applicability, context and safety before signing.</p>'+
  '</div></details>';
