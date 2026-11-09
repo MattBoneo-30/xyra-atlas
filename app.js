@@ -336,7 +336,7 @@ function explore() {
     <div class="filter-row" aria-label="Filter subjects">${[['all','All'],['mind','Mindset'],['skills','Life skills'],['shadow','The shadows']].map(([id,label])=>button(esc(label),'filter',`filter-pill ${filter===id?'active':''}`,`data-id="${id}" aria-pressed="${filter===id}"`)).join('')}</div>
     <div class="section-heading list-title"><div><span class="overline">YOUR KNOWLEDGE LIBRARY</span><h2>${filter==='shadow'?'The hidden side':filter==='all'?'All subjects':'Subjects for you'}</h2></div><span class="result-count">${matches.length} ${matches.length===1?'subject':'subjects'}</span></div>
     <div class="atlas-explore-results">${matches.length
-      ?renderAtlasWorldGallery(matches,courseProgress,c=>c.lessons.find(l=>!isCompleted(idFor(c.id,l.id)))?.stage||'Advanced',getStageArt)
+      ?renderAtlasWorldGallery(matches,courseProgress,c=>c.lessons.find(l=>!isCompleted(idFor(c.id,l.id)))?.stage||'Advanced',getStageArt,c=>COURSES.indexOf(c)+1)
       :`<div class="empty-state">${icon('search',35)}<h3>No matches found</h3><p>Try another word, or browse all subjects.</p>${button('Show all subjects','reset-search','primary-button')}</div>`}</div>
     <div class="learning-invite"><div class="learning-invite-icon">${icon('languages',25)}</div><div><strong>Learning a new language?</strong><p>Choose one of 20 starting paths and try a seven-day sprint.</p></div>${button(chevron,'language','icon-button','aria-label="Open Language Lab"')}</div>
   </main>`;
