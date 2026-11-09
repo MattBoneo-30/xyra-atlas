@@ -299,7 +299,7 @@ export const FIRST_PRINCIPLES_TWO={
       "setup": "A fictional trial flow prominently advertises a free start, while a recurring fee appears only after an additional screen. Cancellation requires several confusing steps. The product team reports that subscriptions increased after the redesign.",
       "variables": "Record what the user sees before acceptance, whether payment terms are understandable, how refusal and cancellation work, accessibility barriers and what evidence shows actual comprehension.",
       "reasoning": "Higher conversion is not evidence that consent improved. The design may create friction and misunderstanding. A safer version puts relevant billing terms before the commitment, gives a clear decline and cancellation option and tests whether users understand what will happen.",
-      "task": "Create a before/after interface inventory and a consent comprehension task that does not reward accidental agreement."
+      "task": "Create a before/after interface inventory and a consent comprehension task that does not reward accidental agreement or hide refusal."
     },
     "contradiction": {
       "claim": "Because more users signed up, the interface must be fair and the company has no ethical reason to change it.",
