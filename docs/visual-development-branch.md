@@ -20,6 +20,12 @@ The connected Vercel project reached its build-rate limit while individual commi
 
 This is added to the pre-existing Vercel configuration; its CSP, security headers, output directory and production settings are retained. It disables the specified branch's automatic deployment in Vercel's documented Git integration. It does not by itself prevent manually triggered redeployments, and the dashboard should be checked before starting future previews. Do not turn off production deployments while development is staged.
 
+## Additional staged course experience: visual inquiry trails
+
+A second integrated learning-and-design phase adds **56 original case-based inquiry stations across 14 subjects**. Four connected stops per course require observing facts, explaining mechanisms, challenging the preferred account and transferring the method to a different situation. Every stop has an independent assignment, worked comparison hidden behind an accessible disclosure, tempting mistake and evidence-quality standard. The course interface uses an illustrated four-node map and cards, compact on mobile and collapsed by default. It references existing lesson IDs and reads existing completion status without changing grades or saved records.
+
+Sources: `atlas-inquiry.js`, `inquirytrails1.js`, `inquirytrails2.js`, `atlas-inquiry.css`, `tests/inquiry-trail.test.mjs`. The static bundle and service-worker precache include the new files. All authored material enters the exact-source specialist reviewer packet and printable copy. See `docs/inquiry-trail-review.md` for the full evidence and accessibility checklist. **Review and physical-device signoff remain pending.**
+
 ## Visual improvements currently staged
 
 ### 1. Atlas of Worlds · Explore
