@@ -57,6 +57,24 @@ function qualificationSupplement(unit){
  '<h5>Defense criteria</h5>'+list(unit.criteria,true)+
  '<p class="disclaimer">Authored preferred options, calculations and interpretations require independent review, not automatic certification.</p></section>';
 }
+function fieldExpeditionSupplement(unit){
+ if(!unit)return '';
+ return '<section class="review-appendix"><h4>Longitudinal field expedition — independently verify every concept, task, worked example and limitation</h4>'+
+ '<h5>'+esc(unit.title)+'</h5>'+
+ '<strong>Learning mission</strong>'+p(unit.mission)+
+ '<strong>Continuing case</strong>'+p(unit.context)+
+ unit.sessions.map((session,i)=>
+   '<h6>Session '+(i+1)+': '+esc(session.name)+'</h6>'+
+   '<strong>Conceptual basis</strong>'+p(session.principle)+
+   '<strong>Independent assignment</strong>'+p(session.assignment)+
+   '<strong>Evidence standard</strong>'+p(session.evidence)+
+   '<strong>Illustrative response — independently verify</strong>'+p(session.worked)
+ ).join('')+
+ '<h5>Final research defense</h5>'+p(unit.defense)+
+ '<h5>Five quality checks</h5>'+list(unit.criteria,true)+
+ '<h5>Boundaries and safety</h5>'+p(unit.boundary)+
+ '<p class="disclaimer">Self-directed learning, not independent expert approval or certification. The time spacing is optional and no progress is recorded.</p></section>';
+}
 function lesson(item){
  const c=item.content;
  return '<details id="lesson-'+slug(item.id)+'" class="review-item"><summary><strong>'+esc(c.title)+
@@ -73,7 +91,7 @@ function lesson(item){
  '<h4>Evidence and transfer practice</h4>'+list(c.stagePractice||[],true)+
  '<h4>Assessment question</h4>'+p(c.quiz.question)+answers(c.quiz.options,c.quiz.correct)+
  '<h4>Assessment rationale</h4>'+p(c.quiz.explanation)+sources(c.references)+
- researchSupplement(c.masterLevelResearchPracticum)+synthesisSupplement(c.intermediateSynthesisSeminar)+qualificationSupplement(c.qualificationDecisions)+
+ researchSupplement(c.masterLevelResearchPracticum)+synthesisSupplement(c.intermediateSynthesisSeminar)+qualificationSupplement(c.qualificationDecisions)+fieldExpeditionSupplement(c.longitudinalFieldExpedition)+
  '<h4>Human review checklist</h4>'+list(item.checklist||[])+
  '<p class="disclaimer">This author-supplied copy is not an independent expert approval. Review actual evidence, applicability, context and safety before signing.</p>'+
  '</div></details>';
