@@ -11,6 +11,7 @@ import {MASTERY_RESEARCH} from '../masteryresearch.js';
 import {FIELD_EXPEDITIONS} from '../fieldexpeditions.js';
 import {FIRST_PRINCIPLES} from '../firstprinciples.js';
 import {INQUIRY_TRAILS} from '../atlas-inquiry.js';
+import {CROSSROAD_CASES} from '../atlas-crossroads.js';
 import {COMPETENCY_BRIDGES} from '../competencybridges.js';
 import {QUALIFYING} from '../qualifyingclinic.js';
 import {SYNTHESIS_SEMINARS} from '../synthesisseminars.js';
@@ -171,6 +172,11 @@ export function buildEditorialReviewPacket(courses,clinics){
         independentAssignment:round.assignment,workedResponse:round.model
       })),
       rubric:[...lesson.practicalStudio.rubric]
+    }}:{}),
+    // The exact interdisciplinary case, both lenses, opposing interpretation,
+    // worked reasoning and evidence standard belong in human review hashes.
+    ...(course.lessons.find(l=>l.stage==='Beginner')===lesson?{crossWorldAppliedMission:{
+      reviewStatus:'pending-independent-review',...CROSSROAD_CASES[course.id]
     }}:{}),
     // The four-stop inquiry map is original course-level teaching, not a score.
     // Attach once per subject to the first published Beginner lesson so every
