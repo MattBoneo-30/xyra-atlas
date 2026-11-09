@@ -43,10 +43,12 @@ export function renderAtlasExploreBanner(total){
  </section>`;
 }
 
-export function renderAtlasWorldGallery(courses,progressFor,nextStageFor,getStageArt){
+export function renderAtlasWorldGallery(courses,progressFor,nextStageFor,getStageArt,worldOrderFor){
  if(!Array.isArray(courses)||!courses.length)return '';
  const cards=courses.map((course,index)=>{
   const progress=visualWorldProgress(course,progressFor);
+  const sourcePosition=typeof worldOrderFor==='function'?Number(worldOrderFor(course)):index+1;
+  const worldNumber=Number.isInteger(sourcePosition)&&sourcePosition>0?sourcePosition:index+1;
   const stage=stageForWorld(course,nextStageFor);
   const scene=typeof getStageArt==='function'?getStageArt(course.id,stage):null;
   const img=localArt(scene?.src || '/assets/'+course.art+'.svg');
@@ -59,7 +61,7 @@ export function renderAtlasWorldGallery(courses,progressFor,nextStageFor,getStag
      <span class="atlas-world-portal-visual">
        <img src="${esc(img)}" alt="" loading="lazy" decoding="async"/>
        <span class="atlas-world-portal-shade" aria-hidden="true"></span>
-       <span class="atlas-world-portal-index" aria-hidden="true">WORLD ${String(index+1).padStart(2,'0')}</span>
+       <span class="atlas-world-portal-index" aria-hidden="true">WORLD ${String(worldNumber).padStart(2,'0')}</span>
        <span class="atlas-world-portal-stage">${esc(stageName)}</span>
      </span>
      <span class="atlas-world-portal-content">
