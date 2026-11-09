@@ -20,3 +20,39 @@
 .chapter-map-studio{margin-bottom:9px}
 @media(max-width:450px){.practical-studio{padding:13px}.practical-studio-task{padding:10px}}
 @media(prefers-reduced-motion:reduce){.practical-studio-model summary{transition:none}}
+
+/* Master-level research packets. Distinct from existing practical studios. */
+.mastery-research{scroll-margin-top:90px;margin:32px 0;padding:clamp(15px,3vw,30px);background:var(--card);border:1px solid var(--line-bright);border-radius:18px;overflow-wrap:anywhere;color:var(--text)}
+.mastery-research h2{font-size:clamp(21px,3vw,28px);line-height:1.28;margin:10px 0 14px}
+.mastery-research h3{font-size:clamp(17px,2vw,20px);margin:0 0 11px;line-height:1.35}
+.mastery-research h4{font-size:clamp(14px,2vw,17px);margin:8px 0 12px;line-height:1.4}
+.mastery-research p{font-size:13px;line-height:1.85}
+.mastery-research-brief{color:var(--muted);font-size:14px!important;margin:0 0 24px!important}
+.mastery-research-question{border-left:3px solid var(--gold);padding:14px 17px;background:var(--card-soft);border-radius:9px}
+.mastery-research-question strong{font-size:12px;color:var(--gold)}
+.mastery-research-question p{margin:9px 0 0}
+.mastery-research-exhibits,.mastery-research-phases,.mastery-research-counter,.mastery-research-transfer,.mastery-research-rubric{margin-top:23px}
+.mastery-research-exhibits ol,.mastery-research-rubric ol{margin:0;padding-left:23px}
+.mastery-research-exhibits li{padding:10px 7px;line-height:1.7}
+.mastery-research-exhibits li+li{border-top:1px solid var(--line)}
+.mastery-research-exhibits li strong{display:inline-block;font-size:13px}
+.mastery-research-exhibits li p{margin:7px 0 0;color:var(--muted)}
+.mastery-research-phase{margin:13px 0;padding:17px;border:1px solid var(--line);background:var(--card-soft);border-radius:12px}
+.mastery-research-phase p{margin:0}
+.mastery-research-index{font-size:11px;letter-spacing:.09em;font-weight:750;color:var(--gold)}
+.mastery-research-worked{margin-top:16px;border:1px solid var(--line-bright);border-radius:10px;overflow:hidden}
+.mastery-research-worked summary{font-size:12px;line-height:1.6;cursor:pointer;padding:12px 14px;font-weight:750;color:var(--text);background:var(--bg-raised)}
+.mastery-research-worked summary:focus-visible,.mastery-research-roadmap summary:focus-visible,.mastery-research-roadmap a:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
+.mastery-research-worked p{padding:13px 14px;color:var(--muted)}
+.mastery-research-counter,.mastery-research-transfer{padding:16px;border:1px solid var(--line);border-radius:12px;background:var(--card-soft)}
+.mastery-research-rubric{border-top:1px solid var(--line);padding-top:18px}
+.mastery-research-rubric li{font-size:12px;line-height:1.8;padding:3px}
+.mastery-research>.fineprint{font-size:11px;color:var(--muted);margin-top:22px;line-height:1.7}
+.mastery-research-roadmap{margin:26px 0;border:1px solid var(--line-bright);background:var(--card);border-radius:14px;overflow:hidden}
+.mastery-research-roadmap summary{padding:17px;cursor:pointer}
+.mastery-research-roadmap summary strong{display:block;margin-top:8px;font-size:16px}
+.mastery-research-roadmap>p,.mastery-research-roadmap>ol,.mastery-research-roadmap>a{margin:10px 18px;font-size:13px;line-height:1.75}
+.mastery-research-roadmap>ol{padding-left:23px}
+.mastery-research-roadmap>a{display:inline-block;font-weight:750;color:var(--gold);text-underline-offset:3px}
+.mastery-research-roadmap>.fineprint{color:var(--muted);font-size:11px;margin-bottom:18px}
+@media(max-width:450px){.mastery-research{padding:13px}.mastery-research-phase,.mastery-research-counter,.mastery-research-transfer{padding:13px}.mastery-research-roadmap summary{padding:14px}}
