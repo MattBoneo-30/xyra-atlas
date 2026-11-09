@@ -5,6 +5,10 @@ import {COURSES} from '../data.js';
 import {MASTERY_RESEARCH,MASTERY_RESEARCH_COUNT,validateMasteryResearch,masteryResearchPanel,masteryResearchRoadmap} from '../masteryresearch.js';
 import {practicalStudioPanel} from '../practicalstudios.js';
 import {portfolioJourneyPanel} from '../portfoliojourneys.js';
+import {SYNTHESIS_SEMINARS} from '../synthesisseminars.js';
+import {CLINICS} from '../clinics.js';
+import {buildEditorialReviewPacket} from '../scripts/editorial-review-packet.mjs';
+import {renderEditorialReviewHTML} from '../scripts/editorial-review-html.mjs';
 
 test('all fourteen subjects have distinct specialist research cases and evidence',()=>{
  const ids=COURSES.map(c=>c.id);
@@ -58,4 +62,20 @@ test('new course reading modules ship in deterministic offline app shell',()=>{
  }
  assert.equal(COURSES.length,14);
  assert.equal(COURSES.reduce((sum,c)=>sum+c.lessons.length,0),139);
+});
+
+test('independent review packet and printable workbook include all new authored teaching',()=>{
+ const packet=buildEditorialReviewPacket(COURSES,CLINICS);
+ assert.equal(packet.lessons.length,139);
+ for(const course of COURSES){
+  const lessonWithResearch=packet.lessons.find(x=>x.course===course.id&&x.content.masterLevelResearchPracticum);
+  const lessonWithSeminar=packet.lessons.find(x=>x.course===course.id&&x.content.intermediateSynthesisSeminar);
+  assert.ok(lessonWithResearch,'Research missing from exact review hash '+course.id);
+  assert.ok(lessonWithSeminar,'Seminar missing from exact review hash '+course.id);
+  assert.equal(lessonWithResearch.content.masterLevelResearchPracticum.title,MASTERY_RESEARCH[course.id].title);
+  assert.equal(lessonWithSeminar.content.intermediateSynthesisSeminar.title,SYNTHESIS_SEMINARS[course.id].title);
+ }
+ const html=renderEditorialReviewHTML(packet);
+ assert.ok(html.includes(MASTERY_RESEARCH.science.title));
+ assert.ok(html.includes(SYNTHESIS_SEMINARS.psychology.title));
 });
