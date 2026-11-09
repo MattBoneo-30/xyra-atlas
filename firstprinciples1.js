@@ -304,14 +304,14 @@ export const FIRST_PRINCIPLES_ONE={
     "contradiction": {
       "claim": "Once the service is technically restored, the communication is complete and users need no further update.",
       "response": "Restoration of functionality does not settle disputed charges, missed deadlines or data exposure. Continued messages should be proportionate and limited to verified facts, but outstanding user-impact questions require an owner and a response path.",
-      "unknown": "The fictional report does not establish total affected users or whether any payment was duplicated."
+      "unknown": "The fictional report does not establish total affected users or whether any payment was duplicated. Payment records and affected-user counts still require verification."
     },
     "transfer": {
       "task": "Transfer the communication protocol to a group-project dispute where a late change is initially labeled a security emergency and later shown to be cosmetic.",
       "criteria": [
         "Verified facts and hypotheses remain separate.",
         "The public request contains safe, executable next steps.",
-        "Corrections are visible and dated.",
+        "Corrections are visible, dated and linked to newly verified evidence.",
         "Boundaries and escalation protect dignity without concealing real harm."
       ]
     },
