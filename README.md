@@ -17,6 +17,7 @@
 - **Specialist continuations:** 14 existing advanced lessons gain three full concept explanations, worked cases, independent tasks and detailed model comparisons; external review remains pending.
 - **Evidence Paths:** 42 review protocols distinguish lesson completion, private drafts and independent validation.
 - **Skill Spirals:** 42 progressive cases across 14 subjects, with worked examples, misconception checks and linked notebooks.
+- **Deep Synthesis Seminars:** 14 new subject-specific intermediate seminars, each with three substantial conceptual explanations, a fictional investigation, independent assignment, hidden worked comparison and transfer challenge (42 conceptual explanations in total). These appear after the existing decision-revision activity, remain accessible offline and do not alter lesson IDs, grades or saved progress. Independent editorial review pending.
 - **Mastery Defense:** 14 advanced writing cases. **Language Transfer:** 20 locale-aware missions. Independent reviews remain pending.
 - Local bookmarks, favorites, quizzes, progress, achievement badges, themes, and JSON export/import for transferring between devices.
 - **Recovery + Choice Coach:** 42 transfer cases; 112 authored wrong-choice explanations for 56 lessons, with clearly labeled answer comparisons for the remaining 83. All 139 lessons covered.
