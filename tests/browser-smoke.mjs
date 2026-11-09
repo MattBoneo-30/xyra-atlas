@@ -173,7 +173,20 @@ try{
    const size=await mobileOverflow(page);
    expect(size.scroll<=size.width+2,course+' advanced case fits narrow phones');
   }
-  await page.evaluate(async()=>{await navigator.serviceWorker.ready});
+  // A missing worker must fail with diagnostics instead of consuming the
+  // four-minute shard watchdog. This also detects async-import load races.
+  await page.evaluate(async()=>{
+   const deadline=15000;
+   await Promise.race([
+    navigator.serviceWorker.ready,
+    new Promise((_,reject)=>setTimeout(async()=>{
+     const reg=await navigator.serviceWorker.getRegistration().catch(()=>null);
+     reject(new Error('Offline worker not ready after '+deadline+'ms; document.readyState='+
+      document.readyState+', scope='+(reg?.scope||'none')+
+      ', active='+(reg?.active?.state||'none')+', installing='+(reg?.installing?.state||'none')));
+    },deadline))
+   ]);
+  });
   await page.reload({waitUntil:'domcontentloaded'});
   await page.waitForFunction(()=>Boolean(navigator.serviceWorker.controller));
   await context.setOffline(true);
