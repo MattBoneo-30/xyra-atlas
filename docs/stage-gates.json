@@ -212,6 +212,11 @@
           "type": "ci",
           "value": "https://github.com/MattBoneo-30/xyra-atlas/actions/runs/41776515377",
           "note": "268 Node tests, full Chromium mobile/desktop/offline smoke, Linux WebKit, static budgets: 138 files, 78 SVGs, ~1.70 MB raw, ~551 KB individual gzip totals. This is code QA, not final art approval or device verification."
+        },
+        {
+          "type": "commit",
+          "value": "a895864c1c2aac799ed308d22d8a52ffc694b421",
+          "note": "Source-level visual upgrade: original-art horizon gallery, numbered course scenes, three-stage reader compass, ephemeral reading-position ribbon, reduced-motion/contrast/mobile CSS, enforced main bundle size, and unexecuted physical-device acceptance matrix. Does not constitute art approval or physical device QA."
         }
       ],
       "blockers": [
