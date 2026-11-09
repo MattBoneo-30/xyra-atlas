@@ -1,3 +1,4 @@
+import {competencyBridgePanel} from './competencybridges.js';
 /** Counterfactual decision revision labs for every intermediate subject.
  * No extra lesson identities, grading, user data, or background operations.
  * Decisions are revised when the learner reveals new evidence.
@@ -46,7 +47,7 @@ export function attachDecisionRevisions(courses){
 const safe=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 export function decisionRevisionPanel(item){
  if(!item)return '';
- return '<section class="decision-revision" id="decision-revision" aria-label="Counterfactual decision-revision lab">'+
+ return competencyBridgePanel(item.key.split(':')[0],'Intermediate')+'<section class="decision-revision" id="decision-revision" aria-label="Counterfactual decision-revision lab">'+
   '<span class="overline">EVIDENCE CHANGES THE DECISION</span><h2>'+safe(item.title)+'</h2>'+
   '<p class="decision-revision-intro">Make an initial judgment from the available case. Reveal a new fact only after recording your reasoning; then compare your revised decision with an illustrative analysis.</p>'+
   '<div class="decision-revision-start"><h3>What is known first</h3><p>'+safe(item.case)+'</p></div>'+
