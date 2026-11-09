@@ -29,7 +29,7 @@ test('mentor view retains accessible actions, validated content escaping and emp
   lesson:{title:'Responsible research',course:'Digital literacy',minutes:8,courseId:'digital',lessonId:'digital-lesson-1'}
  }};
  const html=renderMentorPage(context);
- assert.match(html,/class="mentor-page"/);
+ assert.match(html,/class="page mentor-page"/);
  assert.match(html,/data-action="open-lesson"/);
  assert.match(html,/data-action="map"/);
  assert.match(html,/data-course="digital"/);
