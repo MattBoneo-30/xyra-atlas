@@ -1,3 +1,4 @@
+import {competencyBridgeRoadmap} from './competencybridges.js';
 /** Xyra Atlas subject portfolio trails.
  * One original project evolves through the existing Beginner, Intermediate and
  * Advanced lessons; stage artifacts are ungraded and not certifications.
@@ -85,5 +86,5 @@ export function portfolioJourneyPanel(course,{isLessonDone=()=>false,hasFieldNot
   '<ol class="portfolio-journey-stages">'+cards+'</ol>'+
   '<div class="portfolio-journey-rubric"><h3>Use these checks for the complete portfolio</h3><ul>'+
    item.rubric.map(x=>'<li>'+safe(x)+'</li>').join('')+'</ul></div>'+
-  '<p class="fineprint">'+safe(item.limit)+' All authored cases and review criteria await independent subject review.</p></section>'+skillSpiralPanel(course)+evidencePathPanel(course,{isLessonDone,hasFieldNote})+masteryResearchRoadmap(course)+fieldExpeditionPreview(course)+firstPrinciplesPreview(course);
+  '<p class="fineprint">'+safe(item.limit)+' All authored cases and review criteria await independent subject review.</p></section>'+skillSpiralPanel(course)+evidencePathPanel(course,{isLessonDone,hasFieldNote})+masteryResearchRoadmap(course)+fieldExpeditionPreview(course)+firstPrinciplesPreview(course)+competencyBridgeRoadmap(course);
 }
