@@ -1877,13 +1877,18 @@ if('serviceWorker' in navigator && location.protocol.startsWith('http')){
     if(offlineUpdateApplying){location.reload();return;}
     if(route.view==='offline')requestAnimationFrame(()=>inspectOffline());
   });
-  window.addEventListener('load',async()=>{
+  // Imported course modules may use top-level await for offline data. If the
+  // window load event has already fired, registering only inside a load handler
+  // leaves the PWA permanently unregistered. Handle both startup orderings.
+  const registerOfflineShell=async()=>{
     try{
       const reg=await navigator.serviceWorker.register('/sw.js',{updateViaCache:'none'});
       watchOfflineRegistration(reg);
       void maybeCheckForUpdates();
     }catch{/* Atlas remains usable online if service worker registration fails. */}
-  });
+  };
+  if(document.readyState==='complete')void registerOfflineShell();
+  else window.addEventListener('load',registerOfflineShell,{once:true});
 }
 if(route.view==='course'&&route.courseId==='shadow') modal='shadow';
 if(route.view==='lesson'&&route.courseId==='shadow') modal='shadow';
