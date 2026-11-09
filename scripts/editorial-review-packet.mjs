@@ -10,6 +10,7 @@ import {EVIDENCE_PROTOCOLS} from '../evidenceprotocols.js';
 import {MASTERY_RESEARCH} from '../masteryresearch.js';
 import {FIELD_EXPEDITIONS} from '../fieldexpeditions.js';
 import {FIRST_PRINCIPLES} from '../firstprinciples.js';
+import {INQUIRY_TRAILS} from '../atlas-inquiry.js';
 import {COMPETENCY_BRIDGES} from '../competencybridges.js';
 import {QUALIFYING} from '../qualifyingclinic.js';
 import {SYNTHESIS_SEMINARS} from '../synthesisseminars.js';
@@ -170,6 +171,12 @@ export function buildEditorialReviewPacket(courses,clinics){
         independentAssignment:round.assignment,workedResponse:round.model
       })),
       rubric:[...lesson.practicalStudio.rubric]
+    }}:{}),
+    // The four-stop inquiry map is original course-level teaching, not a score.
+    // Attach once per subject to the first published Beginner lesson so every
+    // worked response, pitfall and evidence standard enters the content hash.
+    ...(course.lessons.find(l=>l.stage==='Beginner')===lesson?{subjectInquiryTrail:{
+      reviewStatus:'pending-independent-review',...INQUIRY_TRAILS[course.id]
     }}:{}),
     // Each first-principles model, thought experiment, rebuttal and transfer
     // task belongs to the external expert's exact-content review hash.
