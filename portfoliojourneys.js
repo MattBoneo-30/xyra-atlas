@@ -6,6 +6,7 @@
 import {PORTFOLIO_JOURNEYS_ONE} from './portfoliojourneys1.js';
 import {PORTFOLIO_JOURNEYS_TWO} from './portfoliojourneys2.js';
 import {skillSpiralPanel} from './skillspirals.js';
+import {masteryResearchRoadmap} from './masteryresearch.js';
 import {evidencePathPanel} from './evidencepath.js';
 export const PORTFOLIO_JOURNEYS=Object.freeze({...PORTFOLIO_JOURNEYS_ONE,...PORTFOLIO_JOURNEYS_TWO});
 export const PORTFOLIO_JOURNEY_COUNT=Object.keys(PORTFOLIO_JOURNEYS).length;
@@ -82,5 +83,5 @@ export function portfolioJourneyPanel(course,{isLessonDone=()=>false,hasFieldNot
   '<ol class="portfolio-journey-stages">'+cards+'</ol>'+
   '<div class="portfolio-journey-rubric"><h3>Use these checks for the complete portfolio</h3><ul>'+
    item.rubric.map(x=>'<li>'+safe(x)+'</li>').join('')+'</ul></div>'+
-  '<p class="fineprint">'+safe(item.limit)+' All authored cases and review criteria await independent subject review.</p></section>'+skillSpiralPanel(course)+evidencePathPanel(course,{isLessonDone,hasFieldNote});
+  '<p class="fineprint">'+safe(item.limit)+' All authored cases and review criteria await independent subject review.</p></section>'+skillSpiralPanel(course)+evidencePathPanel(course,{isLessonDone,hasFieldNote})+masteryResearchRoadmap(course);
 }
