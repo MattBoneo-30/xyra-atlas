@@ -7,6 +7,7 @@
 ## Current build: offline-first release candidate (not production approved)
 
 - Mobile-first violet-and-gold UI with offline course worlds, accessible vector art and PWA icons.
+- **Immersive Visual Experience:** A three-horizon scenic home gallery reuses existing original stage artwork, course heroes gain a numbered world seal, and every lesson displays a Beginner → Intermediate → Advanced compass plus an ephemeral page-position ribbon. Stage-specific reader atmospheres, lighter visual rhythm, high-contrast/reduced-motion styles, keyboard focus, and 360px mobile layouts are bundled offline. The dedicated ~12 KB CSS layer and small visual module keep main `app.js` under its enforced 240 KB raw performance cap. No learner storage or grades change. Final artwork signoff, device QA and production approval remain pending.
 - **14 subjects and 139 structured lessons**, including sourced legal/astronomy chapters, applied capstones, Philippine casework, evidence labs and worked examples. Lesson identifiers remain stable.
 - Psychology, legal literacy, business, money, productivity, communication, critical thinking, language study, digital literacy, career, science, relationships and influence.
 - **The Shadow Library (18+ educational content)** covers manipulation, gaslighting, lies, emotional leverage, deceptive interface design, consent and adult media literacy. The age acknowledgment is a *content gate*, not verified age or identity security.
