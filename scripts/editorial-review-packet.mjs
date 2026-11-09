@@ -7,6 +7,8 @@ import {practiceGuide} from '../practiceguides.js';
 import {authoredCourseLinks} from '../sourcehealth.js';
 import {CURRICULUM_OBJECTIVES} from '../curriculumpath.js';
 import {EVIDENCE_PROTOCOLS} from '../evidenceprotocols.js';
+import {MASTERY_RESEARCH} from '../masteryresearch.js';
+import {SYNTHESIS_SEMINARS} from '../synthesisseminars.js';
 import {getRecoveryCase} from '../recoverystudio.js';
 import {misconceptionUnit} from '../misconceptioncoach.js';
 const toRecord=value=>value!==null&&typeof value==='object'&&!Array.isArray(value);
@@ -155,6 +157,15 @@ export function buildEditorialReviewPacket(courses,clinics){
         independentAssignment:round.assignment,workedResponse:round.model
       })),
       rubric:[...lesson.practicalStudio.rubric]
+    }}:{}),
+    // The independent master-level dossier is rendered on the advanced lesson.
+    // Its entire authored packet is part of the exact-content review hash.
+    ...(lesson.practicalStudio?{masterLevelResearchPracticum:{
+      reviewStatus:'pending-independent-review',...MASTERY_RESEARCH[course.id]
+    }}:{}),
+    // The deeper synthesis seminar is rendered on the intermediate decision lab.
+    ...(lesson.decisionRevision?{intermediateSynthesisSeminar:{
+      reviewStatus:'pending-independent-review',...SYNTHESIS_SEMINARS[course.id]
     }}:{}),
     // Counterfactual decisions, new evidence and revised answers require review.
     ...(lesson.decisionRevision?{decisionRevisionLab:{
