@@ -102,6 +102,9 @@ test('visual layer is local, included in PWA cache and preserves accessibility o
  assert.match(css, /@media\(prefers-contrast:more\)/);
  assert.match(css, /html\[data-theme=light\]/);
  assert.match(css, /@media\(max-width:360px\)/);
+ assert.match(css,/font-size:16px/,'iOS fields should not force viewport zoom');
+ assert.match(css,/min-height:44px/,'mobile reading interactions need touch-size targets');
+ assert.match(css,/overscroll-behavior-x:contain/);
  assert.match(css, /focus-visible/);
  assert.doesNotMatch(js,/localStorage|sessionStorage|fetch\s*\(|XMLHttpRequest|navigator\.sendBeacon/);
  assert.ok(Buffer.byteLength(css,'utf8')<18000,'Visual layer exceeds lightweight source budget');
