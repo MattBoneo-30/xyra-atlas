@@ -18,3 +18,22 @@
 .chapter-map-decision{margin-bottom:9px}
 @media(max-width:450px){.decision-revision{padding:13px}.decision-revision-start,.decision-revision-change{padding:11px}}
 @media(prefers-reduced-motion:reduce){.decision-revision-reveal summary{transition:none}}
+
+/* Advanced synthesis seminars: readable offline teaching and independently attempted work. */
+.synthesis-seminar{margin:26px 0;padding:clamp(16px,3vw,28px);border:1px solid var(--line-bright);border-radius:16px;background:var(--bg-raised);color:var(--text);overflow-wrap:anywhere}
+.synthesis-seminar h2{font-size:clamp(20px,3vw,27px);line-height:1.25;margin:9px 0 14px}
+.synthesis-seminar h3{font-size:clamp(15px,2vw,18px);line-height:1.4;margin:0 0 9px}
+.synthesis-seminar p{line-height:1.8;margin:0}
+.synthesis-thesis{font-size:14px;color:var(--muted);margin-bottom:19px!important}
+.synthesis-lenses{display:grid;grid-template-columns:minmax(0,1fr);gap:13px}
+.synthesis-lens,.synthesis-scenario,.synthesis-assignment,.synthesis-transfer{padding:18px;border:1px solid var(--line);border-radius:12px;background:var(--card-soft);margin-top:13px}
+.synthesis-lens p,.synthesis-scenario p,.synthesis-assignment p,.synthesis-transfer p{font-size:13px}
+.synthesis-index{display:block;font-size:11px;letter-spacing:.1em;color:var(--gold);margin-bottom:9px;font-weight:700}
+.synthesis-assignment{border-color:var(--line-bright)}
+.synthesis-model{border:1px solid var(--line-bright);border-radius:12px;overflow:hidden;margin:13px 0}
+.synthesis-model summary{padding:16px;cursor:pointer;font-size:13px;font-weight:750;line-height:1.5;color:var(--text);background:var(--card-soft)}
+.synthesis-model summary:focus-visible{outline:2px solid var(--gold);outline-offset:-3px}
+.synthesis-model p{padding:17px;font-size:13px}
+.synthesis-seminar>.fineprint{font-size:11px;color:var(--muted);margin-top:19px}
+@media(min-width:1000px){.synthesis-lenses{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:450px){.synthesis-seminar{padding:14px}.synthesis-lens,.synthesis-scenario,.synthesis-assignment,.synthesis-transfer{padding:13px}}
