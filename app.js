@@ -1,6 +1,7 @@
 import { COURSES, LANGUAGES, LEARNING_SPRINT, DAILY_NOTES, findCourse, findLesson, totalLessons } from './data.js';
 import {languageFieldworkPanel,frontierWorkshopPanel} from './frontiercurriculum.js';
 import {syncVisualReaderProgress,visualHorizonsPanel,visualScenePanel,visualStageCompass} from './atlas-visual-experience.js';
+import {renderAtlasExploreBanner,renderAtlasWorldGallery,renderAtlasJourneyConstellation} from './atlas-world-gallery.js';
 import {languageEvidencePanel} from './languageevidence.js';
 import {specialistConceptPanel} from './advancedconcepts.js';
 import {calibrationLabPanel} from './calibrationlabs.js';
@@ -330,11 +331,13 @@ function explore() {
     const typePass = filter==='all' || (filter==='mind' && ['psychology','relationships','thinking','communication'].includes(c.id)) || (filter==='skills' && ['business','savings','time','languages','career','digital','negotiation'].includes(c.id)) || (filter==='shadow' && c.dark);
     return searchPass && typePass;
   });
-  return `<main class="page"><div class="page-title"><span class="overline">EXPLORE THE UNKNOWN</span><h1>What will you <em>learn?</em></h1><p>Your curiosity deserves somewhere beautiful to go.</p></div>
+  return `<main class="page">${renderAtlasExploreBanner(COURSES.length)}
     <label class="search-box">${icon('search',19)}<input id="course-search" type="search" placeholder="Search knowledge, skills, lessons..." autocomplete="off" value="${esc(query)}" aria-label="Search courses"/></label>
     <div class="filter-row" aria-label="Filter subjects">${[['all','All'],['mind','Mindset'],['skills','Life skills'],['shadow','The shadows']].map(([id,label])=>button(esc(label),'filter',`filter-pill ${filter===id?'active':''}`,`data-id="${id}" aria-pressed="${filter===id}"`)).join('')}</div>
     <div class="section-heading list-title"><div><span class="overline">YOUR KNOWLEDGE LIBRARY</span><h2>${filter==='shadow'?'The hidden side':filter==='all'?'All subjects':'Subjects for you'}</h2></div><span class="result-count">${matches.length} ${matches.length===1?'subject':'subjects'}</span></div>
-    <div class="course-list">${matches.length?matches.map(c=>card(c,'horizontal')).join(''):`<div class="empty-state">${icon('search',35)}<h3>No matches found</h3><p>Try another word, or browse all subjects.</p>${button('Show all subjects','reset-search','primary-button')}</div>`}</div>
+    <div class="atlas-explore-results">${matches.length
+      ?renderAtlasWorldGallery(matches,courseProgress,c=>c.lessons.find(l=>!isCompleted(idFor(c.id,l.id)))?.stage||'Advanced',getStageArt)
+      :`<div class="empty-state">${icon('search',35)}<h3>No matches found</h3><p>Try another word, or browse all subjects.</p>${button('Show all subjects','reset-search','primary-button')}</div>`}</div>
     <div class="learning-invite"><div class="learning-invite-icon">${icon('languages',25)}</div><div><strong>Learning a new language?</strong><p>Choose one of 20 starting paths and try a seven-day sprint.</p></div>${button(chevron,'language','icon-button','aria-label="Open Language Lab"')}</div>
   </main>`;
 }
@@ -590,6 +593,7 @@ function journey() {
   return `<main class="page journey-page"><div class="page-title"><span class="overline">YOUR GROWTH IS YOURS</span><h1>Every step <em>counts.</em></h1><p>Not a race. A beautiful habit of becoming.</p></div>
     <div class="journey-banner"><div class="journey-aura">✧</div><span class="overline">YOUR ATLAS RANK</span><div class="journey-level">${Math.floor(done/6)+1}</div><h2>${done < 6?'Curious Learner':done<24?'Knowledge Seeker':'Atlas Explorer'}</h2><p>Keep exploring, one honest lesson at a time.</p>${bars(done%6,6)}<span class="subtle-count">${done%6} / 6 to next level</span></div>
     <div class="metrics-grid"><div><span class="metric-icon">${icon('book',22)}</span><strong>${done}</strong><small>Lessons learned</small></div><div><span class="metric-icon">${icon('flame',22)}</span><strong>${streak()}</strong><small>Day streak</small></div><div><span class="metric-icon">${icon('spark',22)}</span><strong>${xp}</strong><small>Knowledge XP</small></div></div>
+    ${renderAtlasJourneyConstellation(COURSES,courseProgress)}
     <section class="personal-cards-invite"><div class="personal-cards-invite-icon">${icon('book',24)}</div><div><span class="overline">YOUR IDEAS, YOUR OWN FLASHCARDS</span><h2>Study Card Workshop</h2><p>Create private recall cards and review them on a spaced schedule.</p></div>${button('Open workshop','personal-cards-open','small-button')}</section>
     <section class="insights-invite"><div><span class="overline">YOUR LEARNING LANDSCAPE</span><h2>Learning Insights</h2><p>See activity, quiz practice and illustrated subject progress.</p></div>${button('View insights','insights','small-button')}</section>
     <section class="daily-quest-invite"><div class="quest-gem">✦</div><div><span class="overline">A DAILY INVITATION</span><h2>Today's Quest</h2><p>Three thoughtful steps, with no pressure to keep a streak.</p></div>${button('Open quest','quest','small-button')}</section>
