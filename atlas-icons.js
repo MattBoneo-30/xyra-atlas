@@ -1,8 +1,7 @@
 /** Atlas local SVG icon painter, extracted from the app to keep page rendering lean.
  * Inline paths only; no external fonts, tracking, storage or event handling.
  */
-export function icon(name,size=20) {
-  const p = {
+const ICON_PATHS = Object.freeze({
     menu:'<path d="M4 7h16M4 12h16M4 17h16"/>',
     search:'<circle cx="11" cy="11" r="7"/><path d="m16.5 16.5 4.2 4.2"/>',
     arrow:'<path d="m9 18 6-6-6-6"/>', back:'<path d="m15 18-6-6 6-6"/>',
@@ -41,6 +40,8 @@ export function icon(name,size=20) {
     alert:'<path d="m12 2 10 19H2zM12 8v5m0 4v.2"/>',
     external:'<path d="M14 4h6v6m0-6-9 9M20 14v6H4V4h6"/>',
     dots:'<circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/>'
-  };
-  return `<svg aria-hidden="true" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">${p[name] || p.spark}</svg>`;
+  });
+export function icon(name,size=20){
+  const chosen=Object.hasOwn(ICON_PATHS,name)?ICON_PATHS[name]:ICON_PATHS.spark;
+  return `<svg aria-hidden="true" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">${chosen}</svg>`;
 }
