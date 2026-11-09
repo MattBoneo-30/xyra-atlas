@@ -1,5 +1,6 @@
 import { COURSES, LANGUAGES, LEARNING_SPRINT, DAILY_NOTES, findCourse, findLesson, totalLessons } from './data.js';
 import {languageFieldworkPanel,frontierWorkshopPanel} from './frontiercurriculum.js';
+import {syncVisualReaderProgress} from './atlas-visual-experience.js';
 import {languageEvidencePanel} from './languageevidence.js';
 import {specialistConceptPanel} from './advancedconcepts.js';
 import {calibrationLabPanel} from './calibrationlabs.js';
@@ -374,7 +375,7 @@ function coursePage() {
   const stageCount=stage=>c.lessons.filter(l=>l.stage===stage).length;
   const visible=c.lessons.map((lesson,index)=>({lesson,index})).filter(item=>courseStageFilter==='all'||item.lesson.stage===courseStageFilter);
   return `<main class="page course-page"><div class="subnav">${button(`${icon('back',18)} Back to learning`,'goto-explore','back-link')}${button(icon('heart',22),'favorite',`icon-button ${saved.favorites.includes(c.id)?'is-favorite':''}`,`data-id="${c.id}" aria-label="${saved.favorites.includes(c.id)?'Remove from':'Add to'} favorites"`)}</div>
-    <div class="course-hero-art course-world-hero"><img src="${esc(nextWorld?.src||'/assets/'+c.art+'.svg')}" alt="" decoding="async"/><span class="hero-art-overlay"></span><div class="course-hero-story"><span class="overline">${ladder?.complete?'WORLD EXPLORED':'YOUR NEXT WORLD · '+esc(nextWorldStage.toUpperCase())}</span><strong>${esc(nextWorld?.place||c.title)}</strong></div><span class="art-ornament" aria-hidden="true">✦</span></div>
+    <div class="course-hero-art course-world-hero"><span class="atlas-world-seal" aria-hidden="true">WORLD ${String(COURSES.findIndex(item=>item.id===c.id)+1).padStart(2,"0")} · XIV</span><img src="${esc(nextWorld?.src||'/assets/'+c.art+'.svg')}" alt="" decoding="async"/><span class="hero-art-overlay"></span><div class="course-hero-story"><span class="overline">${ladder?.complete?'WORLD EXPLORED':'YOUR NEXT WORLD · '+esc(nextWorldStage.toUpperCase())}</span><strong>${esc(nextWorld?.place||c.title)}</strong></div><span class="art-ornament" aria-hidden="true">✦</span></div>
     <div class="course-meta"><span class="overline">${esc(c.tag)}</span>${c.dark?'<span class="adult-mini">18+</span>':''}</div>
     <h1 class="course-heading">${esc(c.title)}</h1><p class="course-lead">${esc(c.subtitle)}</p>
     <div class="course-facts"><span>${icon('book',17)} ${plural(c.lessons.length,'lesson')}</span><span>${icon('clock',17)} ${c.lessons.reduce((n,l)=>n+l.minutes,0)} min</span><span>${icon('chart',17)} Beginner → Advanced</span></div>
@@ -521,8 +522,12 @@ function lessonPage() {
   const stageArt=chapterArt?null:getStageArt(c.id,l.stage);
   const practiceSteps=practiceGuide(c.id,l.stage);
   const capstoneReview=l.isCapstone?capstoneCheckProgress(saved.capstoneChecks,key,COURSES):null;
-  return `<main class="page reading-page" data-reader-size="${esc(saved.reader.size)}"><div class="subnav">${button(`${icon('back',18)} ${esc(c.title)}`,'open-course','back-link',`data-id="${esc(c.id)}"`)}${button(icon('bookmark',21),'bookmark',`icon-button ${isBookmarked(key)?'is-favorite':''}`,`data-key="${esc(key)}" aria-label="${isBookmarked(key)?'Remove bookmark':'Bookmark lesson'}"`)}</div>
+  return `<main class="page reading-page" data-reader-size="${esc(saved.reader.size)}" data-atlas-stage="${esc(l.stage.toLowerCase())}"><div class="atlas-reader-progress" aria-hidden="true"><span class="atlas-reader-progress-fill"></span></div><div class="subnav">${button(`${icon('back',18)} ${esc(c.title)}`,'open-course','back-link',`data-id="${esc(c.id)}"`)}${button(icon('bookmark',21),'bookmark',`icon-button ${isBookmarked(key)?'is-favorite':''}`,`data-key="${esc(key)}" aria-label="${isBookmarked(key)?'Remove bookmark':'Bookmark lesson'}"`)}</div>
     <div class="reading-head"><span class="overline">${esc(c.title)} · ${esc(l.stage)}${l.isCapstone?" · APPLIED CAPSTONE":""}</span><div class="reading-num">LESSON ${String(idx+1).padStart(2,'0')} OF ${String(c.lessons.length).padStart(2,'0')}</div><h1>${esc(l.title)}</h1><p>${esc(l.intro)}</p><span class="reading-time">${icon('clock',17)} ${l.deepMinutes?`${l.minutes} min quick recap · ${l.deepMinutes} min deep study`:`${l.minutes} min read & practice`}</span></div>
+    <section class="atlas-reader-compass" aria-label="Current learning level">
+      <div class="atlas-reader-compass-caption"><span class="overline">YOUR PLACE IN THE ATLAS</span><span>Lesson ${idx+1} of ${c.lessons.length}</span></div>
+      <ol class="atlas-reader-compass-steps">${["Beginner","Intermediate","Advanced"].map((stage,index)=>`<li class="${l.stage===stage?"is-current":""}" ${l.stage===stage?'aria-current="step"':""}><span class="atlas-compass-number">0${index+1}</span><strong>${stage}</strong></li>`).join("")}</ol>
+    </section>
     <figure class="reading-illustration ${chapterArt?'chapter-art-feature':stageArt?'chapter-art-feature stage-art-feature':''}">
       <img src="${chapterArt?esc(chapterArt.src):stageArt?esc(stageArt.src):'/assets/'+esc(c.art)+'.svg'}" alt="${chapterArt?esc(chapterArt.alt):stageArt?esc(stageArt.alt):''}" decoding="async"/>
       <span class="reading-illustration-glow" aria-hidden="true">✧</span>
@@ -1244,6 +1249,7 @@ function render() {
   document.getElementById('skip-content').inert=Boolean(modal);
   if(modal)requestAnimationFrame(()=>document.querySelector('.modal-card .modal-close')?.focus());
   syncLessonAudioUI();
+  syncVisualReaderProgress();
   document.title = `${view==='course' ? findCourse(route.courseId)?.title+' · ':view==='lesson' ? findLesson(route.courseId,route.lessonId)?.title+' · ' : ''}Xyra Atlas`;
 }
 function toggle(list,value) { saved[list]=saved[list].includes(value)?saved[list].filter(x=>x!==value):[...saved[list],value];persist();render(); }
