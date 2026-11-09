@@ -1,0 +1,29 @@
+/* Atlas competency bridges: one original, low-distraction study scaffold per lesson level. */
+.competency-bridge,.competency-roadmap{margin:24px 0;color:var(--text);scroll-margin-top:90px}
+.competency-bridge-details,.competency-roadmap{border:1px solid var(--line-bright);border-radius:15px;background:var(--card);overflow:hidden}
+.competency-bridge-details>summary,.competency-roadmap>summary{padding:clamp(15px,2.8vw,23px);cursor:pointer;list-style-position:inside}
+.competency-bridge-details>summary strong,.competency-roadmap>summary strong{display:block;font-size:clamp(17px,2.2vw,21px);line-height:1.4;margin:9px 0}
+.competency-bridge-subtitle{display:block;color:var(--muted);font-size:13px;line-height:1.65}
+.competency-bridge-details>summary:focus-visible,.competency-bridge-answer>summary:focus-visible,.competency-roadmap>summary:focus-visible,.competency-roadmap a:focus-visible{outline:3px solid var(--gold);outline-offset:-3px}
+.competency-bridge-body{padding:0 clamp(14px,2.8vw,23px) clamp(15px,2.8vw,23px)}
+.competency-bridge-body h3{font-size:clamp(15px,2vw,18px);margin:15px 0 8px;line-height:1.4}
+.competency-bridge-body p,.competency-roadmap p{font-size:13px;line-height:1.8;overflow-wrap:anywhere}
+.competency-bridge-body>h3:first-child{margin-top:0}
+.competency-bridge-body>p{margin:0}
+.competency-bridge-case,.competency-bridge-task,.competency-bridge-proof{margin-top:17px;padding:15px 17px;background:var(--card-soft);border:1px solid var(--line);border-radius:11px}
+.competency-bridge-case h3,.competency-bridge-task h3,.competency-bridge-proof h3{margin:0 0 8px}
+.competency-bridge-case p,.competency-bridge-task p,.competency-bridge-proof p{margin:0}
+.competency-bridge-task{border-color:var(--line-bright)}
+.competency-bridge-answer{border:1px solid var(--line-bright);border-radius:10px;margin-top:15px;overflow:hidden}
+.competency-bridge-answer>summary{cursor:pointer;font-weight:700;line-height:1.6;font-size:13px;padding:14px}
+.competency-bridge-answer>p{padding:0 14px 14px;margin:0}
+.competency-next{color:var(--muted);font-size:12px!important;margin-top:16px}
+.competency-bridge-body>.fineprint,.competency-roadmap>.fineprint{color:var(--muted);font-size:11px;line-height:1.7;margin:17px 0 0}
+.competency-roadmap>ol{list-style:none;counter-reset:competency;display:grid;gap:12px;padding:0;margin:0 17px 17px}
+.competency-roadmap>ol li{padding:14px;border:1px solid var(--line);border-radius:10px;min-width:0;background:var(--card-soft)}
+.competency-roadmap-level{display:block;font-size:11px;font-weight:750;letter-spacing:.07em;color:var(--gold)}
+.competency-roadmap ol p{margin:8px 0}
+.competency-roadmap a{font-size:12px;color:var(--gold);font-weight:750;text-underline-offset:3px}
+.competency-roadmap>.fineprint{padding:0 17px 17px;margin:0}
+@media(min-width:1000px){.competency-roadmap>ol{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:460px){.competency-bridge-case,.competency-bridge-task,.competency-bridge-proof{padding:12px}.competency-roadmap>ol{margin:0 13px 13px}}
