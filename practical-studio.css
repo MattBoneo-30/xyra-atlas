@@ -121,3 +121,39 @@
 .field-expedition-preview>.fineprint{font-size:11px;color:var(--muted);margin-bottom:19px}
 @media(min-width:1050px){.field-expedition-sessions{grid-template-columns:repeat(2,minmax(0,1fr))}.field-expedition-session{min-width:0}}
 @media(max-width:450px){.field-expedition-disclosure>summary{padding:14px}.field-expedition-session,.field-expedition-context,.field-expedition-defense{padding:13px}}
+
+/* Concept-first companion: collapsible theory with case derivation and opposing account. */
+.first-principles{margin:27px 0;color:var(--text);scroll-margin-top:90px}
+.first-principles-disclosure,.first-principles-preview{border:1px solid var(--line-bright);border-radius:16px;background:var(--card);overflow:hidden}
+.first-principles-disclosure>summary,.first-principles-preview>summary{padding:clamp(15px,3vw,24px);cursor:pointer;list-style-position:inside}
+.first-principles-disclosure>summary strong,.first-principles-preview>summary strong{display:block;font-size:clamp(18px,2.5vw,23px);line-height:1.4;margin:8px 0}
+.first-principles-summary{display:block;font-size:12px;color:var(--muted);line-height:1.65}
+.first-principles-disclosure>summary:focus-visible,.first-principles-solution>summary:focus-visible,.first-principles-rebuttal>summary:focus-visible,.first-principles-preview>summary:focus-visible,.first-principles-preview a:focus-visible{outline:3px solid var(--gold);outline-offset:-3px}
+.first-principles-body{padding:0 clamp(14px,3vw,24px) clamp(16px,3vw,24px)}
+.first-principles-body p,.first-principles-preview p{font-size:13px;line-height:1.8;overflow-wrap:anywhere}
+.first-principles-frame{margin:0 0 19px;color:var(--muted);font-size:14px!important}
+.first-principles-concepts{display:grid;grid-template-columns:minmax(0,1fr);gap:14px}
+.first-principles-concept,.first-principles-experiment,.first-principles-opposition,.first-principles-transfer{padding:17px;border:1px solid var(--line);border-radius:12px;background:var(--card-soft)}
+.first-principles-concept{min-width:0}
+.first-principles-number{font-size:11px;font-weight:750;letter-spacing:.1em;color:var(--gold)}
+.first-principles-concept h3,.first-principles-experiment h3,.first-principles-opposition h3,.first-principles-transfer h3{font-size:clamp(16px,2vw,19px);margin:9px 0;line-height:1.42}
+.first-principles-concept h4,.first-principles-experiment h4,.first-principles-opposition h4,.first-principles-transfer h4{font-size:12px;margin:14px 0 7px;line-height:1.45}
+.first-principles-concept p,.first-principles-experiment p,.first-principles-opposition p,.first-principles-transfer p{margin:0}
+.first-principles-distinction,.first-principles-failure{border-top:1px solid var(--line);margin-top:15px;padding-top:2px}
+.first-principles-distinction p,.first-principles-failure p{color:var(--muted)}
+.first-principles-experiment,.first-principles-opposition,.first-principles-transfer{margin-top:16px}
+.first-principles-solution,.first-principles-rebuttal{border:1px solid var(--line-bright);border-radius:10px;margin-top:16px}
+.first-principles-solution>summary,.first-principles-rebuttal>summary{font-size:12px;line-height:1.65;padding:12px 13px;font-weight:700;cursor:pointer}
+.first-principles-solution>p,.first-principles-rebuttal>p{padding:0 13px 13px}
+.first-principles-opposition blockquote{border-left:3px solid var(--gold);margin:0;padding:10px 13px;color:var(--text);font-size:13px;line-height:1.8}
+.first-principles-transfer ol{font-size:12px;line-height:1.8;margin:8px 0 0;padding-left:22px}
+.first-principles-transfer li{margin:7px 0}
+.first-principles-body>.fineprint{font-size:11px;color:var(--muted);margin:18px 0 0}
+.first-principles-preview{margin:22px 0}
+.first-principles-preview>summary{padding:17px}
+.first-principles-preview>summary strong{font-size:15px;margin-bottom:0}
+.first-principles-preview>p,.first-principles-preview>a{display:block;margin:9px 18px;font-size:12px;line-height:1.75}
+.first-principles-preview>a{color:var(--gold);font-weight:750;text-underline-offset:3px}
+.first-principles-preview>.fineprint{font-size:11px;color:var(--muted);margin-bottom:18px}
+@media(max-width:450px){.first-principles-concept,.first-principles-experiment,.first-principles-opposition,.first-principles-transfer{padding:13px}.first-principles-disclosure>summary{padding:14px}}
+@media(prefers-reduced-motion:reduce){.first-principles-disclosure>summary,.first-principles-solution>summary{transition:none}}
