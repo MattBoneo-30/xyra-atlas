@@ -75,6 +75,27 @@ function fieldExpeditionSupplement(unit){
  '<h5>Boundaries and safety</h5>'+p(unit.boundary)+
  '<p class="disclaimer">Self-directed learning, not independent expert approval or certification. The time spacing is optional and no progress is recorded.</p></section>';
 }
+function firstPrinciplesSupplement(item){
+ if(!item)return '';
+ return '<section class="review-appendix"><h4>First-principles conceptual companion — verify models, examples and safety limitations</h4>'+
+ '<h5>'+esc(item.title)+'</h5>'+p(item.frame)+
+ item.concepts.map((part,i)=>
+  '<h6>Concept '+(i+1)+': '+esc(part.heading)+'</h6>'+
+  '<strong>Explanation — verify each claim</strong>'+p(part.explain)+
+  '<strong>Essential distinction</strong>'+p(part.distinction)+
+  '<strong>Common failure</strong>'+p(part.failure)).join('')+
+ '<h5>Thought experiment</h5><strong>Situation</strong>'+p(item.experiment.setup)+
+ '<strong>Variables</strong>'+p(item.experiment.variables)+
+ '<strong>Independent task</strong>'+p(item.experiment.task)+
+ '<strong>Worked argument — not yet approved</strong>'+p(item.experiment.reasoning)+
+ '<h5>Adversarial claim and reply</h5>'+p(item.contradiction.claim)+
+ '<strong>Authored rebuttal</strong>'+p(item.contradiction.response)+
+ '<strong>Unknown facts</strong>'+p(item.contradiction.unknown)+
+ '<h5>Transfer exercise</h5>'+p(item.transfer.task)+
+ '<h5>Evidence standards</h5>'+list(item.transfer.criteria,true)+
+ '<h5>Boundaries</h5>'+p(item.boundary)+
+ '<p class="disclaimer">All theoretical claims and worked arguments remain pending independent specialist review; this content does not imply a credential.</p></section>';
+}
 function lesson(item){
  const c=item.content;
  return '<details id="lesson-'+slug(item.id)+'" class="review-item"><summary><strong>'+esc(c.title)+
@@ -91,7 +112,7 @@ function lesson(item){
  '<h4>Evidence and transfer practice</h4>'+list(c.stagePractice||[],true)+
  '<h4>Assessment question</h4>'+p(c.quiz.question)+answers(c.quiz.options,c.quiz.correct)+
  '<h4>Assessment rationale</h4>'+p(c.quiz.explanation)+sources(c.references)+
- researchSupplement(c.masterLevelResearchPracticum)+synthesisSupplement(c.intermediateSynthesisSeminar)+qualificationSupplement(c.qualificationDecisions)+fieldExpeditionSupplement(c.longitudinalFieldExpedition)+
+ researchSupplement(c.masterLevelResearchPracticum)+synthesisSupplement(c.intermediateSynthesisSeminar)+qualificationSupplement(c.qualificationDecisions)+fieldExpeditionSupplement(c.longitudinalFieldExpedition)+firstPrinciplesSupplement(c.firstPrinciplesCompanion)+
  '<h4>Human review checklist</h4>'+list(item.checklist||[])+
  '<p class="disclaimer">This author-supplied copy is not an independent expert approval. Review actual evidence, applicability, context and safety before signing.</p>'+
  '</div></details>';
