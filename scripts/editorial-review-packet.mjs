@@ -9,6 +9,7 @@ import {CURRICULUM_OBJECTIVES} from '../curriculumpath.js';
 import {EVIDENCE_PROTOCOLS} from '../evidenceprotocols.js';
 import {MASTERY_RESEARCH} from '../masteryresearch.js';
 import {FIELD_EXPEDITIONS} from '../fieldexpeditions.js';
+import {FIRST_PRINCIPLES} from '../firstprinciples.js';
 import {QUALIFYING} from '../qualifyingclinic.js';
 import {SYNTHESIS_SEMINARS} from '../synthesisseminars.js';
 import {getRecoveryCase} from '../recoverystudio.js';
@@ -159,6 +160,11 @@ export function buildEditorialReviewPacket(courses,clinics){
         independentAssignment:round.assignment,workedResponse:round.model
       })),
       rubric:[...lesson.practicalStudio.rubric]
+    }}:{}),
+    // Each first-principles model, thought experiment, rebuttal and transfer
+    // task belongs to the external expert's exact-content review hash.
+    ...(lesson.practicalStudio?{firstPrinciplesCompanion:{
+      reviewStatus:'pending-independent-review',...FIRST_PRINCIPLES[course.id]
     }}:{}),
     // Six independently authored longitudinal sessions per learning world:
     // concepts, work, evidence requirements and all worked comparisons must
