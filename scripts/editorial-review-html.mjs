@@ -107,6 +107,25 @@ function competencyBridgeSupplement(item){
  '<h5>Evidence of understanding</h5>'+p(item.proof)+
  '<p class="disclaimer">Pending qualified independent review. Neither completion nor a worked example certifies mastery.</p></section>';
 }
+function inquiryTrailSupplement(item){
+ if(!item)return '';
+ const stationNames=['Observe','Explain','Challenge','Transfer'];
+ return '<section class="review-appendix"><h4>Four-stop visual inquiry trail — verify all course teaching and worked reasoning</h4>'+
+  '<h5>'+esc(item.title)+'</h5>'+
+  '<strong>Learning claim</strong>'+p(item.thesis)+
+  '<strong>Continuing case</strong>'+p(item.context)+
+  item.stations.map((station,i)=>
+   '<h6>Station '+(i+1)+' — '+esc(stationNames[i])+': '+esc(station.heading)+'</h6>'+
+   '<strong>Driving question</strong>'+p(station.question)+
+   '<strong>Conceptual explanation</strong>'+p(station.concept)+
+   '<strong>Independent exercise</strong>'+p(station.challenge)+
+   '<strong>Worked comparison, pending independent review</strong>'+p(station.worked)+
+   '<strong>Misleading shortcut</strong>'+p(station.trap)+
+   '<strong>Evidence standard</strong>'+p(station.evidence)
+  ).join('')+
+  '<h5>Ethical or domain boundaries</h5>'+p(item.boundary)+
+  '<p class="disclaimer">Educational and ungraded. All 56 inquiry responses and subject facts require genuine independent expert review. No approval is implied.</p></section>';
+}
 function lesson(item){
  const c=item.content;
  return '<details id="lesson-'+slug(item.id)+'" class="review-item"><summary><strong>'+esc(c.title)+
@@ -123,7 +142,7 @@ function lesson(item){
  '<h4>Evidence and transfer practice</h4>'+list(c.stagePractice||[],true)+
  '<h4>Assessment question</h4>'+p(c.quiz.question)+answers(c.quiz.options,c.quiz.correct)+
  '<h4>Assessment rationale</h4>'+p(c.quiz.explanation)+sources(c.references)+
- researchSupplement(c.masterLevelResearchPracticum)+competencyBridgeSupplement(c.stageCompetencyBridge)+synthesisSupplement(c.intermediateSynthesisSeminar)+qualificationSupplement(c.qualificationDecisions)+fieldExpeditionSupplement(c.longitudinalFieldExpedition)+firstPrinciplesSupplement(c.firstPrinciplesCompanion)+
+ researchSupplement(c.masterLevelResearchPracticum)+competencyBridgeSupplement(c.stageCompetencyBridge)+synthesisSupplement(c.intermediateSynthesisSeminar)+qualificationSupplement(c.qualificationDecisions)+fieldExpeditionSupplement(c.longitudinalFieldExpedition)+firstPrinciplesSupplement(c.firstPrinciplesCompanion)+inquiryTrailSupplement(c.subjectInquiryTrail)+
  '<h4>Human review checklist</h4>'+list(item.checklist||[])+
  '<p class="disclaimer">This author-supplied copy is not an independent expert approval. Review actual evidence, applicability, context and safety before signing.</p>'+
  '</div></details>';
