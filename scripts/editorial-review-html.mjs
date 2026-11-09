@@ -15,6 +15,33 @@ function answers(options,correct){
  return '<ol class="choices">'+options.map((x,i)=>'<li'+(i===correct?' class="answer"':'')+'>'+
  esc(x)+(i===correct?' <strong>(authored answer — verify independently)</strong>':'')+'</li>').join('')+'</ol>';
 }
+function researchSupplement(unit){
+ if(!unit)return '';
+ return '<section class="review-appendix"><h4>Advanced master-level research practicum — verify every exhibit, calculation and response</h4>'+
+ '<h5>'+esc(unit.title)+'</h5>'+p(unit.brief)+
+ '<h5>Research question</h5>'+p(unit.question)+
+ '<h5>Fictional evidence exhibits</h5>'+unit.exhibits.map((x,i)=>
+  '<h6>Exhibit '+(i+1)+': '+esc(x.label)+'</h6>'+p(x.detail)).join('')+
+ '<h5>Investigations and worked reasoning</h5>'+unit.phases.map((x,i)=>
+  '<h6>Phase '+(i+1)+': '+esc(x.name)+'</h6>'+
+  '<strong>Independent task</strong>'+p(x.task)+
+  '<strong>Author example — verify rather than accept</strong>'+p(x.worked)).join('')+
+ '<h5>Countercase</h5>'+p(unit.counter)+
+ '<h5>Transfer assignment</h5>'+p(unit.transfer)+
+ '<h5>Quality criteria</h5>'+list(unit.rubric,true)+
+ '<h5>Boundaries</h5>'+p(unit.limits)+'</section>';
+}
+function synthesisSupplement(unit){
+ if(!unit)return '';
+ return '<section class="review-appendix"><h4>Intermediate synthesis seminar — verify all arguments and safety limits</h4>'+
+ '<h5>'+esc(unit.title)+'</h5>'+p(unit.thesis)+
+ unit.lenses.map((x,i)=>'<h6>Concept '+(i+1)+': '+esc(x.heading)+'</h6>'+p(x.body)).join('')+
+ '<h5>Scenario</h5>'+p(unit.scenario)+
+ '<h5>Independent assignment</h5>'+p(unit.assignment)+
+ '<h5>Author model — verify independently</h5>'+p(unit.model)+
+ '<h5>Transfer challenge</h5>'+p(unit.transfer)+
+ '<h5>Limitations</h5>'+p(unit.limits)+'</section>';
+}
 function lesson(item){
  const c=item.content;
  return '<details id="lesson-'+slug(item.id)+'" class="review-item"><summary><strong>'+esc(c.title)+
@@ -31,6 +58,7 @@ function lesson(item){
  '<h4>Evidence and transfer practice</h4>'+list(c.stagePractice||[],true)+
  '<h4>Assessment question</h4>'+p(c.quiz.question)+answers(c.quiz.options,c.quiz.correct)+
  '<h4>Assessment rationale</h4>'+p(c.quiz.explanation)+sources(c.references)+
+ researchSupplement(c.masterLevelResearchPracticum)+synthesisSupplement(c.intermediateSynthesisSeminar)+
  '<h4>Human review checklist</h4>'+list(item.checklist||[])+
  '<p class="disclaimer">This author-supplied copy is not an independent expert approval. Review actual evidence, applicability, context and safety before signing.</p>'+
  '</div></details>';
@@ -46,6 +74,7 @@ function decision(item){
  '</div></details>';
 }
 const style=[
+ '.review-appendix{border-top:2px solid #a18bbb;margin:28px 0;padding:16px;background:#faf8fc}.review-appendix h5{font-size:17px;margin:20px 0 8px}.review-appendix h6{font-size:14px;margin:15px 0 5px}.review-appendix p{overflow-wrap:anywhere}',
  '*,*:before,*:after{box-sizing:border-box}',
  'body{margin:0;color:#20192e;background:#f5f2fa;font:16px/1.65 system-ui,Arial,sans-serif}',
  'header{padding:30px 5%;background:#211333;color:#fff}main{max-width:1080px;margin:auto;padding:24px}',
