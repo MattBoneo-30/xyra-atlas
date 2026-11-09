@@ -104,7 +104,7 @@ test('editorial exact-content packet and printable review include 56 authored st
  }
  const html=renderEditorialReviewHTML(packet);
  assert.ok(html.includes(INQUIRY_TRAILS.psychology.title));
- assert.ok(html.includes(INQUIRY_TRAILS.shadow.title));
+ assert.ok(html.includes('The Button That Wasn&#39;t a Choice')); // HTML-escaped apostrophe
  assert.ok(html.includes('Four-stop visual inquiry trail'));
  assert.ok(html.includes('Worked comparison, pending independent review'));
 });
