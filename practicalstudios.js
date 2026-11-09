@@ -6,6 +6,7 @@
 import {ADVANCED_DEPTH} from './advanceddepth.js';
 import {MASTERY_RESEARCH,masteryResearchPanel} from './masteryresearch.js';
 import {qualificationPanel} from './qualifyingclinic.js';
+import {fieldExpeditionPanel} from './fieldexpeditions.js';
 import {PRACTICAL_STUDIOS_ONE} from './practicalstudios1.js';
 import {PRACTICAL_STUDIOS_TWO} from './practicalstudios2.js';
 export const PRACTICAL_STUDIOS=Object.freeze({...PRACTICAL_STUDIOS_ONE,...PRACTICAL_STUDIOS_TWO});
@@ -65,5 +66,5 @@ export function practicalStudioPanel(studio){
    '<details class="practical-studio-model"><summary>Reveal and compare an illustrative worked response</summary><p>'+safe(round.model)+'</p></details></article>').join('')+
   '<div class="practical-studio-rubric"><h3>Review the completed work</h3><ol>'+
    studio.rubric.map(line=>'<li>'+safe(line)+'</li>').join('')+'</ol></div>'+
-  '<p class="fineprint">Independent specialist and content-source review are pending. Worked responses are examples, not the only acceptable solutions. Existing quiz grades and stored completion remain unchanged.</p></section>'+masteryResearchPanel(MASTERY_RESEARCH[studio.key.split(':')[0]])+qualificationPanel(studio.key.split(':')[0]);
+  '<p class="fineprint">Independent specialist and content-source review are pending. Worked responses are examples, not the only acceptable solutions. Existing quiz grades and stored completion remain unchanged.</p></section>'+masteryResearchPanel(MASTERY_RESEARCH[studio.key.split(':')[0]])+qualificationPanel(studio.key.split(':')[0])+fieldExpeditionPanel(studio.key.split(':')[0]);
 }
