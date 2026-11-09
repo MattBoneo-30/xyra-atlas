@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {COURSES} from '../data.js';
 import {getStageArt} from '../stageart.js';
-import {readingPosition,syncVisualReaderProgress,installVisualExperience} from '../atlas-visual-experience.js';
+import {readingPosition,syncVisualReaderProgress,installVisualExperience,visualHorizonsPanel,visualScenePanel,visualStageCompass} from '../atlas-visual-experience.js';
 
 const source=name=>fs.readFileSync(new URL('../'+name,import.meta.url),'utf8');
 
@@ -61,18 +61,27 @@ test('the scenic horizon triptych uses real stage illustrations and real course 
   const art=getStageArt(id,stage);
   assert.ok(art?.src, 'No original illustration for '+id+' '+stage);
  }
- assert.match(app,/atlas-horizons-grid/);
- assert.match(app,/data-action="open-course" data-id="\$\{esc\(h\.id\)\}"/);
- assert.match(app,/aria-label="Open \$\{esc\(h\.course\.title\)\} learning world"/);
- assert.match(app,/loading="lazy" decoding="async"/);
+ const gallery=visualHorizonsPanel(horizons.map(([id,stage],i)=>({id,stage,number:String(i+1).padStart(2,'0'),subtitle:'Explore',course:COURSES.find(c=>c.id===id),art:getStageArt(id,stage)})),String);
+ assert.equal((gallery.match(/class="atlas-horizon-card"/g)||[]).length,3);
+ assert.match(gallery,/data-action="open-course" data-id="psychology"/);
+ assert.match(gallery,/aria-label="Open .* learning world"/);
+ assert.match(gallery,/loading="lazy" decoding="async"/);
+ assert.match(app,/visualHorizonsPanel\(horizons,esc\)/);
+ const scene=visualScenePanel((label,action)=>'<button data-action="'+action+'">'+label+'</button>');
+ assert.match(scene,/atlas-lantern-library.svg/);
+ assert.match(scene,/data-action="open-corner"/);
 });
 
 test('lesson reader shows stage path, honest position ribbon and existing illustration',()=>{
  const app=source('app.js');
  assert.match(app,/data-atlas-stage="\$\{esc\(l\.stage\.toLowerCase\(\)\)\}"/);
  assert.match(app,/class="atlas-reader-progress" aria-hidden="true"/);
- assert.match(app,/class="atlas-reader-compass"/);
- assert.match(app,/aria-current="step"/);
+ const compass=visualStageCompass(1,8,'Intermediate');
+ assert.match(app,/visualStageCompass\(idx,c.lessons.length,l.stage\)/);
+ assert.match(compass,/class="atlas-reader-compass"/);
+ assert.equal((compass.match(/class="atlas-compass-number"/g)||[]).length,3);
+ assert.equal((compass.match(/aria-current="step"/g)||[]).length,1);
+ assert.match(compass,/Lesson 2 of 8/);
  assert.match(app,/class="reading-illustration/);
  assert.match(app,/syncVisualReaderProgress\(\);/);
  assert.match(app,/WORLD \$\{String\(COURSES\.findIndex/);
@@ -96,4 +105,5 @@ test('visual layer is local, included in PWA cache and preserves accessibility o
  assert.match(css, /focus-visible/);
  assert.doesNotMatch(js,/localStorage|sessionStorage|fetch\s*\(|XMLHttpRequest|navigator\.sendBeacon/);
  assert.ok(Buffer.byteLength(css,'utf8')<18000,'Visual layer exceeds lightweight source budget');
+ assert.ok(Buffer.byteLength(source('app.js'),'utf8')<240000,'Main script exceeds existing performance budget');
 });
