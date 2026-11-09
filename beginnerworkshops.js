@@ -1,3 +1,4 @@
+import {competencyBridgePanel} from './competencybridges.js';
 /** Applied second-foundation workshops for all Atlas subjects.
  * Original cases. Two independently attempted activities per subject.
  * No new lesson IDs, new grading, user storage, or external requests.
@@ -52,7 +53,7 @@ export function attachBeginnerWorkshops(courses){
 const safe=s=>String(s??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
 export function beginnerWorkshopPanel(item){
  if(!item)return '';
- return '<section class="beginner-workshop" id="beginner-workshop" aria-label="Guided beginner workshop">'+
+ return competencyBridgePanel(item.key.split(':')[0],'Beginner')+'<section class="beginner-workshop" id="beginner-workshop" aria-label="Guided beginner workshop">'+
   '<span class="overline">FOUNDATION · PRACTISE WITH EVIDENCE</span><h2>'+safe(item.title)+'</h2>'+
   '<p class="beginner-workshop-goal">'+safe(item.goal)+'</p>'+
   '<div class="beginner-workshop-case"><h3>Starting case</h3><p>'+safe(item.case)+'</p></div>'+
