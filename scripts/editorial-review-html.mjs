@@ -96,6 +96,17 @@ function firstPrinciplesSupplement(item){
  '<h5>Boundaries</h5>'+p(item.boundary)+
  '<p class="disclaimer">All theoretical claims and worked arguments remain pending independent specialist review; this content does not imply a credential.</p></section>';
 }
+function competencyBridgeSupplement(item){
+ if(!item)return '';
+ return '<section class="review-appendix"><h4>Progressive competency bridge — verify the stage-specific learning claim and all worked reasoning</h4>'+
+ '<h5>'+esc(item.stage)+' skill target</h5>'+p(item.objective)+
+ '<h5>Reasoning model</h5>'+p(item.reasoning)+
+ '<h5>Illustrative case</h5>'+p(item.scenario)+
+ '<h5>Independent assignment</h5>'+p(item.challenge)+
+ '<h5>Author worked explanation — independently verify</h5>'+p(item.feedback)+
+ '<h5>Evidence of understanding</h5>'+p(item.proof)+
+ '<p class="disclaimer">Pending qualified independent review. Neither completion nor a worked example certifies mastery.</p></section>';
+}
 function lesson(item){
  const c=item.content;
  return '<details id="lesson-'+slug(item.id)+'" class="review-item"><summary><strong>'+esc(c.title)+
@@ -112,7 +123,7 @@ function lesson(item){
  '<h4>Evidence and transfer practice</h4>'+list(c.stagePractice||[],true)+
  '<h4>Assessment question</h4>'+p(c.quiz.question)+answers(c.quiz.options,c.quiz.correct)+
  '<h4>Assessment rationale</h4>'+p(c.quiz.explanation)+sources(c.references)+
- researchSupplement(c.masterLevelResearchPracticum)+synthesisSupplement(c.intermediateSynthesisSeminar)+qualificationSupplement(c.qualificationDecisions)+fieldExpeditionSupplement(c.longitudinalFieldExpedition)+firstPrinciplesSupplement(c.firstPrinciplesCompanion)+
+ researchSupplement(c.masterLevelResearchPracticum)+competencyBridgeSupplement(c.stageCompetencyBridge)+synthesisSupplement(c.intermediateSynthesisSeminar)+qualificationSupplement(c.qualificationDecisions)+fieldExpeditionSupplement(c.longitudinalFieldExpedition)+firstPrinciplesSupplement(c.firstPrinciplesCompanion)+
  '<h4>Human review checklist</h4>'+list(item.checklist||[])+
  '<p class="disclaimer">This author-supplied copy is not an independent expert approval. Review actual evidence, applicability, context and safety before signing.</p>'+
  '</div></details>';
