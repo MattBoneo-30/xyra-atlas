@@ -8,6 +8,7 @@ import {authoredCourseLinks} from '../sourcehealth.js';
 import {CURRICULUM_OBJECTIVES} from '../curriculumpath.js';
 import {EVIDENCE_PROTOCOLS} from '../evidenceprotocols.js';
 import {MASTERY_RESEARCH} from '../masteryresearch.js';
+import {QUALIFYING} from '../qualifyingclinic.js';
 import {SYNTHESIS_SEMINARS} from '../synthesisseminars.js';
 import {getRecoveryCase} from '../recoverystudio.js';
 import {misconceptionUnit} from '../misconceptioncoach.js';
@@ -162,6 +163,12 @@ export function buildEditorialReviewPacket(courses,clinics){
     // Its entire authored packet is part of the exact-content review hash.
     ...(lesson.practicalStudio?{masterLevelResearchPracticum:{
       reviewStatus:'pending-independent-review',...MASTERY_RESEARCH[course.id]
+    }}:{}),
+    // The optional qualification clinic's 28 questions, preferred responses,
+    // all 84 choice-specific rationales and defense prompts are hashed for
+    // independent content review, without inventing reviewer approvals.
+    ...(lesson.practicalStudio?{qualificationDecisions:{
+      reviewStatus:'pending-independent-review',...QUALIFYING[course.id]
     }}:{}),
     // The deeper synthesis seminar is rendered on the intermediate decision lab.
     ...(lesson.decisionRevision?{intermediateSynthesisSeminar:{
