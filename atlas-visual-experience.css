@@ -1,0 +1,266 @@
+/*
+ * Atlas Visual Experience: scenic world gallery, stage compass, readable
+ * page rhythm and focus-conscious interaction. No remote fonts or imagery.
+ * Extends existing violet/gold themes without changing curriculum/storage.
+ */
+:root{
+  --atlas-celestial:rgba(201,165,236,.19);
+  --atlas-starlight:rgba(250,220,173,.24);
+  --atlas-outline:color-mix(in srgb,var(--gold) 36%,var(--line));
+}
+html{scroll-padding-top:calc(90px + var(--app-safe-top))}
+body{
+  background-image:
+    radial-gradient(ellipse 70% 33rem at 88% -5%,rgba(128,76,160,.13),transparent 70%),
+    radial-gradient(ellipse 50% 34rem at 3% 43rem,rgba(201,125,180,.055),transparent 75%);
+  background-repeat:no-repeat;
+}
+html[data-theme=light] body{
+  background-image:radial-gradient(ellipse 70% 33rem at 88% -5%,rgba(149,89,174,.065),transparent 75%);
+}
+/* World pages retain the existing original illustrations, with gentler tonal
+ * framing and a distinct identity per learning stage. */
+.course-page,.reading-page{--atlas-stage-accent:var(--lavender);--atlas-stage-aura:rgba(175,141,216,.19)}
+.reading-page[data-atlas-stage=beginner]{--atlas-stage-accent:#dfb993;--atlas-stage-aura:rgba(244,181,129,.14)}
+.reading-page[data-atlas-stage=intermediate]{--atlas-stage-accent:#bea5eb;--atlas-stage-aura:rgba(179,133,238,.16)}
+.reading-page[data-atlas-stage=advanced]{--atlas-stage-accent:#9ed9d0;--atlas-stage-aura:rgba(123,202,193,.13)}
+html[data-theme=light] .reading-page[data-atlas-stage=beginner]{--atlas-stage-accent:#865128}
+html[data-theme=light] .reading-page[data-atlas-stage=intermediate]{--atlas-stage-accent:#694294}
+html[data-theme=light] .reading-page[data-atlas-stage=advanced]{--atlas-stage-accent:#236c69}
+
+/* A new illustrated discovery triptych. Each option opens a real subject. */
+.atlas-horizons{margin:34px 0 38px;position:relative}
+.atlas-horizons-heading{
+  display:flex;align-items:flex-start;justify-content:space-between;
+  gap:18px;margin-bottom:19px
+}
+.atlas-horizons-heading h2{
+  font:normal clamp(27px,4.4vw,38px)/1.16 Georgia,"Times New Roman",serif;
+  letter-spacing:-.045em;margin:10px 0
+}
+.atlas-horizons-heading p{
+  font-size:13px;line-height:1.8;color:var(--muted);max-width:59ch;margin:0
+}
+.atlas-horizons-ornament{
+  flex:none;display:grid;place-items:center;width:64px;height:64px;
+  color:var(--gold);font-size:27px;border-radius:50%;
+  border:1px solid var(--atlas-outline);
+  box-shadow:inset 0 0 0 8px color-mix(in srgb,var(--gold) 4%,transparent);
+  background:radial-gradient(circle,rgba(247,206,147,.13),transparent 69%)
+}
+.atlas-horizons-grid{
+  display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px
+}
+.atlas-horizon-card{
+  width:100%;min-width:0;position:relative;isolation:isolate;display:block;
+  aspect-ratio:4/5;max-height:320px;overflow:hidden;text-align:left;
+  border-radius:19px;padding:0;border:1px solid rgba(244,215,205,.28);
+  background:#231b3d;color:#fff8ee;box-shadow:0 13px 31px rgba(12,7,28,.18);
+  -webkit-tap-highlight-color:transparent
+}
+.atlas-horizon-card>img{
+  display:block;width:100%;height:100%;object-fit:cover;object-position:center;
+  transition:transform .55s cubic-bezier(.2,.7,.2,1),filter .4s ease;
+  filter:saturate(.91)
+}
+.atlas-horizon-shade{
+  position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(0deg,rgba(11,9,32,.98),rgba(18,14,41,.68) 32%,rgba(16,10,30,.05) 78%);
+}
+.atlas-horizon-content{
+  position:absolute;inset:auto 17px 18px;z-index:1;display:grid;gap:7px;
+  color:#fff7ec;text-shadow:0 2px 10px rgba(14,6,35,.7)
+}
+.atlas-horizon-label{
+  color:#ffe2ab;letter-spacing:.13em;font-size:9px;font-weight:800;line-height:1.5
+}
+.atlas-horizon-content strong{
+  font:normal clamp(20px,2.5vw,28px)/1.15 Georgia,"Times New Roman",serif;
+  letter-spacing:-.02em;overflow-wrap:anywhere
+}
+.atlas-horizon-content small{font-size:11px;color:#f3e4ed;line-height:1.55}
+.atlas-horizon-arrow{
+  position:absolute;z-index:1;right:14px;top:14px;display:grid;
+  place-items:center;width:30px;height:30px;border-radius:50%;
+  color:#fff4e2;border:1px solid rgba(255,237,213,.65);
+  background:rgba(28,19,54,.39);font-size:18px
+}
+@media(hover:hover) and (pointer:fine){
+  .atlas-horizon-card:hover>img{transform:scale(1.055);filter:saturate(1.08)}
+  .atlas-horizon-card:hover{border-color:rgba(255,235,201,.7);box-shadow:0 19px 43px rgba(11,7,30,.28)}
+}
+.atlas-horizon-card:focus-visible{
+  outline:3px solid var(--gold);outline-offset:4px
+}
+/* The three illustrated horizons collapse to a readable horizontal gallery. */
+@media(max-width:730px){
+  .atlas-horizons-grid{
+    grid-template-columns:repeat(3,minmax(205px,1fr));
+    overflow-x:auto;overflow-y:hidden;
+    scroll-snap-type:x proximity;scroll-padding-inline:4px;
+    padding:4px 4px 15px;margin:0 -4px;
+    scrollbar-color:var(--line-bright) transparent
+  }
+  .atlas-horizon-card{scroll-snap-align:start;aspect-ratio:4/5;max-height:276px}
+}
+@media(max-width:460px){
+  .atlas-horizons{margin:26px 0 30px}
+  .atlas-horizons-heading h2{font-size:29px}
+  .atlas-horizons-ornament{width:44px;height:44px;font-size:20px}
+  .atlas-horizons-grid{grid-template-columns:repeat(3,222px);gap:11px}
+  .atlas-horizon-card{max-height:262px}
+}
+/* Existing pages feel like a coherent collection of places, not a catalog. */
+.home-page .greeting{position:relative}
+.home-page .greeting:after{
+  content:"✧   ·   ✦";position:absolute;top:0;right:3%;color:var(--gold);
+  opacity:.37;font-size:20px;letter-spacing:13px;pointer-events:none
+}
+.course-world-hero{isolation:isolate}
+.course-world-hero::before{
+  content:"";pointer-events:none;position:absolute;inset:0;z-index:1;
+  box-shadow:inset 0 0 0 1px rgba(255,231,206,.16);
+  border-radius:inherit
+}
+.course-world-hero img{transition:transform .55s ease,filter .55s ease}
+.atlas-world-seal{
+  position:absolute;top:17px;left:18px;z-index:3;
+  color:#ffe7bb;font-weight:750;letter-spacing:.14em;font-size:9px;
+  padding:8px 12px;border-radius:99px;
+  border:1px solid rgba(255,232,200,.46);background:rgba(22,14,42,.57);
+  -webkit-backdrop-filter:blur(5px);backdrop-filter:blur(5px)
+}
+.course-page .curriculum-level{
+  position:relative;overflow:hidden;
+  box-shadow:0 7px 20px rgba(9,5,23,.055);
+  transition:border-color .2s ease,transform .2s ease,box-shadow .2s ease
+}
+.course-page .curriculum-level::after{
+  content:"";position:absolute;pointer-events:none;inset:auto 0 0;
+  height:3px;background:linear-gradient(90deg,var(--lavender),var(--gold));
+  opacity:.58
+}
+@media(hover:hover) and (pointer:fine){
+  .course-page .curriculum-level:hover{
+    transform:translateY(-2px);border-color:var(--atlas-outline);
+    box-shadow:0 14px 34px rgba(10,6,24,.13)
+  }
+}
+.course-page .lesson-row{transition:border-color .18s ease,background .18s ease,transform .18s ease}
+.course-page .lesson-row:focus-visible{outline:3px solid var(--gold);outline-offset:3px}
+@media(hover:hover) and (pointer:fine){.course-page .lesson-row:hover{transform:translateX(2px)}}
+/* The reading ribbon is a visual *page-position* indicator, never a lesson grade. */
+.atlas-reader-progress{
+  position:fixed;top:calc(70px + var(--app-safe-top));left:0;right:0;
+  height:3px;z-index:24;pointer-events:none;overflow:hidden;
+  background:color-mix(in srgb,var(--gold) 8%,transparent)
+}
+.atlas-reader-progress-fill{
+  display:block;width:100%;height:100%;transform-origin:0 50%;
+  transform:scaleX(0);background:linear-gradient(90deg,var(--lavender),var(--gold),#ffe3b3);
+  box-shadow:0 0 12px rgba(247,206,147,.45)
+}
+/* Three small signposts; the current step is not a grade or certification. */
+.atlas-reader-compass{
+  --compass-accent:var(--atlas-stage-accent,var(--gold));
+  margin:16px 0 22px;padding:16px 18px 14px;
+  border:1px solid var(--line-bright);border-radius:17px;
+  background:
+    radial-gradient(circle at 98% 0,var(--atlas-stage-aura,rgba(188,145,230,.12)),transparent 56%),
+    var(--card);
+}
+.atlas-reader-compass-caption{
+  display:flex;justify-content:space-between;gap:10px;align-items:center;
+  margin-bottom:13px
+}
+.atlas-reader-compass-caption>span:last-child{
+  color:var(--muted);font-size:11px;font-variant-numeric:tabular-nums
+}
+.atlas-reader-compass-steps{
+  display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;
+  padding:0;margin:0;list-style:none
+}
+.atlas-reader-compass-steps li{
+  display:flex;align-items:center;gap:9px;
+  padding:10px 11px;min-width:0;border-radius:10px;
+  border:1px solid var(--line);background:var(--bg-raised);color:var(--muted)
+}
+.atlas-reader-compass-steps li.is-current{
+  border-color:color-mix(in srgb,var(--compass-accent) 66%,var(--line-bright));
+  background:color-mix(in srgb,var(--compass-accent) 12%,var(--card));
+  color:var(--text)
+}
+.atlas-reader-compass-steps li.is-current strong{color:var(--compass-accent)}
+.atlas-compass-number{
+  display:grid;place-items:center;flex:none;width:28px;height:28px;
+  color:var(--faint);border:1px solid var(--line);border-radius:50%;
+  font-size:10px;font-weight:750;font-variant-numeric:tabular-nums
+}
+.atlas-reader-compass-steps .is-current .atlas-compass-number{
+  border-color:var(--compass-accent);color:var(--compass-accent);
+  background:color-mix(in srgb,var(--compass-accent) 9%,transparent)
+}
+.atlas-reader-compass-steps strong{
+  font-size:12px;line-height:1.5;min-width:0;overflow-wrap:anywhere;font-weight:750
+}
+.reading-page .reading-head{
+  border-left:2px solid var(--atlas-stage-accent);
+  padding-left:clamp(14px,2.5vw,22px);margin:18px 0 20px;
+  background:linear-gradient(90deg,var(--atlas-stage-aura),transparent 57%);
+}
+.reading-page .reading-head h1{max-width:22ch;text-wrap:balance}
+.reading-page .reading-head>p{max-width:65ch}
+.reading-page .reading-illustration{
+  box-shadow:0 17px 39px rgba(11,7,27,.14);
+  border-color:var(--atlas-outline)
+}
+.reading-page .chapter-map{
+  box-shadow:0 12px 33px rgba(10,7,22,.075)
+}
+.reading-page .lesson-content{max-width:76ch;margin-inline:auto}
+.reading-page .lesson-content h2{text-wrap:balance;letter-spacing:-.025em}
+.reading-page .lesson-content p{line-height:1.93}
+.reading-page .lesson-content :is(ul,ol){line-height:1.83}
+.reading-page .lesson-content :is(blockquote,pre,table){max-width:100%;overflow-wrap:anywhere}
+.reading-page .lesson-content pre{overflow-x:auto}
+.reading-page .reader-toolbar,.reading-page .lesson-audio-panel{
+  box-shadow:0 6px 22px rgba(8,5,23,.06)
+}
+@media(max-width:560px){
+  .reading-page .reading-head{padding:16px 0 5px 14px;margin:8px 0 10px}
+  .reading-page .reading-head h1{font-size:clamp(32px,8vw,44px);letter-spacing:-.05em}
+  .atlas-reader-compass{padding:13px;margin:12px 0 15px}
+  .atlas-reader-compass-steps{gap:5px}
+  .atlas-reader-compass-steps li{padding:7px 5px;gap:5px;justify-content:center;flex-wrap:wrap;text-align:center}
+  .atlas-compass-number{width:25px;height:25px;font-size:9px}
+  .atlas-reader-compass-steps strong{font-size:10px}
+  .course-world-hero .atlas-world-seal{top:12px;left:12px}
+}
+@media(max-width:360px){
+  .atlas-reader-compass-caption{align-items:start;flex-wrap:wrap}
+  .atlas-reader-compass-steps li{padding:6px 2px}
+  .atlas-reader-compass-steps strong{font-size:9px}
+}
+/* Focus mode is deliberately calmer, with no unnecessary frame ornaments. */
+.reader-focus-mode .atlas-reader-compass{max-width:700px;margin-inline:auto}
+.reader-focus-mode .reading-page .reading-head{max-width:700px;margin-inline:auto}
+.reader-focus-mode .reading-page .lesson-content{max-width:68ch}
+/* Ensure light mode maintains the same hierarchy and visible focus. */
+html[data-theme=light] .atlas-reader-compass,
+html[data-theme=light] .course-page .curriculum-level{
+  box-shadow:0 10px 28px rgba(70,38,86,.045)
+}
+html[data-theme=light] .atlas-reader-compass-steps li.is-current strong{font-weight:800}
+html[data-theme=light] .atlas-horizon-card{border-color:rgba(96,66,115,.31)}
+@media(prefers-contrast:more){
+  .atlas-reader-compass,.atlas-reader-compass-steps li,
+  .atlas-horizon-card,.course-page .curriculum-level{border-width:2px}
+  .atlas-reader-compass-caption>span:last-child{color:var(--text)}
+  .atlas-horizon-shade{background:linear-gradient(0deg,rgba(6,4,20,.99),rgba(12,7,25,.78) 52%,rgba(12,7,25,.03))}
+}
+@media(prefers-reduced-motion:reduce){
+  .atlas-horizon-card>img,.course-world-hero img,
+  .course-page .curriculum-level,.course-page .lesson-row{
+    transition:none!important;transform:none!important
+  }
+}
