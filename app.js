@@ -290,6 +290,11 @@ function home() {
   const featured = COURSES.filter(c=>c.featured && !c.dark).slice(0,3);
   const last = saved.lastOpened && findCourse(saved.lastOpened.courseId) && findLesson(saved.lastOpened.courseId,saved.lastOpened.lessonId) ? saved.lastOpened : null;
   const note = DAILY_NOTES[Math.floor(new Date().getTime()/86400000)%DAILY_NOTES.length];
+  const horizons=[
+    {id:'psychology',stage:'Beginner',number:'01',subtitle:'Observe and understand'},
+    {id:'business',stage:'Intermediate',number:'02',subtitle:'Apply and discover'},
+    {id:'science',stage:'Advanced',number:'03',subtitle:'Question and explore'}
+  ].map(h=>({...h,course:findCourse(h.id),art:getStageArt(h.id,h.stage)}));
   return `<main class="page home-page">
     <section class="greeting"><div><div class="eyebrow"><span class="gold-spark">✦</span> YOUR PERSONAL ATLAS</div><p class="hello">Good ${partOfDay()}, ${esc(actualName())} <span class="mini-heart">♡</span></p><h1>Ready to grow<br/><em>today?</em></h1><p class="lead">A little curiosity can change everything.</p></div></section>
     <section class="hero-landscape hero-archive" aria-label="The Celestial Archive Gate">
@@ -299,6 +304,19 @@ function home() {
     <div class="hero-moon" aria-hidden="true">✧</div>
   </section>
     <section class="stats-strip" aria-label="Your learning summary"><div class="stat-persona"><span class="flame-icon">${icon('flame',24)}</span><div><strong>Level ${Math.floor(done/6)+1} · ${done < 6?'Curious Learner':done < 24?'Knowledge Seeker':'Atlas Explorer'}</strong><span>${done} lessons finished</span></div></div>${bars(done % 6,6)}<span class="stat-next">${done%6}/6</span></section>
+
+    <section class="atlas-horizons" aria-labelledby="atlas-horizons-heading">
+      <div class="atlas-horizons-heading">
+        <div><span class="overline">THREE HORIZONS · FOURTEEN WORLDS</span><h2 id="atlas-horizons-heading">A world for every curiosity.</h2><p>Every world offers a journey from foundations to independent understanding. These are three illustrated places to begin.</p></div>
+        <span class="atlas-horizons-ornament" aria-hidden="true">✦</span>
+      </div>
+      <div class="atlas-horizons-grid">${horizons.map(h=>`<button type="button" class="atlas-horizon-card" data-action="open-course" data-id="${esc(h.id)}" aria-label="Open ${esc(h.course.title)} learning world">
+        <img src="${esc(h.art?.src||'/assets/'+h.course.art+'.svg')}" alt="" loading="lazy" decoding="async"/>
+        <span class="atlas-horizon-shade" aria-hidden="true"></span>
+        <span class="atlas-horizon-content"><span class="atlas-horizon-label">HORIZON ${esc(h.number)} · ${esc(h.stage.toUpperCase())}</span><strong>${esc(h.course.title)}</strong><small>${esc(h.subtitle)}</small></span>
+        <span class="atlas-horizon-arrow" aria-hidden="true">↗</span>
+      </button>`).join('')}</div>
+    </section>
     <section class="atlas-scene-section" aria-labelledby="atlas-scene-heading"><div class="section-heading"><div><span class="overline">FOLLOW THE LIGHT</span><h2 id="atlas-scene-heading">Choose your next doorway</h2><p class="atlas-scene-lead">Original illustrated worlds woven into the Atlas. Wander, discover, and return whenever you're ready.</p></div></div>
      <div class="atlas-scene-grid">
       <article class="atlas-scene-card"><img src="/assets/atlas-lantern-library.svg" alt="Starlit library interior with a glowing manuscript, grand arched window and bookshelves" loading="lazy" decoding="async"/><span class="atlas-guide-medallion" aria-hidden="true"><img src="/assets/xyra-guide.svg" alt="" loading="lazy" decoding="async"/></span><div class="atlas-scene-overlay" aria-hidden="true"></div><div class="atlas-scene-copy"><span class="overline">THE LANTERN LIBRARY</span><h3>Meet your guide</h3><p>Quiet moments and a note from Xyra.</p>${button('Visit Xyra’s Corner','open-corner','scene-link')}</div></article>
