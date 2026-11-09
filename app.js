@@ -399,7 +399,7 @@ function coursePage() {
        ${level.nextLesson?button(`Study next: ${esc(level.nextLesson.title)} ${icon('arrow',15)}`,'open-lesson','curriculum-next-action',`data-course="${esc(c.id)}" data-lesson="${esc(level.nextLesson.id)}"`):`<span class="curriculum-level-complete">${icon('check',16)} ${level.total?'All lessons complete':'Lessons are being prepared'}</span>`}
      </article>`).join('')}</div><p class="fineprint">Advanced lessons remain open for independent exploration. Completion is not a credential, assessment of professional judgment or guarantee of expertise.</p>
     </section>
-    ${renderAtlasInquiryTrail(c,{isLessonDone:id=>isCompleted(idFor(c.id,id)),getStageArt})}
+    ${renderAtlasInquiryTrail(c,{isLessonDone:id=>isCompleted(idFor(c.id,id)),getStageArt,allCourses:COURSES})}
     ${portfolioJourneyPanel(c,{isLessonDone:id=>isCompleted(idFor(c.id,id)),hasFieldNote:id=>Boolean(saved.fieldNotes[idFor(c.id,id)]?.trim())})}
     ${responseSimulationPanel(c)}
     ${clinicPanel(c)}
