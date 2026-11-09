@@ -6,6 +6,7 @@
  */
 import {INQUIRY_TRAILS_ONE} from './inquirytrails1.js';
 import {INQUIRY_TRAILS_TWO} from './inquirytrails2.js';
+import {renderAtlasCrossroads} from './atlas-crossroads.js';
 
 export const INQUIRY_TRAILS=Object.freeze({...INQUIRY_TRAILS_ONE,...INQUIRY_TRAILS_TWO});
 export const INQUIRY_SUBJECT_COUNT=Object.keys(INQUIRY_TRAILS).length;
@@ -68,7 +69,7 @@ export function inquiryProgress(course,isLessonDone=()=>false){
  return {done,total:lessons.length,linkedComplete:done.filter(Boolean).length};
 }
 
-export function renderAtlasInquiryTrail(course,{isLessonDone=()=>false,getStageArt=()=>null}={}){
+export function renderAtlasInquiryTrail(course,{isLessonDone=()=>false,getStageArt=()=>null,allCourses=[]}={}){
  const item=INQUIRY_TRAILS[course?.id];
  const lessons=inquiryLinkedLessons(course);
  if(!item||lessons.length!==4)return '';
@@ -111,5 +112,5 @@ export function renderAtlasInquiryTrail(course,{isLessonDone=()=>false,getStageA
    '<div class="atlas-inquiry-marks" aria-hidden="true">'+marks+'</div>'+
    '<ol class="atlas-inquiry-stops">'+sections+'</ol>'+
    '<p class="fineprint">'+safe(item.boundary)+' Exercises are optional, ungraded and pending independent expert review. No new scores or completion records are created.</p>'+
-  '</div></details></section>';
+  '</div></details></section>'+renderAtlasCrossroads(course,allCourses,{lessonNodes:lessons,isLessonDone,getStageArt});
 }
