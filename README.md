@@ -1,128 +1,94 @@
 # ✦ Xyra Atlas
 
-**Your guide from beginner to mastery.** An offline-first, mobile-first private learning PWA.
+**An offline-first, mobile-first learning PWA.** A private pocket library with illustrated worlds, structured courses, practical decisions, recall and reflection.
 
 ![Xyra Atlas emblem](assets/atlas-mark.svg)
 
-## Current build: offline-first release candidate (not production approved)
+## Project status
 
-- Mobile-first violet-and-gold UI with offline course worlds, accessible vector art and PWA icons.
-- **Atlas Crossroads (branch-only):** 14 new interdisciplinary transfer missions connect the existing 14 subjects with a second real discipline. Course pages now show a six-node visual knowledge route (current world → four original lesson checkpoints → connected world), two subject reasoning lenses, a new independent decision, hidden worked comparison, counterargument and evidence criterion. All 84 node links target published routes; original progress, grades and saved data are preserved. The fully local CSS/JS and new teaching enter the offline build and source-accurate specialist review packet. See [Crossroads review and acceptance](docs/crossroads-acceptance.md). Real-device QA, expert validation and merging remain pending.
-- **Inquiry Trails (branch-only):** 56 original case-based reasoning stations across all 14 subjects, organized into four-step Observe → Explain → Challenge → Transfer pathways. Each station provides a concept, individual exercise, hidden worked comparison, misleading-shortcut warning and evidence standard. Course pages show a responsive illustrated, collapsed four-stop trail with links to published lesson IDs and read-only completion hints. Offline JS/CSS assets, curriculum-review hashes, print reviewer handoff and regression tests are included. No new grades, lesson identities, learner records or credentials; subject-expert review and device acceptance remain pending. See [inquiry review handoff](docs/inquiry-trail-review.md).
-- **Visual Development Branch (not merged):** The second visual phase lives on [`dev/atlas-visual-experience`](https://github.com/MattBoneo-30/xyra-atlas/tree/dev/atlas-visual-experience). Explore now offers all 14 original-art world portals with canonical numbering, real next-stage previews, and honest lesson-completion meters. My Journey now includes a 14-world interactive progress constellation. New responsive layouts, improved course wayfinding, reduced-motion/high-contrast variants, and locally cached assets remain isolated from production. Vercel automatic preview deployments are disabled for this branch only. See [visual branch plan](docs/visual-development-branch.md); the merge and production release gates remain open.
-- **Immersive Visual Experience:** A three-horizon scenic home gallery reuses existing original stage artwork, course heroes gain a numbered world seal, and every lesson displays a Beginner → Intermediate → Advanced compass plus an ephemeral page-position ribbon. Stage-specific reader atmospheres, lighter visual rhythm, high-contrast/reduced-motion styles, keyboard focus, and 360px mobile layouts are bundled offline. The dedicated ~12 KB CSS layer and small visual module keep main `app.js` under its enforced 240 KB raw performance cap. No learner storage or grades change. Final artwork signoff, device QA and production approval remain pending.
-- **14 subjects and 139 structured lessons**, including sourced legal/astronomy chapters, applied capstones, Philippine casework, evidence labs and worked examples. Lesson identifiers remain stable.
-- Psychology, legal literacy, business, money, productivity, communication, critical thinking, language study, digital literacy, career, science, relationships and influence.
-- **The Shadow Library (18+ educational content)** covers manipulation, gaslighting, lies, emotional leverage, deceptive interface design, consent and adult media literacy. The age acknowledgment is a *content gate*, not verified age or identity security.
-- Japanese foundations: **26 sequenced checkpoints**, 46 basic hiragana and 46 basic katakana, vowel memory associations, row-by-row reading, everyday nouns, particles and simple verbs. Optional offline kana recall reviews only previously taught characters, schedules remembered/missed sounds, and preserves private progress in backups. Synthetic device audio does not grade pronunciation.
-- Seven-day language practice framework with **160 practical offline starter phrases across all 20 selectable languages**; every language now has phrase cards, spaced recall, two-way recognition and situational practice.
-- Phrase recall, spaced review, situational language practice and optional on-device speech synthesis; native/regional review remains pending.
-- **Field Notebook:** private per-lesson writing with automatic offline saving, JSON backups and a 2,000-character limit; advanced writing scaffolds preserve existing notes.
-- **Specialist continuations:** 14 existing advanced lessons gain three full concept explanations, worked cases, independent tasks and detailed model comparisons; external review remains pending.
-- **Evidence Paths:** 42 review protocols distinguish lesson completion, private drafts and independent validation.
-- **Skill Spirals:** 42 progressive cases across 14 subjects, with worked examples, misconception checks and linked notebooks.
-- **Deep Synthesis Seminars:** 14 new subject-specific intermediate seminars, each with three substantial conceptual explanations, a fictional investigation, independent assignment, hidden worked comparison and transfer challenge (42 conceptual explanations in total). These appear after the existing decision-revision activity, remain accessible offline and do not alter lesson IDs, grades or saved progress. Independent editorial review pending.
-- **Master-Level Research Practicums:** 14 advanced evidence-led investigations covering all subjects, with 42 original fictional source exhibits, 42 independently attempted research stages and worked comparisons, adversarial countercases, interdisciplinary transfer prompts, and five-point self-review criteria. Every subject has a collapsed course-page entry linking to its advanced lesson; all content is offline. The new research and synthesis text is included in the exact-content editorial review packet and its printable companion, with no human approvals implied.
-- **Mastery Qualification Clinic:** 28 new, subject-specific advanced decision checkpoints (two per subject), each with three independently authored answer-choice rationales (84 total). Each subject includes a research-defense prompt and a transparent three-criterion self-check. Checkpoints reveal choice-specific reasoning in an accessible, keyboard-operable interface, run completely offline, and never create scores or modify saved learner progress. The exact content, including every preferred answer and its alternatives, is included in reviewer hashes and the printable editorial packet. No professional accreditation is implied.
-- **Progressive Competency Bridges:** 42 original, stage-specific guided exercises (Beginner, Intermediate and Advanced in each of 14 subject worlds). Every bridge includes an explicit observable objective, a conceptual explanation, a subject case, independent work, concealed worked feedback and evidence of understanding. They appear inside their existing stage lessons, with a collapsed three-stage navigation map on course pages. Modules and mobile styling are offline; no lesson IDs, quizzes, saved notes or progress formats change. Exact text enters editorial review hashes and the printable human-review handoff. All subject claims remain pending independent review.
-- **First-Principles Concept Companions:** 14 new advanced subject companions with 42 substantial conceptual models, 42 critical distinctions, 42 failure-mode analyses, 14 evidence-driven thought experiments, 14 opposing-claim rebuttals, and 14 transfer challenges. The new material is collapsed by default for readable mobile lessons, appears before the practical studio and as a course preview, and remains available offline. All authored claims and illustrative answers are included in the human editorial review packet and exact-content hashes; no new lesson identities, grades or learner tracking are introduced.\n- **Longitudinal Field Expeditions:** 14 original six-session advanced learning journeys (84 total sessions), each with a contextual case, conceptual teaching, an independent assignment, a specific evidence requirement, a worked comparison revealed only on demand, a final defense and five evidence-quality criteria. Expeditions are collapsed by default, have optional spaced revisit guidance, and appear in both the advanced lesson and course preview. No new lesson identities, saved dates, grade changes, tracking or external requests. Every session is included in exact-content editorial review hashes and printable review materials; specialist approvals remain outstanding.
-- **Mastery Defense:** 14 advanced writing cases. **Language Transfer:** 20 locale-aware missions. Independent reviews remain pending.
-- Local bookmarks, favorites, quizzes, progress, achievement badges, themes, and JSON export/import for transferring between devices.
-- **Recovery + Choice Coach:** 42 transfer cases; 112 authored wrong-choice explanations for 56 lessons, with clearly labeled answer comparisons for the remaining 83. All 139 lessons covered.
-- **Review Deck:** recall flashcards unlocked by completed lessons; spaced practice at 1, 3, 7, 14, 30, and 60-day intervals, with 10-minute repeats for forgotten material. Review schedules are stored locally and included in progress backups.
-- Offline app shell and included course library, cached by a same-origin service worker.
-- No account, advertisement, external API call or tracking service is required for the current edition.
+**Release candidate under development — not production approved.** The release gates remain open; passing code checks does not establish subject-expert accreditation, native-language accuracy or physical-device approval.
 
-## Release notes
+| Area | Current scope |
+| --- | --- |
+| Learning library | 14 subjects, 139 stable core lessons; Beginner, Intermediate and Advanced paths |
+| Practice | Quizzes, 42 contextual decisions, guided exercises, first-principles studies, research practicums and defensive reasoning |
+| Interactive exploration | Illustrated world catalogue, 14-world learning constellation, 56 Inquiry Trail stations and 14 Crossroads missions |
+| Languages | 20 starter language pathways and 160 phrases; native/regional expert review **pending** |
+| Offline and privacy | Same-origin service worker, personal notes, bookmarks, progress, reviews, backup and recovery controls |
+| Art and accessibility | Original local SVG scenes, responsive reading, accessible navigation and reduced-motion styles; final device QA **pending** |
 
-Development and verification history lives in [CHANGELOG.md](CHANGELOG.md). Consult [the latest GitHub Actions checks](https://github.com/MattBoneo-30/xyra-atlas/actions) before deploying; a passing code pipeline is not external editorial approval.
+A new installation correctly begins at **0 lessons and 0 decisions** completed. Course content is available offline after a successful first online cache. The protected Shadow Library contains **adult (18+) defensive educational material**, with an acknowledgment gate rather than verified age authentication.
 
-## Scope and verification
+Current development work is deliberately staged on [`dev/atlas-visual-experience`](https://github.com/MattBoneo-30/xyra-atlas/tree/dev/atlas-visual-experience), not merged into `main`. Automatic Vercel previews are disabled for this named branch through its `vercel.json` Git configuration. See [development and merge policy](docs/visual-development-branch.md) and [draft review PR](https://github.com/MattBoneo-30/xyra-atlas/pull/3).
 
-The current build contains 139 structured lessons, 42 contextual decision questions, working offline study tools and an accessible original vector-art library. A full independent editorial-review packet and cryptographic reviewer-signoff workflow are available, but **0 lessons and 0 decisions currently have qualified external approval**. General educational content is not professional certification or individualized legal, financial or medical advice.
+## Core learner experience
 
-The integrated original SVG illustrations include 42 subject-and-stage scenes in addition to earlier course and chapter compositions; these lightweight vector illustrations are **not** owner-approved final painterly cinematic artwork. Linux Chromium and WebKit checks do **not** establish real iOS/Android PWA installation, mobile-device performance or complete accessibility conformance. Review the evidence and open blockers in [stage gates](docs/stage-gates.json) and the [single external acceptance handoff](docs/release-acceptance-handoff.md) before claiming production-final release.
+- **Discover:** browse 14 illustrated course worlds, choose a level, and follow published lesson routes. The learning constellation and world-card meters reflect actual completed lessons, **not** professional qualifications.
+- **Learn deeply:** first-principles explanations, case-based work, intermediate synthesis, advanced practicums and optional self-directed teaching material across all subjects.
+- **Connect ideas:** 56 four-stage Inquiry Trail checkpoints and 14 interdisciplinary Crossroads missions. Links point to existing lessons and read completion state without adding grades or progress IDs.
+- **Retain knowledge:** local Review Deck spaced repetition, practice exams, feedback, study streaks, a personal notebook and optional challenge exercises.
+- **Study languages:** 20 locally bundled starter phrase sets, retrieval practice, explicit locale caveats and optional installed-device voices. Automated speech is not a native recording or proof of fluency.
+- **Recover:** export personal data and restore validated backups; treat exports as sensitive. Browser storage can be erased, evicted or lost with a device.
 
-## Run locally
+Extensive changes and historical version details are in [CHANGELOG.md](CHANGELOG.md).
 
-Requires Node.js 20+ (no package install or network necessary).
+## Run locally and test
+
+Requires **Node.js 20 or newer**. The production static build uses Node built-ins and does not require packages for its core construction.
 
 ```bash
-npm run dev
+npm run dev                    # http://localhost:4173
+npm run check                  # syntax, Node tests, production build
+npm run audit:assets           # run after building the dist/ folder
+npm run audit:curriculum       # stage and lesson evidence audit
+npm run check:sources          # online official-source URL health
+npm run audit:claims           # exact-source expert attestations
+npm run audit:editorial        # independent editorial attestations
+npm run audit:language         # qualified language reviewer attestations
+npm run audit:devices          # physical-device evidence
+npm run release:preflight      # all release gate dependencies
 ```
 
-Open `http://localhost:4173`. To run checks and build the production site:
+Browser checks require their test-only Playwright dependencies. Once installed in the supported environment, run `npm run test:browser` and `npm run test:webkit`. Automated WebKit does **not** replace genuine physical iOS Safari/PWA testing. See [visual acceptance matrix](docs/visual-experience-acceptance.md).
 
-```bash
-npm run check
-```
+## Deploying a verified build
 
-The static `dist/` directory is produced, including generated 192×192, 512×512 and iOS home-screen PNG icons. Build needs only Node built-ins.
+The build command is `npm run build`; output is `dist/`. Vercel can use **Other** as framework, read `vercel.json` and deploy over HTTPS. After the first online visit and successful caching, installed learners can use the bundled material offline. Android users can use Chrome's **Install app** option when offered; iOS users can use Safari → Share → **Add to Home Screen**.
 
-## Deploy on Vercel
-
-1. Import this GitHub repository into Vercel.
-2. Use `Other` as framework (or let Vercel detect the `vercel.json` configuration).
-3. Build command: `npm run build`.
-4. Output directory: `dist`.
-5. Deploy over HTTPS, visit once online, and let the service worker finish installing.
-
-For iOS: open the Vercel URL in **Safari** → Share → **Add to Home Screen** → **Open as Web App**. For Android: open in **Chrome** → menu → **Install app** (when offered).
-
-**Offline:** the app caches static files and all included learning content. After the service worker finishes and has cached the entire app shell, it runs offline, including lesson progress. The first visit, updates, and reinstall require connectivity. iOS can evict stored offline content under device-storage pressure; no web app can guarantee permanent storage. Keep backup exports of progress.
+**Do not merge or initiate a production deployment while the four formal release gates remain open.** The draft PR accumulates the release candidate, test results and reviewer findings; the project owner authorizes the eventual merge once evidence is complete. Branch-only commits are intentionally excluded from production builds to avoid the Vercel deployment limit.
 
 ## Privacy and safety
 
-- The Vercel deployment and local preview share a restrictive Content Security Policy with local-only scripts and connections, prohibited object embedding, and frame protection. Security headers, offline assets and extension-sensitive 404 behavior are covered by automated tests. No account or external CDN is needed.
+- No account, advertisement, server-side learning analytics or external content API is required for the current offline edition.
+- Learning state is stored locally in the browser rather than automatically synchronizing between devices.
+- Personal exports may include notes, saved names, study history and quiz results. Keep backups private and verify restores before relying on them; removing site data can erase all local progress.
+- The deployment uses restrictive CSP/security headers and same-origin static assets. Offline-first does **not** imply protection from unlocked-device access or permanent storage.
+- Law, money, psychology, safety and health topics are **general education** and cannot substitute for current official sources or qualified advice.
+- Shadow Library content is framed for defensive recognition, consequences and informed choice, **not** instructions for coercion or exploitation.
 
-- All data is kept in local browser storage on the device. It does **not** automatically sync between devices.
-- A JSON backup contains your selected name, learning history, bookmarks and quiz answers. Treat it as personal data; store it privately.
-- Clearing site data or uninstalling can erase progress. Export first.
-- The Shadow Library is educational, with techniques explained in terms of recognition, consequences and informed consent; it is not a manual for coercing or exploiting people.
-- Law, finance, psychology and health are educational general information; check primary local sources or relevant qualified professionals for decisions.
+## Repository map
 
-## Project structure
+| Area | Main files |
+| --- | --- |
+| App shell and navigation | `index.html`, `app.js`, `atlas-icons.js`, `styles.css` |
+| Courses and illustrated stages | `data.js`, `stageart.js`, `chapterart.js`, `atlas-world-gallery.js` |
+| Advanced teaching and transfer | `atlas-inquiry.js`, `inquirytrails1.js`, `inquirytrails2.js`, `atlas-crossroads.js`, `atlascrossroads1.js`, `atlascrossroads2.js` |
+| Learning state and restoration | `review.js`, `backup.js`, `backupcrypto.js`, `storagehealth.js`, `fieldnotes.js` |
+| Language learning | `phrasebook.js`, `phrasereview.js`, `languagechallenge.js`, `conversationquest.js` |
+| Offline build and release | `sw.js`, `scripts/build.mjs`, `scripts/static-asset-audit.mjs`, `vercel.json` |
+| Testing and evidence | `tests/`, `scripts/editorial-review-packet.mjs`, `docs/stage-gates.json` |
 
-```
-index.html             HTML shell and PWA metadata
-styles.css             Responsive design system and screen styles
-app.js                 Navigation, interface, storage, quizzes, review UX, install UX
-data.js                Offline learning curriculum and language sprint
-deeptracks.js          Earlier sourced field guides with examples and quizzes
-masterytracks.js       29 advanced applied guides across all 14 learning subjects
-capstonelabs.js         14 advanced case-based capstones with evidence rubrics
-capstonechecks.js       Local private self-review checklist validation and updates
-review.js              Dependency-free spaced repetition logic and input validation
-fieldnotes.js          Offline per-lesson notebook validation and saving
-datacontrols.js        Private progress category inventory and selective erase
-studio.js
-paths.js                Seven-session study planner, validation and progress              Validated savings, business, and time scenario calculations
-phrasebook.js          Twenty offline language starter phrase packs and progress validation
-phrasereview.js         Private language-by-language spaced recall scheduling
-languagechallenge.js   Offline two-way recognition questions and persisted scores
-conversationquest.js      Validated situational phrase-sequence sessions, scoring and history
-examhistory.js         Validated private exam results and subject-review summaries
-focusedexam.js         Prioritized missed-question revision exams
-assets/                14 course scenes, three home worlds, 14 illustrated chapters, corner art and identity
-sw.js                  Offline service worker
-manifest.webmanifest   Installability metadata
-scripts/build.mjs      Dependency-free static build and PNG generation
-scripts/artwork_builder.py   Optional source generator for 14 reproducible course scenes
-scripts/serve.mjs      Local HTTP preview
-tests/                 Content and PWA checks
-vercel.json            Vercel build and security headers
-```
+## Independent review and acceptance
 
-**External-reviewer signing utility:** `npm run sign:editorial -- <review.json> <private-key-outside-repo.pem>` signs an actual reviewer-completed exact-content review using a locally held Ed25519 private key. The helper refuses keys stored in the Git repository and writes only the signed record to an untracked artifact; full instructions in `docs/independent-editorial-attestations.md`. Neither this command nor a passing CI report certifies the content without real external review.\n\n**Independent editorial attestation intake:** Editorial claims can now be checked against a signed exact-content hash and an externally vetted subject-specific reviewer roster. CI produces an audit report with zero approvals by default; source revisions invalidate approvals. The process does **not** invent reviewers or automatically change stage gates. Details: `docs/independent-editorial-attestations.md`.\n\n**CI browser environment:** GitHub Actions uses a pinned Ubuntu 24.04 runner so the tested Playwright 1.56 Chromium/WebKit binaries remain supported; the moving `ubuntu-latest` runner is not reliable for this browser version.\n\n**Language editor workbook:** `npm run export:language-review` creates a version-specific JSON inventory and printable Markdown workbook for all 160 starter phrases in 20 languages, with each expression's locale, context, romanization caveats, exact source digest and six native-speaker review criteria. The sources are explicitly unreviewed; the workbook is archived in CI but not shipped to learners. This prepares independent regional/native editor signoff without asserting fluency.\n\n**Portable reviewer display QA:** Chromium now verifies that the exported 176-item HTML review copy loads with all subject anchors, expands full lesson evidence through keyboard activation, and fits mobile width. This is editor usability testing, not independent subject-matter approval.\n\n**Reviewer-friendly HTML:** Running `npm run export:editorial` also creates a portable print-ready HTML view of every authored lesson, source, answer key and decision case with exact source hashes. The artifact is saved in CI next to the JSON reviewer packet. It has no scripts or learner data; it does not constitute independent signoff.\n\n**Independent editorial review handoff:** Run `npm run export:editorial` to create an artifact containing the complete current 134-lesson teaching inventory, all 42 decision questions, their references, exact answer rationales and SHA-256 content digests. CI archives this private author-content packet for qualified editors. All items explicitly remain **pending independent review**; generating a hash or passing software tests does not approve a lesson, validate citations, or complete the Advanced Curriculum gate.\n\n**Philippine agency claim register:** `docs/claim-review-register.json` now traces six limited, date-stamped claims to NPC/BSP/DTI public sources. The related DTI casework also links the official post-mediation adjudication requirements. These are source checks, **not** professional legal/financial editorial approval.\n\n**Public-source link monitoring:** The separate weekly and manually dispatchable GitHub Actions workflow runs `npm run check:sources`, stores a source-health JSON report, and flags inaccessible, missing or access-restricted public URLs. It does not send learner data or certify that online materials substantively support claims. Independent editorial review remains necessary.\n\n**Curriculum audit workflow:** Run `npm run audit:curriculum` to generate an offline-only `artifacts/curriculum-audit.json` file with coverage counts and per-lesson editorial gaps. CI uploads the report as a separate artifact after testing the production source. It does not certify expert accuracy or source validity and it does not change learner progress.\n\n## Next content milestones
+The [four release gates](docs/stage-gates.json) are **Advanced Curriculum**, **Final Visual Experience**, **Language Quality**, and **Release Readiness**. Every gate still requires evidence and explicit human signoff, including expert citation checks and native/regional review of starter language content.
 
-1. Continue deep subject tracks beyond the 29 new mastery guides, with more Philippine-law coverage and region selection. The foundation for privacy, consumer and banking complaints is implemented.
-2. Complete owner-approved painterly art and richer character scenes. All 14 subject illustrations, three home worlds, 14 capstone scenes, and 42 stage-specific illustrated learning worlds are now integrated; final art approval remains outstanding.
-3. Expand the working study-card and language-challenge banks with more verified language material and properly sourced audio (the present audio depends on installed device voices).
-4. A transparent download manager for optional offline packs and optional end-to-end encrypted synchronization.
+- [Course and language review handoff](docs/inquiry-trail-review.md)
+- [Interdisciplinary Crossroads acceptance](docs/crossroads-acceptance.md)
+- [Visual branch, offline, CI and merge checklist](docs/visual-development-branch.md)
+- [Mobile and artwork acceptance matrix](docs/visual-experience-acceptance.md)
+- [Source-use review requirements](docs/source-evidence-review.md)
+- [Native/regional language attestation requirements](docs/independent-language-attestations.md)
+
+Run `npm run export:editorial`, `npm run export:language-review` and `npm run export:source-evidence` to generate reviewer evidence. Exact-content hashes and unsigned packets establish provenance, **not approval**. Signed, independent, qualified reviewers must confirm facts, legal applicability and language quality. Actual phone/device screenshots and an authorized release decision complete the remainder.
 
 Made for curiosity, by the Xyra Atlas project.
-
-
-## Independent review workflows
-
-The 134 lessons, 42 decisions and 42 source URLs require independent factual/editorial signoff; all 160 starter language phrases require qualified regional review. Use `npm run export:source-evidence` for exact-source traceability and `npm run audit:language` for genuine signed reviewer coverage. None is automatically approved. See [source review](docs/source-evidence-review.md) and [language attestation](docs/independent-language-attestations.md) instructions.
