@@ -2,6 +2,9 @@
 
 This archive preserves prior development notes from the project README. Versions and test descriptions are historical records of the original release in which features were introduced; they are not fresh independent expert reviews. For the current acceptance state, consult [stage gates](docs/stage-gates.json).
 
+- **Immersive Visual Experience (post-1.67 development):** Introduced a scenic three-horizon illustrated entry gallery using the existing original 14-world stage-art system, an accessible world-number seal, a clear Beginner/Intermediate/Advanced reader compass, and a visual page-position ribbon explicitly unrelated to graded learning progress. Added responsive styles for narrow screens, reduced motion, higher contrast, light mode, and keyboard focus. Extracted scene renderers into a separate local visual module to keep the main script under the audited 240 KB source limit. Both JS and CSS are precached offline. Added targeted tests for visual routes, art references, ephemeral scroll progress, reduced-motion support, module packaging, and source budgets. All four official acceptance gates remain open; physical iOS/Android testing and owner-approved final art remain outstanding.
+
+
 
 - **Progressive Competency Bridges (post-1.67 development):** Added 42 original stage-specific scaffolds across all 14 worlds (Beginner, Intermediate, Advanced). Unlike advanced-only enrichment, these introduce a concept, case, independent attempt, hidden worked comparison and evidence standard at every learning stage. A compact course map links to existing stage lesson IDs, and the PWA includes an offline, responsive stylesheet. Added schema, rendering, route, offline-bundle and editorial-review regression tests. No new progress keys or grading, no telemetry, and no implication of expert accreditation. Author content still requires subject-specialist review and production device QA.
 
