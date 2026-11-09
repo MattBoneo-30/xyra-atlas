@@ -20,9 +20,8 @@ export function validateCrossroads(ids=IDS){
   const unit=CROSSROAD_CASES[id];
   if(!unit||!ids.includes(unit.partner)||id===unit.partner)throw Error('Invalid partner world '+id);
   for(const [field,min] of Object.entries({title:20,scenario:120,challenge:100,worked:145,falsifier:90,evidence:90,boundary:60})){
-   const name=field==='challenge'?'task':field==='falsifier'?'falsifier':field==='boundary'?'boundary':field;
-   // Input authors use `challenge` in the renderer as the independently attempted task.
-   if(typeof unit[name]!=='string'||unit[name].length<min)throw Error('Incomplete cross-world '+id+':'+name);
+   const name=field;
+    if(typeof unit[name]!=='string'||unit[name].length<min)throw Error('Incomplete cross-world '+id+':'+name);
   }
   if(!Array.isArray(unit.models)||unit.models.length!==2||unit.models.some(x=>typeof x!=='string'||x.length<90))throw Error('Missing reasoning lenses '+id);
  }
@@ -58,7 +57,7 @@ export function renderAtlasCrossroads(course,allCourses,{lessonNodes=[],isLesson
    (node.kind==='lesson'?'<span class="atlas-crossroads-cue">'+(completed?'Linked lesson complete':'Linked lesson not complete')+'</span>':'')+
    '</a></li>';
  }).join('');
- const standards=unit.evidence.map(x=>'<li>'+escapeHtml(x)+'</li>').join('');
+ const standards='<p>'+escapeHtml(unit.evidence)+'</p>';
  const partnerName=escapeHtml(partner.title);
  return '<section class="atlas-crossroads" aria-label="Cross-world transfer mission for '+escapeHtml(course.title)+'">'+
   '<details class="atlas-crossroads-disclosure"><summary class="atlas-crossroads-summary">'+
@@ -75,10 +74,10 @@ export function renderAtlasCrossroads(course,allCourses,{lessonNodes=[],isLesson
    '<div class="atlas-crossroads-lenses">'+
     '<article><h3>'+escapeHtml(course.title)+' lens</h3><p>'+escapeHtml(unit.models[0])+'</p></article>'+
     '<article><h3>'+partnerName+' lens</h3><p>'+escapeHtml(unit.models[1])+'</p></article></div>'+
-   '<div class="atlas-crossroads-task"><h3>Attempt the integrated challenge</h3><p>'+escapeHtml(unit.task)+'</p></div>'+
+   '<div class="atlas-crossroads-task"><h3>Attempt the integrated challenge</h3><p>'+escapeHtml(unit.challenge)+'</p></div>'+
    '<details class="atlas-crossroads-answer"><summary>Compare your reasoning with a worked response</summary><p>'+escapeHtml(unit.worked)+'</p></details>'+
    '<div class="atlas-crossroads-counter"><h3>Challenge your own conclusion</h3><p>'+escapeHtml(unit.falsifier)+'</p></div>'+
-   '<div class="atlas-crossroads-evidence"><h3>What counts as convincing evidence?</h3><ul>'+standards+'</ul></div>'+
+   '<div class="atlas-crossroads-evidence"><h3>What counts as convincing evidence?</h3>'+standards</div>'+
    '<p class="fineprint">'+escapeHtml(unit.boundary)+' This optional mission is not graded or independently expert-approved. Linked lesson completion does not verify this work. No personal data or scores are created.</p>'+
   '</div></details></section>';
 }
