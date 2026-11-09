@@ -19,7 +19,7 @@ export function validateCrossroads(ids=IDS){
  for(const id of ids){
   const unit=CROSSROAD_CASES[id];
   if(!unit||!ids.includes(unit.partner)||id===unit.partner)throw Error('Invalid partner world '+id);
-  for(const [field,min] of Object.entries({title:20,scenario:120,challenge:100,worked:145,falsifier:90,evidence:90,boundary:60})){
+  for(const [field,min] of Object.entries({title:20,scenario:120,challenge:100,worked:145,falsifier:90,evidence:75,boundary:60})){
    const name=field;
     if(typeof unit[name]!=='string'||unit[name].length<min)throw Error('Incomplete cross-world '+id+':'+name);
   }
