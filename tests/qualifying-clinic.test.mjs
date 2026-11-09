@@ -88,3 +88,31 @@ test('human editorial packet hashes and print copy contain all 28 decisions',()=
  assert.ok(html.includes(QUALIFYING.shadow.title));
  assert.ok(html.includes('Independent research defense'));
 });
+
+test('choice interaction updates only in-memory feedback and pressed state',()=>{
+ let clickHandler;
+ const doc={addEventListener(type,handler){
+  assert.equal(type,'click');
+  clickHandler=handler;
+ }};
+ const feedback={textContent:''};
+ const choices=[0,1,2].map(i=>({
+  attributes:{'data-qualifying-course':'business','data-qualifying-step':'0','data-qualifying-answer':String(i),'aria-pressed':'false'},
+  getAttribute(name){return this.attributes[name];},
+  setAttribute(name,value){this.attributes[name]=value;},
+  closest(){return scope;}
+ }));
+ const scope={
+  querySelectorAll(){return choices;},
+  querySelector(){return feedback;}
+ };
+ assert.equal(installQualificationInteractions(doc),true);
+ assert.equal(installQualificationInteractions(doc),false);
+ clickHandler({target:{closest(){return choices[1];}}});
+ assert.match(feedback.textContent,/Preferred for this fictional case/);
+ assert.deepEqual(choices.map(b=>b.attributes['aria-pressed']),['false','true','false']);
+ clickHandler({target:{closest(){return choices[0];}}});
+ assert.match(feedback.textContent,/Reconsider this choice/);
+ assert.match(feedback.textContent,/Preferred here:/);
+ assert.deepEqual(choices.map(b=>b.attributes['aria-pressed']),['true','false','false']);
+});
