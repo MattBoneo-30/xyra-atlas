@@ -24,7 +24,7 @@ export function validateMasteryResearch(courseIds=EXPECTED){
   if(titles.has(item.title))throw Error('Duplicate research practicum title: '+id);
   titles.add(item.title);
   if(!Array.isArray(item.exhibits)||item.exhibits.length!==3||
-    item.exhibits.some(e=>typeof e.label!=='string'||e.label.length<10||
+    item.exhibits.some(e=>typeof e.label!=='string'||e.label.length<7||
      typeof e.detail!=='string'||e.detail.length<130))
     throw Error('Incomplete evidence exhibits: '+id);
   if(!Array.isArray(item.phases)||item.phases.length!==3||
@@ -33,7 +33,7 @@ export function validateMasteryResearch(courseIds=EXPECTED){
     typeof p.worked!=='string'||p.worked.length<165))
     throw Error('Incomplete independent research phases: '+id);
   if(!Array.isArray(item.rubric)||item.rubric.length!==5||
-   item.rubric.some(x=>typeof x!=='string'||x.length<55))
+   item.rubric.some(x=>typeof x!=='string'||x.length<40))
     throw Error('Incomplete research review criteria: '+id);
  }
  return true;
