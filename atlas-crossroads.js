@@ -77,7 +77,7 @@ export function renderAtlasCrossroads(course,allCourses,{lessonNodes=[],isLesson
    '<div class="atlas-crossroads-task"><h3>Attempt the integrated challenge</h3><p>'+escapeHtml(unit.challenge)+'</p></div>'+
    '<details class="atlas-crossroads-answer"><summary>Compare your reasoning with a worked response</summary><p>'+escapeHtml(unit.worked)+'</p></details>'+
    '<div class="atlas-crossroads-counter"><h3>Challenge your own conclusion</h3><p>'+escapeHtml(unit.falsifier)+'</p></div>'+
-   '<div class="atlas-crossroads-evidence"><h3>What counts as convincing evidence?</h3>'+standards</div>'+
+   '<div class="atlas-crossroads-evidence"><h3>What counts as convincing evidence?</h3>'+standards+'</div>'+
    '<p class="fineprint">'+escapeHtml(unit.boundary)+' This optional mission is not graded or independently expert-approved. Linked lesson completion does not verify this work. No personal data or scores are created.</p>'+
   '</div></details></section>';
 }
