@@ -1,6 +1,6 @@
 import { COURSES, LANGUAGES, LEARNING_SPRINT, DAILY_NOTES, findCourse, findLesson, totalLessons } from './data.js';
 import {languageFieldworkPanel,frontierWorkshopPanel} from './frontiercurriculum.js';
-import {syncVisualReaderProgress} from './atlas-visual-experience.js';
+import {syncVisualReaderProgress,visualHorizonsPanel,visualScenePanel,visualStageCompass} from './atlas-visual-experience.js';
 import {languageEvidencePanel} from './languageevidence.js';
 import {specialistConceptPanel} from './advancedconcepts.js';
 import {calibrationLabPanel} from './calibrationlabs.js';
@@ -305,24 +305,8 @@ function home() {
   </section>
     <section class="stats-strip" aria-label="Your learning summary"><div class="stat-persona"><span class="flame-icon">${icon('flame',24)}</span><div><strong>Level ${Math.floor(done/6)+1} · ${done < 6?'Curious Learner':done < 24?'Knowledge Seeker':'Atlas Explorer'}</strong><span>${done} lessons finished</span></div></div>${bars(done % 6,6)}<span class="stat-next">${done%6}/6</span></section>
 
-    <section class="atlas-horizons" aria-labelledby="atlas-horizons-heading">
-      <div class="atlas-horizons-heading">
-        <div><span class="overline">THREE HORIZONS · FOURTEEN WORLDS</span><h2 id="atlas-horizons-heading">A world for every curiosity.</h2><p>Every world offers a journey from foundations to independent understanding. These are three illustrated places to begin.</p></div>
-        <span class="atlas-horizons-ornament" aria-hidden="true">✦</span>
-      </div>
-      <div class="atlas-horizons-grid">${horizons.map(h=>`<button type="button" class="atlas-horizon-card" data-action="open-course" data-id="${esc(h.id)}" aria-label="Open ${esc(h.course.title)} learning world">
-        <img src="${esc(h.art?.src||'/assets/'+h.course.art+'.svg')}" alt="" loading="lazy" decoding="async"/>
-        <span class="atlas-horizon-shade" aria-hidden="true"></span>
-        <span class="atlas-horizon-content"><span class="atlas-horizon-label">HORIZON ${esc(h.number)} · ${esc(h.stage.toUpperCase())}</span><strong>${esc(h.course.title)}</strong><small>${esc(h.subtitle)}</small></span>
-        <span class="atlas-horizon-arrow" aria-hidden="true">↗</span>
-      </button>`).join('')}</div>
-    </section>
-    <section class="atlas-scene-section" aria-labelledby="atlas-scene-heading"><div class="section-heading"><div><span class="overline">FOLLOW THE LIGHT</span><h2 id="atlas-scene-heading">Choose your next doorway</h2><p class="atlas-scene-lead">Original illustrated worlds woven into the Atlas. Wander, discover, and return whenever you're ready.</p></div></div>
-     <div class="atlas-scene-grid">
-      <article class="atlas-scene-card"><img src="/assets/atlas-lantern-library.svg" alt="Starlit library interior with a glowing manuscript, grand arched window and bookshelves" loading="lazy" decoding="async"/><span class="atlas-guide-medallion" aria-hidden="true"><img src="/assets/xyra-guide.svg" alt="" loading="lazy" decoding="async"/></span><div class="atlas-scene-overlay" aria-hidden="true"></div><div class="atlas-scene-copy"><span class="overline">THE LANTERN LIBRARY</span><h3>Meet your guide</h3><p>Quiet moments and a note from Xyra.</p>${button('Visit Xyra’s Corner','open-corner','scene-link')}</div></article>
-      <article class="atlas-scene-card"><img src="/assets/atlas-starlit-garden.svg" alt="Twilight flowering garden with a winding path toward a glowing stone observatory" loading="lazy" decoding="async"/><div class="atlas-scene-overlay" aria-hidden="true"></div><div class="atlas-scene-copy"><span class="overline">THE STARLIT PATH</span><h3>Find your constellation</h3><p>Explore how fourteen learning worlds connect.</p>${button('See the knowledge map','map','scene-link')}</div></article>
-     </div>
-    </section>
+    ${visualHorizonsPanel(horizons,esc)}
+    ${visualScenePanel(button)}
     ${last ? `<section class="resume-card"><div class="section-heading compact"><div><span class="overline">PICK UP WHERE YOU LEFT OFF</span><h2>Keep going</h2></div></div><button type="button" data-action="open-lesson" data-course="${esc(last.courseId)}" data-lesson="${esc(last.lessonId)}" class="resume-inner"><span class="resume-icon">${icon('play',22)}</span><span><strong>${esc(findLesson(last.courseId,last.lessonId).title)}</strong><small>${esc(findCourse(last.courseId).title)}</small></span>${chevron}</button></section>`:''}
     <section class="review-invite"><div class="review-invite-icon">${icon('orbit',27)}</div><div><span class="overline">MAKE KNOWLEDGE STICK</span><h2>Your Review Deck</h2><p>${reviewsDue ? `${plural(reviewsDue,'flashcard')} ready to practice.` : 'Complete a lesson to unlock its flashcard.'}</p></div>${button(`Practice ${icon('arrow',17)}`,'review','small-button')}</section>
     <section class="path-invite"><div class="path-invite-icon">${icon('compass',27)}</div><div><span class="overline">YOUR OWN ROADMAP</span><h2>Guided Learning Paths</h2><p>Pick a goal and get a seven-session plan that follows your progress.</p></div>${button('Plan my week','path','small-button')}</section>
@@ -542,10 +526,7 @@ function lessonPage() {
   const capstoneReview=l.isCapstone?capstoneCheckProgress(saved.capstoneChecks,key,COURSES):null;
   return `<main class="page reading-page" data-reader-size="${esc(saved.reader.size)}" data-atlas-stage="${esc(l.stage.toLowerCase())}"><div class="atlas-reader-progress" aria-hidden="true"><span class="atlas-reader-progress-fill"></span></div><div class="subnav">${button(`${icon('back',18)} ${esc(c.title)}`,'open-course','back-link',`data-id="${esc(c.id)}"`)}${button(icon('bookmark',21),'bookmark',`icon-button ${isBookmarked(key)?'is-favorite':''}`,`data-key="${esc(key)}" aria-label="${isBookmarked(key)?'Remove bookmark':'Bookmark lesson'}"`)}</div>
     <div class="reading-head"><span class="overline">${esc(c.title)} · ${esc(l.stage)}${l.isCapstone?" · APPLIED CAPSTONE":""}</span><div class="reading-num">LESSON ${String(idx+1).padStart(2,'0')} OF ${String(c.lessons.length).padStart(2,'0')}</div><h1>${esc(l.title)}</h1><p>${esc(l.intro)}</p><span class="reading-time">${icon('clock',17)} ${l.deepMinutes?`${l.minutes} min quick recap · ${l.deepMinutes} min deep study`:`${l.minutes} min read & practice`}</span></div>
-    <section class="atlas-reader-compass" aria-label="Current learning level">
-      <div class="atlas-reader-compass-caption"><span class="overline">YOUR PLACE IN THE ATLAS</span><span>Lesson ${idx+1} of ${c.lessons.length}</span></div>
-      <ol class="atlas-reader-compass-steps">${["Beginner","Intermediate","Advanced"].map((stage,index)=>`<li class="${l.stage===stage?"is-current":""}" ${l.stage===stage?'aria-current="step"':""}><span class="atlas-compass-number">0${index+1}</span><strong>${stage}</strong></li>`).join("")}</ol>
-    </section>
+    ${visualStageCompass(idx,c.lessons.length,l.stage)}
     <figure class="reading-illustration ${chapterArt?'chapter-art-feature':stageArt?'chapter-art-feature stage-art-feature':''}">
       <img src="${chapterArt?esc(chapterArt.src):stageArt?esc(stageArt.src):'/assets/'+esc(c.art)+'.svg'}" alt="${chapterArt?esc(chapterArt.alt):stageArt?esc(stageArt.alt):''}" decoding="async"/>
       <span class="reading-illustration-glow" aria-hidden="true">✧</span>
