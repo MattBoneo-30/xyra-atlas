@@ -49,7 +49,7 @@ test('all courses render seven landmarks and real next-lesson routes without gra
   const html=renderCourseFieldGuide(course,{completed:[],ladder});
   assert.equal((html.match(/class="atlas-guide-jump"/g)||[]).length,7);
   assert.equal((html.match(/class="atlas-guide-stage /g)||[]).length,3);
-  assert.ok(html.includes(COURSE_ORIENTATIONS[course.id].question));
+  assert.ok(html.includes(COURSE_ORIENTATIONS[course.id].question.replaceAll("'",'&#39;')),course.id+' study question missing');
   assert.ok(html.includes('#/lesson/'+course.id+'/'));
   assert.match(html,/How to study this subject deeply/);
   for(const stop of COURSE_WAYPOINTS)assert.ok(html.includes('data-atlas-jump="'+stop.id+'"'));
