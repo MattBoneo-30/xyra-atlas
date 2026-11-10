@@ -235,3 +235,77 @@ html[data-theme=light] .atlas-course-field-guide{
 @media(prefers-reduced-motion:reduce){
   .atlas-guide-jump,.atlas-guide-session-link{transition:none!important}
 }
+
+/* Keep the full original curriculum readable after its new jump index. */
+.course-page .lesson-list-title{
+  scroll-margin-top:calc(80px + var(--app-safe-top,0px));
+}
+.course-page .course-stage-tabs{
+  scroll-snap-type:x proximity;
+  scroll-padding-inline:4px;
+}
+.course-page .course-stage-button{
+  scroll-snap-align:start;
+  min-height:44px;
+}
+.course-page .course-stage-button:focus-visible{
+  outline:3px solid var(--gold);
+  outline-offset:2px;
+}
+.course-page .lesson-list{
+  position:relative;
+  gap:9px;
+}
+.course-page .lesson-row{
+  position:relative;
+  min-width:0;
+  overflow:hidden;
+  border-left:3px solid transparent;
+  transition:border-color .18s ease,background .18s ease,box-shadow .18s ease;
+}
+.course-page .lesson-row:has(.lesson-number.done){
+  border-left-color:var(--good);
+}
+.course-page .lesson-row:focus-visible{
+  outline:3px solid var(--gold);
+  outline-offset:2px;
+  border-left-color:var(--gold);
+}
+.course-page .lesson-row .lesson-info{
+  min-width:0;
+}
+.course-page .lesson-row .lesson-info strong{
+  font-size:13px;
+  line-height:1.5;
+  text-wrap:balance;
+}
+.course-page .lesson-row .lesson-info small{
+  font-size:11px;
+  line-height:1.5;
+  overflow-wrap:anywhere;
+}
+@media(max-width:525px){
+  .course-page .course-stage-tabs{
+    gap:7px;
+    margin-inline:-2px;
+    padding-inline:3px;
+  }
+  .course-page .course-stage-button{
+    padding:10px 12px;
+    font-size:11px;
+  }
+  .course-page .lesson-row{
+    min-height:68px;
+    gap:10px;
+    padding:10px 9px;
+  }
+  .course-page .lesson-row .lesson-number{
+    height:34px;width:34px;
+  }
+  .course-page .lesson-row .lesson-info strong{
+    font-size:12px;
+  }
+}
+@media(prefers-reduced-motion:reduce){
+  .course-page .lesson-row{transition:none!important}
+}
