@@ -242,6 +242,11 @@
           "type": "commit",
           "value": "c654eea5c243a2d692cd7f49655720bca4086d9d",
           "note": "Six-node concept maps with 84 links to existing courses and lessons, responsive original-art disclosure panels and offline CSS/JS, source-level verification completed. Genuine owner art approval, full browser suite and physical-device checks remain outstanding."
+        },
+        {
+          "type": "commit",
+          "value": "a3249490a1cdc2b7ce97fd1d2f94940275ae6f9e",
+          "note": "Staged narrow-screen Knowledge Map and private Practice History responsive styling, improved focus, high contrast and reduced motion. Page rendering extracted from the app; source-level checks passed. Physical iPhone/Android screenshots and owner art acceptance are not completed."
         }
       ],
       "blockers": [
@@ -303,6 +308,11 @@
           "type": "ci",
           "value": "https://github.com/MattBoneo-30/xyra-atlas/actions/runs/41763169389",
           "note": "After Playwright runner pin, 235 tests and browser engines pass; this is pre-deployment QA, not real-device or Vercel verification."
+        },
+        {
+          "type": "commit",
+          "value": "a3249490a1cdc2b7ce97fd1d2f94940275ae6f9e",
+          "note": "Stateless extracted map/history view module, main app reduced to ~227.8 KB, new regression tests and offline asset entries. GitHub branch CI must be run and reviewed; source checks do not establish a green build or independent acceptance."
         }
       ],
       "blockers": [
