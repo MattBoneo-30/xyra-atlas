@@ -4,6 +4,10 @@
 **Base commit on `main`:** `3d357741660e78d007a3ac32bcfcfcc813330a37`  
 **Branch policy:** accumulate coherent visual improvements; **do not merge or deploy until explicit owner approval**.
 
+## Stabilization and release-readiness batch
+
+The latest engineering phase moves private Practice History and Knowledge Map markup into `atlas-page-views.js`, reducing the core app by roughly 6.7 KB. A separate local `atlas-release-polish.css` layer improves narrow-phone map and history layouts, focus and contrast without touching user records. Both modules are offline-cached; targeted tests are in `tests/page-view-extraction.test.mjs`. See [release-readiness-batch.md](release-readiness-batch.md) for the full acceptance matrix. All four release gates remain open pending latest full CI, independent expert signoff, owner artwork approval and physical device testing.
+
 ## Why this branch exists
 
 The connected Vercel project reached its build-rate limit while individual commits were being made directly to production. Branching protects `main` from unfinished visual work, but Git providers normally still trigger preview builds. To minimize additional Vercel deployments, the branch has this exact configuration in `vercel.json`:
