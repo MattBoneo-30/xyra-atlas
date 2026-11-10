@@ -5,6 +5,7 @@ import {languageFieldworkPanel,frontierWorkshopPanel} from './frontiercurriculum
 import {syncVisualReaderProgress,visualHorizonsPanel,visualScenePanel,visualStageCompass} from './atlas-visual-experience.js';
 import {renderAtlasExploreBanner,renderAtlasWorldGallery,renderAtlasJourneyConstellation} from './atlas-world-gallery.js';
 import {renderAtlasInquiryTrail} from './atlas-inquiry.js';
+import {renderCourseFieldGuide} from './atlas-course-field-guide.js';
 import {languageEvidencePanel} from './languageevidence.js';
 import {specialistConceptPanel} from './advancedconcepts.js';
 import {calibrationLabPanel} from './calibrationlabs.js';
@@ -307,7 +308,7 @@ function clinicPanel(course){
  const clinic=getClinic(course.id);
  if(!clinic)return '';
  const stats=clinicStats(saved.clinicAnswers,course.id);
- return `<section class="clinic-panel" aria-label="Applied decision clinic">
+ return `<section class="clinic-panel" id="atlas-decision-clinic" aria-label="Applied decision clinic">
   <div class="clinic-head"><div><span class="overline">APPLIED JUDGMENT • THREE DECISIONS</span><h2>${esc(clinic.title)}</h2><p>${esc(clinic.intro)}</p></div>
   <span class="clinic-score" aria-label="${stats.answered} of ${stats.total} questions answered">${stats.answered}/${stats.total} answered</span></div>
   <div class="clinic-grid">${clinic.questions.map((q,i)=>{
@@ -348,7 +349,8 @@ function coursePage() {
     <div class="course-facts"><span>${icon('book',17)} ${plural(c.lessons.length,'lesson')}</span><span>${icon('clock',17)} ${c.lessons.reduce((n,l)=>n+l.minutes,0)} min</span><span>${icon('chart',17)} Beginner → Advanced</span></div>
     <div class="course-progress"><div><strong>Your progress</strong><span>${done}/${c.lessons.length} lessons</span></div>${bars(done,c.lessons.length)}</div>
     ${button(`${icon('play',18)} ${done ? 'Continue learning' : 'Start learning'}`,'open-lesson','primary-button course-start',`data-course="${esc(c.id)}" data-lesson="${esc(firstUnfinished.id)}"`)}
-    <section class="curriculum-ladder" aria-label="Learning ladder for ${esc(c.title)}">
+    ${renderCourseFieldGuide(c,{completed:saved.completed,ladder})}
+    <section class="curriculum-ladder" id="atlas-stage-ladder" aria-label="Learning ladder for ${esc(c.title)}">
      <div class="curriculum-ladder-heading"><span class="overline">FROM FOUNDATION TO APPLIED WORK</span><h2>Three levels of practice</h2><p>Every stage has a learning objective and an observable exercise. Your recorded lesson progress is a study guide, not a measure of professional competence.</p></div>
      <div class="curriculum-ladder-levels">${ladder.levels.map(level=>`<article class="curriculum-level curriculum-level-illustrated" data-stage="${esc(level.stage)}"><button type="button" class="curriculum-world-preview" data-action="course-stage-filter" data-id="${esc(level.stage)}" aria-label="Explore ${esc(level.stage)} lessons in ${esc(c.title)}" aria-pressed="${courseStageFilter===level.stage}">
        <img src="${esc(getStageArt(c.id,level.stage)?.src||'/assets/'+c.art+'.svg')}" alt="" loading="lazy" decoding="async"/>
