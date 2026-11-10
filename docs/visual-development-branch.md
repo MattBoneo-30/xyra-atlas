@@ -4,6 +4,10 @@
 **Base commit on `main`:** `3d357741660e78d007a3ac32bcfcfcc813330a37`  
 **Branch policy:** accumulate coherent visual improvements; **do not merge or deploy until explicit owner approval**.
 
+## Latest staged feature: Course Field Guide
+
+A new Field Guide organizes the existing deep course content in each of the 14 subject worlds: up to three real unfinished lessons in a bounded 40-minute reading session, honest current stage and remaining-time indicators, seven direct in-page shortcuts, and a collapsible subject-specific plan for approaching the material. The 14 authored questions and 42 study moves are included in the independent editorial-review packet. The guide never changes progress keys, grades, or routes. All new local JS/CSS is packaged offline. See [course-field-guide-review.md](course-field-guide-review.md) for exact test and signoff criteria. **Still on branch; not independently approved or released.**
+
 ## Stabilization and release-readiness batch
 
 The latest engineering phase moves private Practice History and Knowledge Map markup into `atlas-page-views.js`, reducing the core app by roughly 6.7 KB. A separate local `atlas-release-polish.css` layer improves narrow-phone map and history layouts, focus and contrast without touching user records. Both modules are offline-cached; targeted tests are in `tests/page-view-extraction.test.mjs`. See [release-readiness-batch.md](release-readiness-batch.md) for the full acceptance matrix. All four release gates remain open pending latest full CI, independent expert signoff, owner artwork approval and physical device testing.
