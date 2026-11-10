@@ -159,6 +159,11 @@
           "type": "commit",
           "value": "c654eea5c243a2d692cd7f49655720bca4086d9d",
           "note": "14 original interdisciplinary case studies now staged, each with two subject lenses, independent assignment, worked reasoning, alternative interpretation and evidence criterion. Exact source included in specialist review hashes and print packet. Specialist signoff remains outstanding."
+        },
+        {
+          "type": "commit",
+          "value": "f93f6d5def541c8742e3b603cc091154c2bb0ae5",
+          "note": "Fourteen original course guiding questions and forty-two step-by-step subject study strategies added to independent editorial review hashes and printable packet, explicitly marked pending external validation. Existing 139 lesson IDs, grades and progress unchanged."
         }
       ],
       "blockers": [
@@ -247,6 +252,11 @@
           "type": "commit",
           "value": "a3249490a1cdc2b7ce97fd1d2f94940275ae6f9e",
           "note": "Staged narrow-screen Knowledge Map and private Practice History responsive styling, improved focus, high contrast and reduced motion. Page rendering extracted from the app; source-level checks passed. Physical iPhone/Android screenshots and owner art acceptance are not completed."
+        },
+        {
+          "type": "commit",
+          "value": "f93f6d5def541c8742e3b603cc091154c2bb0ae5",
+          "note": "Branch-only responsive Course Field Guide adds honest next-reading session, seven real navigable course landmarks, practical focus/scroll controls, stage highlights and refined lesson filters. Source-level checks added; owner art acceptance, full browser/mobile QA and physical PWA evidence still required."
         }
       ],
       "blockers": [
