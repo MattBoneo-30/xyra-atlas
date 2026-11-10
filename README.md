@@ -4,6 +4,10 @@
 
 ![Xyra Atlas emblem](assets/atlas-mark.svg)
 
+## Development branch stabilization
+
+On `dev/atlas-visual-experience`, private practice-history and Knowledge Map presentation have been separated into pure `atlas-page-views.js`, recovering ~6.7 KB of main application source headroom. The responsive `atlas-release-polish.css` layer improves compact map cards, practice-history controls and keyboard focus, and both additions are precached for offline operation. Regression tests and the [release-readiness matrix](docs/release-readiness-batch.md) document intended behavior and remaining evidence. This branch remains unmerged; full branch CI, independent subject/language reviews, and real-device/owner visual acceptance are still required.
+
 ## Project status
 
 **Release candidate under development — not production approved.** The release gates remain open; passing code checks does not establish subject-expert accreditation, native-language accuracy or physical-device approval.
