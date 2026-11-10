@@ -59,7 +59,7 @@ export function renderAtlasCrossroads(course,allCourses,{lessonNodes=[],isLesson
  }).join('');
  const standards='<p>'+escapeHtml(unit.evidence)+'</p>';
  const partnerName=escapeHtml(partner.title);
- return '<section class="atlas-crossroads" aria-label="Cross-world transfer mission for '+escapeHtml(course.title)+'">'+
+ return '<section class="atlas-crossroads" id="atlas-crossroads" aria-label="Cross-world transfer mission for '+escapeHtml(course.title)+'">'+
   '<details class="atlas-crossroads-disclosure"><summary class="atlas-crossroads-summary">'+
    '<span class="atlas-crossroads-summary-media"><img src="'+escapeHtml(art)+'" alt="" loading="lazy" decoding="async"/><span class="atlas-crossroads-art-shade" aria-hidden="true"></span></span>'+
    '<span class="atlas-crossroads-summary-content"><span class="overline">FIELD CROSSROADS · ONE QUESTION, TWO WORLDS</span>'+
