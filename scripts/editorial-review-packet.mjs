@@ -12,6 +12,7 @@ import {FIELD_EXPEDITIONS} from '../fieldexpeditions.js';
 import {FIRST_PRINCIPLES} from '../firstprinciples.js';
 import {INQUIRY_TRAILS} from '../atlas-inquiry.js';
 import {CROSSROAD_CASES} from '../atlas-crossroads.js';
+import {COURSE_ORIENTATIONS} from '../atlas-course-orientations.js';
 import {COMPETENCY_BRIDGES} from '../competencybridges.js';
 import {QUALIFYING} from '../qualifyingclinic.js';
 import {SYNTHESIS_SEMINARS} from '../synthesisseminars.js';
@@ -172,6 +173,11 @@ export function buildEditorialReviewPacket(courses,clinics){
         independentAssignment:round.assignment,workedResponse:round.model
       })),
       rubric:[...lesson.practicalStudio.rubric]
+    }}:{}),
+    // Subject-specific Field Guide study strategies appear in their source
+    // form on the first Beginner lesson for exact-copy external review.
+    ...(course.lessons.find(l=>l.stage==='Beginner')===lesson?{courseFieldOrientation:{
+      reviewStatus:'pending-independent-review',...COURSE_ORIENTATIONS[course.id]
     }}:{}),
     // The exact interdisciplinary case, both lenses, opposing interpretation,
     // worked reasoning and evidence standard belong in human review hashes.
