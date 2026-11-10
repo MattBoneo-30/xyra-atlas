@@ -131,6 +131,9 @@ jobs:
           test -s dist/datacontrols.js
           test -s dist/voicecoach.js
           test -s dist/phrasereview.js
+          test -s dist/atlas-course-field-guide.js
+          test -s dist/atlas-course-orientations.js
+          test -s dist/atlas-course-field-guide.css
           test -s dist/atlas-page-views.js
           test -s dist/atlas-release-polish.css
           test -s dist/examhistory.js
