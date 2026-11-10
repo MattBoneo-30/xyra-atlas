@@ -302,8 +302,8 @@ try{
   expect(await page.locator('.chapter-map-node').count()>=2,'cached lessons remain available offline');
   await page.locator('.bottom-nav [data-action="nav"][data-id="explore"]').click();
   await waitRoute(page,'#/explore');
-  await page.locator('.course-list').waitFor();
-  expect(await page.locator('.course-list [data-action="open-course"]').count()>=10,'offline navigation keeps the local course library usable');
+  await page.locator('.atlas-world-gallery').waitFor();
+  expect(await page.locator('.atlas-world-gallery .atlas-world-portal[data-action="open-course"]').count()>=10,'offline navigation keeps the local course library usable');
   await page.screenshot({path:snapshots+'/mobile-offline.png',fullPage:true});
   await context.setOffline(false);
  });
@@ -311,10 +311,10 @@ try{
   const home=await mobileOverflow(page);
   expect(home.scroll<=home.width+2,'320px home has no horizontal page overflow: '+JSON.stringify(home));
   await page.locator('.bottom-nav [data-action="nav"][data-id="explore"]').click();
-  await page.locator('.course-list').waitFor();
+  await page.locator('.atlas-world-gallery').waitFor();
   const listing=await mobileOverflow(page);
   expect(listing.scroll<=listing.width+2,'320px course directory fits the viewport: '+JSON.stringify(listing));
-  await page.locator('.course-list [data-action="open-course"][data-id="shadow"]').click();
+  await page.locator('.atlas-world-gallery .atlas-world-portal[data-action="open-course"][data-id="shadow"]').click();
   await page.locator('.modal-card').waitFor();
   expect(await page.locator('[data-action="enter-shadow"]').isDisabled(),'mature-content entry requires acknowledgment');
   await page.locator('#age-agree').check();
