@@ -2,7 +2,7 @@ name: Verify Xyra Atlas
 
 on:
   push:
-    branches: [main]
+    branches: [main, dev/atlas-visual-experience]
   pull_request:
     branches: [main]
   workflow_dispatch:
@@ -40,6 +40,17 @@ jobs:
           retention-days: 14
       - name: Audit lesson pedagogy and source inventory
         run: npm run audit:curriculum
+      - name: Check official reference URL availability (informational)
+        continue-on-error: true
+        run: npm run check:sources
+      - name: Archive public URL availability observations
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: xyra-atlas-source-url-health
+          path: artifacts/public-source-health.json
+          if-no-files-found: ignore
+          retention-days: 14
       - name: Save curriculum audit
         if: always()
         uses: actions/upload-artifact@v7
@@ -120,6 +131,8 @@ jobs:
           test -s dist/datacontrols.js
           test -s dist/voicecoach.js
           test -s dist/phrasereview.js
+          test -s dist/atlas-page-views.js
+          test -s dist/atlas-release-polish.css
           test -s dist/examhistory.js
           test -s dist/focusedexam.js
           test -s dist/capstonelabs.js
