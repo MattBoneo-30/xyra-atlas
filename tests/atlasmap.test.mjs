@@ -14,9 +14,17 @@ test('map reflects lesson progress and marks mature section without unlocking it
  assert.equal(m.nodes.find(n=>n.id==='shadow').dark,true);
 });
 test('rendered map is available offline with complete assets and navigation',()=>{
- const app=fs.readFileSync('app.js','utf8'),sw=fs.readFileSync('sw.js','utf8'),build=fs.readFileSync('scripts/build.mjs','utf8');
- assert.match(app,/function mapPage\(/);assert.match(app,/map:mapPage/);assert.match(app,/data-action="open-course"/);
- assert.match(sw,/\/atlasmap\.js/);assert.match(build,/'atlasmap\.js'/);
+ const app=fs.readFileSync('app.js','utf8');
+ const view=fs.readFileSync('atlas-page-views.js','utf8');
+ const sw=fs.readFileSync('sw.js','utf8'),build=fs.readFileSync('scripts/build.mjs','utf8');
+ assert.match(app,/function mapPage\(/);
+ assert.match(app,/map:mapPage/);
+ assert.match(app,/renderAtlasMapView\(\{atlas,trails,button,icon,esc\}\)/);
+ assert.match(view,/data-action="open-course"/);
+ assert.match(sw,/\/atlasmap\.js/);
+ assert.match(build,/'atlasmap\.js'/);
+ assert.match(sw,/\/atlas-page-views\.js/);
+ assert.match(build,/'atlas-page-views\.js'/);
 });
 
 test('suggested connections are grounded in the actual curriculum, with real next lessons',()=>{
@@ -47,11 +55,13 @@ test('finished subjects cannot be recommended as unfinished next lessons',()=>{
  assert.deepEqual(suggestKnowledgeTrails(null),[]);
 });
 test('map cards expose a real accessible path into connected lessons',()=>{
- const app=fs.readFileSync('app.js','utf8'),css=fs.readFileSync('styles.css','utf8');
+ const app=fs.readFileSync('app.js','utf8'),view=fs.readFileSync('atlas-page-views.js','utf8');
+ const css=fs.readFileSync('styles.css','utf8');
  assert.match(app,/suggestKnowledgeTrails\(atlas,3\)/);
- assert.match(app,/class="atlas-learning-trails"/);
- assert.match(app,/'atlas-trail-button'/);
- assert.match(app,/trail\.to\.nextLesson\.id/);
+ assert.match(app,/renderAtlasMapView\(\{atlas,trails,button,icon,esc\}\)/);
+ assert.match(view,/class="atlas-learning-trails"/);
+ assert.match(view,/'atlas-trail-button'/);
+ assert.match(view,/trail\.to\.nextLesson\.id/);
  assert.match(css,/\.atlas-trails-grid/);
  assert.match(css,/\.atlas-trail-button:focus-visible/);
 });
