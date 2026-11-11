@@ -30,14 +30,15 @@ test('all 14 expedition scenarios and 42 ungraded missions enter exact-content e
  }
 });
 
+const htmlEscape=value=>String(value).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 test('printable editorial packet renders all expedition choices, teaching tasks and boundaries',()=>{
  const packet=buildEditorialReviewPacket(COURSES,CLINICS);
  const html=renderEditorialReviewHTML(packet);
  assert.equal((html.match(/Expedition Studio — independently review/g)||[]).length,14);
  for(const [id,unit] of Object.entries(ATLAS_EXPEDITIONS)){
-  assert.ok(html.includes(unit.title),id+' title omitted');
-  for(const m of unit.missions)assert.ok(html.includes(m.task),id+' task omitted');
-  for(const choice of unit.choices)assert.ok(html.includes(choice.consequence),id+' decision rationale omitted');
+  assert.ok(html.includes(htmlEscape(unit.title)),id+' title omitted');
+  for(const m of unit.missions)assert.ok(html.includes(htmlEscape(m.task)),id+' task omitted');
+  for(const choice of unit.choices)assert.ok(html.includes(htmlEscape(choice.consequence)),id+' decision rationale omitted');
  }
  const sourceMatrix=buildSourceEvidenceMatrix(packet);
  const teachingSites=sourceMatrix.sources.flatMap(source=>source.usages)
