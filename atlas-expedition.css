@@ -1,0 +1,55 @@
+/* Expedition Studio: original interactive, offline-first visual learning surface. */
+.atlas-expedition{margin:24px 0 28px;scroll-margin-top:90px;color:var(--text)}
+.atlas-expedition-disclosure{border:1px solid var(--line-bright);border-radius:24px;background:var(--card);overflow:hidden;box-shadow:0 16px 40px rgba(17,9,39,.11)}
+.atlas-expedition-summary{display:grid;grid-template-columns:minmax(180px,37%) minmax(0,1fr);min-height:246px;cursor:pointer;list-style:none;position:relative}
+.atlas-expedition-summary::-webkit-details-marker{display:none}
+.atlas-expedition-summary::marker{content:''}
+.atlas-expedition-poster{position:relative;overflow:hidden;background:linear-gradient(140deg,#302148,#151022);display:block}
+.atlas-expedition-poster img{width:100%;height:100%;position:absolute;inset:0;object-fit:cover;transition:transform .6s ease}
+.atlas-expedition-summary:hover .atlas-expedition-poster img{transform:scale(1.035)}
+.atlas-expedition-poster-shade{position:absolute;inset:0;background:linear-gradient(90deg,transparent 45%,rgba(18,13,31,.24))}
+.atlas-expedition-summary-content{padding:clamp(20px,3.5vw,42px);display:flex;flex-direction:column;align-items:start;justify-content:center;gap:14px}
+.atlas-expedition .overline{letter-spacing:.16em;font-size:10px;line-height:1.55;color:var(--gold)}
+.atlas-expedition-summary-content strong{font:normal clamp(30px,4vw,46px)/1.08 Georgia,'Times New Roman',serif;letter-spacing:-.035em;max-width:19ch;text-wrap:balance}
+.atlas-expedition-summary-content>span:not(.overline){font-size:13px;line-height:1.7;color:var(--muted);max-width:41ch}
+.atlas-expedition-summary-content em{font-style:normal;font-size:12px;font-weight:800;display:inline-flex;align-items:center;gap:10px;padding:11px 16px;border:1px solid var(--line-bright);border-radius:40px;color:var(--text);background:var(--card-soft)}
+.atlas-expedition-disclosure[open] .atlas-expedition-summary{border-bottom:1px solid var(--line)}
+.atlas-expedition-interior{padding:clamp(17px,3.4vw,38px);display:grid;gap:32px}
+.atlas-expedition-intro{padding:clamp(20px,3.2vw,36px);border-radius:20px;background:radial-gradient(circle at 90% 0%,rgba(177,136,234,.17),transparent 53%),var(--card-soft);border:1px solid var(--line-bright)}
+.atlas-expedition-intro h2{font:normal clamp(24px,3.6vw,38px)/1.16 Georgia,'Times New Roman',serif;letter-spacing:-.03em;max-width:26ch;margin:14px 0}
+.atlas-expedition-intro p{max-width:80ch;color:var(--muted);line-height:1.85;font-size:13px}
+.atlas-expedition-section-heading{display:grid;gap:8px;margin-bottom:16px}
+.atlas-expedition-section-heading h3{font:normal clamp(23px,2.7vw,33px)/1.18 Georgia,'Times New Roman',serif;letter-spacing:-.028em;margin:0}
+.atlas-expedition-section-heading p{margin:0;color:var(--muted);font-size:12px;line-height:1.7}
+.atlas-expedition-choices{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.atlas-expedition-choice{appearance:none;cursor:pointer;text-align:left;display:flex;align-items:start;gap:12px;padding:18px;min-height:108px;background:var(--card-soft);color:var(--text);border:1px solid var(--line-bright);border-radius:15px;font:600 12px/1.55 inherit;font-family:inherit;font-size:12px;line-height:1.65;transition:background .16s,border-color .16s,transform .16s}
+.atlas-expedition-choice:hover{transform:translateY(-2px);border-color:var(--gold)}
+.atlas-expedition-choice[aria-pressed="true"]{background:color-mix(in srgb,var(--gold) 10%,var(--card));border-color:var(--gold);box-shadow:inset 0 0 0 1px var(--gold)}
+.atlas-expedition-choice-index{flex:none;font-weight:800;color:var(--gold);font-size:10px}
+.atlas-expedition-choice>span:nth-child(2){flex:1}
+.atlas-expedition-choice>span:last-child{color:var(--gold)}
+.atlas-expedition-feedback{margin-top:12px;padding:22px;border:1px solid var(--line-bright);border-radius:15px;background:color-mix(in srgb,var(--lavender) 8%,var(--card))}
+.atlas-expedition-feedback[hidden]{display:none}
+.atlas-expedition-feedback h4{margin:9px 0;font-size:17px;line-height:1.4}
+.atlas-expedition-feedback p{margin:9px 0 0;color:var(--muted);font-size:12px;line-height:1.8}
+.atlas-expedition-stages{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.atlas-expedition-stage{min-width:0;border:1px solid var(--line-bright);border-radius:18px;overflow:hidden;background:var(--card-soft)}
+.atlas-expedition-stage-art{height:148px;position:relative;background:#1d1630;overflow:hidden}
+.atlas-expedition-stage-art img{display:block;width:100%;height:100%;object-fit:cover}
+.atlas-expedition-stage-number{position:absolute;top:14px;left:14px;background:rgba(18,12,30,.76);color:#ffe6bb;backdrop-filter:blur(8px);width:36px;height:36px;display:grid;place-items:center;border:1px solid rgba(255,230,187,.26);border-radius:50%;font-size:11px;font-weight:800}
+.atlas-expedition-stage-body{padding:20px;display:grid;gap:12px;align-content:start}
+.atlas-expedition-stage-body .overline{font-size:9px;letter-spacing:.09em}
+.atlas-expedition-stage-body h4{margin:0;font:normal 23px/1.17 Georgia,'Times New Roman',serif;letter-spacing:-.02em}
+.atlas-expedition-stage-body>p{font-size:12px;color:var(--muted);line-height:1.75;margin:0}
+.atlas-expedition-stage-body dl{display:grid;gap:10px;margin:0;padding-top:12px;border-top:1px solid var(--line)}
+.atlas-expedition-stage-body dt{text-transform:uppercase;letter-spacing:.11em;color:var(--gold);font-weight:800;font-size:9px}
+.atlas-expedition-stage-body dd{font-size:12px;line-height:1.65;margin:4px 0 0}
+.atlas-expedition-lesson{margin-top:auto;padding:11px 0 0;border-top:1px solid var(--line);text-decoration:none;color:var(--gold);font-weight:700;font-size:11px;line-height:1.5;display:inline-flex;justify-content:space-between;gap:12px}
+.atlas-expedition-final{padding:clamp(19px,3vw,34px);border-radius:18px;background:var(--card-soft);border:1px solid var(--line-bright)}
+.atlas-expedition-final h3{font:normal 26px/1.25 Georgia,'Times New Roman',serif;margin:10px 0}
+.atlas-expedition-final>p{line-height:1.85;color:var(--muted);font-size:12px;max-width:83ch}
+.atlas-expedition-final .fineprint{border-top:1px solid var(--line);padding-top:12px;margin-bottom:0}
+.atlas-expedition-summary:focus-visible,.atlas-expedition-choice:focus-visible,.atlas-expedition-lesson:focus-visible{outline:3px solid var(--gold);outline-offset:3px}
+@media(max-width:900px){.atlas-expedition-choices,.atlas-expedition-stages{grid-template-columns:1fr}.atlas-expedition-stage{display:grid;grid-template-columns:190px minmax(0,1fr)}.atlas-expedition-stage-art{height:100%;min-height:250px}.atlas-expedition-choice{min-height:70px}}
+@media(max-width:620px){.atlas-expedition-summary{grid-template-columns:1fr}.atlas-expedition-poster{height:185px}.atlas-expedition-summary-content{padding:23px}.atlas-expedition-summary-content strong{font-size:31px}.atlas-expedition-interior{gap:23px;padding:14px}.atlas-expedition-choices{gap:8px}.atlas-expedition-stage{display:block}.atlas-expedition-stage-art{height:145px;min-height:0}.atlas-expedition-stage-body{padding:17px}.atlas-expedition-choice{padding:15px}.atlas-expedition-intro{padding:18px}}
+@media(prefers-reduced-motion:reduce){.atlas-expedition-summary img,.atlas-expedition-choice{transition:none}.atlas-expedition-summary:hover .atlas-expedition-poster img,.atlas-expedition-choice:hover{transform:none}}

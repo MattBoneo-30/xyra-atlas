@@ -6,6 +6,7 @@ import {syncVisualReaderProgress,visualHorizonsPanel,visualScenePanel,visualStag
 import {renderAtlasExploreBanner,renderAtlasWorldGallery,renderAtlasJourneyConstellation} from './atlas-world-gallery.js';
 import {renderAtlasInquiryTrail} from './atlas-inquiry.js';
 import {renderCourseFieldGuide} from './atlas-course-field-guide.js';
+import {renderAtlasExpedition} from './atlas-expedition.js';
 import {languageEvidencePanel} from './languageevidence.js';
 import {specialistConceptPanel} from './advancedconcepts.js';
 import {calibrationLabPanel} from './calibrationlabs.js';
@@ -350,6 +351,7 @@ function coursePage() {
     <div class="course-progress"><div><strong>Your progress</strong><span>${done}/${c.lessons.length} lessons</span></div>${bars(done,c.lessons.length)}</div>
     ${button(`${icon('play',18)} ${done ? 'Continue learning' : 'Start learning'}`,'open-lesson','primary-button course-start',`data-course="${esc(c.id)}" data-lesson="${esc(firstUnfinished.id)}"`)}
     ${renderCourseFieldGuide(c,{completed:saved.completed,ladder})}
+    ${renderAtlasExpedition(c,{completed:saved.completed,getStageArt})}
     <section class="curriculum-ladder" id="atlas-stage-ladder" aria-label="Learning ladder for ${esc(c.title)}">
      <div class="curriculum-ladder-heading"><span class="overline">FROM FOUNDATION TO APPLIED WORK</span><h2>Three levels of practice</h2><p>Every stage has a learning objective and an observable exercise. Your recorded lesson progress is a study guide, not a measure of professional competence.</p></div>
      <div class="curriculum-ladder-levels">${ladder.levels.map(level=>`<article class="curriculum-level curriculum-level-illustrated" data-stage="${esc(level.stage)}"><button type="button" class="curriculum-world-preview" data-action="course-stage-filter" data-id="${esc(level.stage)}" aria-label="Explore ${esc(level.stage)} lessons in ${esc(c.title)}" aria-pressed="${courseStageFilter===level.stage}">

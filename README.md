@@ -4,6 +4,10 @@
 
 ![Xyra Atlas emblem](assets/atlas-mark.svg)
 
+## New Expedition Studio (development branch)
+
+Every course now includes an optional illustrated Expedition Studio with one authored real-world scenario, three comparative decisions with ungraded explanations, and three stage-specific field missions. Across fourteen learning worlds this adds **42 actionable tasks and 42 decision alternatives** with observable evidence criteria, using the established lesson IDs and original local scene artwork. The Studio introduces no new lesson completions, grades, certificates, personal records, remote requests, or tracking, and is bundled for offline use. Independent subject review and device acceptance are pending; it remains unmerged on the development branch. See [Expedition Studio QA](docs/expedition-studio-acceptance.md).
+
 ## New Course Field Guide (development branch)
 
 Every subject now has a **personalized Field Guide** at the start of its course, using real unfinished lessons for a bounded study session, the existing stage-completion counts, and seven direct in-page shortcuts to the deep-learning studios and full syllabus. The 14 subject-specific guiding questions and 42 study moves encourage active application of established material without producing new grades or lesson identities. The interface is keyboard-friendly, responsive through 320px, light/dark-compatible, and bundled offline. Original lessons and prior advanced content remain intact. Independent editorial, browser/device QA, and final merge approval remain pending. See [Course Field Guide QA](docs/course-field-guide-review.md).
