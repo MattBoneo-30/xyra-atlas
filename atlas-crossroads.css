@@ -1,0 +1,57 @@
+/* Atlas Crossroads: six grounded links, two disciplinary lenses, one
+   transfer challenge. All local, accessible and without progress mutation. */
+.atlas-crossroads{margin:26px 0 33px;scroll-margin-top:88px;color:var(--text)}
+.atlas-crossroads-disclosure{overflow:hidden;background:var(--card);border:1px solid var(--line-bright);border-radius:21px;box-shadow:0 12px 30px rgba(17,8,40,.08)}
+.atlas-crossroads-summary{display:grid;grid-template-columns:minmax(0,35%) minmax(0,1fr);cursor:pointer;list-style:none;min-height:215px}
+.atlas-crossroads-summary::-webkit-details-marker{display:none}
+.atlas-crossroads-summary::marker{content:""}
+.atlas-crossroads-summary-media{display:block;position:relative;overflow:hidden;background:#211633;min-height:215px}
+.atlas-crossroads-summary-media>img{display:block;position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;filter:saturate(.85);transition:transform .35s ease}
+.atlas-crossroads-art-shade{position:absolute;inset:0;pointer-events:none;background:linear-gradient(90deg,transparent,rgba(16,9,35,.29))}
+.atlas-crossroads-summary-content{display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:11px;min-width:0;padding:clamp(17px,3.3vw,31px)}
+.atlas-crossroads-summary-content .overline{font-size:10px;line-height:1.5;color:var(--gold)}
+.atlas-crossroads-summary-content>strong{font:normal clamp(24px,3.2vw,33px)/1.2 Georgia,"Times New Roman",serif;letter-spacing:-.035em;text-wrap:balance;overflow-wrap:anywhere}
+.atlas-crossroads-summary-content>span:nth-child(3){font-size:13px;line-height:1.75;color:var(--muted)}
+.atlas-crossroads-cta{display:inline-flex;align-items:center;gap:7px;margin-top:5px;padding:9px 13px;border:1px solid var(--line-bright);border-radius:99px;background:var(--bg-raised);font-size:12px;font-weight:800;color:var(--gold)}
+.atlas-crossroads-cta::after{content:"+";font-size:17px}
+.atlas-crossroads-disclosure[open] .atlas-crossroads-cta::after{content:"−"}
+.atlas-crossroads-summary:focus-visible,.atlas-crossroads-link:focus-visible,.atlas-crossroads-answer summary:focus-visible{outline:3px solid var(--gold);outline-offset:-4px}
+.atlas-crossroads-body{border-top:1px solid var(--line);padding:clamp(16px,3vw,27px)}
+.atlas-crossroads-body>header{margin:0 auto 23px;max-width:74ch;text-align:center}
+.atlas-crossroads-body>header h2{font:normal clamp(25px,3vw,34px)/1.22 Georgia,"Times New Roman",serif;letter-spacing:-.025em;text-wrap:balance;margin:10px 0}
+.atlas-crossroads-body p{font-size:13px;line-height:1.83;overflow-wrap:anywhere}
+.atlas-crossroads-body>header p{color:var(--muted);margin:0}
+.atlas-crossroads-map{list-style:none;display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px;padding:0;margin:0 0 23px}
+.atlas-crossroads-node{position:relative;min-width:0}
+.atlas-crossroads-node:not(:last-child)::after{content:"";position:absolute;left:calc(100% + 1px);right:-9px;top:24px;height:1px;background:var(--line-bright);pointer-events:none}
+.atlas-crossroads-link{min-height:150px;height:100%;display:flex;align-items:center;flex-direction:column;gap:8px;text-align:center;border:1px solid var(--line);border-radius:13px;background:var(--bg-raised);padding:12px 6px;color:var(--text);text-decoration:none}
+.atlas-crossroads-symbol{display:grid;place-items:center;flex:none;width:43px;height:43px;border-radius:50%;background:var(--card);border:1px solid var(--line-bright);font-size:13px;font-weight:750;color:var(--gold);font-variant-numeric:tabular-nums}
+.atlas-crossroads-node:first-child .atlas-crossroads-symbol,.atlas-crossroads-node:last-child .atlas-crossroads-symbol{font-size:23px}
+.atlas-crossroads-link strong{font-size:12px;line-height:1.3;overflow-wrap:anywhere}
+.atlas-crossroads-link small{font-size:10px;line-height:1.5;color:var(--muted);overflow-wrap:anywhere}
+.atlas-crossroads-cue{font-size:9px;color:var(--muted);line-height:1.5;margin-top:auto}
+.atlas-crossroads-node:last-child .atlas-crossroads-link{background:color-mix(in srgb,var(--lavender) 9%,var(--card));border-color:var(--line-bright)}
+.atlas-crossroads-case,.atlas-crossroads-task,.atlas-crossroads-counter,.atlas-crossroads-evidence{border:1px solid var(--line);border-radius:13px;background:var(--card-soft);padding:clamp(15px,2.5vw,22px);margin:13px 0}
+.atlas-crossroads-case .overline{color:var(--gold)}
+.atlas-crossroads-case p{margin:9px 0 0}
+.atlas-crossroads-lenses{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:13px}
+.atlas-crossroads-lenses article{min-width:0;padding:17px 19px;border:1px solid var(--line-bright);border-radius:12px;background:radial-gradient(circle at 100% 0%,rgba(176,138,231,.12),transparent 55%),var(--card)}
+.atlas-crossroads-body h3{font-size:16px;line-height:1.4;margin:0 0 9px;overflow-wrap:anywhere}
+.atlas-crossroads-lenses article p,.atlas-crossroads-task p,.atlas-crossroads-counter p,.atlas-crossroads-evidence p{margin:0}
+.atlas-crossroads-task{border-color:var(--atlas-outline,var(--line-bright));background:color-mix(in srgb,var(--gold) 5%,var(--card))}
+.atlas-crossroads-answer{border:1px solid var(--line-bright);border-radius:12px;margin:15px 0;background:var(--card);overflow:hidden}
+.atlas-crossroads-answer>summary{cursor:pointer;padding:15px 17px;font-size:13px;line-height:1.7;font-weight:750;color:var(--text)}
+.atlas-crossroads-answer>p{margin:0;padding:0 17px 17px}
+.atlas-crossroads-evidence{border-left:3px solid var(--gold)}
+.atlas-crossroads-body>.fineprint{font-size:11px;color:var(--muted);line-height:1.8;margin:20px 0 0}
+@media(hover:hover) and (pointer:fine){
+ .atlas-crossroads-summary:hover img{transform:scale(1.035)}
+ .atlas-crossroads-link:hover{border-color:var(--gold)}
+}
+@media(max-width:1020px){.atlas-crossroads-map{grid-template-columns:repeat(3,minmax(0,1fr))}.atlas-crossroads-node:not(:last-child)::after{display:none}.atlas-crossroads-link{min-height:125px}}
+@media(max-width:680px){.atlas-crossroads-summary{grid-template-columns:minmax(0,1fr)}.atlas-crossroads-summary-media{min-height:150px;max-height:180px}.atlas-crossroads-summary-content{padding:18px}.atlas-crossroads-summary-content>strong{font-size:27px}.atlas-crossroads-body>header{text-align:left}.atlas-crossroads-lenses{grid-template-columns:minmax(0,1fr)}.atlas-crossroads-map{grid-template-columns:repeat(2,minmax(0,1fr))}.atlas-crossroads-link{min-height:110px}.atlas-crossroads-body{padding:15px}}
+@media(max-width:360px){.atlas-crossroads-summary-content>strong{font-size:23px}.atlas-crossroads-link{padding:10px 4px}.atlas-crossroads-link strong{font-size:11px}}
+html[data-theme=light] .atlas-crossroads-lenses article{background:var(--card)}
+@media(prefers-contrast:more){.atlas-crossroads-disclosure,.atlas-crossroads-link,.atlas-crossroads-lenses article{border-width:2px}.atlas-crossroads-link small,.atlas-crossroads-cue,.atlas-crossroads-body>header p{color:var(--text)}}
+@media(prefers-reduced-motion:reduce){.atlas-crossroads-summary-media>img{transition:none!important;transform:none!important}}
+@media print{.atlas-crossroads-summary-media{display:none}.atlas-crossroads-map{grid-template-columns:repeat(3,minmax(0,1fr))}.atlas-crossroads-link{min-height:0}.atlas-crossroads-node{break-inside:avoid}}

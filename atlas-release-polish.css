@@ -1,0 +1,196 @@
+/* Atlas release-readiness visual refinement.
+ * Focus: narrow screens, readable private history and knowledge-map routes.
+ * No additional images, tracking, font downloads or scripting.
+ */
+.atlas-map-wrap{
+  border-radius:clamp(15px,3vw,27px);
+  outline-offset:3px;
+}
+.atlas-map-page .page-title h1,
+.atlas-map-page .atlas-trails-heading h2{
+  text-wrap:balance;
+}
+.atlas-map-page .atlas-map-summary{
+  border-bottom:1px solid var(--line);
+  margin-bottom:24px;
+  padding-block:18px;
+}
+.atlas-map-page .atlas-map-summary>span{
+  display:inline-flex;gap:8px;align-items:center;
+  padding:9px 11px;
+  border:1px solid var(--line);
+  background:var(--card);
+  border-radius:99px;
+  line-height:1.5;
+}
+.atlas-map-page .atlas-star-node{
+  overflow-wrap:anywhere;
+}
+.atlas-map-page .atlas-star-node:focus-visible{
+  outline:3px solid #f8d79b;
+  outline-offset:4px;
+  border-color:#f8d79b;
+}
+.atlas-map-page .atlas-node-label strong{
+  text-wrap:balance;
+}
+.atlas-map-page .atlas-trail-body{
+  min-width:0;
+}
+.atlas-map-page .atlas-trail-button{
+  min-width:0;overflow-wrap:anywhere;
+  min-height:46px;
+}
+.atlas-map-page .atlas-trail-button:focus-visible{
+  outline:3px solid var(--gold);outline-offset:3px;
+}
+.exam-insights .exam-insights-metrics{
+  font-variant-numeric:tabular-nums;
+}
+.exam-insights .exam-insights-recent{
+  min-width:0;
+}
+.exam-insights .exam-insights-recent-row{
+  min-width:0;
+}
+.exam-insights .exam-insights-recent-row>span{
+  min-width:0;overflow-wrap:anywhere;
+}
+.exam-insights .exam-insights-heading .secondary-button,
+.exam-insights .exam-focus-controls .primary-button{
+  min-height:44px;white-space:normal;
+  line-height:1.45;text-align:center;
+}
+.exam-insights .exam-insights-focus-item{
+  min-width:0;
+}
+.exam-insights .exam-insights-focus-item>div{
+  min-width:0;overflow-wrap:anywhere;
+}
+.exam-insights :is(button,select,a):focus-visible{
+  outline:3px solid var(--gold);outline-offset:3px;
+}
+@media(max-width:690px){
+  .atlas-map-page .atlas-trails-heading{
+    gap:12px;
+  }
+  .atlas-map-page .atlas-map-summary{
+    justify-content:flex-start;
+    gap:9px;
+  }
+  .exam-insights .exam-insights-heading{
+    display:flex;align-items:stretch;
+    flex-direction:column;
+  }
+  .exam-insights .exam-insights-heading .secondary-button{
+    align-self:flex-start;
+    max-width:100%;
+  }
+}
+@media(max-width:430px){
+  .atlas-map-page .atlas-map-orbit{
+    gap:8px;
+    padding:10px;
+  }
+  .atlas-map-page .atlas-star-node{
+    min-width:0;
+    padding:7px;
+    border-radius:13px;
+    min-height:136px;
+  }
+  .atlas-map-page .atlas-node-art{
+    height:62px;
+  }
+  .atlas-map-page .atlas-node-label strong{
+    font-size:11px;
+  }
+  .atlas-map-page .atlas-node-label small{
+    font-size:10px;
+  }
+  .atlas-map-page .atlas-map-summary>span{
+    font-size:11px;
+  }
+  .atlas-map-page .atlas-trail-card{
+    grid-template-columns:86px minmax(0,1fr);
+  }
+  .atlas-map-page .atlas-trail-body{
+    padding:12px;
+    gap:7px;
+  }
+  .atlas-map-page .atlas-trail-body h3{
+    font-size:19px;
+  }
+  .atlas-map-page .atlas-trail-scene{
+    min-height:205px;
+  }
+  .exam-insights{
+    padding:16px 12px;
+    border-radius:16px;
+  }
+  .exam-insights .exam-insights-metrics{
+    gap:5px;
+  }
+  .exam-insights .exam-insights-metrics>div{
+    min-width:0;
+    padding:10px 6px;
+  }
+  .exam-insights .exam-insights-metrics strong{
+    font-size:clamp(17px,5.4vw,23px);
+  }
+  .exam-insights .exam-insights-metrics span{
+    font-size:10px;
+    line-height:1.45;
+  }
+  .exam-insights .exam-insights-columns>div{
+    padding:13px;
+  }
+  .exam-insights .exam-insights-recent-row{
+    grid-template-columns:minmax(0,1fr) minmax(0,1.2fr) auto;
+    gap:7px;font-size:11px;
+  }
+  .exam-insights .exam-insights-recent-row strong{
+    font-size:11px;
+  }
+  .exam-insights .exam-focus-action{
+    padding:13px;
+  }
+}
+@media(max-width:350px){
+  .atlas-map-page .atlas-map-orbit{
+    grid-template-columns:minmax(0,1fr);
+  }
+  .atlas-map-page .atlas-star-node{
+    display:grid;
+    grid-template-columns:70px minmax(0,1fr);
+    align-items:center;gap:10px;
+    text-align:left;min-height:80px;
+  }
+  .atlas-map-page .atlas-node-art{height:67px}
+  .atlas-map-page .atlas-trail-card{
+    grid-template-columns:75px minmax(0,1fr);
+  }
+  .atlas-map-page .atlas-trail-body h3{font-size:18px}
+  .exam-insights .exam-insights-recent-row{
+    grid-template-columns:minmax(0,1fr) minmax(0,1fr);
+    gap:3px 10px;
+  }
+  .exam-insights .exam-insights-recent-row strong{
+    grid-column:2;
+    justify-self:end;
+  }
+}
+html[data-theme=light] .atlas-map-page .atlas-map-summary>span{
+  background:var(--card);
+}
+@media(prefers-contrast:more){
+  .atlas-map-page .atlas-map-summary>span,
+  .exam-insights .exam-insights-columns>div{
+    border-width:2px;
+  }
+}
+@media(prefers-reduced-motion:reduce){
+  .atlas-map-page .atlas-star-node,
+  .atlas-map-page .atlas-trail-button{
+    transition:none!important;
+  }
+}

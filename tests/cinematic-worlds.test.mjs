@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
+import {visualScenePanel} from '../atlas-visual-experience.js';
 
 const root=process.cwd();
 const names=['atlas-archive-gate','atlas-lantern-library','atlas-starlit-garden'];
@@ -29,20 +30,24 @@ test('all three original cinematic world assets are lightweight, safe and access
 test('cinematic scenes are integrated with working navigational actions and accessible markup',()=>{
  const app=fs.readFileSync('app.js','utf8');
  const css=fs.readFileSync('styles.css','utf8');
+ const scene=visualScenePanel((label,action,cls)=>`<button type="button" class="${cls}" data-action="${action}">${label}</button>`);
  const build=fs.readFileSync('scripts/build.mjs','utf8');
  assert.match(app,/class="hero-landscape hero-archive"/);
  assert.match(app,/fetchpriority="high"/);
  assert.match(app,/Enter the Atlas','goto-explore'/);
- assert.match(app,/Visit Xyra’s Corner','open-corner'/);
- assert.match(app,/See the knowledge map','map'/);
- assert.match(app,/class="atlas-scene-grid"/);
- assert.match(app,/class="atlas-guide-medallion" aria-hidden="true"/);
- assert.match(app,/src="\/assets\/xyra-guide.svg" alt="" loading="lazy"/);
+ assert.match(scene,/Visit Xyra’s Corner/);
+ assert.match(scene,/data-action="open-corner"/);
+ assert.match(scene,/See the knowledge map/);
+ assert.match(scene,/data-action="map"/);
+ assert.match(app,/visualScenePanel\(button\)/);
+ assert.match(scene,/class="atlas-scene-grid"/);
+ assert.match(scene,/class="atlas-guide-medallion" aria-hidden="true"/);
+ assert.match(scene,/src="\/assets\/xyra-guide.svg" alt="" loading="lazy"/);
  assert.match(css,/\.atlas-scene-card \.atlas-guide-medallion/);
  assert.ok(fs.readFileSync('sw.js','utf8').includes('/assets/xyra-guide.svg'),
   'character cameo is included in the offline bundle');
  for(const name of names){
-  assert.ok(app.includes('/assets/'+name+'.svg'),'original art is loaded by app: '+name);
+  assert.ok((app+scene).includes('/assets/'+name+'.svg'),'original art is loaded by the app or extracted scene renderer: '+name);
  }
  assert.match(css,/\.hero-archive \.landscape-shade/);
  assert.match(css,/\.atlas-scene-grid/);

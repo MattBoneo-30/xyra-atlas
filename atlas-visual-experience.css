@@ -264,3 +264,41 @@ html[data-theme=light] .atlas-horizon-card{border-color:rgba(96,66,115,.31)}
     transition:none!important;transform:none!important
   }
 }
+
+/* Release-readiness mobile legibility and touch ergonomics.
+ * 16px controls prevent unrequested viewport zoom in iOS Safari while
+ * large touch targets and contained overflow preserve one-handed reading.
+ */
+@media(max-width:600px){
+  .reading-page :is(input:not([type="checkbox"]):not([type="radio"]),select,textarea),
+  .course-page :is(input:not([type="checkbox"]):not([type="radio"]),select,textarea),
+  .global-search-page :is(input,select,textarea),
+  .atlas-explore-filters :is(input,select,textarea){
+    font-size:16px;
+    max-width:100%;
+  }
+  .reading-page :is(.reader-toolbar,.lesson-audio-panel) button,
+  .atlas-inquiry-link,
+  .atlas-crossroads-answer>summary,
+  .atlas-inquiry-answer>summary{
+    min-height:44px;
+  }
+  .atlas-inquiry-link{display:inline-flex;align-items:center}
+  .atlas-horizons-grid{overscroll-behavior-x:contain}
+  .reading-page :is(pre,table){max-width:100%;overflow-x:auto}
+  .reading-page .lesson-content{overflow-wrap:anywhere}
+}
+@media(max-width:370px){
+  .atlas-reader-compass-steps strong{font-size:10px;line-height:1.4}
+  .atlas-reader-compass-steps li{min-width:0}
+  .reading-page .reading-head{padding-left:12px}
+}
+@media(prefers-contrast:more){
+  .atlas-reader-progress-fill{background:var(--gold);box-shadow:none}
+  .atlas-reader-compass-steps li.is-current{
+    outline:2px solid currentColor;outline-offset:1px
+  }
+}
+@media(prefers-reduced-motion:reduce){
+  html:focus-within{scroll-behavior:auto}
+}

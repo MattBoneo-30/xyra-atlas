@@ -42,5 +42,10 @@
         }
       ]
     }
-  ]
+  ],
+  "git": {
+    "deploymentEnabled": {
+      "dev/atlas-visual-experience": false
+    }
+  }
 }

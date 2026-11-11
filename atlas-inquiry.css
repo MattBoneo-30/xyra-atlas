@@ -1,0 +1,234 @@
+/* Xyra Atlas · Inquiry Trails — progressive visual argument map.
+ * Local artwork, no tracking, no new lesson state. */
+.atlas-inquiry{margin:29px 0 34px;scroll-margin-top:90px;color:var(--text)}
+.atlas-inquiry-disclosure{
+ overflow:hidden;background:var(--card);border:1px solid var(--line-bright);
+ border-radius:22px;box-shadow:0 12px 30px rgba(9,6,24,.085)
+}
+.atlas-inquiry-summary{
+ display:grid;grid-template-columns:minmax(0,36%) minmax(0,1fr);
+ min-height:236px;cursor:pointer;position:relative;
+ list-style:none;background:var(--card)
+}
+.atlas-inquiry-summary::-webkit-details-marker{display:none}
+.atlas-inquiry-summary::marker{content:""}
+.atlas-inquiry-summary-image{
+ display:block;position:relative;min-height:236px;overflow:hidden;
+ background:#211b39
+}
+.atlas-inquiry-summary-image>img{
+ display:block;width:100%;height:100%;position:absolute;inset:0;
+ object-fit:cover;object-position:center;
+ filter:saturate(.85) contrast(1.02);
+ transition:transform .45s ease,filter .45s ease
+}
+.atlas-inquiry-summary-image-shade{
+ display:block;position:absolute;inset:0;pointer-events:none;
+ background:linear-gradient(90deg,transparent 15%,rgba(21,15,45,.15) 75%,rgba(21,15,45,.4))
+}
+.atlas-inquiry-summary-copy{
+ padding:clamp(20px,3.6vw,37px);display:flex;flex-direction:column;
+ align-items:flex-start;justify-content:center;gap:11px;min-width:0
+}
+.atlas-inquiry-summary-copy .overline{color:var(--gold);line-height:1.55;font-size:10px}
+.atlas-inquiry-summary-copy>strong{
+ font:normal clamp(24px,3vw,34px)/1.17 Georgia,"Times New Roman",serif;
+ letter-spacing:-.035em;text-wrap:balance;overflow-wrap:anywhere
+}
+.atlas-inquiry-summary-copy>span:nth-child(3){
+ color:var(--muted);font-size:13px;line-height:1.85;max-width:63ch
+}
+.atlas-inquiry-summary-cta{
+ display:inline-flex;align-items:center;gap:12px;
+ margin-top:6px;padding:11px 15px;border-radius:99px;
+ color:var(--gold);font-size:12px;font-weight:800;
+ border:1px solid var(--line-bright);background:var(--bg-raised)
+}
+.atlas-inquiry-summary-cta::after{content:"＋";font-size:16px;line-height:1}
+.atlas-inquiry-disclosure[open] .atlas-inquiry-summary-cta::after{content:"−"}
+.atlas-inquiry-summary:focus-visible{
+ outline:3px solid var(--gold);outline-offset:-5px
+}
+@media(hover:hover) and (pointer:fine){
+ .atlas-inquiry-summary:hover .atlas-inquiry-summary-image>img{
+  transform:scale(1.035);filter:saturate(1)
+ }
+ .atlas-inquiry-summary:hover .atlas-inquiry-summary-cta{
+  border-color:var(--gold)
+ }
+}
+.atlas-inquiry-body{padding:clamp(17px,3vw,30px);border-top:1px solid var(--line)}
+.atlas-inquiry-introduction{
+ max-width:75ch;margin:0 auto 26px;text-align:center
+}
+.atlas-inquiry-introduction h2{
+ font:normal clamp(24px,3.5vw,32px)/1.23 Georgia,"Times New Roman",serif;
+ letter-spacing:-.032em;text-wrap:balance;margin:0 0 12px
+}
+.atlas-inquiry-introduction p{
+ color:var(--muted);font-size:13px;line-height:1.88;margin:9px 0
+}
+.atlas-inquiry-marks{
+ position:relative;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));
+ gap:10px;margin:15px auto 28px;max-width:830px;
+}
+.atlas-inquiry-marks::before{
+ content:"";position:absolute;top:20px;left:12.5%;right:12.5%;height:1px;
+ background:linear-gradient(90deg,var(--lavender),var(--gold),var(--lavender));
+ opacity:.55;pointer-events:none
+}
+.atlas-inquiry-mark{
+ position:relative;z-index:1;min-width:0;display:flex;flex-direction:column;
+ align-items:center;justify-content:flex-start;text-align:center;gap:8px;
+ font-size:11px;font-weight:750;color:var(--muted);line-height:1.4
+}
+.atlas-inquiry-mark-number{
+ width:43px;height:43px;display:grid;place-items:center;
+ border:1px solid var(--line-bright);border-radius:50%;
+ background:var(--card);color:var(--gold);font-size:12px;
+ font-variant-numeric:tabular-nums;box-shadow:0 0 0 5px var(--card)
+}
+.atlas-inquiry-stops{
+ list-style:none;counter-reset:inquiry;padding:0;margin:0;
+ display:grid;grid-template-columns:repeat(2,minmax(0,1fr));
+ gap:18px
+}
+.atlas-inquiry-stop{
+ position:relative;min-width:0;
+ display:flex;flex-direction:column;border-radius:15px;
+ border:1px solid var(--line);background:var(--card-soft);
+ overflow:hidden
+}
+.atlas-inquiry-stop-signpost{
+ display:flex;align-items:center;flex-wrap:wrap;gap:9px;
+ min-height:51px;padding:11px 17px;
+ border-bottom:1px solid var(--line);
+ background:radial-gradient(circle at 85% -70%,rgba(173,121,226,.16),transparent 65%);
+}
+.atlas-inquiry-stop-number{
+ display:grid;place-items:center;flex:none;
+ width:30px;height:30px;border:1px solid var(--line-bright);
+ border-radius:50%;color:var(--gold);font-size:11px;font-weight:750
+}
+.atlas-inquiry-stop-phase{
+ font-size:11px;letter-spacing:.035em;font-weight:800;color:var(--text)
+}
+.atlas-inquiry-lesson-status{
+ margin-left:auto;font-size:10px;color:var(--muted);
+ line-height:1.5
+}
+.atlas-inquiry-stop article{
+ display:flex;flex-direction:column;flex:1;min-width:0;
+ padding:clamp(15px,2vw,21px)
+}
+.atlas-inquiry-stop h3{
+ font:normal clamp(21px,2.3vw,26px)/1.2 Georgia,"Times New Roman",serif;
+ letter-spacing:-.02em;overflow-wrap:anywhere;margin:0 0 9px
+}
+.atlas-inquiry-stop h4{
+ font-size:12px;margin:0 0 7px;font-weight:800;
+ letter-spacing:.02em;line-height:1.5
+}
+.atlas-inquiry-stop p{
+ font-size:12px;line-height:1.84;margin:0;overflow-wrap:anywhere
+}
+.atlas-inquiry-focus{
+ color:var(--muted);font-style:italic;font-size:13px!important;
+ padding-bottom:12px;border-bottom:1px solid var(--line)
+}
+.atlas-inquiry-explain,.atlas-inquiry-challenge,
+.atlas-inquiry-counter,.atlas-inquiry-evidence{margin-top:17px}
+.atlas-inquiry-challenge{
+ padding:14px;border:1px solid var(--line-bright);
+ border-radius:10px;background:var(--bg-raised)
+}
+.atlas-inquiry-challenge h4{color:var(--gold)}
+.atlas-inquiry-answer{
+ margin-top:14px;border:1px solid var(--line-bright);border-radius:10px;
+ background:var(--card);overflow:hidden
+}
+.atlas-inquiry-answer>summary{
+ cursor:pointer;font-size:12px;font-weight:750;
+ line-height:1.6;padding:13px 14px;
+ color:var(--text);list-style-position:inside
+}
+.atlas-inquiry-answer>summary:focus-visible{
+ outline:3px solid var(--gold);outline-offset:-3px
+}
+.atlas-inquiry-answer>p{padding:0 14px 14px}
+.atlas-inquiry-counter{
+ padding:12px 13px;border-left:2px solid var(--gold);
+ background:color-mix(in srgb,var(--gold) 5%,var(--card));
+ border-radius:0 8px 8px 0
+}
+.atlas-inquiry-counter p{color:var(--muted)}
+.atlas-inquiry-evidence{
+ padding-top:13px;border-top:1px dashed var(--line-bright)
+}
+.atlas-inquiry-evidence p{color:var(--muted)}
+.atlas-inquiry-link{
+ display:inline-flex;margin-top:auto;padding-top:18px;
+ align-items:center;gap:8px;color:var(--gold);
+ font-size:12px;font-weight:800;
+ text-decoration:underline;text-underline-offset:4px;
+ line-height:1.6
+}
+.atlas-inquiry-link::after{content:"↗";text-decoration:none}
+.atlas-inquiry-link:focus-visible{
+ outline:3px solid var(--gold);outline-offset:3px
+}
+.atlas-inquiry-body>.fineprint{
+ margin:21px 0 0;color:var(--muted);font-size:11px;line-height:1.8
+}
+html[data-theme=light] .atlas-inquiry-disclosure{
+ box-shadow:0 11px 27px rgba(64,32,79,.06)
+}
+html[data-theme=light] .atlas-inquiry-counter{
+ background:color-mix(in srgb,var(--gold) 7%,var(--card))
+}
+@media(max-width:860px){
+ .atlas-inquiry-summary{grid-template-columns:minmax(0,34%) minmax(0,1fr)}
+ .atlas-inquiry-stops{gap:12px}
+ .atlas-inquiry-stop-signpost{padding:10px 12px}
+ .atlas-inquiry-lesson-status{margin-left:0;width:100%;padding-left:38px}
+}
+@media(max-width:680px){
+ .atlas-inquiry-summary{grid-template-columns:1fr}
+ .atlas-inquiry-summary-image{min-height:155px;max-height:175px}
+ .atlas-inquiry-summary-copy{padding:20px}
+ .atlas-inquiry-summary-copy>strong{font-size:29px}
+ .atlas-inquiry-summary-copy>span:nth-child(3){font-size:12px}
+ .atlas-inquiry-stops{grid-template-columns:minmax(0,1fr)}
+ .atlas-inquiry-stop-signpost{padding:12px 15px}
+ .atlas-inquiry-lesson-status{width:auto;margin-left:auto;padding:0}
+ .atlas-inquiry-body{padding:15px}
+ .atlas-inquiry-introduction{text-align:left;margin-bottom:16px}
+ .atlas-inquiry-marks{gap:3px;margin:10px 0 24px}
+ .atlas-inquiry-mark{font-size:10px}
+ .atlas-inquiry-mark-number{width:35px;height:35px}
+ .atlas-inquiry-marks::before{top:17px}
+}
+@media(max-width:360px){
+ .atlas-inquiry-summary-copy{padding:15px}
+ .atlas-inquiry-summary-copy>strong{font-size:25px}
+ .atlas-inquiry-mark{font-size:9px}
+ .atlas-inquiry-mark-number{width:31px;height:31px;font-size:10px}
+ .atlas-inquiry-lesson-status{width:100%;margin-left:39px}
+}
+@media(prefers-contrast:more){
+ .atlas-inquiry-disclosure,.atlas-inquiry-stop,.atlas-inquiry-challenge,
+ .atlas-inquiry-answer{border-width:2px}
+ .atlas-inquiry-introduction p,.atlas-inquiry-counter p,
+ .atlas-inquiry-evidence p,.atlas-inquiry-focus{color:var(--text)}
+}
+@media(prefers-reduced-motion:reduce){
+ .atlas-inquiry-summary-image>img,.atlas-inquiry-summary-cta{
+  transition:none!important;transform:none!important
+ }
+}
+@media print{
+ .atlas-inquiry-disclosure>.atlas-inquiry-summary{min-height:0;display:block}
+ .atlas-inquiry-summary-image,.atlas-inquiry-summary-cta{display:none}
+ .atlas-inquiry-stops{display:block}
+ .atlas-inquiry-stop{break-inside:avoid;margin:12px 0}
+}

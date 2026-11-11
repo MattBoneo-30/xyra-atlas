@@ -173,7 +173,20 @@ try{
    const size=await mobileOverflow(page);
    expect(size.scroll<=size.width+2,course+' advanced case fits narrow phones');
   }
-  await page.evaluate(async()=>{await navigator.serviceWorker.ready});
+  // A missing worker must fail with diagnostics instead of consuming the
+  // four-minute shard watchdog. This also detects async-import load races.
+  await page.evaluate(async()=>{
+   const deadline=15000;
+   await Promise.race([
+    navigator.serviceWorker.ready,
+    new Promise((_,reject)=>setTimeout(async()=>{
+     const reg=await navigator.serviceWorker.getRegistration().catch(()=>null);
+     reject(new Error('Offline worker not ready after '+deadline+'ms; document.readyState='+
+      document.readyState+', scope='+(reg?.scope||'none')+
+      ', active='+(reg?.active?.state||'none')+', installing='+(reg?.installing?.state||'none')));
+    },deadline))
+   ]);
+  });
   await page.reload({waitUntil:'domcontentloaded'});
   await page.waitForFunction(()=>Boolean(navigator.serviceWorker.controller));
   await context.setOffline(true);
@@ -289,8 +302,8 @@ try{
   expect(await page.locator('.chapter-map-node').count()>=2,'cached lessons remain available offline');
   await page.locator('.bottom-nav [data-action="nav"][data-id="explore"]').click();
   await waitRoute(page,'#/explore');
-  await page.locator('.course-list').waitFor();
-  expect(await page.locator('.course-list [data-action="open-course"]').count()>=10,'offline navigation keeps the local course library usable');
+  await page.locator('.atlas-world-gallery').waitFor();
+  expect(await page.locator('.atlas-world-gallery .atlas-world-portal[data-action="open-course"]').count()>=10,'offline navigation keeps the local course library usable');
   await page.screenshot({path:snapshots+'/mobile-offline.png',fullPage:true});
   await context.setOffline(false);
  });
@@ -298,10 +311,10 @@ try{
   const home=await mobileOverflow(page);
   expect(home.scroll<=home.width+2,'320px home has no horizontal page overflow: '+JSON.stringify(home));
   await page.locator('.bottom-nav [data-action="nav"][data-id="explore"]').click();
-  await page.locator('.course-list').waitFor();
+  await page.locator('.atlas-world-gallery').waitFor();
   const listing=await mobileOverflow(page);
   expect(listing.scroll<=listing.width+2,'320px course directory fits the viewport: '+JSON.stringify(listing));
-  await page.locator('.course-list [data-action="open-course"][data-id="shadow"]').click();
+  await page.locator('.atlas-world-gallery .atlas-world-portal[data-action="open-course"][data-id="shadow"]').click();
   await page.locator('.modal-card').waitFor();
   expect(await page.locator('[data-action="enter-shadow"]').isDisabled(),'mature-content entry requires acknowledgment');
   await page.locator('#age-agree').check();
@@ -1492,10 +1505,22 @@ try{
    expect((await page.locator('.offline-update-ready').textContent()).includes('Apply update'),'update needs explicit user consent');
    await context.setOffline(true);
    await page.locator('[data-action="offline-apply-update"]').click();
+   // A waiting worker may briefly enter 'activating' while the old worker is
+   // still active. Waiting for !registration.waiting alone is a race; verify
+   // the new worker's actual cache fingerprint and offline completeness.
    await page.waitForFunction(async expected=>{
     const registration=await navigator.serviceWorker.getRegistration();
-    return Boolean(registration?.active&&!registration.waiting&&navigator.serviceWorker.controller&&document.querySelector('.offline-library-page'));
-   },replacement,{timeout:25000});
+    if(!registration?.active||registration.waiting||!navigator.serviceWorker.controller||
+      !document.querySelector('.offline-library-page'))return false;
+    const report=await new Promise(resolve=>{
+     const channel=new MessageChannel();
+     const timer=setTimeout(()=>{channel.port1.close();resolve(null);},1200);
+     channel.port1.onmessage=e=>{clearTimeout(timer);channel.port1.close();resolve(e.data);};
+     try{registration.active.postMessage({type:'ATLAS_OFFLINE_STATUS'},[channel.port2]);}
+     catch{clearTimeout(timer);channel.port1.close();resolve(null);}
+    });
+    return report?.version===expected&&report?.ready===true;
+   },replacement,{timeout:30000});
    await page.locator('.offline-library-page').waitFor();
    const final=await status();
    expect(final?.version===replacement,'approved update activated using already cached offline assets');

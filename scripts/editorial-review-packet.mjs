@@ -10,6 +10,10 @@ import {EVIDENCE_PROTOCOLS} from '../evidenceprotocols.js';
 import {MASTERY_RESEARCH} from '../masteryresearch.js';
 import {FIELD_EXPEDITIONS} from '../fieldexpeditions.js';
 import {FIRST_PRINCIPLES} from '../firstprinciples.js';
+import {INQUIRY_TRAILS} from '../atlas-inquiry.js';
+import {CROSSROAD_CASES} from '../atlas-crossroads.js';
+import {COURSE_ORIENTATIONS} from '../atlas-course-orientations.js';
+import {ATLAS_EXPEDITIONS} from '../atlas-expedition.js';
 import {COMPETENCY_BRIDGES} from '../competencybridges.js';
 import {QUALIFYING} from '../qualifyingclinic.js';
 import {SYNTHESIS_SEMINARS} from '../synthesisseminars.js';
@@ -170,6 +174,28 @@ export function buildEditorialReviewPacket(courses,clinics){
         independentAssignment:round.assignment,workedResponse:round.model
       })),
       rubric:[...lesson.practicalStudio.rubric]
+    }}:{}),
+    // Subject-specific Field Guide study strategies appear in their source
+    // form on the first Beginner lesson for exact-copy external review.
+    ...(course.lessons.find(l=>l.stage==='Beginner')===lesson?{courseFieldOrientation:{
+      reviewStatus:'pending-independent-review',...COURSE_ORIENTATIONS[course.id]
+    }}:{}),
+    // Include the Expedition Studio's scenario, every decision consequence and
+    // all three level-specific deliverables in the signed editorial content hash.
+    // It is optional, ungraded teaching and is never a new completed lesson.
+    ...(course.lessons.find(l=>l.stage==='Beginner')===lesson?{subjectAppliedExpedition:{
+      reviewStatus:'pending-independent-review',...ATLAS_EXPEDITIONS[course.id]
+    }}:{}),
+    // The exact interdisciplinary case, both lenses, opposing interpretation,
+    // worked reasoning and evidence standard belong in human review hashes.
+    ...(course.lessons.find(l=>l.stage==='Beginner')===lesson?{crossWorldAppliedMission:{
+      reviewStatus:'pending-independent-review',...CROSSROAD_CASES[course.id]
+    }}:{}),
+    // The four-stop inquiry map is original course-level teaching, not a score.
+    // Attach once per subject to the first published Beginner lesson so every
+    // worked response, pitfall and evidence standard enters the content hash.
+    ...(course.lessons.find(l=>l.stage==='Beginner')===lesson?{subjectInquiryTrail:{
+      reviewStatus:'pending-independent-review',...INQUIRY_TRAILS[course.id]
     }}:{}),
     // Each first-principles model, thought experiment, rebuttal and transfer
     // task belongs to the external expert's exact-content review hash.

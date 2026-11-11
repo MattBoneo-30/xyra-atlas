@@ -1,6 +1,12 @@
 import { COURSES, LANGUAGES, LEARNING_SPRINT, DAILY_NOTES, findCourse, findLesson, totalLessons } from './data.js';
+import {icon} from './atlas-icons.js';
+import {renderMentorPage} from './atlas-mentor-view.js';
 import {languageFieldworkPanel,frontierWorkshopPanel} from './frontiercurriculum.js';
 import {syncVisualReaderProgress,visualHorizonsPanel,visualScenePanel,visualStageCompass} from './atlas-visual-experience.js';
+import {renderAtlasExploreBanner,renderAtlasWorldGallery,renderAtlasJourneyConstellation} from './atlas-world-gallery.js';
+import {renderAtlasInquiryTrail} from './atlas-inquiry.js';
+import {renderCourseFieldGuide} from './atlas-course-field-guide.js';
+import {renderAtlasExpedition} from './atlas-expedition.js';
 import {languageEvidencePanel} from './languageevidence.js';
 import {specialistConceptPanel} from './advancedconcepts.js';
 import {calibrationLabPanel} from './calibrationlabs.js';
@@ -17,6 +23,7 @@ import {createChapterMap} from './visualmap.js';
 import {getChapterArt} from './chapterart.js';
 import {getStageArt} from './stageart.js';
 import {buildLessonNarration} from './narration.js';
+import {renderAtlasMapView,renderExamHistoryPanel} from './atlas-page-views.js';
 import {parseStoredEnvelope,storageHealthMessage} from './storagehealth.js';
 import {normalizeOfflineReport,offlineAdvice} from './offline.js';
 import {parseBackupEnvelope,normalizeLessonKeys,normalizeQuizAnswers,normalizeLastOpened,backupCounts} from './backup.js';
@@ -186,49 +193,7 @@ function visitToday() {
 }
 visitToday();
 function streak() { return countVisitStreak(saved.dailyVisits); }
-function icon(name,size=20) {
-  const p = {
-    menu:'<path d="M4 7h16M4 12h16M4 17h16"/>',
-    search:'<circle cx="11" cy="11" r="7"/><path d="m16.5 16.5 4.2 4.2"/>',
-    arrow:'<path d="m9 18 6-6-6-6"/>', back:'<path d="m15 18-6-6 6-6"/>',
-    down:'<path d="m6 9 6 6 6-6"/>',
-    home:'<path d="m3 10 9-7 9 7v10H3z"/><path d="M9 20v-7h6v7"/>',
-    compass:'<circle cx="12" cy="12" r="9"/><path d="m15.5 8.5-2.7 5.1-5.3 2.9 2.7-5.3z"/>',
-    chart:'<path d="M4 20V4M4 20h16M8 16v-4M13 16V8M18 16V5"/>',
-    bookmark:'<path d="M6 4h12v17l-6-4-6 4z"/>',
-    user:'<circle cx="12" cy="8" r="4"/><path d="M4 21c1-5 5-7 8-7s7 2 8 7"/>',
-    bell:'<path d="M5 17h14l-2-3V9a5 5 0 0 0-10 0v5z"/><path d="M10 20h4"/>',
-    sun:'<circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M4.9 4.9l1.4 1.4m11.4 11.4 1.4 1.4m0-14.2-1.4 1.4M6.3 17.7l-1.4 1.4"/>',
-    moon:'<path d="M20 15a8 8 0 0 1-11-11 8 8 0 1 0 11 11"/>',
-    spark:'<path d="m12 2 2.4 7.6L22 12l-7.6 2.4L12 22l-2.4-7.6L2 12l7.6-2.4z"/>',
-    flame:'<path d="M12 22c5 0 8-3.5 8-8 0-3-1.6-6.1-5-9-.2 3-1.9 4.3-3 5-1-4-3.1-6-4-7C8 8 4 10 4 15c0 4 3 7 8 7Z"/>',
-    brain:'<path d="M12 7a4 4 0 0 0-7-2c-3 1-3 5-1 7-2 3 0 6 3 6 0 3 5 4 5 0V7zm0 0a4 4 0 0 1 7-2c3 1 3 5 1 7 2 3 0 6-3 6 0 3-5 4-5 0V7zM8 9c3 0 4 2 4 4m4-4c-3 0-4 2-4 4"/>',
-    scale:'<path d="M12 3v18M4 7h16M6 7l-4 8c2 2 6 2 8 0L6 7Zm12 0-4 8c2 2 6 2 8 0l-4-8ZM7 21h10"/>',
-    briefcase:'<rect x="3" y="7" width="18" height="14" rx="2"/><path d="M9 7V4h6v3M3 12c6 4 12 4 18 0M12 12v4"/>',
-    wallet:'<rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 9h18M15 15h6M17 15h.1"/>',
-    clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v6l4 2"/>',
-    languages:'<path d="M4 5h13M11 3v3M6 9c2 5 6 8 11 10M15 9c-1 3-6 8-11 11M15 19l3-9 3 9m-5-3h4"/>',
-    message:'<path d="M4 5h16v12H9l-5 4z"/><path d="M8 10h8M8 13h5"/>',
-    shield:'<path d="M12 2 20 5v6c0 6-4 9-8 11-4-2-8-5-8-11V5z"/><path d="m8 12 3 3 5-6"/>',
-    heart:'<path d="M20.8 8.2c0 5-8.8 11.2-8.8 11.2S3.2 13.2 3.2 8.2a4.8 4.8 0 0 1 8.8-2.4 4.8 4.8 0 0 1 8.8 2.4Z"/>',
-    rocket:'<path d="M6 14c-2-6 6-12 14-12 0 8-6 16-12 14l-2-2Zm4-1 1 1M5 19l-2 2m3-2 2-2M9 6 6 4 4 6v3M15 15l3 3v3h-3"/>',
-    orbit:'<circle cx="12" cy="12" r="3"/><ellipse cx="12" cy="12" rx="10" ry="5" transform="rotate(-35 12 12)"/><ellipse cx="12" cy="12" rx="10" ry="5" transform="rotate(35 12 12)"/>',
-    check:'<path d="m5 12 5 5 9-10"/>', close:'<path d="M5 5 19 19M19 5 5 19"/>',
-    play:'<path d="m8 5 11 7-11 7z"/>',
-    book:'<path d="M12 6c-3-2-6-2-10-1v14c4-1 7-1 10 1 3-2 6-2 10-1V5c-4-1-7-1-10 1Zm0 0v14"/>',
-    lock:'<rect x="5" y="10" width="14" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/>',
-    download:'<path d="M12 3v13m-5-5 5 5 5-5M4 18v3h16v-3"/>',
-    upload:'<path d="M12 17V4m-5 5 5-5 5 5M4 17v4h16v-4"/>',
-    trash:'<path d="M4 7h16M9 7V4h6v3M6 7l1 14h10l1-14M10 11v6m4-6v6"/>',
-    info:'<circle cx="12" cy="12" r="10"/><path d="M12 11v6m0-10v.2"/>',
-    wifi:'<path d="M2 8c6-5 14-5 20 0M5 12c4-4 10-4 14 0m-11 4c3-3 5-3 8 0M12 20h.1"/>',
-    'wifi-off':'<path d="m2 2 20 20M2 8c2-2 5-3 7-3m4 0c3 0 6 1 9 3M6 12c2-1 4-2 6-2m5 2 2 0m-11 4c2-2 4-2 5-2M12 20h.1"/>',
-    alert:'<path d="m12 2 10 19H2zM12 8v5m0 4v.2"/>',
-    external:'<path d="M14 4h6v6m0-6-9 9M20 14v6H4V4h6"/>',
-    dots:'<circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/>'
-  };
-  return `<svg aria-hidden="true" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">${p[name] || p.spark}</svg>`;
-}
+
 const mark = `<img src="/assets/atlas-mark.svg" alt="" class="brand-mark" />`;
 const chevron = icon('arrow',17);
 const button = (label,action,extra='',attrs='') => `<button type="button" class="${extra}" data-action="${action}" ${attrs}>${label}</button>`;
@@ -330,11 +295,13 @@ function explore() {
     const typePass = filter==='all' || (filter==='mind' && ['psychology','relationships','thinking','communication'].includes(c.id)) || (filter==='skills' && ['business','savings','time','languages','career','digital','negotiation'].includes(c.id)) || (filter==='shadow' && c.dark);
     return searchPass && typePass;
   });
-  return `<main class="page"><div class="page-title"><span class="overline">EXPLORE THE UNKNOWN</span><h1>What will you <em>learn?</em></h1><p>Your curiosity deserves somewhere beautiful to go.</p></div>
+  return `<main class="page">${renderAtlasExploreBanner(COURSES.length)}
     <label class="search-box">${icon('search',19)}<input id="course-search" type="search" placeholder="Search knowledge, skills, lessons..." autocomplete="off" value="${esc(query)}" aria-label="Search courses"/></label>
     <div class="filter-row" aria-label="Filter subjects">${[['all','All'],['mind','Mindset'],['skills','Life skills'],['shadow','The shadows']].map(([id,label])=>button(esc(label),'filter',`filter-pill ${filter===id?'active':''}`,`data-id="${id}" aria-pressed="${filter===id}"`)).join('')}</div>
     <div class="section-heading list-title"><div><span class="overline">YOUR KNOWLEDGE LIBRARY</span><h2>${filter==='shadow'?'The hidden side':filter==='all'?'All subjects':'Subjects for you'}</h2></div><span class="result-count">${matches.length} ${matches.length===1?'subject':'subjects'}</span></div>
-    <div class="course-list">${matches.length?matches.map(c=>card(c,'horizontal')).join(''):`<div class="empty-state">${icon('search',35)}<h3>No matches found</h3><p>Try another word, or browse all subjects.</p>${button('Show all subjects','reset-search','primary-button')}</div>`}</div>
+    <div class="atlas-explore-results">${matches.length
+      ?renderAtlasWorldGallery(matches,courseProgress,c=>c.lessons.find(l=>!isCompleted(idFor(c.id,l.id)))?.stage||'Advanced',getStageArt,c=>COURSES.indexOf(c)+1)
+      :`<div class="empty-state">${icon('search',35)}<h3>No matches found</h3><p>Try another word, or browse all subjects.</p>${button('Show all subjects','reset-search','primary-button')}</div>`}</div>
     <div class="learning-invite"><div class="learning-invite-icon">${icon('languages',25)}</div><div><strong>Learning a new language?</strong><p>Choose one of 20 starting paths and try a seven-day sprint.</p></div>${button(chevron,'language','icon-button','aria-label="Open Language Lab"')}</div>
   </main>`;
 }
@@ -342,7 +309,7 @@ function clinicPanel(course){
  const clinic=getClinic(course.id);
  if(!clinic)return '';
  const stats=clinicStats(saved.clinicAnswers,course.id);
- return `<section class="clinic-panel" aria-label="Applied decision clinic">
+ return `<section class="clinic-panel" id="atlas-decision-clinic" aria-label="Applied decision clinic">
   <div class="clinic-head"><div><span class="overline">APPLIED JUDGMENT • THREE DECISIONS</span><h2>${esc(clinic.title)}</h2><p>${esc(clinic.intro)}</p></div>
   <span class="clinic-score" aria-label="${stats.answered} of ${stats.total} questions answered">${stats.answered}/${stats.total} answered</span></div>
   <div class="clinic-grid">${clinic.questions.map((q,i)=>{
@@ -383,7 +350,9 @@ function coursePage() {
     <div class="course-facts"><span>${icon('book',17)} ${plural(c.lessons.length,'lesson')}</span><span>${icon('clock',17)} ${c.lessons.reduce((n,l)=>n+l.minutes,0)} min</span><span>${icon('chart',17)} Beginner → Advanced</span></div>
     <div class="course-progress"><div><strong>Your progress</strong><span>${done}/${c.lessons.length} lessons</span></div>${bars(done,c.lessons.length)}</div>
     ${button(`${icon('play',18)} ${done ? 'Continue learning' : 'Start learning'}`,'open-lesson','primary-button course-start',`data-course="${esc(c.id)}" data-lesson="${esc(firstUnfinished.id)}"`)}
-    <section class="curriculum-ladder" aria-label="Learning ladder for ${esc(c.title)}">
+    ${renderCourseFieldGuide(c,{completed:saved.completed,ladder})}
+    ${renderAtlasExpedition(c,{completed:saved.completed,getStageArt})}
+    <section class="curriculum-ladder" id="atlas-stage-ladder" aria-label="Learning ladder for ${esc(c.title)}">
      <div class="curriculum-ladder-heading"><span class="overline">FROM FOUNDATION TO APPLIED WORK</span><h2>Three levels of practice</h2><p>Every stage has a learning objective and an observable exercise. Your recorded lesson progress is a study guide, not a measure of professional competence.</p></div>
      <div class="curriculum-ladder-levels">${ladder.levels.map(level=>`<article class="curriculum-level curriculum-level-illustrated" data-stage="${esc(level.stage)}"><button type="button" class="curriculum-world-preview" data-action="course-stage-filter" data-id="${esc(level.stage)}" aria-label="Explore ${esc(level.stage)} lessons in ${esc(c.title)}" aria-pressed="${courseStageFilter===level.stage}">
        <img src="${esc(getStageArt(c.id,level.stage)?.src||'/assets/'+c.art+'.svg')}" alt="" loading="lazy" decoding="async"/>
@@ -395,6 +364,7 @@ function coursePage() {
        ${level.nextLesson?button(`Study next: ${esc(level.nextLesson.title)} ${icon('arrow',15)}`,'open-lesson','curriculum-next-action',`data-course="${esc(c.id)}" data-lesson="${esc(level.nextLesson.id)}"`):`<span class="curriculum-level-complete">${icon('check',16)} ${level.total?'All lessons complete':'Lessons are being prepared'}</span>`}
      </article>`).join('')}</div><p class="fineprint">Advanced lessons remain open for independent exploration. Completion is not a credential, assessment of professional judgment or guarantee of expertise.</p>
     </section>
+    ${renderAtlasInquiryTrail(c,{isLessonDone:id=>isCompleted(idFor(c.id,id)),getStageArt,allCourses:COURSES})}
     ${portfolioJourneyPanel(c,{isLessonDone:id=>isCompleted(idFor(c.id,id)),hasFieldNote:id=>Boolean(saved.fieldNotes[idFor(c.id,id)]?.trim())})}
     ${responseSimulationPanel(c)}
     ${clinicPanel(c)}
@@ -554,17 +524,11 @@ function lessonPage() {
 
 
 function examHistoryPanel(){
- const report=examHistoryInsights(saved.examHistory,COURSES);
- if(!report.attempts)return `<section class="exam-insights exam-insights-empty"><span class="overline">PRACTICE HISTORY</span><h2>Your progress through practice</h2><p>Completed challenges appear here with private subject scores and lessons worth revisiting. Scores are study signals, not qualifications.</p></section>`;
- const subjects=report.subjects.slice(0,6),focus=report.focus;
- const available=focusQuestionPool(COURSES,saved.examHistory).length;
- return `<section class="exam-insights" aria-label="Practice history"><div class="exam-insights-heading"><div><span class="overline">YOUR PRIVATE PRACTICE HISTORY</span><h2>Patterns worth noticing</h2><p>Based only on completed practice exams in this browser. Lower scores identify questions to revisit, not your overall ability.</p></div>${button('Clear history','exam-history-clear','secondary-button')}</div>
- <div class="exam-insights-metrics"><div><strong>${report.attempts}</strong><span>Recent exams</span></div><div><strong>${report.correct}/${report.total}</strong><span>Answers correct</span></div><div><strong>${report.percent}%</strong><span>Across recorded questions</span></div></div>
- <div class="exam-insights-columns"><div><h3>Practice by subject</h3><div class="exam-insights-subjects">${subjects.map(a=>`<div class="exam-insights-subject"><div class="exam-insights-subject-label"><span>${esc(a.title)}</span><strong>${a.correct}/${a.total} · ${a.percent}%</strong></div><div class="exam-insights-track"><span style="width:${a.percent}%"></span></div></div>`).join('')}</div></div>
- <div><h3>Questions to revisit</h3>${focus.length?`<div class="exam-insights-focus">${focus.map(q=>`<div class="exam-insights-focus-item"><div><strong>${esc(q.title)}</strong><small>${esc(q.courseTitle)} · Missed ${q.count} ${q.count===1?'time':'times'}</small></div>${button('Review','open-lesson','secondary-button',`data-course="${esc(q.courseId)}" data-lesson="${esc(q.lessonId)}"`)}</div>`).join('')}</div>`:'<p class="fineprint">No missed questions in your saved results. Keep exploring new topics.</p>'}</div></div>
- ${available?`<div class="exam-focus-action"><div><span class="overline">FROM INSIGHT TO PRACTICE</span><h3>Retest missed questions</h3><p>Revisit up to ${available} distinct questions you previously missed, prioritized by repeat misses. No unrelated questions are added.</p></div><div class="exam-focus-controls"><label for="exam-focus-size">Maximum questions</label><select id="exam-focus-size" class="styled-select">${EXAM_SIZES.map(n=>`<option value="${n}">${n} questions</option>`).join('')}</select>${button('Start focused revision','exam-focus-start','primary-button')}</div></div>`:''}
- <div class="exam-insights-recent"><h3>Recent challenges</h3>${report.recent.slice(0,5).map(r=>`<div class="exam-insights-recent-row"><span>${esc(new Date(r.endedAt).toLocaleDateString(undefined,{year:'numeric',month:'short',day:'numeric'}))}</span><span>${r.areas.length===1?esc(COURSES.find(c=>c.id===r.areas[0].courseId)?.title||r.areas[0].courseId):'Mixed subjects'}</span><strong>${r.correct}/${r.total}</strong></div>`).join('')}</div>
- <p class="fineprint">Only scores and missed lesson identifiers are retained—not raw answers. Up to 12 completed exams can be backed up or cleared. This history does not change lesson completion.</p></section>`;
+ return renderExamHistoryPanel({
+  report:examHistoryInsights(saved.examHistory,COURSES),
+  available:focusQuestionPool(COURSES,saved.examHistory).length,
+  COURSES,EXAM_SIZES,button,esc
+ });
 }
 
 function examPage(){
@@ -590,6 +554,7 @@ function journey() {
   return `<main class="page journey-page"><div class="page-title"><span class="overline">YOUR GROWTH IS YOURS</span><h1>Every step <em>counts.</em></h1><p>Not a race. A beautiful habit of becoming.</p></div>
     <div class="journey-banner"><div class="journey-aura">✧</div><span class="overline">YOUR ATLAS RANK</span><div class="journey-level">${Math.floor(done/6)+1}</div><h2>${done < 6?'Curious Learner':done<24?'Knowledge Seeker':'Atlas Explorer'}</h2><p>Keep exploring, one honest lesson at a time.</p>${bars(done%6,6)}<span class="subtle-count">${done%6} / 6 to next level</span></div>
     <div class="metrics-grid"><div><span class="metric-icon">${icon('book',22)}</span><strong>${done}</strong><small>Lessons learned</small></div><div><span class="metric-icon">${icon('flame',22)}</span><strong>${streak()}</strong><small>Day streak</small></div><div><span class="metric-icon">${icon('spark',22)}</span><strong>${xp}</strong><small>Knowledge XP</small></div></div>
+    ${renderAtlasJourneyConstellation(COURSES,courseProgress)}
     <section class="personal-cards-invite"><div class="personal-cards-invite-icon">${icon('book',24)}</div><div><span class="overline">YOUR IDEAS, YOUR OWN FLASHCARDS</span><h2>Study Card Workshop</h2><p>Create private recall cards and review them on a spaced schedule.</p></div>${button('Open workshop','personal-cards-open','small-button')}</section>
     <section class="insights-invite"><div><span class="overline">YOUR LEARNING LANDSCAPE</span><h2>Learning Insights</h2><p>See activity, quiz practice and illustrated subject progress.</p></div>${button('View insights','insights','small-button')}</section>
     <section class="daily-quest-invite"><div class="quest-gem">✦</div><div><span class="overline">A DAILY INVITATION</span><h2>Today's Quest</h2><p>Three thoughtful steps, with no pressure to keep a streak.</p></div>${button('Open quest','quest','small-button')}</section>
@@ -636,14 +601,7 @@ function scenarioPage(){
 }
 
 function mentorPage(){
- const todayNote=mentorMoment(today(),COURSES,saved.completed);
- const entry=todayNote?.reflection,guide=todayNote?.lesson;
- return `<main class="page mentor-page"><div class="subnav">${button(`${icon('back',18)} Back to home`,'goto-home','back-link')}</div>
- <section class="mentor-hero"><div class="mentor-portrait"><img src="/assets/xyra-guide.svg" alt="Illustrated Xyra with violet eyes, dark hair, human ears, amethyst crown and lavender clothing" loading="eager"/></div><div class="mentor-hero-copy"><span class="overline">THE AMETHYST GUIDE OF ATLAS</span><h1>Welcome to <em>my corner.</em></h1><p>I'm Xyra, your fictional guide through this library. Think of this place as a gentle invitation to be curious, question what you know and keep moving at your own pace.</p><p class="mentor-signature">With curiosity, Xyra ✦</p></div></section>
- <div class="mentor-content"><section class="mentor-reflection"><span class="overline">TODAY'S REFLECTION · ${esc(today())}</span><h2>${esc(entry?.title||'Follow your curiosity')}</h2><p class="mentor-quote">“${esc(entry?.message||'Every question has a place here.')}”</p><div class="mentor-prompt"><strong>A question for today</strong><p>${esc(entry?.prompt||'What would you like to understand?')}</p></div><p class="fineprint">Reflections rotate with the local date. They are invitations, not psychological evaluations or personal predictions.</p></section>
- ${guide?`<section class="mentor-lesson"><span class="overline">A LITTLE LEARNING TO TRY</span><h2>${esc(guide.title)}</h2><p>${esc(guide.course)} · ${guide.minutes} minutes</p><p>Open this lesson for an explanation, a practical exercise and your private Field Notebook.</p>${button(`Explore this lesson ${icon('arrow',17)}`,'open-lesson','primary-button',`data-course="${esc(guide.courseId)}" data-lesson="${esc(guide.lessonId)}"`)}</section>`:''}</div>
- <section class="mentor-outro"><span class="overline">TAKE YOUR TIME</span><p>There is no finish line to understanding the world. Go wherever the next thoughtful question takes you.</p>${button(`Explore the Atlas ${icon('compass',17)}`,'map','secondary-button')}</section>
- </main>`;
+ return renderMentorPage({todayNote:mentorMoment(today(),COURSES,saved.completed),day:today(),button,icon,esc});
 }
 
 function insightsPage(){
@@ -692,28 +650,7 @@ function questPage(){
 function mapPage(){
  const atlas=buildKnowledgeMap(COURSES,saved.completed);
  const trails=suggestKnowledgeTrails(atlas,3);
- const spots=atlas.nodes.map(n=>`<button type="button" class="atlas-star-node ${n.done?'has-progress':''} ${n.percent===100?'is-mastered':''} ${n.dark?'is-shadow':''}" style="--node-x:${n.x}%;--node-y:${n.y}%" data-action="open-course" data-id="${esc(n.id)}" aria-label="Open ${esc(n.title)}. ${n.done} of ${n.total} lessons complete">
-   <span class="atlas-node-art"><img src="/assets/${esc(n.art)}.svg" alt="" loading="lazy" decoding="async"/></span>
-   <span class="atlas-node-label"><strong>${esc(n.title)}</strong><small>${n.dark?'18+ · content acknowledgment required':`${n.done}/${n.total} lessons`}</small><span class="atlas-node-track"><span style="width:${n.percent}%"></span></span></span>
- </button>`).join('');
- const links=atlas.links.map(l=>`<line x1="${l.x1}%" y1="${l.y1}%" x2="${l.x2}%" y2="${l.y2}%"/>`).join('');
- return `<main class="page atlas-map-page"><div class="subnav">${button(`${icon('back',18)} Back to learning`,'goto-explore','back-link')}</div><div class="page-title"><span class="overline">A UNIVERSE OF QUESTIONS</span><h1>Your Knowledge <em>Constellation.</em></h1><p>Fourteen connected worlds of learning. Choose any illustrated star to open a subject and follow your curiosity.</p></div>
-  <section class="atlas-map-wrap" aria-label="Interactive knowledge map of ${atlas.nodes.length} subjects">
-   <div class="atlas-sky" aria-hidden="true"><div class="atlas-sky-nebula"></div><svg viewBox="0 0 100 100" preserveAspectRatio="none"><g class="atlas-connections">${links}</g><g class="atlas-background-stars"><circle cx="8" cy="9" r=".12"/><circle cx="23" cy="35" r=".16"/><circle cx="69" cy="7" r=".12"/><circle cx="94" cy="29" r=".16"/><circle cx="31" cy="77" r=".14"/><circle cx="77" cy="77" r=".12"/><circle cx="53" cy="52" r=".2"/></g></svg></div>
-   <div class="atlas-map-orbit">${spots}</div>
-  </section>
-  <section class="atlas-map-summary"><span>${icon('spark',20)} ${atlas.nodes.length} learning worlds</span><span>${icon('book',20)} ${atlas.completed} of ${atlas.total} lessons finished</span><span>${icon('compass',20)} Follow your own path</span></section>
-  <section class="atlas-learning-trails" aria-label="Suggested connections between learning subjects">
-   <div class="atlas-trails-heading"><div><span class="overline">FOLLOW THE THREADS</span><h2>Where curiosity leads next</h2><p>These optional connections use your completed lessons. They are invitations to explore, never required prerequisites or measures of expertise.</p></div><span class="atlas-trails-count">${trails.length} paths</span></div>
-   <div class="atlas-trails-grid">${trails.map(trail=>`<article class="atlas-trail-card">
-    <div class="atlas-trail-scene"><img src="/assets/${esc(trail.to.art)}.svg" alt="" loading="lazy" decoding="async"/><span class="atlas-trail-compass" aria-hidden="true">${icon('compass',20)}</span></div>
-    <div class="atlas-trail-body"><span class="overline">FROM ${esc(trail.from.title)} TO</span><h3>${esc(trail.to.title)}</h3><p>${esc(trail.reason)}</p>
-    <span class="atlas-trail-next">Start with: ${esc(trail.to.nextLesson.title)}</span>
-    ${button(`Explore this connection ${icon('arrow',17)}`,'open-lesson','atlas-trail-button',`data-course="${esc(trail.to.id)}" data-lesson="${esc(trail.to.nextLesson.id)}"`)}
-    </div></article>`).join('')||'<p class="atlas-trail-empty">You have explored every connected subject. Revisit any star to practice what you learned.</p>'}</div>
-  </section>
-  <p class="info-line">${icon('info',16)} Lines show suggested topic connections—not required prerequisites. Mature subjects still require acknowledgment.</p>
- </main>`;
+ return renderAtlasMapView({atlas,trails,button,icon,esc});
 }
 
 function studioPage(){
@@ -1918,13 +1855,18 @@ if('serviceWorker' in navigator && location.protocol.startsWith('http')){
     if(offlineUpdateApplying){location.reload();return;}
     if(route.view==='offline')requestAnimationFrame(()=>inspectOffline());
   });
-  window.addEventListener('load',async()=>{
+  // Imported course modules may use top-level await for offline data. If the
+  // window load event has already fired, registering only inside a load handler
+  // leaves the PWA permanently unregistered. Handle both startup orderings.
+  const registerOfflineShell=async()=>{
     try{
       const reg=await navigator.serviceWorker.register('/sw.js',{updateViaCache:'none'});
       watchOfflineRegistration(reg);
       void maybeCheckForUpdates();
     }catch{/* Atlas remains usable online if service worker registration fails. */}
-  });
+  };
+  if(document.readyState==='complete')void registerOfflineShell();
+  else window.addEventListener('load',registerOfflineShell,{once:true});
 }
 if(route.view==='course'&&route.courseId==='shadow') modal='shadow';
 if(route.view==='lesson'&&route.courseId==='shadow') modal='shadow';

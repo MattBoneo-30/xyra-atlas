@@ -149,6 +149,21 @@
           "type": "ci",
           "value": "https://github.com/MattBoneo-30/xyra-atlas/actions/runs/41762776612",
           "note": "Full Chromium/WebKit CI passed following independent author-content HTML review copy; no reviewer attestations fabricated."
+        },
+        {
+          "type": "commit",
+          "value": "b6cb0569c68416588f3e962f1056242e190cdb85",
+          "note": "56 original inquiry stations added to exact-content specialist review records and printable reviewer packet; source-level checks completed, all professional approvals still pending, and no lesson identity or saved grade changed."
+        },
+        {
+          "type": "commit",
+          "value": "c654eea5c243a2d692cd7f49655720bca4086d9d",
+          "note": "14 original interdisciplinary case studies now staged, each with two subject lenses, independent assignment, worked reasoning, alternative interpretation and evidence criterion. Exact source included in specialist review hashes and print packet. Specialist signoff remains outstanding."
+        },
+        {
+          "type": "commit",
+          "value": "f93f6d5def541c8742e3b603cc091154c2bb0ae5",
+          "note": "Fourteen original course guiding questions and forty-two step-by-step subject study strategies added to independent editorial review hashes and printable packet, explicitly marked pending external validation. Existing 139 lesson IDs, grades and progress unchanged."
         }
       ],
       "blockers": [
@@ -217,6 +232,31 @@
           "type": "commit",
           "value": "a895864c1c2aac799ed308d22d8a52ffc694b421",
           "note": "Source-level visual upgrade: original-art horizon gallery, numbered course scenes, three-stage reader compass, ephemeral reading-position ribbon, reduced-motion/contrast/mobile CSS, enforced main bundle size, and unexecuted physical-device acceptance matrix. Does not constitute art approval or physical device QA."
+        },
+        {
+          "type": "commit",
+          "value": "014b863b048625fbc1bdde558bad9a15cd20daef",
+          "note": "Staged only on dev/atlas-visual-experience: original-art 14-world Explore portals, canonical world numbers under filters, next-stage previews, honest completion meters, and personal 14-node learning constellation. Branch-specific Vercel preview deployments disabled. Static renderer, syntax, offline registration and budget checks done; no human art signoff or physical-device QA. See docs/visual-development-branch.md."
+        },
+        {
+          "type": "commit",
+          "value": "b6cb0569c68416588f3e962f1056242e190cdb85",
+          "note": "Four-stop illustrated inquiry maps now staged for all 14 subject pages, with 56 original explanations, tasks, countercases and evidence standards. Source syntax, coverage, responsive CSS, offline registration and app size checked in isolation. Real-device and owner artwork acceptance pending."
+        },
+        {
+          "type": "commit",
+          "value": "c654eea5c243a2d692cd7f49655720bca4086d9d",
+          "note": "Six-node concept maps with 84 links to existing courses and lessons, responsive original-art disclosure panels and offline CSS/JS, source-level verification completed. Genuine owner art approval, full browser suite and physical-device checks remain outstanding."
+        },
+        {
+          "type": "commit",
+          "value": "a3249490a1cdc2b7ce97fd1d2f94940275ae6f9e",
+          "note": "Staged narrow-screen Knowledge Map and private Practice History responsive styling, improved focus, high contrast and reduced motion. Page rendering extracted from the app; source-level checks passed. Physical iPhone/Android screenshots and owner art acceptance are not completed."
+        },
+        {
+          "type": "commit",
+          "value": "f93f6d5def541c8742e3b603cc091154c2bb0ae5",
+          "note": "Branch-only responsive Course Field Guide adds honest next-reading session, seven real navigable course landmarks, practical focus/scroll controls, stage highlights and refined lesson filters. Source-level checks added; owner art acceptance, full browser/mobile QA and physical PWA evidence still required."
         }
       ],
       "blockers": [
@@ -278,6 +318,11 @@
           "type": "ci",
           "value": "https://github.com/MattBoneo-30/xyra-atlas/actions/runs/41763169389",
           "note": "After Playwright runner pin, 235 tests and browser engines pass; this is pre-deployment QA, not real-device or Vercel verification."
+        },
+        {
+          "type": "commit",
+          "value": "a3249490a1cdc2b7ce97fd1d2f94940275ae6f9e",
+          "note": "Stateless extracted map/history view module, main app reduced to ~227.8 KB, new regression tests and offline asset entries. GitHub branch CI must be run and reviewed; source checks do not establish a green build or independent acceptance."
         }
       ],
       "blockers": [

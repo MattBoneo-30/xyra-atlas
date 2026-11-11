@@ -107,6 +107,65 @@ function competencyBridgeSupplement(item){
  '<h5>Evidence of understanding</h5>'+p(item.proof)+
  '<p class="disclaimer">Pending qualified independent review. Neither completion nor a worked example certifies mastery.</p></section>';
 }
+function inquiryTrailSupplement(item){
+ if(!item)return '';
+ const stationNames=['Observe','Explain','Challenge','Transfer'];
+ return '<section class="review-appendix"><h4>Four-stop visual inquiry trail — verify all course teaching and worked reasoning</h4>'+
+  '<h5>'+esc(item.title)+'</h5>'+
+  '<strong>Learning claim</strong>'+p(item.thesis)+
+  '<strong>Continuing case</strong>'+p(item.context)+
+  item.stations.map((station,i)=>
+   '<h6>Station '+(i+1)+' — '+esc(stationNames[i])+': '+esc(station.heading)+'</h6>'+
+   '<strong>Driving question</strong>'+p(station.question)+
+   '<strong>Conceptual explanation</strong>'+p(station.concept)+
+   '<strong>Independent exercise</strong>'+p(station.challenge)+
+   '<strong>Worked comparison, pending independent review</strong>'+p(station.worked)+
+   '<strong>Misleading shortcut</strong>'+p(station.trap)+
+   '<strong>Evidence standard</strong>'+p(station.evidence)
+  ).join('')+
+  '<h5>Ethical or domain boundaries</h5>'+p(item.boundary)+
+  '<p class="disclaimer">Educational and ungraded. All 56 inquiry responses and subject facts require genuine independent expert review. No approval is implied.</p></section>';
+}
+function courseFieldGuideSupplement(item){
+ if(!item)return '';
+ return '<section class="review-appendix"><h4>Subject-specific Field Guide — independent editorial review</h4>'+
+  '<h5>Guiding learning question</h5>'+p(item.question)+
+  '<h5>Three study moves from foundations to transfer</h5>'+list(item.moves||[],true)+
+  '<h5>Safety or professional limits</h5>'+p(item.boundary)+
+  '<p class="disclaimer">This educational study strategy is not a completion score or an independently approved curriculum statement.</p></section>';
+}
+function crossworldSupplement(item){
+ if(!item)return '';
+ return '<section class="review-appendix"><h4>Cross-world transfer studio — independent specialist verification required</h4>'+
+ '<h5>'+esc(item.title)+'</h5>'+
+ '<p><strong>Related discipline:</strong> '+esc(item.partner)+'</p>'+
+ '<strong>Continuing case</strong>'+p(item.scenario)+
+ '<h5>Two separate reasoning lenses</h5>'+
+ (item.models||[]).map((entry,i)=>'<strong>Lens '+(i+1)+'</strong>'+p(entry)).join('')+
+ '<h5>Independent application task</h5>'+p(item.challenge)+
+ '<h5>Worked reference — do not assume expert approval</h5>'+p(item.worked)+
+ '<h5>Counterargument or disconfirming possibility</h5>'+p(item.falsifier)+
+ '<h5>Evidence of satisfactory reasoning</h5>'+p(item.evidence)+
+ '<h5>Domain limits</h5>'+p(item.boundary)+
+ '<p class="disclaimer">Optional educational material pending independently qualified subject review. No score, credential or accreditation is implied.</p></section>';
+}
+function expeditionSupplement(item){
+ if(!item)return '';
+ return '<section class="review-appendix"><h4>Expedition Studio — independently review all three choices and 3 staged missions</h4>'+
+  '<h5>'+esc(item.title)+'</h5>'+
+  '<strong>Applied scenario</strong>'+p(item.setup)+
+  '<strong>Central reasoning question</strong>'+p(item.question)+
+  '<h5>All possible response options and authored consequence explanations</h5>'+
+  '<ol class="choices">'+(item.choices||[]).map(choice=>'<li><strong>'+esc(choice.label)+'</strong>'+p(choice.consequence)+'</li>').join('')+'</ol>'+
+  '<h5>Three stage-specific evidence missions</h5>'+
+  (item.missions||[]).map((mission,i)=>'<h6>Mission '+(i+1)+' — '+esc(mission.stage)+': '+esc(mission.focus)+'</h6>'+
+    '<strong>Independent task</strong>'+p(mission.task)+
+    '<strong>Requested output</strong>'+p(mission.artifact)+
+    '<strong>Quality criteria</strong>'+p(mission.check)).join('')+
+  '<h5>Overall evidence test</h5>'+p(item.evidence)+
+  '<h5>Subject boundaries</h5>'+p(item.boundary)+
+  '<p class="disclaimer">The authored decision consequences are not independently approved. This teaching is optional and ungraded. No academic credential or professional accreditation is implied.</p></section>';
+}
 function lesson(item){
  const c=item.content;
  return '<details id="lesson-'+slug(item.id)+'" class="review-item"><summary><strong>'+esc(c.title)+
@@ -123,7 +182,7 @@ function lesson(item){
  '<h4>Evidence and transfer practice</h4>'+list(c.stagePractice||[],true)+
  '<h4>Assessment question</h4>'+p(c.quiz.question)+answers(c.quiz.options,c.quiz.correct)+
  '<h4>Assessment rationale</h4>'+p(c.quiz.explanation)+sources(c.references)+
- researchSupplement(c.masterLevelResearchPracticum)+competencyBridgeSupplement(c.stageCompetencyBridge)+synthesisSupplement(c.intermediateSynthesisSeminar)+qualificationSupplement(c.qualificationDecisions)+fieldExpeditionSupplement(c.longitudinalFieldExpedition)+firstPrinciplesSupplement(c.firstPrinciplesCompanion)+
+ researchSupplement(c.masterLevelResearchPracticum)+competencyBridgeSupplement(c.stageCompetencyBridge)+synthesisSupplement(c.intermediateSynthesisSeminar)+qualificationSupplement(c.qualificationDecisions)+fieldExpeditionSupplement(c.longitudinalFieldExpedition)+firstPrinciplesSupplement(c.firstPrinciplesCompanion)+inquiryTrailSupplement(c.subjectInquiryTrail)+crossworldSupplement(c.crossWorldAppliedMission)+courseFieldGuideSupplement(c.courseFieldOrientation)+expeditionSupplement(c.subjectAppliedExpedition)+
  '<h4>Human review checklist</h4>'+list(item.checklist||[])+
  '<p class="disclaimer">This author-supplied copy is not an independent expert approval. Review actual evidence, applicability, context and safety before signing.</p>'+
  '</div></details>';
