@@ -1505,10 +1505,22 @@ try{
    expect((await page.locator('.offline-update-ready').textContent()).includes('Apply update'),'update needs explicit user consent');
    await context.setOffline(true);
    await page.locator('[data-action="offline-apply-update"]').click();
+   // A waiting worker may briefly enter 'activating' while the old worker is
+   // still active. Waiting for !registration.waiting alone is a race; verify
+   // the new worker's actual cache fingerprint and offline completeness.
    await page.waitForFunction(async expected=>{
     const registration=await navigator.serviceWorker.getRegistration();
-    return Boolean(registration?.active&&!registration.waiting&&navigator.serviceWorker.controller&&document.querySelector('.offline-library-page'));
-   },replacement,{timeout:25000});
+    if(!registration?.active||registration.waiting||!navigator.serviceWorker.controller||
+      !document.querySelector('.offline-library-page'))return false;
+    const report=await new Promise(resolve=>{
+     const channel=new MessageChannel();
+     const timer=setTimeout(()=>{channel.port1.close();resolve(null);},1200);
+     channel.port1.onmessage=e=>{clearTimeout(timer);channel.port1.close();resolve(e.data);};
+     try{registration.active.postMessage({type:'ATLAS_OFFLINE_STATUS'},[channel.port2]);}
+     catch{clearTimeout(timer);channel.port1.close();resolve(null);}
+    });
+    return report?.version===expected&&report?.ready===true;
+   },replacement,{timeout:30000});
    await page.locator('.offline-library-page').waitFor();
    const final=await status();
    expect(final?.version===replacement,'approved update activated using already cached offline assets');
