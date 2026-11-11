@@ -630,9 +630,9 @@ export function validateAtlasExpeditions(ids=IDS){
  if(!Array.isArray(ids)||ids.length!==14||new Set(ids).size!==14||EXPEDITION_WORLD_COUNT!==14||EXPEDITION_MISSION_COUNT!==42)throw Error('Incomplete expeditions');
  for(const id of ids){
   const item=ATLAS_EXPEDITIONS[id];
-  if(!item||!['title','setup','question','evidence','boundary'].every(k=>typeof item[k]==='string'&&item[k].length>35))throw Error('Missing expedition editorial content: '+id);
+  if(!item||!Object.entries({title:15,setup:120,question:45,evidence:85,boundary:55}).every(([k,min])=>typeof item[k]==='string'&&item[k].length>=min))throw Error('Missing expedition editorial content: '+id);
   if(!Array.isArray(item.choices)||item.choices.length!==3||item.choices.some(x=>x.label.length<12||x.consequence.length<60))throw Error('Incomplete decision alternatives '+id);
-  if(!Array.isArray(item.missions)||item.missions.length!==3||item.missions.some((x,i)=>x.stage!==LEVELS[i]||!['focus','task','artifact','check'].every(k=>typeof x[k]==='string'&&x[k].length>20)))throw Error('Incomplete field missions '+id);
+  if(!Array.isArray(item.missions)||item.missions.length!==3||item.missions.some((x,i)=>x.stage!==LEVELS[i]||!Object.entries({focus:12,task:65,artifact:15,check:25}).every(([k,min])=>typeof x[k]==='string'&&x[k].length>=min)))throw Error('Incomplete field missions '+id);
  }
  return true;
 }
