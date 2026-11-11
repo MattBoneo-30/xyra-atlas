@@ -149,6 +149,23 @@ function crossworldSupplement(item){
  '<h5>Domain limits</h5>'+p(item.boundary)+
  '<p class="disclaimer">Optional educational material pending independently qualified subject review. No score, credential or accreditation is implied.</p></section>';
 }
+function expeditionSupplement(item){
+ if(!item)return '';
+ return '<section class="review-appendix"><h4>Expedition Studio — independently review all three choices and 3 staged missions</h4>'+
+  '<h5>'+esc(item.title)+'</h5>'+
+  '<strong>Applied scenario</strong>'+p(item.setup)+
+  '<strong>Central reasoning question</strong>'+p(item.question)+
+  '<h5>All possible response options and authored consequence explanations</h5>'+
+  '<ol class="choices">'+(item.choices||[]).map(choice=>'<li><strong>'+esc(choice.label)+'</strong>'+p(choice.consequence)+'</li>').join('')+'</ol>'+
+  '<h5>Three stage-specific evidence missions</h5>'+
+  (item.missions||[]).map((mission,i)=>'<h6>Mission '+(i+1)+' — '+esc(mission.stage)+': '+esc(mission.focus)+'</h6>'+
+    '<strong>Independent task</strong>'+p(mission.task)+
+    '<strong>Requested output</strong>'+p(mission.artifact)+
+    '<strong>Quality criteria</strong>'+p(mission.check)).join('')+
+  '<h5>Overall evidence test</h5>'+p(item.evidence)+
+  '<h5>Subject boundaries</h5>'+p(item.boundary)+
+  '<p class="disclaimer">The authored decision consequences are not independently approved. This teaching is optional and ungraded. No academic credential or professional accreditation is implied.</p></section>';
+}
 function lesson(item){
  const c=item.content;
  return '<details id="lesson-'+slug(item.id)+'" class="review-item"><summary><strong>'+esc(c.title)+
@@ -165,7 +182,7 @@ function lesson(item){
  '<h4>Evidence and transfer practice</h4>'+list(c.stagePractice||[],true)+
  '<h4>Assessment question</h4>'+p(c.quiz.question)+answers(c.quiz.options,c.quiz.correct)+
  '<h4>Assessment rationale</h4>'+p(c.quiz.explanation)+sources(c.references)+
- researchSupplement(c.masterLevelResearchPracticum)+competencyBridgeSupplement(c.stageCompetencyBridge)+synthesisSupplement(c.intermediateSynthesisSeminar)+qualificationSupplement(c.qualificationDecisions)+fieldExpeditionSupplement(c.longitudinalFieldExpedition)+firstPrinciplesSupplement(c.firstPrinciplesCompanion)+inquiryTrailSupplement(c.subjectInquiryTrail)+crossworldSupplement(c.crossWorldAppliedMission)+courseFieldGuideSupplement(c.courseFieldOrientation)+
+ researchSupplement(c.masterLevelResearchPracticum)+competencyBridgeSupplement(c.stageCompetencyBridge)+synthesisSupplement(c.intermediateSynthesisSeminar)+qualificationSupplement(c.qualificationDecisions)+fieldExpeditionSupplement(c.longitudinalFieldExpedition)+firstPrinciplesSupplement(c.firstPrinciplesCompanion)+inquiryTrailSupplement(c.subjectInquiryTrail)+crossworldSupplement(c.crossWorldAppliedMission)+courseFieldGuideSupplement(c.courseFieldOrientation)+expeditionSupplement(c.subjectAppliedExpedition)+
  '<h4>Human review checklist</h4>'+list(item.checklist||[])+
  '<p class="disclaimer">This author-supplied copy is not an independent expert approval. Review actual evidence, applicability, context and safety before signing.</p>'+
  '</div></details>';

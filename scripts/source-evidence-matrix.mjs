@@ -41,7 +41,16 @@ export function buildSourceEvidenceMatrix(packet){
    title:c.title,stage:c.stage,course:l.course,
    stageLearningObjective:c.stageLearningObjective,introduction:c.intro,
    sections:c.sections.map(s=>({heading:s.heading,body:s.body})),
-   example:c.workedExample,exercise:c.task,question:c.quiz.question,
+   example:c.workedExample,exercise:c.task,
+   // Full source-hash-associated applied teaching must be discoverable by
+   // independent claim reviewers (including the newest Expedition Studio).
+   authoredLearningSupplements:c.subjectAppliedExpedition?{
+     subjectAppliedExpedition:c.subjectAppliedExpedition,
+     subjectInquiryTrail:c.subjectInquiryTrail,
+     crossWorldAppliedMission:c.crossWorldAppliedMission,
+     courseFieldOrientation:c.courseFieldOrientation
+   }:null,
+   question:c.quiz.question,
    answerOptions:[...c.quiz.options],authoredCorrectIndex:c.quiz.correct,
    authoredAnswer:c.quiz.options[c.quiz.correct],answerExplanation:c.quiz.explanation
   });

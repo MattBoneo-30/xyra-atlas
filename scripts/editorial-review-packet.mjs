@@ -13,6 +13,7 @@ import {FIRST_PRINCIPLES} from '../firstprinciples.js';
 import {INQUIRY_TRAILS} from '../atlas-inquiry.js';
 import {CROSSROAD_CASES} from '../atlas-crossroads.js';
 import {COURSE_ORIENTATIONS} from '../atlas-course-orientations.js';
+import {ATLAS_EXPEDITIONS} from '../atlas-expedition.js';
 import {COMPETENCY_BRIDGES} from '../competencybridges.js';
 import {QUALIFYING} from '../qualifyingclinic.js';
 import {SYNTHESIS_SEMINARS} from '../synthesisseminars.js';
@@ -178,6 +179,12 @@ export function buildEditorialReviewPacket(courses,clinics){
     // form on the first Beginner lesson for exact-copy external review.
     ...(course.lessons.find(l=>l.stage==='Beginner')===lesson?{courseFieldOrientation:{
       reviewStatus:'pending-independent-review',...COURSE_ORIENTATIONS[course.id]
+    }}:{}),
+    // Include the Expedition Studio's scenario, every decision consequence and
+    // all three level-specific deliverables in the signed editorial content hash.
+    // It is optional, ungraded teaching and is never a new completed lesson.
+    ...(course.lessons.find(l=>l.stage==='Beginner')===lesson?{subjectAppliedExpedition:{
+      reviewStatus:'pending-independent-review',...ATLAS_EXPEDITIONS[course.id]
     }}:{}),
     // The exact interdisciplinary case, both lenses, opposing interpretation,
     // worked reasoning and evidence standard belong in human review hashes.

@@ -4,6 +4,10 @@
 
 ![Xyra Atlas emblem](assets/atlas-mark.svg)
 
+## Major engineering accomplishment — 11 November 2026
+
+**Platform implementation and visual/curriculum expansion: completed on the development branch.** The integrated learning experience includes the 14 new Expedition Studios, 42 staged missions and 42 contextual option explanations, now represented in exact-content editorial hashes and reviewer handoffs. Latest CI status must be checked for the milestone commit. Final **independent expert, native-language, physical-device and production acceptance gates remain open**; the status is not a completed public release. See [Major Engineering Accomplishment](docs/MAJOR_ENGINEERING_ACCOMPLISHMENT.md).
+
 ## New Expedition Studio (development branch)
 
 Every course now includes an optional illustrated Expedition Studio with one authored real-world scenario, three comparative decisions with ungraded explanations, and three stage-specific field missions. Across fourteen learning worlds this adds **42 actionable tasks and 42 decision alternatives** with observable evidence criteria, using the established lesson IDs and original local scene artwork. The Studio introduces no new lesson completions, grades, certificates, personal records, remote requests, or tracking, and is bundled for offline use. Independent subject review and device acceptance are pending; it remains unmerged on the development branch. See [Expedition Studio QA](docs/expedition-studio-acceptance.md).

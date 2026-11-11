@@ -2,6 +2,11 @@
 **Integration:** dev/atlas-visual-experience only. No merge or release without owner approval.
 **Scope:** 14 original scenario labs, 42 staged field missions (Beginner / Intermediate / Advanced), 42 selectable decisions with authored tradeoff explanations, 42 existing-course lesson links, and 42 original source artworks reused for mission stages.
 
+## Independent review traceability
+- Every subject's three missions and three decision consequences are attached exactly once to the first Beginner lesson in the SHA-256 editorial review packet.
+- Printable HTML shows every authored choice, consequence, task, artifact, evidence test and limitation; source-to-teaching evidence includes the expedition record.
+- This preserves pending-review status and invalidates any earlier hash when the course teaching changes.
+
 ## Data and learner integrity
 - Study missions are educational exercises and **not** new core lessons. All lesson links are resolved from `COURSES` and use existing IDs.
 - Progress indicators count actual published lessons recorded in the existing browser-local completion list. Choosing an option does not create scores, bookmarks, history, certificates or new stored identifiers.
